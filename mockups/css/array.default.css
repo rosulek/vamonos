@@ -73,11 +73,18 @@ table.array td, table.array tr {
 
 .array-cells td.changed, .array-indices td.changed {
     -webkit-animation: array-changed 0.6s linear;
+    animation: array-changed 0.6s linear;
 }
 .indices-above .array-indices td.changed {
     -webkit-animation: none;
+    animation: none;
 }
 @-webkit-keyframes array-changed {
+    0% { background: default; color: default; }
+    20% { background: #ed8; color: red; }
+    100% { background: default; color: default; }
+}
+@keyframes array-changed {
     0% { background: default; color: default; }
     20% { background: #ed8; color: red; }
     100% { background: default; color: default; }
