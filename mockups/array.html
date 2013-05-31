@@ -1,0 +1,271 @@
+<link rel="stylesheet" type="text/css" href="css/array.default.css">
+<script type="text/javascript" src="../deps/jquery.min.js"></script>
+<script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
+
+
+<style type="text/css">
+    .container {
+        padding: 10px;
+        margin: 10px;
+        border: 1px solid black;
+        display: inline-block;
+/*        float: left;
+        clear: left; */
+        box-shadow: 5px 5px 5px #ccc;
+    }
+</style>
+
+<h1>Array mockups</h1>
+
+<div class="container">
+    <table class="array">
+        <tr class="array-indices">
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+            <td>4</td>
+            <td>5</td>
+            <td>6</td>
+        </tr>
+        <tr class="array-cells">
+            <td>3</td>
+            <td>1</td>
+            <td>4</td>
+            <td>1</td>
+            <td>5</td>
+            <td>9</td>
+        </tr>
+    </table>
+</div>
+
+
+
+<div class="container indices-above">
+    <table class="array">
+        <tr class="array-indices">
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+            <td>4</td>
+            <td>5</td>
+            <td>6</td>
+        </tr>
+        <tr class="array-cells">
+            <td>3</td>
+            <td>1</td>
+            <td>4</td>
+            <td>1</td>
+            <td>5</td>
+            <td>9</td>
+        </tr>
+    </table>
+</div>
+
+<div class="container">
+    <table class="array">
+        <tr class="array-indices">
+            <td class=shaded>1</td>
+            <td class=shaded>2</td>
+            <td class=shaded>3</td>
+            <td>4</td>
+            <td>5</td>
+            <td>6</td>
+        </tr>
+        <tr class="array-cells">
+            <td class=shaded>3</td>
+            <td class=shaded>1</td>
+            <td class=shaded>4</td>
+            <td>1</td>
+            <td>5</td>
+            <td>9</td>
+        </tr>
+    </table>
+</div>
+
+<div class="container indices-above">
+    <table class="array">
+        <tr class="array-indices">
+            <td class=shaded>1</td>
+            <td class=shaded>2</td>
+            <td class=shaded>3</td>
+            <td>4</td>
+            <td>5</td>
+            <td>6</td>
+        </tr>
+        <tr class="array-cells">
+            <td class=shaded>3</td>
+            <td class=shaded>1</td>
+            <td class=shaded>4</td>
+            <td>1</td>
+            <td>5</td>
+            <td>9</td>
+        </tr>
+    </table>
+</div>
+
+
+
+
+<div class="container indices-above">
+    <table class="array">
+        <tr class="array-indices">
+            <td class=shaded>1</td>
+            <td class=shaded>2</td>
+            <td class=shaded>3</td>
+            <td>4</td>
+            <td>5</td>
+            <td>6</td>
+        </tr>
+        <tr class="array-cells">
+            <td class=shaded>3</td>
+            <td class=shaded>1</td>
+            <td class=shaded>4</td>
+            <td>1</td>
+            <td>5</td>
+            <td>9</td>
+        </tr>
+        <tr class="array-annotations">
+            <td class=shaded></td>
+            <td class=shaded>i</td>
+            <td class=shaded></td>
+            <td>j</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+</div>
+
+
+
+
+<div class="container">
+    <table class="array">
+        <tr class="array-indices">
+            <td class=shaded>1</td>
+            <td class=shaded>2</td>
+            <td class=shaded>3</td>
+            <td>4</td>
+            <td>5</td>
+            <td>6</td>
+        </tr>
+        <tr class="array-cells">
+            <td class=shaded>3</td>
+            <td class=shaded>1</td>
+            <td class=shaded>4</td>
+            <td>1</td>
+            <td>5</td>
+            <td>9</td>
+        </tr>
+        <tr class="array-annotations">
+            <td class=shaded></td>
+            <td class=shaded></td>
+            <td class=shaded></td>
+            <td>&#x2191;<br>j</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+</div>
+
+
+
+<div class="container">
+    <table class="array">
+        <tr class="array-indices">
+            <td class="array-title"></td>
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+            <td>4</td>
+            <td>5</td>
+            <td>6</td>
+        </tr>
+        <tr class="array-cells">
+            <td class="array-title">opt:</td>
+            <td>3</td>
+            <td>1</td>
+            <td>4</td>
+            <td>1</td>
+            <td>5</td>
+            <td>9</td>
+        </tr>
+    </table>
+</div>
+
+
+
+<div class="container" id="swap-container1">
+    <table class="array">
+        <tr class="array-indices">
+            <td class="changed">1</td>
+            <td>2</td>
+            <td class="changed">3</td>
+            <td>4</td>
+            <td>5</td>
+            <td>6</td>
+        </tr>
+        <tr class="array-cells">
+            <td class="changed">3</td>
+            <td>1</td>
+            <td class="changed">4</td>
+            <td>1</td>
+            <td>5</td>
+            <td>9</td>
+        </tr>
+    </table>
+    <input type="submit" id="swap1" value="swap">
+</div>
+
+<script type="text/javascript">
+    var swap = function (e1, e2) {
+        var tmp = e1.clone();
+        e1.replaceWith(e2.clone());
+        e2.replaceWith(tmp);
+    };
+    var refresh = function (e) {
+        e.replaceWith( e.clone() );
+    };
+    var swap1and3 = function (e) {
+        var a1 = e.find(".array-cells td:nth-child(1)"),
+            a3 = e.find(".array-cells td:nth-child(3)"),
+            i1 = e.find(".array-indices td:nth-child(1)"),
+            i3 = e.find(".array-indices td:nth-child(3)");
+
+        swap(a1, a3);
+        refresh(i1);
+        refresh(i3);
+    }
+
+    $("#swap1").on("click", function() { swap1and3( $("#swap-container1") ); });
+</script>
+
+
+
+
+<div class="container indices-above" id="swap-container2">
+    <table class="array">
+        <tr class="array-indices">
+            <td class="changed">1</td>
+            <td>2</td>
+            <td class="changed">3</td>
+            <td>4</td>
+            <td>5</td>
+            <td>6</td>
+        </tr>
+        <tr class="array-cells">
+            <td class="changed shaded">3</td>
+            <td class="shaded">1</td>
+            <td class="changed shaded">4</td>
+            <td>1</td>
+            <td>5</td>
+            <td>9</td>
+        </tr>
+    </table>
+    <input type="submit" id="swap2" value="swap">
+</div>
+
+<script type="text/javascript">
+    $("#swap2").on("click", function() { swap1and3( $("#swap-container2") ); });
+</script>
+
+

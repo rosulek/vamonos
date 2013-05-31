@@ -1,0 +1,90 @@
+<link rel="stylesheet" type="text/css" href="css/graph.default.css">
+<script type="text/javascript" src="../deps/jquery.min.js"></script>
+<script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
+
+<div id="container" style="margin: 20px 0 0 20px; width:600px; height:600px; border: 1px solid black;">
+  <div class="graph-inner-container">
+
+    <div class="vertex" style="left: 100px; top: 50px;">1</div>
+    <div id="v2" class="vertex vertex-draggable" style="left: 200px; top: 50px;">2</div>
+    <div class="vertex-deletable vertex" style="left: 300px; top: 50px;">3</div>
+    <div class="vertex-selected vertex" style="left: 400px; top: 50px;">4</div>
+
+
+    <div class="vertex" style="left: 100px; top: 150px;">
+        <div class="vertex-nw-label">nw</div>
+        5
+    </div>
+    <div class="vertex" style="left: 200px; top: 150px;"><div class="vertex-ne-label">ne</div>6</div>
+    <div class="vertex" style="left: 300px; top: 150px;"><div class="vertex-sw-label">sw</div>7</div>
+    <div class="vertex" style="left: 400px; top: 150px;"><div class="vertex-se-label">se</div>8</div>
+
+    <div class="vertex" style="width:50px; height:50px; left: 100px; top: 250px;">
+        <div class="vertex-tophalf">top</div>
+        <div class="vertex-swquad">sw</div>
+        <div class="vertex-sequad">se</div>
+    </div>
+    <div class="vertex" style="width:50px; height:50px; left: 200px; top: 250px;">
+        <div class="vertex-bottomhalf">bot</div>
+        <div class="vertex-nwquad">nw</div>
+        <div class="vertex-nequad">ne</div>
+    </div>
+    <div class="vertex" style="width:50px; height:50px; left: 300px; top: 250px;">
+        <div class="vertex-bottomhalf">bot</div>
+        <div class="vertex-tophalf">top</div>
+    </div>
+    <div class="vertex" style="width:50px; height:50px; left: 400px; top: 250px;">
+        <div class="vertex-nwquad">A</div>
+        <div class="vertex-nequad">B</div>
+        <div class="vertex-swquad">C</div>
+        <div class="vertex-sequad">D</div>
+    </div>
+
+
+    <div class="vertex" style="width:50px; height:50px; left: 100px; top: 350px;">
+        <div class="vertex-lefthalf">L</div>
+        <div class="vertex-nequad">ne</div>
+        <div class="vertex-sequad">se</div>
+    </div>
+    <div class="vertex" style="width:50px; height:50px; left: 200px; top: 350px;">
+        <div class="vertex-righthalf">R</div>
+        <div class="vertex-nwquad">nw</div>
+        <div class="vertex-swquad">sw</div>
+    </div>
+    <div class="vertex" style="width:50px; height:50px; left: 300px; top: 350px;">
+        <div class="vertex-lefthalf">L</div>
+        <div class="vertex-righthalf">R</div>
+    </div>
+
+
+    <div class="vertex" style="width: 50px; left: 100px; top: 450px;">
+        long
+        <div class="vertex-nw-label">nw</div>
+    </div>
+
+
+    <div class="vertex" style="width: 50px; left: 200px; top: 450px;">
+        <div class="vertex-lefthalf">L</div>
+        <div class="vertex-righthalf">R</div>
+    </div>
+
+
+    <div class="vertex" style="height: 50px; left: 300px; top: 450px;">
+        <div class="vertex-tophalf">up</div>
+        <div class="vertex-bottomhalf">dn</div>
+    </div>
+
+
+
+  </div>
+</div>
+
+<ul>
+    <li> vertex 2 = draggable
+    <li> vertex 3 = deletable
+    <li> vertex 4 = selected
+</ul>
+
+<script type="text/javascript">
+    $("#v2").draggable({ containment: "parent" });
+</script>

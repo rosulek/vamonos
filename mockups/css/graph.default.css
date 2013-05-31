@@ -1,0 +1,164 @@
+.vertex {
+    width: 22px;
+    height: 22px;
+    text-align: center;
+    padding: 0px;
+
+    border-radius: 100%;
+    border: 1px solid black;
+    background: #eee;
+
+    position: absolute; /* left/top are relative to container */
+}
+
+/* required, so that vertex positions are relative to container */
+.graph-inner-container {
+    position: absolute;
+    width: inherit;
+    height: inherit;
+}
+
+
+/************/
+/* DRAGGING */
+
+
+/* these classes added by jQuery */
+.ui-draggable {
+    cursor: move;
+}
+.ui-draggable-dragging, .vertex-drag-onto {
+    -webkit-box-shadow: 5px 5px 10px #aaa;
+    -moz-box-shadow: 5px 5px 10px #aaa;
+    box-shadow: 5px 5px 10px #aaa;
+}
+
+.vertex-drag-onto {
+    cursor: default;
+}
+
+
+
+/************/
+/* DELETING */
+
+.vertex-deletable:hover {
+    background: #fcc;
+    -webkit-box-shadow: 5px 5px 10px #caa;
+    -moz-box-shadow: 5px 5px 10px #caa;
+    box-shadow: 5px 5px 10px #caa;
+    cursor: crosshair;
+}
+
+
+/************/
+/* SELECTED */
+
+
+.vertex-selected {
+    background: #ffc;
+}
+
+/**********/
+/* LABELS */
+
+.vertex-nw-label, .vertex-ne-label, .vertex-sw-label, .vertex-se-label {
+    position: absolute;
+}
+
+.vertex-nw-label { 
+    right: 85%;
+    bottom: 85%;
+}
+.vertex-ne-label { 
+    left: 85%;
+    bottom: 85%;
+}
+.vertex-sw-label { 
+    right: 85%;
+    top: 85%;
+}
+.vertex-se-label { 
+    left: 85%;
+    top: 85%;
+}
+
+
+/********************/
+/* MULTI-PART NODES */
+
+/* these don't allow for easy shading of the quadrants: */
+
+.vertex-tophalf, .vertex-bottomhalf, .vertex-righthalf, .vertex-lefthalf,
+.vertex-nwquad, .vertex-nequad, .vertex-swquad, .vertex-sequad {
+    border: 1px solid black;
+    position: absolute;
+}
+
+.vertex-tophalf {
+    height: 50%;
+    width: 100%;
+    border-width: 0 0 1px 0;
+    top: 0px;
+    left: 0px;
+}
+
+.vertex-bottomhalf {
+    height: 50%;
+    width: 100%;
+    border-width: 1px 0 0 0;
+    bottom: 0px;
+    left: 0px;
+}
+
+.vertex-righthalf {
+    height: 100%;
+    width: 50%;
+    border-width: 0 0 0 1px;
+    top: 0px;
+    right: 0px;
+}
+
+.vertex-lefthalf {
+    height: 100%;
+    width: 50%;
+    border-width: 0 1px 0 0;
+    top: 0px;
+    left: 0px;
+}
+
+
+.vertex-swquad {
+    height: 50%;
+    width: 50%;
+    border-width: 1px 1px 0 0;
+    bottom: 0px;
+    left: 0px;
+}
+
+.vertex-sequad {
+    height: 50%;
+    width: 50%;
+    border-width: 1px 0 0 1px;
+    bottom: 0px;
+    right: 0px;
+}
+
+.vertex-nwquad {
+    height: 50%;
+    width: 50%;
+    border-width: 0 1px 1px 0;
+    top: 0px;
+    left: 0px;
+}
+
+.vertex-nequad {
+    height: 50%;
+    width: 50%;
+    border-width: 0 0 1px 1px;
+    top: 0px;
+    right: 0px;
+}
+
+
+
