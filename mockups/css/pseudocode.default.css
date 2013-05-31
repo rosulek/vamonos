@@ -1,0 +1,33 @@
+
+
+table.pseudocode {
+    border-collapse: collapse;
+    display: inline;
+    vertical-align: middle;
+}
+
+td.pseudocode-title {
+    font-style: italic;
+    border-bottom: 1px solid black;
+}
+
+td.pseudocode-line-number {
+    text-align: right;
+    color: #888;
+    padding-right: 8px;
+    font-size: 10px;
+}
+
+.pseudocode-indent {
+    width: 32px;
+    display: inline-block;
+}
+
+td.pseudocode-comment {
+    color: #888;
+    font-style: italic;
+}
+
+td.pseudocode-text {
+    padding-right: 20px;
+}

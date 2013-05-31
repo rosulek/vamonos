@@ -1,0 +1,150 @@
+<link rel="stylesheet" type="text/css" href="css/pseudocode.default.css">
+<script type="text/javascript" src="../deps/jquery.min.js"></script>
+<script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
+
+
+<style type="text/css">
+    .container {
+        padding: 10px;
+        margin: 10px;
+        border: 1px solid black;
+        display: inline-block;
+/*        float: left;
+        clear: left; */
+        box-shadow: 5px 5px 5px #ccc;
+    }
+</style>
+
+<h1>Pseudocode mockups</h1>
+
+<div class="container">
+    <table class="pseudocode">
+        <tr class="pseudocode-header">
+            <td></td>
+            <td class="pseudocode-title">InsertionSort(A):</td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">1</td>
+            <td class="pseudocode-text"><b>for</b> j = 2 <b>to</b> A.length</td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">2</td>
+            <td class="pseudocode-text"> <span class="pseudocode-indent"></span> key = A[j]</td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">3</td>
+            <td class="pseudocode-text"> <span class="pseudocode-indent"></span> i = j - 1</td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">4</td>
+            <td class="pseudocode-text"> <span class="pseudocode-indent"></span> <b>while</b> i &gt; 0 <b>and</b> A[i] &gt; key</td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">5</td>
+            <td class="pseudocode-text"> <span class="pseudocode-indent"></span><span class="pseudocode-indent"></span> A[i+1] = A[i]</td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">6</td>
+            <td class="pseudocode-text"> <span class="pseudocode-indent"></span><span class="pseudocode-indent"></span> i = i - 1</td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">7</td>
+            <td class="pseudocode-text"> <span class="pseudocode-indent"></span> A[i+1] = key</td>
+        </tr>
+    </table>
+</div>
+
+
+
+
+<div class="container">
+    <table class="pseudocode">
+        <tr class="pseudocode-header">
+            <td></td>
+            <td class="pseudocode-title" colspan=2>InsertionSort(A):</td>
+            <td class="pseudocode-comment"></td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">1</td>
+            <td class="pseudocode-text"><b>for</b> j = 2 <b>to</b> A.length</td>
+            <td class="pseudocode-comment"></td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">2</td>
+            <td class="pseudocode-text"> <span class="pseudocode-indent"></span> key = A[j]</td>
+            <td class="pseudocode-comment"></td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">3</td>
+            <td class="pseudocode-text"> <span class="pseudocode-indent"></span> i = j - 1</td>
+            <td class="pseudocode-comment">// insert A[j] into sorted sequence A[1..j-1]</td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">4</td>
+            <td class="pseudocode-text"> <span class="pseudocode-indent"></span> <b>while</b> i &gt; 0 <b>and</b> A[i] &gt; key</td>
+            <td class="pseudocode-comment"></td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">5</td>
+            <td class="pseudocode-text"> <span class="pseudocode-indent"></span><span class="pseudocode-indent"></span> A[i+1] = A[i]</td>
+            <td class="pseudocode-comment"></td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">6</td>
+            <td class="pseudocode-text"> <span class="pseudocode-indent"></span><span class="pseudocode-indent"></span> i = i - 1</td>
+            <td class="pseudocode-comment"></td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">7</td>
+            <td class="pseudocode-text"> <span class="pseudocode-indent"></span> A[i+1] = key</td>
+            <td class="pseudocode-comment"></td>
+        </tr>
+    </table>
+</div>
+
+
+
+
+
+
+
+<div class="container">
+    <table class="pseudocode">
+        <tr class="pseudocode-header">
+            <td></td>
+            <td class="pseudocode-title">InsertionSort(A):</td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">1</td>
+            <td class="pseudocode-text"><b>for</b> j = 2 <b>to</b> A.length</td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">2</td>
+            <td class="pseudocode-text"> <span class="pseudocode-indent"></span> key = A[j]</td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td></td>
+            <td class="pseudocode-comment"> <span class="pseudocode-indent"></span> // insert A[j] into sorted sequence A[1..j-1]</td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">3</td>
+            <td class="pseudocode-text"> <span class="pseudocode-indent"></span> i = j - 1</td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">4</td>
+            <td class="pseudocode-text"> <span class="pseudocode-indent"></span> <b>while</b> i &gt; 0 <b>and</b> A[i] &gt; key</td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">5</td>
+            <td class="pseudocode-text"> <span class="pseudocode-indent"></span><span class="pseudocode-indent"></span> A[i+1] = A[i]</td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">6</td>
+            <td class="pseudocode-text"> <span class="pseudocode-indent"></span><span class="pseudocode-indent"></span> i = i - 1</td>
+        </tr>
+        <tr class="pseudocode-line">
+            <td class="pseudocode-line-number">7</td>
+            <td class="pseudocode-text"> <span class="pseudocode-indent"></span> A[i+1] = key</td>
+        </tr>
+    </table>
+</div>
