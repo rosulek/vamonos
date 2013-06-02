@@ -14,9 +14,27 @@ td.pseudocode-title {
 td.pseudocode-line-number {
     text-align: right;
     color: #888;
-    padding-right: 8px;
+    padding: 0 4px 0 4px;
     font-size: 10px;
+    background: #eee;
 }
+
+.no-line-numbers td.pseudocode-line-number {
+    display: none;
+}
+
+
+td.pseudocode-gutter {
+    width: 14px;
+    background: #ddd;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.no-gutter td.pseudocode-gutter {
+    display: none;
+}
+
 
 .pseudocode-indent {
     width: 32px;
@@ -26,8 +44,34 @@ td.pseudocode-line-number {
 td.pseudocode-comment {
     color: #888;
     font-style: italic;
+    padding-left: 8px;
 }
 
 td.pseudocode-text {
     padding-right: 20px;
+    padding-left: 8px;
+}
+
+
+tr.pseudocode-active td.pseudocode-text, tr.pseudocode-active td.pseudocode-comment  {
+    background: #efc;
+}
+tr.pseudocode-active td.pseudocode-line-number {
+    background: #deb;
+}
+tr.pseudocode-active td.pseudocode-gutter {
+    background: #cda;
+}
+
+
+.pseudocode-breakpoint {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 6px;
+    background: #e55;
+}
+
+tr.pseudocode-active .pseudocode-breakpoint {
+    background: red;
 }
