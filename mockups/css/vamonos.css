@@ -69,6 +69,15 @@ table.pseudocode td.pseudocode-title {
   font-style: italic;
   border-bottom: 1px solid black;
 }
+table.pseudocode td.pseudocode-line-number,
+table.pseudocode td.pseudocode-gutter,
+table.pseudocode td.pseudocode-text,
+table.pseudocode td.pseudocode-comment {
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
 table.pseudocode td.pseudocode-line-number {
   text-align: right;
   color: #555555;
@@ -76,15 +85,17 @@ table.pseudocode td.pseudocode-line-number {
   font-size: 10px;
   background: #eeeeee;
 }
+.no-line-numbers table.pseudocode td.pseudocode-line-number {
+  display: none;
+}
 table.pseudocode td.pseudocode-gutter {
   width: 14px;
   background: #dddddd;
   text-align: center;
   vertical-align: middle;
 }
-table.pseudocode .pseudocode-indent {
-  width: 32px;
-  display: inline-block;
+.no-gutter table.pseudocode td.pseudocode-gutter {
+  display: none;
 }
 table.pseudocode td.pseudocode-comment {
   color: #888888;
@@ -95,6 +106,10 @@ table.pseudocode td.pseudocode-text {
   padding-right: 20px;
   padding-left: 8px;
 }
+table.pseudocode .pseudocode-indent {
+  width: 32px;
+  display: inline-block;
+}
 table.pseudocode div.pseudocode-breakpoint {
   display: inline-block;
   width: 12px;
@@ -102,7 +117,7 @@ table.pseudocode div.pseudocode-breakpoint {
   border-radius: 6px;
   background: #ff0000;
 }
-table.pseudocode tr.pseudocode-active .pseudocode-breakpoint {
+tr.pseudocode-active table.pseudocode div.pseudocode-breakpoint {
   background-color: #f30000;
 }
 table.pseudocode tr.pseudocode-active td.pseudocode-text,
@@ -114,12 +129,6 @@ table.pseudocode tr.pseudocode-active td.pseudocode-line-number {
 }
 table.pseudocode tr.pseudocode-active td.pseudocode-gutter {
   background-color: #d3d991;
-}
-.no-gutter table.pseudocode td.pseudocode-gutter {
-  display: none;
-}
-.no-line-numbers table.pseudocode td.pseudocode-line-number {
-  display: none;
 }
 @-webkit-keyframes background-highlight-pulse {
   0% {
