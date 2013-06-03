@@ -235,4 +235,42 @@
         }
     </script>
 
+
+
+
+
+
+    <h1>Controls Mockup</h1>
+
+    <div class="container">
+        <div class="vamonos-controls">
+            <button id="vamonos-prev">&#x25C0;</button>
+            <button id="vamonos-next">&#x25B6;</button>
+            <div id="vamonos-slider"></div> <span id="vamonos-framenumber"></span>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var updatedisplay = function(ev,ui) {
+            $("#vamonos-framenumber").html( (ui.value || 7)  + " / 20" );
+        };
+
+        $( "#vamonos-slider" ).slider({
+            min:1, max:20, value:7,
+            slide: updatedisplay,
+            change: updatedisplay,
+            create: updatedisplay
+        });
+        $( "#vamonos-prev" ).on( "click", function() {
+            $("#vamonos-slider").slider("option", "value", 
+                $("#vamonos-slider").slider("option", "value") - 1
+            );
+        }); 
+        $( "#vamonos-next" ).on( "click", function() {
+            $("#vamonos-slider").slider("option", "value", 
+                $("#vamonos-slider").slider("option", "value") + 1
+            );
+        }); 
+    </script>
+
 </head></html>
