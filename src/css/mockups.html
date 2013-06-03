@@ -248,8 +248,9 @@
     <h1>Controls Mockup</h1>
 
     <div class="container">
-        <div class="vamonos-controls">
-            <button id="vamonos-prev">&#x25C0;</button>
+        <div id="vamonos-controls" class="vamonos-controls inactive">
+            <button id="vamonos-stop" disabled>&#x25A0;</button>
+            <button id="vamonos-prev" disabled>&#x25C0;</button>
             <button id="vamonos-next">&#x25B6;</button>
             <div id="vamonos-slider"></div> <span id="vamonos-framenumber"></span>
         </div>
@@ -257,11 +258,11 @@
 
     <script type="text/javascript">
         var updatedisplay = function(ev,ui) {
-            $("#vamonos-framenumber").html( (ui.value || 7)  + " / 20" );
+            $("#vamonos-framenumber").html( (ui.value || 0)  + " / " + $("#vamonos-slider").slider("option", "max") );
         };
 
         $( "#vamonos-slider" ).slider({
-            min:1, max:20, value:7,
+            min:1, max:20, value:0,
             slide: updatedisplay,
             change: updatedisplay,
             create: updatedisplay
@@ -272,10 +273,23 @@
             );
         }); 
         $( "#vamonos-next" ).on( "click", function() {
+            $("#vamonos-stop").removeAttr("disabled");
+            $("#vamonos-prev").removeAttr("disabled");
+            $("#vamonos-controls").removeClass("inactive");
+            $("#vamonos-slider").slider("option", "max", 20);
             $("#vamonos-slider").slider("option", "value", 
                 $("#vamonos-slider").slider("option", "value") + 1
             );
         }); 
+        $( "#vamonos-stop" ).on( "click", function() {
+            $("#vamonos-stop").attr("disabled", "true");
+            $("#vamonos-prev").attr("disabled", "true");
+            $("#vamonos-controls").addClass("inactive");
+            $("#vamonos-slider").slider("option", "max", 0);
+            $("#vamonos-slider").slider("option", "value", 0);
+            updatedisplay({},{});
+        });
+
     </script>
 
 

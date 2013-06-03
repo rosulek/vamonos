@@ -31,6 +31,14 @@
     transition: background-color 0.2s ease-in-out;
 }
 
+.ease-all () {
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+
+
 .box-shadow(@color) {
     -webkit-box-shadow: 5px 5px 10px @color;
     -moz-box-shadow: 5px 5px 10px @color;
@@ -367,6 +375,8 @@ table.pseudocode {
     width: 200px;
     margin: 0 4px 0 4px;
 
+    .ease-all();
+
     .ui-slider-handle {
         position: absolute;
         z-index: 2;
@@ -381,8 +391,21 @@ table.pseudocode {
         top: -5px;
         margin-left:-5px; 
     }
+
+    .inactive & {
+        width: 0px;
+        border-width: 0px;
+        margin: 0px;
+
+        .ui-slider-handle {
+            display: none;
+        }
+    }
 }
 
+.inactive #vamonos-framenumber {
+    display: none;
+}
 
 
 //////////////////////
