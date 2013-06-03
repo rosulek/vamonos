@@ -276,6 +276,10 @@ table.pseudocode tr.pseudocode-active td.pseudocode-gutter {
   display: inline-block;
   width: 200px;
   margin: 0 4px 0 4px;
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 #vamonos-slider.ui-slider .ui-slider-handle {
   position: absolute;
@@ -291,6 +295,17 @@ table.pseudocode tr.pseudocode-active td.pseudocode-gutter {
   height: 16px;
   top: -5px;
   margin-left: -5px;
+}
+.inactive #vamonos-slider.ui-slider {
+  width: 0px;
+  border-width: 0px;
+  margin: 0px;
+}
+.inactive #vamonos-slider.ui-slider .ui-slider-handle {
+  display: none;
+}
+.inactive #vamonos-framenumber {
+  display: none;
 }
 table.matrix {
   border-collapse: collapse;
