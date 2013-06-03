@@ -35,15 +35,9 @@
 
     <script type="text/javascript">
         var myviz = new vamanos.Visualizer({
-            pseudocode: {
-                container: "pseudocode",
-                userBreakpoints: false,
-            },
-            breakpoints: [1,5],
             controls: "controls",
-            inputters: { A: new vamonos.inputters.Hardcoded([5, 2, 4, 6, 1, 3]) },
-            viewers: [
-                new vamonos.viewers.Array({
+            interfacers: [
+                new Vamonos.Interfacer.Array({
                     container: "array",
                     varName: "A",
                     showChangesOn: "next",
@@ -51,8 +45,18 @@
                         i: { annotate: 1 },
                         j: { annotate: 1, cssAfter: "shaded" }
                     }
-                })
+                }),
+                new Vamonos.Interfacer.Hardcoded({
+                    A: [5, 2, 4, 6, 1, 3]
+                }),
+                new Vamonos.Interfacer.Pseudocode({
+                    container: "pseudocode",
+                    userBreakpoints: false,
+                    breakpoints: [1,5],
+                }),
+
             ],
+            varNames: ["A", "i", "j", "key"],
 
             algorithm: function (viz) {
                 with (viz.vars) {
