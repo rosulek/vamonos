@@ -75,6 +75,7 @@
         <label><input id="cbtitle" type=checkbox checked> title</label> <br>
         <label><input id="cbgutter" type=checkbox checked> gutter</label> <br>
         <label><input id="cbline" type=checkbox checked> line numbers</label> <br>
+        <label><input id="cbbreakpoints" type=checkbox checked> breakpoints</label> <br>
         <input type="submit" id="activeline" value="swap active line">
     </div>
 
@@ -87,6 +88,9 @@
         });
         $("#cbtitle").change( function() {
             $("#pc tr:nth-child(1)").toggle();
+        });
+        $("#cbbreakpoints").change( function() {
+            $("#pc .pseudocode-breakpoint").toggle();
         });
         $("#activeline").on( "click", function() {
             $("#pc tr:nth-child(5)").toggleClass("pseudocode-active");
@@ -120,8 +124,8 @@
                 <td class=shaded></td>
                 <td class=shaded>i</td>
                 <td class=shaded></td>
-                <td>j</td>
                 <td></td>
+                <td>j</td>
                 <td></td>
             </tr>
         </table>
@@ -129,7 +133,7 @@
 
 
     <div class="container">
-        <label><input id="cbindicesabove" type=checkbox> indices above</label> <br>
+        <label><input id="cbindicesabove" type=checkbox> indices inside</label> <br>
         <label><input id="cbshading" type=checkbox checked> shading</label> <br>
         <label><input id="cbannotations" type=checkbox checked> annotations</label> <br>
         <input type="submit" id="arrswap" value="swap elements">
@@ -137,7 +141,8 @@
 
     <script type="text/javascript">
         $("#cbindicesabove").change( function() {
-            $("#arr").toggleClass("indices-above");
+            $("#arr .changed").removeClass("changed");
+            $("#arr").toggleClass("indices-inside");
         });
         $("#cbshading").change( function() {
             $("#arr tr.array-indices td:lt(3)").toggleClass("shaded");
@@ -148,30 +153,30 @@
             $("#arr tr.array-annotations").toggle();
         });
 
-        var swap = function (e1, e2) {
-            e1.addClass("changed");
-            e2.addClass("changed");
-            var tmp = e1.clone();
-            e1.replaceWith(e2.clone());
-            e2.replaceWith(tmp);
-        };
         var refresh = function (e) {
             e.addClass("changed");
             e.replaceWith( e.clone() );
         };
-        var swap1and3 = function (e) {
-            var a1 = e.find(".array-cells td:nth-child(1)"),
-                a3 = e.find(".array-cells td:nth-child(3)"),
-                i1 = e.find(".array-indices td:nth-child(1)"),
-                i3 = e.find(".array-indices td:nth-child(3)");
+        var swap = function (e1, e2) {
+            var tmp = e1.html();
+            e1.html(e2.html());
+            e2.html(tmp);
+            refresh(e1);
+            refresh(e2);
+        };
+        var swap2and5 = function (e) {
+            var a2 = e.find(".array-cells td:nth-child(2)"),
+                a5 = e.find(".array-cells td:nth-child(5)"),
+                i2 = e.find(".array-indices td:nth-child(2)"),
+                i5 = e.find(".array-indices td:nth-child(5)");
 
-            swap(a1, a3);
-            refresh(i1);
-            refresh(i3);
+            swap(a2, a5);
+            refresh(i2);
+            refresh(i5);
         }
 
         $("#arrswap").on("click", function() {
-            swap1and3( $("#arr") );
+            swap2and5( $("#arr") );
         });
     </script>
 
@@ -272,5 +277,104 @@
             );
         }); 
     </script>
+
+
+
+
+
+
+
+    <h1>(Adjacency) Matrix Mockup</h1>
+
+    <div id="mat" class="container">
+        <table class="matrix">
+            <tr class="matrix-label-row">
+                <th></th>
+                <th>v1</th>
+                <th>v2</th>
+                <th>v3</th>
+                <th>v4</th>
+                <th>v5</th>
+            </tr>
+            <tr class="matrix-data-row">
+                <th class="matrix-label">v1</th>
+                <td>-</td>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+                <td>3</td>
+            </tr>
+            <tr class="matrix-data-row">
+                <th class="matrix-label">v2</th>
+                <td>1</td>
+                <td>-</td>
+                <td>2</td>
+                <td>3</td>
+                <td>3</td>
+            </tr>
+            <tr class="matrix-data-row">
+                <th class="matrix-label">v3</th>
+                <td>2</td>
+                <td>2</td>
+                <td>-</td>
+                <td>3</td>
+                <td>3</td>
+            </tr>
+            <tr class="matrix-data-row">
+                <th class="matrix-label">v4</th>
+                <td>3</td>
+                <td>3</td>
+                <td>3</td>
+                <td>-</td>
+                <td>3</td>
+            </tr>
+            <tr class="matrix-data-row">
+                <th class="matrix-label">v5</th>
+                <td>3</td>
+                <td>3</td>
+                <td>3</td>
+                <td>3</td>
+                <td>-</td>
+            </tr>
+            
+        </table>
+    </div>
+
+    <div class="container">
+        <label><input id="cbhighlight" type=checkbox> row/col highlighting</label> <br>
+        <label><input id="cbmatshade" type=checkbox> shading</label> <br>
+        <input type="submit" id="mchange" value="change value"> <br>
+    </div>
+
+    <script type="text/javascript">
+        $("#cbhighlight").change( function() {
+            $("#mat tr:nth-child(3) td, #mat tr:nth-child(3) th").toggleClass("row-highlight");
+            $("#mat tr td:nth-child(5), #mat tr th:nth-child(5)").toggleClass("col-highlight");
+        });
+
+        $("#cbmatshade").change( function() {
+            $("#mat tr:nth-child(2) td:lt(1)").toggleClass("shaded");
+            $("#mat tr:nth-child(3) td:lt(2)").toggleClass("shaded");
+            $("#mat tr:nth-child(4) td:lt(3)").toggleClass("shaded");
+            $("#mat tr:nth-child(5) td:lt(4)").toggleClass("shaded");
+            $("#mat tr:nth-child(6) td:lt(5)").toggleClass("shaded");
+        });
+        $("#mchange").on("click", function() {
+            var c1 = $("#mat tr:nth-child(3) td:nth-child(5)");
+            var c2 = $("#mat tr:nth-child(5) td:nth-child(3)");
+
+            var x = c1.html();
+            c1.html(7 - x);
+            c2.html(7 - x);
+
+            c1.addClass("changed");
+            c2.addClass("changed");
+
+            refresh( c1 );
+            refresh( c2 );
+        });
+    </script>
+
+
 
 </head></html>

@@ -2,63 +2,50 @@ table.array {
   border-collapse: collapse;
   display: inline;
 }
-table.array td,
-table.array tr {
+table.array td {
   margin: 0px;
   border-spacing: 0px;
   vertical-align: middle;
+  text-align: center;
 }
-table.array tr.array-indices td,
+table.array tr.array-cells td {
+  min-width: 24px;
+}
+table.array tr.array-indices td {
+  font-size: 10px;
+  color: #555555;
+}
+.indices-inside table.array tr.array-indices td,
 table.array tr.array-cells td {
   border: 1px solid #888888;
   background-color: #eeeeee;
+  -webkit-transition: background-color 0.2s ease-in-out;
+  -moz-transition: background-color 0.2s ease-in-out;
+  -o-transition: background-color 0.2s ease-in-out;
+  transition: background-color 0.2s ease-in-out;
 }
-table.array tr.array-indices td.shaded,
+.indices-inside table.array tr.array-indices td.shaded,
 table.array tr.array-cells td.shaded {
-  background-color: #aaaaaa;
+  background-color: #999999;
 }
-table.array tr.array-indices td.changed,
+.indices-inside table.array tr.array-indices td.changed,
 table.array tr.array-cells td.changed {
   -webkit-animation: background-highlight-pulse 0.6s ease-in-out;
   animation: background-highlight-pulse 0.6s ease-in-out;
 }
-table.array tr.array-indices td.array-title,
+.indices-inside table.array tr.array-indices td.array-title,
 table.array tr.array-cells td.array-title {
   border: 0px;
   background: inherit;
   padding-right: 8px;
 }
-table.array tr.array-cells td {
+.indices-inside table.array tr.array-cells td {
   border-top-width: 0px;
-  min-width: 24px;
-  text-align: center;
 }
-table.array tr.array-indices td {
-  border-bottom-width: 0px;
-  font-size: 9px;
-  padding-left: 3px;
-  color: #555555;
-}
-table.array tr.array-annotations td {
-  text-align: center;
-  font-style: italic;
-}
-.indices-above table.array tr.array-indices td {
-  border-width: 0px;
-  background: inherit;
-  text-align: center;
-  padding: 0px;
-  font-size: 10px;
-}
-.indices-above table.array tr.array-indices td.shaded {
-  background-color: inherit;
-}
-.indices-above table.array tr.array-indices td.changed {
-  -webkit-animation: none;
-  animation: none;
-}
-.indices-above table.array tr.array-cells td {
-  border-top-width: 1px;
+.indices-inside table.array tr.array-indices td {
+  border-bottom: 0px;
+  text-align: left;
+  padding-left: 2px;
 }
 table.pseudocode {
   border-collapse: collapse;
@@ -123,20 +110,22 @@ table.pseudocode div.pseudocode-breakpoint {
   width: 12px;
   height: 12px;
   border-radius: 6px;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
   background: #ff0000;
 }
 tr.pseudocode-active table.pseudocode div.pseudocode-breakpoint {
-  background-color: #f30000;
+  background-color: #fc0000;
 }
 table.pseudocode tr.pseudocode-active td.pseudocode-text,
 table.pseudocode tr.pseudocode-active td.pseudocode-comment {
-  background-color: #f3faa7;
+  background-color: #fcfbbb;
 }
 table.pseudocode tr.pseudocode-active td.pseudocode-line-number {
-  background-color: #e3e99c;
+  background-color: #ebeaaf;
 }
 table.pseudocode tr.pseudocode-active td.pseudocode-gutter {
-  background-color: #d3d991;
+  background-color: #dadaa2;
 }
 .graph-inner-container {
   position: absolute;
@@ -148,7 +137,9 @@ table.pseudocode tr.pseudocode-active td.pseudocode-gutter {
   height: 22px;
   text-align: center;
   padding: 0px;
-  border-radius: 100%;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
   border: 1px solid #888888;
   background: #eeeeee;
   position: absolute;
@@ -293,11 +284,67 @@ table.pseudocode tr.pseudocode-active td.pseudocode-gutter {
   border: 1px solid #888;
   background: #ccc;
   border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
   box-shadow: 2px 2px 2px #ccc;
   width: 8px;
   height: 16px;
   top: -5px;
   margin-left: -5px;
+}
+table.matrix {
+  border-collapse: collapse;
+}
+table.matrix td,
+table.matrix th {
+  text-align: center;
+  vertical-align: middle;
+  padding: 4px;
+}
+table.matrix td {
+  background-color: #eeeeee;
+  -webkit-transition: background-color 0.2s ease-in-out;
+  -moz-transition: background-color 0.2s ease-in-out;
+  -o-transition: background-color 0.2s ease-in-out;
+  transition: background-color 0.2s ease-in-out;
+}
+table.matrix td.changed {
+  -webkit-animation: background-highlight-pulse 0.6s ease-in-out;
+  animation: background-highlight-pulse 0.6s ease-in-out;
+}
+table.matrix td.shaded,
+table.matrix td.shaded.row-highlight,
+table.matrix td.shaded.col-highlight,
+table.matrix td.shaded.row-highlight.col-highlight {
+  background-color: #999999;
+}
+table.matrix td.row-highlight,
+table.matrix td.col-highlight {
+  background-color: #dddddd;
+}
+table.matrix td.col-highlight.row-highlight {
+  background-color: #bbbbbb;
+}
+table.matrix th {
+  font-weight: normal;
+  color: #555555;
+  font-size: 10px;
+}
+table.matrix th {
+  border-right: 1px solid #888;
+}
+table.matrix tr.matrix-label-row th {
+  border-bottom: 1px solid #888;
+  border-right-width: 0px;
+}
+table.matrix tr.matrix-label-row th:first-child {
+  border-bottom-width: 0px;
+}
+table.matrix tr:last-child td {
+  border-bottom: 1px solid #888;
+}
+table.matrix tr td:last-child {
+  border-right: 1px solid #888;
 }
 @-webkit-keyframes background-highlight-pulse {
   0% {
@@ -305,7 +352,7 @@ table.pseudocode tr.pseudocode-active td.pseudocode-gutter {
     color: default;
   }
   20% {
-    background: #f3faa7;
+    background: #fcfbbb;
     color: #ff0000;
   }
   100% {
@@ -319,7 +366,7 @@ table.pseudocode tr.pseudocode-active td.pseudocode-gutter {
     color: default;
   }
   20% {
-    background: #f3faa7;
+    background: #fcfbbb;
     color: #ff0000;
   }
   100% {
