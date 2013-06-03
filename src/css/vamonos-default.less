@@ -1,11 +1,14 @@
 @border-color: #888;
-@dark-shaded-color: #aaa;
+@dark-shaded-color: #999;
+@med-shaded-color: #bbb;
+@light-shaded-color: #ddd;
 @normal-item-bg-color: #eee;
 
 @numbering-color: #555; // array index, pseudocode line number
+@numbering-size: 10px;
 @shadow-color: #aaa;
 
-@highlight-background-color: #F3FAA7;
+@highlight-background-color: #FCFBBB;
 @highlight-text-color: red;
 @alert-color: #F77F6F;
 
@@ -34,6 +37,12 @@
     box-shadow: 5px 5px 10px @color;
 }
 
+.border-radius(@amt) {
+    border-radius: @amt;
+    -webkit-border-radius: @amt;
+    -moz-border-radius: @amt;
+}
+
 ////////////////
 // ARRAYS
 
@@ -43,15 +52,25 @@ table.array {
     border-collapse: collapse;
     display: inline;
 
-    td, tr {
+    td {
         margin: 0px;
         border-spacing: 0px;
         vertical-align: middle;
+        text-align: center;
     }
 
-    tr.array-indices td, tr.array-cells td {
+    tr.array-cells td {
+        min-width: @array-cell-width;     
+    }
+    tr.array-indices td {
+        font-size: @numbering-size;
+        color: @numbering-color;
+    }
+
+    .indices-inside & tr.array-indices td, tr.array-cells td {
         border: 1px solid @border-color;
         background-color: @normal-item-bg-color;
+        .ease-bg();
 
         &.shaded {
             background-color: @dark-shaded-color;
@@ -68,48 +87,15 @@ table.array {
         }
     }
 
-    tr.array-cells td {
-        border-top-width: 0px;
-        min-width: @array-cell-width;
-        text-align: center;
-    }
-
-    tr.array-indices td {
-        border-bottom-width: 0px;
-        font-size: 9px;
-        padding-left: 3px;
-        color: @numbering-color;
-    }
-
-    tr.array-annotations td {
-        text-align: center;
-        font-style: italic;
-    }
-
-
-    // "indices-above" OPTION
-
-    .indices-above & {
-        tr.array-indices td {
-            border-width: 0px;
-            background: inherit;
-            text-align: center;
-            padding: 0px;
-            font-size: 10px;
-
-            &.shaded {
-                background-color: inherit;
-            }
-
-            &.changed {
-                .no-animation;
-            }
-        }
-
+    .indices-inside & {
         tr.array-cells td {
-            border-top-width: 1px;
+            border-top-width: 0px;
         }
-
+        tr.array-indices td {
+            border-bottom: 0px;
+            text-align: left;
+            padding-left: 2px;
+        }
     }
 
 }
@@ -146,7 +132,7 @@ table.pseudocode {
         text-align: right;
         color: @numbering-color;
         padding: 0 4px 0 4px;
-        font-size: 10px;
+        font-size: @numbering-size;
         background: @pseudocode-line-number-bg-color;
 
         .no-line-numbers & {
@@ -191,7 +177,8 @@ table.pseudocode {
         display: inline-block;
         width: (@pseudocode-gutter-size - 2);
         height: (@pseudocode-gutter-size - 2);
-        border-radius: (@pseudocode-gutter-size - 2)/2;
+        @tmp-radius: (@pseudocode-gutter-size - 2)/2;
+        .border-radius(@tmp-radius);
         background: @pseudocode-breakpoint-color;
         
         tr.pseudocode-active & {
@@ -235,7 +222,7 @@ table.pseudocode {
     text-align: center;
     padding: 0px;
 
-    border-radius: 100%;
+    .border-radius(50%);
     border: 1px solid @border-color;
     background: @normal-item-bg-color;
 
@@ -386,13 +373,71 @@ table.pseudocode {
         cursor: default;
         border: 1px solid #888;
         background: #ccc;
-        border-radius: 3px;
+        .border-radius(3px);
         box-shadow: 2px 2px 2px #ccc;
 
         width: 8px;
         height: 16px;
         top: -5px;
         margin-left:-5px; 
+    }
+}
+
+
+
+//////////////////////
+// MATRIX
+
+table.matrix {
+    border-collapse: collapse;
+
+    td, th {
+        text-align: center;
+        vertical-align: middle;
+        padding: 4px;
+    }
+    td {
+        background-color: @normal-item-bg-color; 
+        .ease-bg();       
+
+        &.changed {
+            .background-highlight-pulse();
+        }
+        &.shaded, &.shaded.row-highlight, &.shaded.col-highlight, &.shaded.row-highlight.col-highlight,  {
+            background-color: @dark-shaded-color;
+        }
+        &.row-highlight, &.col-highlight {
+            background-color: @light-shaded-color;
+        }
+        &.col-highlight.row-highlight {
+            background-color: @med-shaded-color;
+        }
+
+    }
+    th {
+        font-weight: normal;
+        color: @numbering-color;
+        font-size: @numbering-size;
+    }
+
+
+    // BORDERS
+
+    th {
+        border-right: 1px solid #888;
+    }
+    tr.matrix-label-row th {
+        border-bottom: 1px solid #888;
+        border-right-width: 0px;
+    }
+    tr.matrix-label-row th:first-child {
+        border-bottom-width: 0px;
+    }
+    tr:last-child td {
+        border-bottom: 1px solid #888;
+    }
+    tr td:last-child {
+        border-right: 1px solid #888;
     }
 }
 
