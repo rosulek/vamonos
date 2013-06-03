@@ -1,0 +1,385 @@
+@border-color: #888;
+@dark-shaded-color: #aaa;
+@normal-item-bg-color: #eee;
+
+@numbering-color: #555; // array index, pseudocode line number
+@shadow-color: #aaa;
+
+@highlight-background-color: #F3FAA7;
+@highlight-text-color: red;
+@alert-color: #F77F6F;
+
+////////////////
+
+.background-highlight-pulse () {
+    -webkit-animation: background-highlight-pulse 0.6s ease-in-out;
+    animation: background-highlight-pulse 0.6s ease-in-out;
+}
+
+.no-animation () {
+    -webkit-animation: none;
+    animation: none;
+}
+
+.ease-bg () {
+    -webkit-transition: background-color 0.2s ease-in-out;
+    -moz-transition: background-color 0.2s ease-in-out;
+    -o-transition: background-color 0.2s ease-in-out;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.box-shadow(@color) {
+    -webkit-box-shadow: 5px 5px 10px @color;
+    -moz-box-shadow: 5px 5px 10px @color;
+    box-shadow: 5px 5px 10px @color;
+}
+
+////////////////
+// ARRAYS
+
+@array-cell-width: 24px;
+
+table.array {
+    border-collapse: collapse;
+    display: inline;
+
+    td, tr {
+        margin: 0px;
+        border-spacing: 0px;
+        vertical-align: middle;
+    }
+
+    tr.array-indices td, tr.array-cells td {
+        border: 1px solid @border-color;
+        background-color: @normal-item-bg-color;
+
+        &.shaded {
+            background-color: @dark-shaded-color;
+        }
+
+        &.changed {
+            .background-highlight-pulse;
+        }
+
+        &.array-title {
+            border: 0px;
+            background: inherit;
+            padding-right: 8px;
+        }
+    }
+
+    tr.array-cells td {
+        border-top-width: 0px;
+        min-width: @array-cell-width;
+        text-align: center;
+    }
+
+    tr.array-indices td {
+        border-bottom-width: 0px;
+        font-size: 9px;
+        padding-left: 3px;
+        color: @numbering-color;
+    }
+
+    tr.array-annotations td {
+        text-align: center;
+        font-style: italic;
+    }
+
+
+    // "indices-above" OPTION
+
+    .indices-above & {
+        tr.array-indices td {
+            border-width: 0px;
+            background: inherit;
+            text-align: center;
+            padding: 0px;
+            font-size: 10px;
+
+            &.shaded {
+                background-color: inherit;
+            }
+
+            &.changed {
+                .no-animation;
+            }
+        }
+
+        tr.array-cells td {
+            border-top-width: 1px;
+        }
+
+    }
+
+}
+
+
+/////////////////
+// PSEUDOCODE
+
+@pseudocode-gutter-color: #ddd;
+@pseudocode-gutter-size: 14px;
+@pseudocode-comment-color: #888;
+@pseudocode-breakpoint-color: red;
+@pseudocode-indent: 32px;
+@pseudocode-line-number-bg-color: mix(@pseudocode-gutter-color, #fff, 50%);
+
+table.pseudocode {
+    border-collapse: collapse;
+    display: inline;
+
+    td {
+        vertical-align: middle;
+    }
+
+    td.pseudocode-title {
+        font-style: italic;
+        border-bottom: 1px solid black;
+    }
+
+    td.pseudocode-line-number, td.pseudocode-gutter, td.pseudocode-text, td.pseudocode-comment {
+        .ease-bg;   // ease highlighting of active line
+    }
+
+    td.pseudocode-line-number {
+        text-align: right;
+        color: @numbering-color;
+        padding: 0 4px 0 4px;
+        font-size: 10px;
+        background: @pseudocode-line-number-bg-color;
+
+        .no-line-numbers & {
+            display: none;
+        }
+    }
+
+    td.pseudocode-gutter {
+        width: @pseudocode-gutter-size;
+        background: @pseudocode-gutter-color;
+        text-align: center;
+        vertical-align: middle;
+
+        .no-gutter & {
+            display: none;
+        }
+    }
+
+    td.pseudocode-text {
+        padding-right: 20px;
+    }
+
+    td.pseudocode-comment {
+        color: @pseudocode-comment-color;
+        font-style: italic;
+    }
+
+    td.pseudocode-comment, td.pseudocode-text {
+        padding-left: 8px;
+
+        .no-gutter.no-line-numbers & {
+            padding-left: 0px;
+        }
+    }
+
+    .pseudocode-indent {
+        width: @pseudocode-indent;
+        display: inline-block;
+    }
+
+    div.pseudocode-breakpoint {
+        display: inline-block;
+        width: (@pseudocode-gutter-size - 2);
+        height: (@pseudocode-gutter-size - 2);
+        border-radius: (@pseudocode-gutter-size - 2)/2;
+        background: @pseudocode-breakpoint-color;
+        
+        tr.pseudocode-active & {
+            background-color: multiply(@pseudocode-breakpoint-color, @highlight-background-color);
+        }
+    }
+
+    tr.pseudocode-active {
+        td.pseudocode-text, td.pseudocode-comment  {
+            background-color: @highlight-background-color;
+        }
+        td.pseudocode-line-number {
+            background-color: multiply(@highlight-background-color, @pseudocode-line-number-bg-color);
+        }
+        td.pseudocode-gutter {
+            background-color: multiply(@highlight-background-color, @pseudocode-gutter-color, 50%);
+        }
+    }
+
+}
+
+
+/////////////////////////
+// GRAPHS
+
+@vertex-size: 22px;
+
+// required extra layer to let vertex positions be
+// relative to container
+
+.graph-inner-container {    
+    position: absolute;
+    width: inherit;
+    height: inherit;
+}
+
+
+.vertex {
+    width: @vertex-size;
+    height: @vertex-size;
+    text-align: center;
+    padding: 0px;
+
+    border-radius: 100%;
+    border: 1px solid @border-color;
+    background: @normal-item-bg-color;
+
+    position: absolute; // left/top: relative to container
+
+    // additional layer to allow centering contents
+    .vertex-contents {
+        display: table-cell;
+        width: inherit;
+        height: inherit;
+        vertical-align: middle;
+    }
+
+    &.ui-draggable {
+        cursor: move;
+    }
+    &.ui-draggable-dragging, &.vertex-drag-onto {
+        .box-shadow(@shadow-color);
+    }
+    &.vertex-drag-onto {
+        cursor: default;
+    }
+
+    &.vertex-deletable:hover {
+        background: @alert-color;
+        .box-shadow(@shadow-color);
+        cursor: crosshair;
+    }
+
+    &.changed {
+        .background-highlight-pulse;
+
+        .vertex-nw-label, .vertex-ne-label, .vertex-sw-label, .vertex-se-label {
+            .no-animation;
+        }
+    }
+
+    // LABELS
+
+    .vertex-nw-label, .vertex-ne-label, .vertex-sw-label, .vertex-se-label {
+        position: absolute;
+    }
+
+    .vertex-nw-label { 
+        right: 85%;
+        bottom: 85%;
+    }
+    .vertex-ne-label { 
+        left: 85%;
+        bottom: 85%;
+    }
+    .vertex-sw-label { 
+        right: 85%;
+        top: 85%;
+    }
+    .vertex-se-label { 
+        left: 85%;
+        top: 85%;
+    }
+
+
+    // SUBDIVIDED VERTICES
+
+/*
+
+    .vertex-tophalf, .vertex-bottomhalf, .vertex-righthalf, .vertex-lefthalf,
+    .vertex-nwquad, .vertex-nequad, .vertex-swquad, .vertex-sequad {
+        border: 1px solid black;
+        position: absolute;
+    }
+
+    .vertex-tophalf, .vertex-bottomhalf {
+        height: 50%;
+        width: 100%;
+    }
+    .vertex-tophalf {
+        border-width: 0 0 1px 0;
+        top: 0px;
+        left: 0px;
+    }
+    .vertex-bottomhalf {
+        border-width: 1px 0 0 0;
+        bottom: 0px;
+        left: 0px;
+    }
+
+    .vertex-righthalf, .vertex-lefthalf {
+        height: 100%;
+        width: 50%;
+    }
+    .vertex-righthalf {
+        border-width: 0 0 0 1px;
+        top: 0px;
+        right: 0px;
+    }
+    .vertex-lefthalf {
+        border-width: 0 1px 0 0;
+        top: 0px;
+        left: 0px;
+    }
+
+    .vertex-swquad, .vertex-sequad, .vertex-nequad, .vertex-nwquad {
+        height: 50%;
+        width: 50%;
+    }
+    .vertex-swquad {
+        border-width: 1px 1px 0 0;
+        bottom: 0px;
+        left: 0px;
+    }
+    .vertex-sequad {
+        border-width: 1px 0 0 1px;
+        bottom: 0px;
+        right: 0px;
+    }
+    .vertex-nwquad {
+        border-width: 0 1px 1px 0;
+        top: 0px;
+        left: 0px;
+    }
+    .vertex-nequad {
+        border-width: 0 0 1px 1px;
+        top: 0px;
+        right: 0px;
+    }
+
+*/
+
+}
+
+
+
+
+
+////////////////
+// ANIMATIONS
+
+@-webkit-keyframes background-highlight-pulse {
+    0% { background: default; color: default; }
+    20% { background: @highlight-background-color; color: @highlight-text-color; }
+    100% { background: default; color: default; }
+}
+@keyframes background-highlight-pulse {
+    0% { background: default; color: default; }
+    20% { background: @highlight-background-color; color: @highlight-text-color; }
+    100% { background: default; color: default; }
+}
