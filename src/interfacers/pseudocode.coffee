@@ -1,4 +1,4 @@
-class Vamonos.Interfacers.Hardcoded extends Vamonos.Interfacers.Generic
+class Vamonos.Interfacers.Pseudocode extends Vamonos.Interfacers.Generic
 
     constructor: ({@container, @userBreakpoints, @breakpoints}) ->
         
