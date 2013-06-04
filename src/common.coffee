@@ -62,7 +62,13 @@ class Common
                 ret[name] = val
         ret
 
-
+    ###
+    #   Common.clone(obj)
+    #
+    #   Clones an object deeply and returns it.
+    #
+    #   Inline javascript (sorry!)
+    ###
     `Common.clone = function (src) {
         function mixin(dest, source, copyFunc) {
             var name, s, i, empty = {};
