@@ -1,6 +1,6 @@
 #_require ./generic.coffee
 
-class Interfacers.Pseudocode extends Interfacers.Generic
+class Pseudocode extends GenericInterfacer
 
     constructor: ({@container, @userBreakpoints, @breakpoints}) ->
         
