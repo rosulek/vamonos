@@ -1,4 +1,6 @@
-class Vamonos.Interfacers.Generic
+Interfacers = exports? and @ or @Interfacers = {}
+
+class Interfacers.Generic
 
     constructor: ->
 
