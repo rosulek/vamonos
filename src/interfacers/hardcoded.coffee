@@ -1,7 +1,7 @@
 #_require ./generic.coffee
 #_require ../common.coffee
 
-class Interfacers.Hardcoded extends Interfacers.Generic
+class Hardcoded extends GenericInterfacer
 
     constructor: (@obj) ->
         
