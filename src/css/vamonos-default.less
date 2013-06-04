@@ -54,7 +54,7 @@
 ////////////////
 // ARRAYS
 
-@array-cell-width: 24px;
+@array-cell-size: 24px;
 
 table.array {
     border-collapse: collapse;
@@ -68,7 +68,8 @@ table.array {
     }
 
     tr.array-cells td {
-        min-width: @array-cell-width;     
+        min-width: @array-cell-size;     
+        height: @array-cell-size;     
     }
     tr.array-indices td {
         font-size: @numbering-size;

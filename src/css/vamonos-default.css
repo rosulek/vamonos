@@ -10,6 +10,7 @@ table.array td {
 }
 table.array tr.array-cells td {
   min-width: 24px;
+  height: 24px;
 }
 table.array tr.array-indices td {
   font-size: 10px;
