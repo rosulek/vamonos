@@ -1,7 +1,10 @@
 #_require ./common.coffee
 
 ###
-# Visualizer:
+#
+#   src/visualizer.coffee :: exports Vamonos.Visualizer
+#   Sets up control and maintains state for the visualization.
+#
 ###
 
 class Visualizer
@@ -27,7 +30,16 @@ class Visualizer
         @activate()
         @showFrame("init")
         
-    # takes in a pseudocode line number and pushes a frame only if it's set as a breakpoint
+    ###
+    #   line(number)
+    #   marks an expression in the javascript algorithm simulation (passed
+    #   in to constructor as 'algorithm') as corresponding to a particular
+    #   line in the pseudocode.
+    #
+    #   takes in a pseudocode line number and pushes a frame only if it's set
+    #   as a breakpoint in @vars._breakpoints.
+    ###
+
     line: (n) ->
         return unless n in @vars._breakpoints
         # TODO need a clone function - copy mike's
@@ -49,13 +61,4 @@ class Visualizer
         viewer.clear() for viewer in @viewers
 
 
-
-# export Visualizer to global namespace. in node this is the exports variable.
-# otherwise attach to the value of 'this' (the browser window)
-root = exports ? @
-
-# is Vamonos already defined there? if not create it
-root.Vamanos or= {}
-
-# attach the visualizer class to the Vamanos namespace
-root.Vamanos.Visualizer = Visualizer
+Common.vamonos_export { Visualizer }
