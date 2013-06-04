@@ -45,7 +45,10 @@ class Common
         root.Vamanos or= {}
 
         # attach each obj to the Vamanos namespace
+        # TODO - merge objects instead of manually 
         for name, value of obj
+            if name of obj
+                root.Vamonos[name]
             root.Vamanos[name] = value
 
     @clone: ->
