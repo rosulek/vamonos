@@ -148,3 +148,5 @@ class Common
             }
         });
     };`
+
+Common.VamonosExport { Common }
