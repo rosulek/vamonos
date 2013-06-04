@@ -1,4 +1,4 @@
-
+#_require ./common.coffee
 
 ###
 # Visualizer:
@@ -6,20 +6,11 @@
 
 class Visualizer
 
-    # ???????????????????????
-    {arrayify, jqueryify, clone} = require 'Vamonos-Common'
-    
-    arrayify: (obj) ->
-        if obj instanceof Array then obj else [obj]
-
-    jqueryify: (obj) ->
-        if typeof obj is 'string' then $("#" + obj) else obj
-
     constructor: ({varNames, controls, interfacers, algorithm}) ->
         @active        = no
         @currentFrame  = 0
-        @varNames      = arrayify(varNames)
-        @interfacers   = arrayify(interfacers)
+        @varNames      = Common.arrayify(varNames)
+        @interfacers   = Common.arrayify(interfacers)
 
         # create a list of variables from the names of the variables
         @vars = {}
@@ -57,3 +48,14 @@ class Visualizer
     clear: ->
         viewer.clear() for viewer in @viewers
 
+
+
+# export Visualizer to global namespace. in node this is the exports variable.
+# otherwise attach to the value of 'this' (the browser window)
+root = exports ? @
+
+# is Vamonos already defined there? if not create it
+root.Vamanos or= {}
+
+# attach the visualizer class to the Vamanos namespace
+root.Vamanos.Visualizer = Visualizer
