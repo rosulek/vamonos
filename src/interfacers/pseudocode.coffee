@@ -2,7 +2,8 @@
 
 class Pseudocode extends Interfacer
 
-    constructor: ({@container, @userBreakpoints, @breakpoints}) ->
+    constructor: ({container, @userBreakpoints, @breakpoints}) ->
+        formatContainer(container)
         
     # if user breakpoints is set enable/disable clicking in the gutter
     # to the set breakpoints
@@ -13,6 +14,9 @@ class Pseudocode extends Interfacer
     setup: (args...) ->
         super(args)
         @vars._breakpoints = @breakpoints
+
+    formatContainer: (container) ->
+        $("#" + container)
 
 
 Common.VamonosExport { Interfacers: { Pseudocode } }
