@@ -15,4 +15,4 @@ class Pseudocode extends Interfacer
         @vars._breakpoints = @breakpoints
 
 
-Common.vamonos_export { Interfacers: { Pseudocode } }
+Common.VamonosExport { Interfacers: { Pseudocode } }

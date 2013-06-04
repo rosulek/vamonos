@@ -89,4 +89,4 @@ class Visualizer
 
 
 # Export the Visualizer object to the global namespace
-Common.vamonos_export { Visualizer }
+Common.VamonosExport { Visualizer }

@@ -36,7 +36,7 @@ class Common
     #
     #   exports names to the global Vamonos namespace
     ###
-    @vamonos_export: (obj) ->
+    @VamonosExport: (obj) ->
         # node uses exports as the module namespace. check to see if it's
         # there. otherwise, use 'this' - the browser window.
         root = exports ? window
