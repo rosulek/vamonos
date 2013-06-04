@@ -3,7 +3,6 @@
     <link rel="stylesheet" type="text/css" href="../src/css/vamonos-default.css">
     <script type="text/javascript" src="../deps/jquery.min.js"></script>
     <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="jquery.jeditable.js"></script>
     <script type="text/javascript" src="live-array.js"></script>
     <style type="text/css">
         .container {
@@ -22,11 +21,14 @@
         .live-input {
             display: inline;
             border: 0px;
-            background: #fe9;
+            background: none;
             font: inherit;
             padding: 0px;
             margin: 0px;
             text-align: center;
+        }
+        table.array tr.array-cells td.editing {
+            background: #9f9;
         }
     </style>
 
@@ -44,40 +46,6 @@
             initialarray: [3,1,4,1,5]
         });
     </script>
-
-
-
-    <h1>Array Mockup</h1>
-
-    <div id="arr" class="container">
-        <table class="array">
-            <tr class="array-indices">
-                <td class=shaded>1</td>
-                <td class=shaded>2</td>
-                <td class=shaded>3</td>
-                <td>4</td>
-                <td>5</td>
-                <td>6</td>
-            </tr>
-            <tr class="array-cells">
-                <td class=shaded>3</td>
-                <td class=shaded>1</td>
-                <td class=shaded>4</td>
-                <td>1</td>
-                <td>5</td>
-                <td>9</td>
-            </tr>
-            <tr class="array-annotations">
-                <td class=shaded></td>
-                <td class=shaded>i</td>
-                <td class=shaded></td>
-                <td></td>
-                <td>j</td>
-                <td></td>
-            </tr>
-        </table>
-    </div>
-
 
 
 </head></html>
