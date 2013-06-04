@@ -1,5 +1,3 @@
-Interfacers = exports? and @ or @Interfacers = {}
-
 class Interfacers.Generic
 
     constructor: ->
