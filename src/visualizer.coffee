@@ -3,35 +3,53 @@
 ###
 #
 #   src/visualizer.coffee :: exports Vamonos.Visualizer
+#
 #   Sets up control and maintains state for the visualization.
 #
 ###
 
 class Visualizer
 
-    constructor: ({varNames, controls, interfacers, algorithm}) ->
-        @active        = no
-        @currentFrame  = 0
-        @varNames      = Common.arrayify(varNames)
-        @interfacers   = Common.arrayify(interfacers)
+    constructor: ({varNames, interfacers, @controls, @algorithm}) ->
+        @active             = no
+        @currentFrameNumber = 0
 
-        # create a list of variables from the names of the variables
+        @varNames           = Common.arrayify(varNames)
+        @interfacers        = Common.arrayify(interfacers)
+
+        # create the vars object
         @vars = {}
         @vars[v] = undefined for v in @varNames
 
+        # pass a reference to the vars object to each interfacer
         ui.setup(@vars) for ui in @interfacers
 
 
+    ###
+    #   Visualizer.currentFrame()
+    #
+    #   Easily access the current frame.
+    ###
+    currentFrame: -> @frames[@currentFrameNumber]
+
+
+    ###
+    #   Visualizer.generate()
+    #
+    #   Initializes the frame array, runs the algorithm, and activates
+    #   interfacers.
+    ###
     generate: ->
         @clear() if @active
-        # this is an array of cloned this.vars arrays
         @frames = []
         @algorithm(this)
         @activate()
         @showFrame("init")
         
+
     ###
-    #   line(number)
+    #   Visualizer.line(number)
+    #
     #   marks an expression in the javascript algorithm simulation (passed
     #   in to constructor as 'algorithm') as corresponding to a particular
     #   line in the pseudocode.
@@ -39,26 +57,36 @@ class Visualizer
     #   takes in a pseudocode line number and pushes a frame only if it's set
     #   as a breakpoint in @vars._breakpoints.
     ###
-
     line: (n) ->
         return unless n in @vars._breakpoints
-        # TODO need a clone function - copy mike's
-        newFrame = clone(@vars)
+        newFrame = Common.clone(@vars)
         newFrame._lineNumber = n
         frames.push(newFrame)
 
-    #createControls: ->
-        #$("#" + @controls).html(   # html goes here )
-            #slider goes here among other things
 
-    activate: ->
-        viewer.changeMode("active") for viewer in @viewers 
+    ###
+    #   Interfacer controls - send a message to all interfacers
+    ###
+    activate: -> 
+        return if @active
+        @active = yes
+        for ui in @interfacers 
+            ui.changeMode("active") 
 
     showFrame: (transition) ->
-        viewer.render(@frames[@currentFrame], transition) for viewer in @viewers
+        for ui in @interfacers
+            ui.render(@currentFrame(), transition) 
+
+    deactivate: ->
+        return unless @active
+        @active = no
+        for ui in @interfacers
+            ui.changeMode("inactive") 
 
     clear: ->
-        viewer.clear() for viewer in @viewers
+        for ui in @interfacers
+            ui.clear() 
 
 
+# Export the Visualizer object to the global namespace
 Common.vamonos_export { Visualizer }
