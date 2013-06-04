@@ -1,4 +1,4 @@
-class Interfacers.Generic
+class GenericInterfacer
 
     constructor: ->
 
