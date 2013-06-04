@@ -1,4 +1,4 @@
-class GenericInterfacer
+class Interfacer
 
     constructor: ->
 
