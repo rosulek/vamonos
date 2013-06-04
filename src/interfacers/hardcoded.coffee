@@ -1,4 +1,6 @@
-class Vamonos.Interfacers.Hardcoded extends Vamonos.Interfacers.Generic
+#_require ./generic.coffee
+
+class Interfacers.Hardcoded extends Interfacers.Generic
 
     constructor: (@obj) ->
         

@@ -1,4 +1,6 @@
-class Vamonos.Interfacers.Pseudocode extends Vamonos.Interfacers.Generic
+#_require ./generic.coffee
+
+class Interfacers.Pseudocode extends Interfacers.Generic
 
     constructor: ({@container, @userBreakpoints, @breakpoints}) ->
         
