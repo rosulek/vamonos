@@ -1,4 +1,4 @@
-#_require ./generic.coffee
+#_require ./interfacer.coffee
 
 class Pseudocode extends Interfacer
 

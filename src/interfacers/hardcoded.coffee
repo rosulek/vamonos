@@ -1,4 +1,4 @@
-#_require ./generic.coffee
+#_require ./interfacer.coffee
 #_require ../common.coffee
 
 class Hardcoded extends Interfacer
