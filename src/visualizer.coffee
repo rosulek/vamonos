@@ -34,6 +34,25 @@ class Visualizer
 
 
     ###
+    #   Frame controls - move frame and send message to interfacers
+    ###
+    nextFrame: ->
+        return if @currentFrameNumber >= @frames.length
+        @currentFrameNumber += 1
+        @showFrame()
+
+    prevFrame: ->
+        return if @currentFrameNumber <= 0
+        @currentFrameNumber -= 1
+        @showFrame()
+
+    goToFrame: (n) ->
+        return if n < 0 or n > @frames.length
+        @currentFrameNumber = n
+        @showFrame()
+
+
+    ###
     #   Visualizer.generate()
     #
     #   Initializes the frame array, runs the algorithm, and activates
