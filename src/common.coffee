@@ -63,6 +63,13 @@ class Common
         ret
 
 
+    ###
+    #   Common.clone(obj)
+    #
+    #   Deep clones an object and returns it.
+    #
+    #   Inline javascript.
+    ###
     `Common.clone = function (src) {
         function mixin(dest, source, copyFunc) {
             var name, s, i, empty = {};
