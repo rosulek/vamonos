@@ -271,8 +271,8 @@ table.pseudocode tr.pseudocode-active td.pseudocode-gutter {
   height: 8px;
   position: relative;
   text-align: left;
-  border: 1px solid #ccc;
-  background: #eee;
+  border: 1px solid #bbbbbb;
+  background: #eeeeee;
   display: inline-block;
   width: 200px;
   margin: 0 4px 0 4px;
@@ -285,12 +285,14 @@ table.pseudocode tr.pseudocode-active td.pseudocode-gutter {
   position: absolute;
   z-index: 2;
   cursor: default;
-  border: 1px solid #888;
-  background: #ccc;
+  border: 1px solid #888888;
+  background: #bbbbbb;
   border-radius: 3px;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
-  box-shadow: 2px 2px 2px #ccc;
+  -webkit-box-shadow: 2px 2px 2px #bbbbbb;
+  -moz-box-shadow: 2px 2px 2px #bbbbbb;
+  box-shadow: 2px 2px 2px #bbbbbb;
   width: 8px;
   height: 16px;
   top: -5px;

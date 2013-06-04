@@ -369,8 +369,8 @@ table.pseudocode {
     height: 8px;
     position: relative;
     text-align: left;
-    border: 1px solid #ccc;
-    background: #eee;
+    border: 1px solid @med-shaded-color;
+    background: @normal-item-bg-color;
     display: inline-block;
     width: 200px;
     margin: 0 4px 0 4px;
@@ -381,10 +381,13 @@ table.pseudocode {
         position: absolute;
         z-index: 2;
         cursor: default;
-        border: 1px solid #888;
-        background: #ccc;
+        border: 1px solid @border-color;
+        background: @med-shaded-color;
         .border-radius(3px);
-        box-shadow: 2px 2px 2px #ccc;
+
+        -webkit-box-shadow: 2px 2px 2px @med-shaded-color;
+        -moz-box-shadow: 2px 2px 2px @med-shaded-color;
+        box-shadow: 2px 2px 2px @med-shaded-color;
 
         width: 8px;
         height: 16px;
