@@ -1,4 +1,5 @@
 #_require ../common.coffee
+#_require ./interfacer.coffee
 
 class LiveArray extends Interfacer
 
