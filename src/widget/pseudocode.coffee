@@ -36,24 +36,18 @@ class Pseudocode extends Widget
     enableBreakpointSelection: ->
         @$tbl.find("td.pseudocode-gutter")
              .on("click", (event) =>
-                 console.log "handler: ", event.target
                  @breakPointToggle(
                      $(event.target).closest("tr").attr("vamonos-linenumber"),
-                     $(event.target)
-                 )
-             )
+                     $(event.target)))
 
     breakPointToggle: (n, $e) ->
         n = parseInt(n, 10)
         if n in @stash._breakpoints
-            console.log "remove breakpoint", n
             @removeBreakpoint(n)
 
         else
-            console.log "add breakpoint", n
             @ensureBreakpoint(n)
 
-        console.log @stash._breakpoints
 
 
     ensureBreakpoint: (n) ->
