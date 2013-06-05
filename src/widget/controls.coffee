@@ -1,0 +1,65 @@
+#_require ./widget.coffee
+#_require ../common.coffee
+
+class Controls extends Widget
+
+    constructor: ({container, @target, noStopButton, noSlider, noFrameNumber}) ->
+        @$container = jqueryify(container)
+
+        @$stopButton = $("<button>", {html: "&#x25A0;"})
+        @$prevButton = $("<button>", {html: "&#x25C0;"})
+        @$nextButton = $("<button>", {html: "&#x25B6;"})
+        @$slider     = $("<div>")
+        @$frameLabel = $("<span>")
+
+        @$container.append(@$stopButton)                unless noStopButton
+        @$container.append(@$prevButton, @$nextButton)
+        @$container.append(@$slider)                    unless noSlider
+        @$container.append(@$frameLabel)                unless noFrameNumber
+
+        @$slider.slider({
+            min:1, max:1, value:0,
+            slide:  => @writeLabel,
+            change: => (_,ui) => @target.jumpFrame(ui.value ? 0)
+        })
+
+        @$stopButton.on("click", => @target.deactivate() )
+        @$nextButton.on("click", =>
+            if @mode is "edit"
+                @target.activate()
+            else if @mode is "display"
+                @target.nextFrame()
+        )
+            
+        @$prevButton.on("click", => @target.prevFrame())
+
+    setup: (@stash) ->
+
+    writeLabel: ->
+        value = @$slider.slider("option", "value")
+        max   = @$slider.slider("option", "max")
+        @$label.html( "#{label} / #{max}" )
+        
+
+    setMode: (mode_str) ->
+        switch mode_str
+            when "edit"
+                @$stopButton.attr("disabled", "true");
+                @$prevButton.attr("disabled", "true");
+                @$container.removeClass("controls-disabled")
+
+            when "display"
+                @$stopButton.attr("disabled", "false");
+                @$prevButton.attr("disabled", "false");
+                @$container.addClass("controls-disabled")
+
+        @mode = mode_str
+
+    render: (frame, type) ->
+        @$slider.slider("option", "max",   frame._numFrames)
+        @$slider.slider("option", "value", frame._frameNumer)
+        @writeLabel()
+
+    clear: () ->
+
+Common.VamonosExport { Widget: { Controls } }
