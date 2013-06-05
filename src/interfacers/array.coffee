@@ -4,6 +4,7 @@
 class VArray extends Interfacer
 
     constructor: ({container, @defaultArray, @varName, ignoreIndexZero,
+<<<<<<< HEAD:src/interfacers/array.coffee
                     @showChanges, @cssRules, @showIndices}) ->
         @$container  = Common.jqueryify(container)
         @$editBox    = null
@@ -12,6 +13,16 @@ class VArray extends Interfacer
 
         @showChanges = if @showChanges? then Common.arrayify(@showChanges) else ["next"]
 
+=======
+                    showChanges, @cssRules, @showIndices}) ->
+        @$container = Common.jqueryify(container)
+        @$editBox   = null
+        @editIndex  = null
+        @firstIndex = if ignoreIndexZero then 1 else 0
+
+        # TODO check that this works
+        @showChanges = Common.arrayify(showChanges ? "next")
+>>>>>>> 01c376d2efa7f4e798a93e61025accf23369cc72:src/interfacers/live-array.coffee
 
         @$arrayTbl = $("<table>", {class: "array"}).append( 
             $("<tr>", {class: "array-indices"}),
