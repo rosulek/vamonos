@@ -3,6 +3,7 @@
 @med-shaded-color: #bbb;
 @light-shaded-color: #ddd;
 @normal-item-bg-color: #eee;
+@editing-bg-color: #92E894;
 
 @numbering-color: #555; // array index, pseudocode line number
 @numbering-size: 10px;
@@ -51,6 +52,24 @@
     -moz-border-radius: @amt;
 }
 
+
+/////////////////
+// INLINE INPUT
+
+input.inline-input {
+    display: inline;
+    border: 0px;
+    background: none;
+    font: inherit;
+    padding: 0px;
+    margin: 0px;
+    text-align: center;
+}
+
+input.inline-input:focus {
+    outline: none;
+}
+
 ////////////////
 // ARRAYS
 
@@ -87,6 +106,10 @@ table.array {
 
         &.changed {
             .background-highlight-pulse;
+        }
+
+        &.editing {
+            background-color: @editing-bg-color;
         }
 
         &.array-title {

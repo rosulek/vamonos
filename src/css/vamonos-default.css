@@ -1,3 +1,15 @@
+input.inline-input {
+  display: inline;
+  border: 0px;
+  background: none;
+  font: inherit;
+  padding: 0px;
+  margin: 0px;
+  text-align: center;
+}
+input.inline-input:focus {
+  outline: none;
+}
 table.array {
   border-collapse: collapse;
   display: inline;
@@ -33,6 +45,10 @@ table.array tr.array-cells td.shaded {
 table.array tr.array-cells td.changed {
   -webkit-animation: background-highlight-pulse 0.6s ease-in-out;
   animation: background-highlight-pulse 0.6s ease-in-out;
+}
+.indices-inside table.array tr.array-indices td.editing,
+table.array tr.array-cells td.editing {
+  background-color: #92e894;
 }
 .indices-inside table.array tr.array-indices td.array-title,
 table.array tr.array-cells td.array-title {
