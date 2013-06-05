@@ -2,11 +2,15 @@
     display: inline-block;
     vertical-align: middle;
     padding: 10px;
-    margin: 10px;
     border: 1px solid black;
+    margin: 5px 0 20px 0;
     -moz-box-shadow: 5px 5px 5px #ccc;
     -webkit-box-shadow: 5px 5px 5px #ccc;
     box-shadow: 5px 5px 5px #ccc;
+}
+
+.vamonos {
+    text-align: center;
 }
 
 h1 { margin: 32px 0 0 0; }

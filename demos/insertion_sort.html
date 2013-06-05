@@ -10,10 +10,9 @@
 
     <h2>Insertion Sort</h2>
 
-    <div class="container" id="array"></div>
 
-    <div class="container">
-        <div id="pseudocode" title="InsertionSort(A):">
+    <div class="vamonos">
+        <div class="container" id="pseudocode" title="InsertionSort(A):">
             for j = 2 to A.length
                 key = A[j]
                 i = j - 1
@@ -22,10 +21,11 @@
                     i = i - 1
                 A[i + 1] = key
         </div>
+        <br>
+        <div id="controls"></div>
+        <br>
+        <div class="container" id="array"></div>
     </div>
-
-        <div id="controls" class="container"></div>
-
 
     <script type="text/javascript">
         var myviz = new Vamonos.Visualizer({
@@ -45,13 +45,16 @@
                 new Vamonos.Widget.Pseudocode({
                     container: "pseudocode",
                     userBreakpoints: true,
-                    breakpoints: [5,7],
+                    breakpoints: [1,5],
                 }),
 
                 new Vamonos.Widget.Controls({
                     container: "controls",
+//                    noStopButton: true,
                 })
             ],
+
+//            autoStart: true,
 
             algorithm: function (viz) {
                 with (viz.stash) {

@@ -10,7 +10,7 @@
 
 class Visualizer
 
-    constructor: ({widgets, @algorithm, @maxFrames}) ->
+    constructor: ({widgets, @algorithm, @maxFrames, autoStart}) ->
         @currentFrameNumber = 0
         @widgets            = Common.arrayify(widgets)
         @maxFrames         ?= 250
@@ -22,6 +22,7 @@ class Visualizer
         ui.setup(@stash, this) for ui in @widgets
 
         @deactivate()
+        @generate() if autoStart
 
 
     ###
@@ -34,10 +35,16 @@ class Visualizer
         @activate()
         @frames = []
         @currentFrameNumber = 0
+
         try
+            # there's always a "before" & "after" snapshot
+            @line(0)
             @algorithm(this)
-        catch error
-            alert("Too many frames. Are you sure you don't have an infinite loop?")
+            @line(0)
+        catch err
+            alert("Too many frames. You may have an infinite loop. Visualization has been truncated to the first #{@maxFrames} frames.")
+        
+
         @currentFrameNumber = 0
         f._numFrames = @frames.length for f in @frames
         @nextFrame()
@@ -52,9 +59,13 @@ class Visualizer
     #
     #   takes in a pseudocode line number and pushes a frame only if it's set
     #   as a breakpoint in @stash._breakpoints.
+    #
+    #   n=0 is reserved for taking a snapshot of the variables before/after
+    #   entire algorithm execution
+    #
     ###
     line: (n) ->
-        return unless n in @stash._breakpoints
+        return unless n in @stash._breakpoints or n is 0
         throw "too many frames" if @currentFrameNumber >= @maxFrames
 
         newFrame              = Common.clone(@stash)

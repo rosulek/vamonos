@@ -21,11 +21,11 @@ class VArray extends Widget
         @$container.append(@$arrayTbl)
 
 
-    setup: (stash) ->
+    setup: (@stash) ->
         @theArray = stash[@varName] = []
 
-        stash[v] = null for [_, v, _] in @cssRules
-        stash[v] = null for v in @showIndices            
+        @stash[v] = null for [_, v, _] in @cssRules
+        @stash[v] = null for v in @showIndices            
 
     setMode: (mode) ->
         if mode is "edit"
@@ -38,6 +38,9 @@ class VArray extends Widget
                 @appendCellRaw(v) for v in @defaultArray[@firstIndex..]
             else 
                 @appendCellRaw(null)
+
+            # reset array indices in the stash
+            @stash[v] = null for v in @showIndices            
 
             @$arrayTbl.on("click", "tr.array-cells td", {}, (e) => @tdClick(e) )
         

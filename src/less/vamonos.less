@@ -403,7 +403,7 @@ table.pseudocode {
     background: @normal-item-bg-color;
     display: inline-block;
     width: 200px;
-    margin: 0 4px 0 4px;
+    margin: 0 8px 0 8px;
 
     .ease-all();
 
@@ -440,10 +440,14 @@ table.pseudocode {
     }
 }
 
-.controls-disabled .controls-frame-number {
-    display: none;
-}
+span.controls-frame-number {
 
+    padding-left: 4px;
+
+    .controls-disabled & {
+        display: none;
+    }
+}
 
 //////////////////////
 // MATRIX

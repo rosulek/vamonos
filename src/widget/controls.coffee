@@ -40,6 +40,7 @@ class Controls extends Widget
             @writeLabel( ui.value )
 
     setup: (@stash, @target) ->
+        
 
     writeLabel: (value) ->
         value ?= @$slider.slider("option", "value")
