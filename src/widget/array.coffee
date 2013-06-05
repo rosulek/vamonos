@@ -10,7 +10,6 @@ class VArray extends Widget
         @editIndex  = null
         @firstIndex = if ignoreIndexZero then 1 else 0
 
-        # TODO check that this works
         @showChanges = Common.arrayify(showChanges ? "next")
 
         @$arrayTbl = $("<table>", {class: "array"}).append( 
