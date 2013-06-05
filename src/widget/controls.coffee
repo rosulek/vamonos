@@ -3,14 +3,14 @@
 
 class Controls extends Widget
 
-    constructor: ({container, @target, noStopButton, noSlider, noFrameNumber}) ->
-        @$container = jqueryify(container)
+    constructor: ({container, noStopButton, noSlider, noFrameNumber, @showWhileSliding}) ->
+        @$container = Common.jqueryify(container)
 
         @$stopButton = $("<button>", {html: "&#x25A0;"})
         @$prevButton = $("<button>", {html: "&#x25C0;"})
         @$nextButton = $("<button>", {html: "&#x25B6;"})
-        @$slider     = $("<div>")
-        @$frameLabel = $("<span>")
+        @$slider     = $("<div>", {class: "controls-slider"})
+        @$frameLabel = $("<span>", {class: "controls-frame-number"})
 
         @$container.append(@$stopButton)                unless noStopButton
         @$container.append(@$prevButton, @$nextButton)
@@ -19,26 +19,32 @@ class Controls extends Widget
 
         @$slider.slider({
             min:1, max:1, value:0,
-            slide:  => @writeLabel,
-            change: => (_,ui) => @target.jumpFrame(ui.value ? 0)
+            slide: (event,ui) => @slideEvent(event,ui)
+            stop:  => @target.jumpFrame( @$slider.slider("option", "value") )
         })
 
         @$stopButton.on("click", => @target.deactivate() )
         @$nextButton.on("click", =>
             if @mode is "edit"
-                @target.activate()
+                @target.generate()
             else if @mode is "display"
                 @target.nextFrame()
         )
             
         @$prevButton.on("click", => @target.prevFrame())
 
-    setup: (@stash) ->
+    slideEvent: (event,ui) ->
+        if @showWhileSliding
+            @target.jumpFrame( ui.value )
+        else
+            @writeLabel( ui.value )
 
-    writeLabel: ->
-        value = @$slider.slider("option", "value")
-        max   = @$slider.slider("option", "max")
-        @$label.html( "#{label} / #{max}" )
+    setup: (@stash, @target) ->
+
+    writeLabel: (value) ->
+        value ?= @$slider.slider("option", "value")
+        max    = @$slider.slider("option", "max")
+        @$frameLabel.html( "#{value} / #{max}" )
         
 
     setMode: (mode_str) ->
@@ -46,18 +52,18 @@ class Controls extends Widget
             when "edit"
                 @$stopButton.attr("disabled", "true");
                 @$prevButton.attr("disabled", "true");
-                @$container.removeClass("controls-disabled")
+                @$container.addClass("controls-disabled")
 
             when "display"
-                @$stopButton.attr("disabled", "false");
-                @$prevButton.attr("disabled", "false");
-                @$container.addClass("controls-disabled")
+                @$stopButton.removeAttr("disabled");
+                @$prevButton.removeAttr("disabled");
+                @$container.removeClass("controls-disabled")
 
         @mode = mode_str
 
     render: (frame, type) ->
         @$slider.slider("option", "max",   frame._numFrames)
-        @$slider.slider("option", "value", frame._frameNumer)
+        @$slider.slider("option", "value", frame._frameNumber)
         @writeLabel()
 
     clear: () ->

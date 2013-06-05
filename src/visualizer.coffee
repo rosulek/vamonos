@@ -18,7 +18,7 @@ class Visualizer
         @stash = { _breakpoints: [] }
 
         # pass a reference to the stash object to each widget
-        ui.setup(@stash) for ui in @widgets
+        ui.setup(@stash, this) for ui in @widgets
 
         @deactivate()
 
@@ -31,6 +31,7 @@ class Visualizer
     ###
     generate: ->
         @frames = []
+        @currentFrameNumber = 0
         @algorithm(this)
         @currentFrameNumber = 0
         f._numFrames = @frames.length for f in @frames
@@ -58,6 +59,8 @@ class Visualizer
 
     ###
     #   Frame controls - move frame and send message to widgets
+    #  
+    #   frame numbers are 1-indexed
     ###
     nextFrame: ->
         @goToFrame(@currentFrameNumber + 1, "next")
@@ -69,10 +72,10 @@ class Visualizer
         @goToFrame(n, "jump")
 
     goToFrame: (n, type) ->
-        return if n < 0 or n > @frames.length - 1
+        return unless 1 <= n <= @frames.length
         @currentFrameNumber = n
         for ui in @widgets
-            ui.render(@frames[@currentFrameNumber], type)
+            ui.render(@frames[@currentFrameNumber-1], type)
 
 
     ###

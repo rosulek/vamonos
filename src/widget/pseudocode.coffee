@@ -15,8 +15,7 @@ class Pseudocode extends Widget
     # if user breakpoints is set enable/disable clicking in the gutter
     # to the set breakpoints
     setMode: (mode_str) ->
-        return unless mode_str is 'input'
-        @stash[name] = value for name, value of @obj
+        @$tbl.find("tr.pseudocode-active").removeClass("pseudocode-active") if mode_str is 'edit'
 
     setup: (@stash) ->
         @stash._breakpoints = @breakpoints
