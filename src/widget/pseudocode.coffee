@@ -23,11 +23,11 @@ class Pseudocode extends Widget
     setMode: (mode) ->
         if mode is 'edit'
             @$tbl.find("tr.pseudocode-active").removeClass("pseudocode-active")
-            @enableBreakpointSelection()
+            @enableBreakpointSelection() if @userBreakpoints
 
         else if mode is 'display'
             @showBreakpoints()
-            @disableBreakpointSelection()
+            @disableBreakpointSelection() if @userBreakpoints
 
     disableBreakpointSelection: ->
         @$tbl.find("td.pseudocode-gutter")
