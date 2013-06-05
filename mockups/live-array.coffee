@@ -1,10 +1,19 @@
+# TODO display array indices
+
+arrayify = (obj) ->
+        if obj instanceof Array then obj else [obj]
+
 class LiveArrayMockup
 
-    constructor: ({container, @separator, initialarray}) ->
-        @$container   = container
-        @theArray     = []
-        @$inputBox    = null
-        @editingIndex = null
+    constructor: ({container, @defaultArray, @varName, ignoreIndexZero, @showChanges}) ->
+        @$container = container
+        @$editBox   = null
+        @editIndex  = null
+        @firstIndex = if ignoreIndexZero then 1 else 0
+
+        # TODO arrayify @showChanges
+
+        @showChanges ?= ["play"]
 
         @$arrayTbl = $("<table>", {class: "array"}).append( 
             $("<tr>", {class: "array-indices"}),
@@ -13,69 +22,104 @@ class LiveArrayMockup
         )
         @$container.append(@$arrayTbl)
 
-        if initialarray.length
-            @appendCell(v) for v in initialarray
-        else 
-            @appendCell(null)
 
-        @$arrayTbl.on("click", "tr.array-cells td", {}, (e) => @tdClick(e) )
+    setup: (stash) ->
+        @theArray = stash[@varName] = []
+
+    modeChange: (mode) ->
+        if mode is "edit"
+            @theArray.length = 0
+            @theArray.push(null) if @firstIndex = 1        
+
+            @$arrayTbl.find("tr").empty()
+
+            if @defaultArray? and @defaultArray.length > @firstIndex
+                @appendCellRaw(v) for v in @defaultArray[@firstIndex..]
+            else 
+                @appendCellRaw(null)
+
+            @$arrayTbl.on("click", "tr.array-cells td", {}, (e) => @tdClick(e) )
+        
+        else if mode is "display"
+            # shallow copy of @theArray
+            @defaultArray = @theArray.slice(0)
+            @$arrayTbl.off("click")
+
+    render: (frame, type) ->
+        frameArray = frame[@varName]
+
+        while frameArray.length < @theArray.length
+            @chopLastCell()
+
+        showChange = type in @showChanges
+
+        for i,v of frameArray
+            if i >= @theArray.length
+                @appendCellRaw(v, showChange)
+            else
+                @setCellRaw(i, v, showChange)
 
 
-    valueEncode: (txt) ->
+    # TODO this is just the default
+
+    txtToRaw: (txt) ->
         if isNaN(parseInt(txt)) then null else parseInt(txt)
 
-    valueDecode: (txt) -> txt
+    rawToTxt: (txt) -> txt
 
-    valueValid: (txt) ->
-        @valueEncode(txt)?
+    txtValid: (txt) -> @txtToRaw(txt)?
+
 
 
     tdClick: (event) ->
         # ignore clicks on existing inputbox
-        @startEditing( $(event.target).index() ) unless @$inputBox? and event.target == @$inputBox.get(0)
+        return if @$editBox? and event.target is @$editBox.get(0)
+
+        # .index() is 0-based index among siblings
+        @startEditing( $(event.target).index() + @firstIndex ) 
 
     startEditing: (index) ->
-        return if index is @editingIndex
-        if (@editingIndex?)
+        return if index is @editIndex
+        if (@editIndex?)
             @endEditing(yes)
 
-        $tgt = @getNthCell(index)
+        $cell = @getNthCell(index)
 
-        @editingIndex = index
-        @$inputBox = $("<input class='live-input'>")
-        @$inputBox.val(@theArray[index])
-        @$inputBox.width( $tgt.width() );           
-        @$inputBox.on("blur",    (e) => @endEditing(yes)    )
-        @$inputBox.on("keydown", (e) => @inpKeyDown(e) ) 
+        @editIndex = index
+        @$editBox = $("<input class='inline-input'>")
+        @$editBox.val(@theArray[index])
+        @$editBox.width( $cell.width() );           
+        @$editBox.on("blur",    (e) => @endEditing(yes) )
+        @$editBox.on("keydown", (e) => @editKeyDown(e) ) 
 
-        $tgt.html( @$inputBox )
-        $tgt.addClass("editing")
-        @$inputBox.focus();
-        @$inputBox.select();
+        $cell.html( @$editBox )
+        @getNthColumn(index).addClass("editing")
+        @$editBox.focus();
+        @$editBox.select();
 
 
     endEditing: (save) ->
-        return unless @editingIndex? and @$inputBox?
-        $activechild = @getNthCell(@editingIndex)
+        return unless @editIndex? and @$editBox?
+        $cell = @getNthCell(@editIndex)
 
-        last = @editingIndex == @theArray.length - 1
-        txt  = $activechild.find("input").val()
-        dead = last and @editingIndex != 0 and \
-               ( (save and !@valueValid(txt)) or (!save and !@theArray[@editingIndex]?) )
+        last = @editIndex == @theArray.length - 1
+        txt  = $cell.children("input").val()
+        dead = last and @editIndex != @firstIndex and \
+               ( (save and !@txtValid(txt)) or (!save and !@theArray[@editIndex]?) )
 
         if dead
             @chopLastCell()                        
-        else if save and @valueValid(txt)
-            @theArray[@editingIndex] = @valueEncode(txt)
+        else if save and @txtValid(txt)
+            @setCellTxt(@editIndex, txt)
 
-        $activechild.html( "" + @valueDecode( @theArray[@editingIndex] ) )
-        $activechild.removeClass("editing")
+        @getNthColumn(@editIndex).removeClass("editing")
 
-        @editingIndex = null
-        @$inputBox = null
+        @editIndex = null
+        @$editBox = null
+
 
         
-    inpKeyDown: (event) ->
+    editKeyDown: (event) ->
         k = event.keyCode
         shift = event.shiftKey
         
@@ -85,33 +129,33 @@ class LiveArrayMockup
             return false
 
         # tab, space
-        if k is 32 or (!shift and k is 9)
-            @setNextActive()
+        if (!shift and k is 9) or k is 32
+            @startEditingNext()
             return false
 
         # shift-tab
         if shift && k is 9
-            @setPrevActive()
+            @startEditingPrev()
             return false
         
         # backspace
-        if k is 8 && @$inputBox.val() is ""
-            @setPrevActive()
+        if k is 8 && @$editBox.val() is ""
+            @startEditingPrev()
             return false
 
         # left-arrow
         if k is 37
-            elt = @$inputBox.get(0)
+            elt = @$editBox.get(0)
             if elt.selectionStart == 0 and elt.selectionEnd == 0
-                @setPrevActive()
+                @startEditingPrev()
                 return false
 
         # right-arrow
         if k is 39
-            txt = @$inputBox.val();
-            elt = @$inputBox.get(0)
+            txt = @$editBox.val();
+            elt = @$editBox.get(0)
             if elt.selectionStart == txt.length and elt.selectionEnd == txt.length
-                @setNextActive()
+                @startEditingNext()
                 return false
 
         # escape
@@ -121,29 +165,56 @@ class LiveArrayMockup
         
 
     getNthCell: (n) ->
-        @$arrayTbl.find(".array-cells").children().eq(n)
+        # .eq() is 0-indexed
+        @$arrayTbl.find("tr.array-cells").children().eq(n - @firstIndex)
 
-    setNextActive: ->
-        if @editingIndex is @theArray.length - 1 
-            return unless @valueValid( @$inputBox.val() )
-            @appendCell(null) 
+    getNthColumn: (n) ->
+        # :nth-child() selector is 1-indexed
+        i = n - @firstIndex + 1
+        @$arrayTbl.find("tr td:nth-child(" + i + ")")
 
-        @startEditing(@editingIndex + 1)
+    startEditingNext: ->
+        if @editIndex is @theArray.length - 1 
+            return unless @txtValid( @$editBox.val() )
+            @appendCellRaw(null) 
 
-    setPrevActive: ->
-        @startEditing(@editingIndex - 1) if @editingIndex > 0
+        @startEditing(@editIndex + 1)
 
-    appendCell: (val) ->
+    startEditingPrev: ->
+        @startEditing(@editIndex - 1) if @editIndex > @firstIndex
+
+    appendCellRaw: (val, showChanges) ->
         newindex = @theArray.length
         @theArray.push(val);
-        @$arrayTbl.find(".array-indices").append("<td>" + newindex + "</td>")
-        @$arrayTbl.find(".array-cells").append( $("<td>", {text: @valueDecode(val)}) )
-        @$arrayTbl.find(".array-annotations").append("<td></td>")
+        @$arrayTbl.find("tr.array-indices").append("<td>" + newindex + "</td>")
+        @$arrayTbl.find("tr.array-cells").append( $("<td>", {text: @rawToTxt(val)}) )
+        @$arrayTbl.find("tr.array-annotations").append("<td></td>")
+
+        @markChanged(newindex) if showChanges
 
     chopLastCell: ->
-        i = @theArray.length
         @theArray.length--;
         @$arrayTbl.find("td:last-child").remove()
-
     
+    setCellTxt: (index, txtVal, showChanges) ->
+        @setCellRaw(index, @txtToRaw(txtVal), showChanges)
+
+    setCellRaw: (index, rawVal, showChanges) ->
+        @theArray[index] = rawVal
+        $cell = @getNthCell(index)
+
+        oldhtml = $cell.html()
+
+        # first index might be null, but we still have to "display" it
+        newhtml = if @theArray[index]? \
+                    then "" + @rawToTxt( @theArray[index] ) \
+                    else ""
+
+        $cell.html(newhtml)
+        @markChanged(index) if showChanges and oldhtml != newhtml
+
+    markChanged: (index) ->
+        @getNthColumn(index).addClass("changed")
+        
+
     

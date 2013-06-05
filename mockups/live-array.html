@@ -18,7 +18,7 @@
         h1 { margin: 32px 0 0 0; }
         h1:first-child { margin: 0px; }
 
-        .live-input {
+        .inline-input {
             display: inline;
             border: 0px;
             background: none;
@@ -27,8 +27,12 @@
             margin: 0px;
             text-align: center;
         }
-        table.array tr.array-cells td.editing {
+        table.array tr.array-cells td.editing,
+        .indices-inside table.array tr.array-indices td.editing {
             background: #9f9;
+        }
+        .inline-input:focus {
+            outline: none;
         }
     </style>
 
@@ -42,8 +46,9 @@
 
     <script type="text/javascript">
         var x = new LiveArrayMockup({ 
+            varName: "A",
             container: $("#myarray"),
-            initialarray: [3,1,4,1,5]
+            defaultArray: [3,1,4,1,5],
         });
     </script>
 
