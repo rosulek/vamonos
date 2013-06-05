@@ -51,10 +51,13 @@ class Pseudocode extends Interfacer
             )
         )
 
-        # add bold keywords
-        pattern    = new RegExp(@keywords, "g")
-        html_lines = for line in html_lines
-            line.replace(pattern, (s) -> "<b>#{s}</b>")
+        # add bold keywords but not to comments
+        pattern    = new RegExp("\\b(#{@keywords})\\b", "g")
+        html_lines = for line in html_lines 
+            if line.match /^\s*\/\//
+                line
+            else
+                line.replace(pattern, (s) -> "<b>#{s}</b>")
 
 
         minWhitespace = (line.match(/^\s*/)[0].length for line in html_lines)
