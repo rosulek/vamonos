@@ -194,12 +194,12 @@ class VArray extends Interfacer
     getNthColumn: (n) ->
         # :nth-child() selector is 1-indexed
         i = n - @firstIndex + 1
-        @$arrayTbl.find("tr td:nth-child(" + i + ")")
+        @$arrayTbl.find("tr td:nth-child(#{i})")
 
     getNthAnnotation: (n) ->
         # :nth-child() selector is 1-indexed
         i = n - @firstIndex + 1
-        @$arrayTbl.find("tr.array-annotations td:nth-child(" + i + ")")
+        @$arrayTbl.find("tr.array-annotations td:nth-child(#{i})")
 
 
     startEditingNext: ->
