@@ -11,9 +11,10 @@ class Pseudocode extends Widget
 
 
     constructor: ({container, @userBreakpoints, @breakpoints}) ->
+        @userBreakpoints ?= true
         # sets @$tbl as the jquery selector for the pseudocode object
-        @formatContainer(Common.jqueryify(container))
-        @breakpoints ?= true
+        nLines = @formatContainer(Common.jqueryify(container))
+        @breakpoints ?= [1..nLines]
 
 
     setup: (@stash) ->
@@ -136,6 +137,7 @@ class Pseudocode extends Widget
             )
 
         $container.html(@$tbl)
+        return lineNumber
 
 
 Common.VamonosExport { Widget: { Pseudocode } }
