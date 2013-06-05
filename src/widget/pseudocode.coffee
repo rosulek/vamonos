@@ -13,6 +13,7 @@ class Pseudocode extends Widget
     constructor: ({container, @userBreakpoints, @breakpoints}) ->
         # sets @$tbl as the jquery selector for the pseudocode object
         @formatContainer(Common.jqueryify(container))
+        @breakpoints ?= true
 
 
     setup: (@stash) ->
