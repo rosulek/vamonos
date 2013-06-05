@@ -64,6 +64,9 @@ table.array tr.array-cells td.array-title {
   text-align: left;
   padding-left: 2px;
 }
+.no-indices table.array tr.array-indices {
+  display: none;
+}
 table.pseudocode {
   border-collapse: collapse;
   display: inline;

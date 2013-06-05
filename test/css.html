@@ -120,6 +120,7 @@
 
     <div class="container">
         <label><input id="cbindicesabove" type=checkbox> indices inside</label> <br>
+        <label><input id="cbnoindices" type=checkbox> no indices</label> <br>
         <label><input id="cbshading" type=checkbox checked> shading</label> <br>
         <label><input id="cbannotations" type=checkbox checked> annotations</label> <br>
         <input type="submit" id="arrswap" value="swap elements">
@@ -129,6 +130,10 @@
         $("#cbindicesabove").change( function() {
             $("#arr .changed").removeClass("changed");
             $("#arr").toggleClass("indices-inside");
+        });
+        $("#cbnoindices").change( function() {
+            $("#arr .changed").removeClass("changed");
+            $("#arr").toggleClass("no-indices");
         });
         $("#cbshading").change( function() {
             $("#arr tr.array-indices td:lt(3)").toggleClass("shaded");
