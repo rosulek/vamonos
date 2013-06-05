@@ -63,11 +63,11 @@ class VArray extends Interfacer
             if !isNaN(parseInt(index)) and @firstIndex <= index < frameArray.length
                 $col = @getNthColumn(index)
                 $selector = switch compare 
-                    when "<"  then $col.prevAll() 
-                    when "<=" then $col.prevAll().add($col)
-                    when "="  then $col
-                    when ">"  then $col.nextAll()
-                    when ">=" then $col.nextAll().add($col)
+                    when "<"        then $col.prevAll() 
+                    when "<="       then $col.prevAll().add($col)
+                    when "=", "=="  then $col
+                    when ">"        then $col.nextAll()
+                    when ">="       then $col.nextAll().add($col)
                 $selector.addClass(className)
 
         # apply the "changed" class after applying the other css rules
