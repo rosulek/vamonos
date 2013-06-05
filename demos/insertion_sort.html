@@ -13,7 +13,7 @@
     <div class="container" id="array"></div>
 
     <div class="container">
-        <div id="pseudocode" class="no-gutter" title="InsertionSort(A):">
+        <div id="pseudocode" title="InsertionSort(A):">
             for j = 2 to A.length
                 key = A[j]
                 i = j - 1
@@ -44,8 +44,8 @@
 
                 new Vamonos.Widget.Pseudocode({
                     container: "pseudocode",
-                    userBreakpoints: false,
-                    breakpoints: [1,2,3,4,5,6,7],
+                    userBreakpoints: true,
+                    breakpoints: [5,7],
                 }),
 
                 new Vamonos.Widget.Controls({

@@ -9,16 +9,77 @@ class Pseudocode extends Widget
                    .sort((a,b) -> b.length - a.length)
                    .join("|")
 
+
     constructor: ({container, @userBreakpoints, @breakpoints}) ->
+        # sets @$tbl as the jquery selector for the pseudocode object
         @formatContainer(Common.jqueryify(container))
-        
-    # if user breakpoints is set enable/disable clicking in the gutter
-    # to the set breakpoints
-    setMode: (mode_str) ->
-        @$tbl.find("tr.pseudocode-active").removeClass("pseudocode-active") if mode_str is 'edit'
+
 
     setup: (@stash) ->
         @stash._breakpoints = @breakpoints
+        @showBreakpoints()
+
+
+    setMode: (mode) ->
+        if mode is 'edit'
+            @$tbl.find("tr.pseudocode-active").removeClass("pseudocode-active")
+            @enableBreakpointSelection()
+
+        else if mode is 'display'
+            @showBreakpoints()
+            @disableBreakpointSelection()
+
+    disableBreakpointSelection: ->
+        @$tbl.find("td.pseudocode-gutter")
+             .off("click")
+
+    enableBreakpointSelection: ->
+        @$tbl.find("td.pseudocode-gutter")
+             .on("click", (event) =>
+                 console.log "handler: ", event.target
+                 @breakPointToggle(
+                     $(event.target).closest("tr").attr("vamonos-linenumber"),
+                     $(event.target)
+                 )
+             )
+
+    breakPointToggle: (n, $e) ->
+        n = parseInt(n, 10)
+        if n in @stash._breakpoints
+            console.log "remove breakpoint", n
+            @removeBreakpoint(n)
+
+        else
+            console.log "add breakpoint", n
+            @ensureBreakpoint(n)
+
+        console.log @stash._breakpoints
+
+
+    ensureBreakpoint: (n) ->
+        return if n in @stash._breakpoints
+        @getNthPseudocodeLine(n)
+            .find("td.pseudocode-gutter")
+            .append($("<div>", {class: "pseudocode-breakpoint"}))
+        @stash._breakpoints.push(n)
+
+    removeBreakpoint: (n) ->
+        return unless n in @stash._breakpoints
+        @getNthPseudocodeLine(n)
+            .find("td.pseudocode-gutter")
+            .find("div.pseudocode-breakpoint")
+            .remove()
+        @stash._breakpoints.splice(@stash._breakpoints.indexOf(n), 1)
+
+    showBreakpoints: ->
+        @$tbl.find("td.pseudocode-gutter div.pseudocode-breakpoint").remove()
+        for n in @breakpoints
+            @getNthPseudocodeLine(n)
+                .find("td.pseudocode-gutter")
+                .append($("<div>", {class: "pseudocode-breakpoint"}))
+
+    getNthPseudocodeLine: (n) ->
+        @$tbl.find("tr[vamonos-linenumber=#{ n }]")
 
     render: (frame, type) ->
 
@@ -26,9 +87,9 @@ class Pseudocode extends Widget
 
         # change highlighted line to frame's line number
         @$tbl.find("tr[vamonos-linenumber=#{ frame._lineNumber }]")
-             .addClass("pseudocode-active") 
+             .addClass("pseudocode-active")
 
-            
+
     formatContainer: ($container) ->
         #get title, remove title
         title = $container.attr("title")
@@ -49,7 +110,7 @@ class Pseudocode extends Widget
 
         # add bold keywords but not to comments
         pattern    = new RegExp("\\b(#{@keywords})\\b", "g")
-        html_lines = for line in html_lines 
+        html_lines = for line in html_lines
             if line.match /^\s*\/\//
                 line
             else
@@ -62,10 +123,10 @@ class Pseudocode extends Widget
         # add each line to the table while adding tabs
         lineNumber = 1
         for line in html_lines
-            [lineNumberStr, className] = 
+            [lineNumberStr, className] =
                 if line.match /^\s*\/\//
                     ["" , "pseudocode-comment"]
-                else 
+                else
                     [lineNumber++, "pseudocode-text"]
 
             indent_num = Math.floor((line.match(/^\s*/)[0].length - minWhitespace) / 4 )
@@ -78,7 +139,7 @@ class Pseudocode extends Widget
                     $("<td>", {class: className, html: (indent + line) }),
                 )
             )
-            
+
         $container.html(@$tbl)
 
 
