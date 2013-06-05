@@ -12,9 +12,18 @@ class Pseudocode extends Interfacer
         return unless mode_str is 'input'
         @vars[name] = value for name, value of @obj
 
+        #  clear highlighted line
+        
     setup: (args...) ->
         super(args)
         @vars._breakpoints = @breakpoints
+
+    render: (frame, type) ->
+
+        # change highlighted line to frames line number
+
+            
+
 
     formatContainer: ($container) ->
         #get title, remove title
@@ -57,12 +66,10 @@ class Pseudocode extends Interfacer
                 $("<tr>", {class: "pseudocode-line"}).append(
                     $("<td>", {class: "pseudocode-gutter"}),
                     $("<td>", {class: "pseudocode-line-number", text: lineNumber}),
-                    $txt = $("<td>", {class: className}),
+                    $("<td>", {class: className, html: (indent + line) }),
                 )
             )
             
-            $txt.append(indent + line)
-
         $container.html($tbl)
 
 
