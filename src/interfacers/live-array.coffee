@@ -4,12 +4,11 @@ class LiveArray extends Interfacer
 
     constructor: ({container, @defaultArray, @varName, ignoreIndexZero,
                     @showChanges, @cssRules, @showIndices}) ->
-        @$container = container
+        @$container = Common.jqueryify(container)
         @$editBox   = null
         @editIndex  = null
         @firstIndex = if ignoreIndexZero then 1 else 0
 
-        # TODO jqueryify container
         # TODO arrayify @showChanges
 
         @showChanges ?= ["next"]
