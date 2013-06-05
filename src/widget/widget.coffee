@@ -2,17 +2,10 @@ class Widget
 
     constructor: ->
 
-    setup: (vars) ->
-        @vars = vars
+    setup: (@stash) ->
 
-    changeMode: (mode) ->
-        if @mode isnt mode
-            dostuff()
-        else
-            dootherstuff()
+    setMode: (mode) ->
 
     render: (args...) ->
-        dostuff()
 
     clear: ->
-        dostuff()

@@ -27,22 +27,23 @@
 
     <script type="text/javascript">
         var myviz = new Vamonos.Visualizer({
-            controls: "controls",
-            interfacers: [
+            widgets: [
+                new Vamonos.Widget.Console(),
                 new Vamonos.Widget.Array({
                     container: "array",
+                    defaultArray: [undefined, 3, 1, 4, 1, 5, 9],
+                    ignoreIndexZero: true,
                     varName: "A",
-                    showChangesOn: "next",
-                    indices: {
-                        i: { annotate: 1 },
-                        j: { annotate: 1, cssAfter: "shaded" }
-                    }
+                    cssRules: [
+                        [">", "j", "shaded"]
+                    ],
+                    showIndices: ["i", "j"],
                 }),
 
                 new Vamonos.Widget.Pseudocode({
                     container: "pseudocode",
                     userBreakpoints: false,
-                    breakpoints: [1,5],
+                    breakpoints: [1,2,3,4,5,6,7],
                 }),
 
                 //new Vamonos.Widget.Controls({
@@ -52,16 +53,15 @@
 
 
             ],
-            varNames: ["A", "i", "j", "key"],
 
             algorithm: function (viz) {
-                with (viz.vars) {
-                    for (j = 2; viz.line(1) && j < A.length - 1; j++) {
+                with (viz.stash) {
+                    for (j = 2; viz.line(1), j < A.length - 1; j++) {
                         viz.line(2);
                         key = A[j];
                         viz.line(3);
                         i = j - 1;
-                        while (viz.line(4) && i > 0 && A[i] > key) {
+                        while (viz.line(4), i > 0 && A[i] > key) {
                             viz.line(5);
                             A[i + 1] = A[i];
                             viz.line(6);
@@ -71,7 +71,6 @@
                         A[i + 1] = key;
                     }
                 }
-                viz.done();
             }
         });
 
