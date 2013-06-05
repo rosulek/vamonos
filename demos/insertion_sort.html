@@ -37,7 +37,7 @@
         var myviz = new Vamonos.Visualizer({
             controls: "controls",
             interfacers: [
-                new Vamonos.Interfacer.Array({
+                new Vamonos.Widget.Array({
                     container: "array",
                     varName: "A",
                     showChangesOn: "next",
@@ -46,15 +46,15 @@
                         j: { annotate: 1, cssAfter: "shaded" }
                     }
                 }),
-                new Vamonos.Interfacer.Hardcoded({
+                new Vamonos.Widget.Hardcoded({
                     A: [5, 2, 4, 6, 1, 3]
                 }),
-                new Vamonos.Interfacer.Pseudocode({
+                new Vamonos.Widget.Pseudocode({
                     container: "pseudocode",
                     userBreakpoints: false,
                     breakpoints: [1,5],
                 }),
-                new Vamonos.Interfacer.Controls({
+                new Vamonos.Widget.Controls({
                     container: "controls",
                     target: myviz,
                 }),
