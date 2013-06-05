@@ -310,7 +310,12 @@ LiveArrayMockup = (function() {
   };
 
   LiveArrayMockup.prototype.markChanged = function(index) {
-    return this.getNthColumn(index).addClass("changed");
+    var $col;
+    $col = this.getNthColumn(index);
+    $col.addClass("changed");
+    return $col.each(function() {
+      return $(this).replaceWith($(this).clone());
+    });
   };
 
   return LiveArrayMockup;

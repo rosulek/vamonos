@@ -242,7 +242,12 @@ class LiveArrayMockup
         @markChanged(index) if showChanges and oldhtml != newhtml
 
     markChanged: (index) ->
-        @getNthColumn(index).addClass("changed")
+        $col = @getNthColumn(index)
+        $col.addClass("changed")
+        
+        # "refresh" each DOM element so that CSS transitions can restart
+        $col.each( -> $(this).replaceWith( $(this).clone() ) )
+        
         
 
     
