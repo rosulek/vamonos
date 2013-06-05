@@ -3,6 +3,12 @@
 
 class Pseudocode extends Interfacer
 
+    keywords: "for while if else elseif elsif elif begin end then repeat until
+               to downto by return error throw and or"
+                   .split(/\s+/)
+                   .sort((a,b) -> b.length - a.length)
+                   .join("|")
+
     constructor: ({container, @userBreakpoints, @breakpoints}) ->
         @formatContainer(Common.jqueryify(container))
         
@@ -27,8 +33,6 @@ class Pseudocode extends Interfacer
              .addClass("pseudocode-active") 
 
             
-
-
     formatContainer: ($container) ->
         #get title, remove title
         title = $container.attr("title")
@@ -47,12 +51,17 @@ class Pseudocode extends Interfacer
             )
         )
 
+        # add bold keywords
+        pattern    = new RegExp(@keywords, "g")
+        html_lines = for line in html_lines
+            line.replace(pattern, (s) -> "<b>#{s}</b>")
+
+
         minWhitespace = (line.match(/^\s*/)[0].length for line in html_lines)
                             .reduce((a,b) -> if a < b then a else b)
 
+        # add each line to the table while adding tabs
         lineNumber = 1
-
-        # add each line
         for line in html_lines
             [lineNumberStr, className] = 
                 if line.match /^\s*\/\//
