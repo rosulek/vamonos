@@ -1,16 +1,17 @@
-class LiveArrayMockup
+#_require ../common.coffee
+#_require ./interfacer.coffee
+
+class VArray extends Interfacer
 
     constructor: ({container, @defaultArray, @varName, ignoreIndexZero,
                     @showChanges, @cssRules, @showIndices}) ->
-        @$container = container
-        @$editBox   = null
-        @editIndex  = null
-        @firstIndex = if ignoreIndexZero then 1 else 0
+        @$container  = Common.jqueryify(container)
+        @$editBox    = null
+        @editIndex   = null
+        @firstIndex  = if ignoreIndexZero then 1 else 0
 
-        # TODO jqueryify container
-        # TODO arrayify @showChanges
+        @showChanges = if @showChanges? then Common.arrayify(@showChanges) else ["next"]
 
-        @showChanges ?= ["next"]
 
         @$arrayTbl = $("<table>", {class: "array"}).append( 
             $("<tr>", {class: "array-indices"}),
@@ -248,6 +249,6 @@ class LiveArrayMockup
         # "refresh" each DOM element so that CSS transitions can restart
         $col.each( -> $(this).replaceWith( $(this).clone() ) )
         
-        
+Common.VamonosExport { Interfacers: { Array: VArray } }
 
     

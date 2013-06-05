@@ -44,23 +44,20 @@ class Common
         # is Vamonos already defined? if not create it
         root.Vamonos or= {}
 
-        # merge obj into the Vamanos namespace
-        root.Vamonos = @merge(root.Vamonos, obj)
+        # mix-in obj into the Vamanos namespace
+        @mixin( root.Vamonos, obj )
 
     ### 
-    #   Common.merge(obj1, obj2)
+    #   Common.mixin(dest, src)
     #
-    #   Merge all attributes of obj1 and obj2 recursively and return a new
-    #   object.
+    #   Add all attributes of src object to dest object, recursively
     ###
-    @merge: (obj1, obj2) ->
-        ret = @clone(obj1)
-        for name, val of obj2
-            if (typeof ret[name] is 'object') and (typeof obj2[name] is 'object')
-                ret[name] = @merge(obj1[name], obj2[name])
+    @mixin: (dest, src) ->
+        for name, val of src
+            if (typeof dest[name] is 'object') and (typeof src[name] is 'object')
+                @mixin( dest[name], src[name])
             else
-                ret[name] = val
-        ret
+                dest[name] = src[name]
 
     ###
     #   Common.clone(obj)
