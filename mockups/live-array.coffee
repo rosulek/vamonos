@@ -1,19 +1,16 @@
-# TODO display array indices
-
-arrayify = (obj) ->
-        if obj instanceof Array then obj else [obj]
-
 class LiveArrayMockup
 
-    constructor: ({container, @defaultArray, @varName, ignoreIndexZero, @showChanges}) ->
+    constructor: ({container, @defaultArray, @varName, ignoreIndexZero,
+                    @showChanges, @cssRules, @showIndices}) ->
         @$container = container
         @$editBox   = null
         @editIndex  = null
         @firstIndex = if ignoreIndexZero then 1 else 0
 
+        # TODO jqueryify container
         # TODO arrayify @showChanges
 
-        @showChanges ?= ["play"]
+        @showChanges ?= ["next"]
 
         @$arrayTbl = $("<table>", {class: "array"}).append( 
             $("<tr>", {class: "array-indices"}),
@@ -26,10 +23,13 @@ class LiveArrayMockup
     setup: (stash) ->
         @theArray = stash[@varName] = []
 
-    modeChange: (mode) ->
+        stash[v] = null for [_, v, _] in @cssRules
+        stash[v] = null for v in @showIndices            
+
+    setMode: (mode) ->
         if mode is "edit"
             @theArray.length = 0
-            @theArray.push(null) if @firstIndex = 1        
+            @theArray.push(null) if @firstIndex is 1        
 
             @$arrayTbl.find("tr").empty()
 
@@ -48,16 +48,44 @@ class LiveArrayMockup
     render: (frame, type) ->
         frameArray = frame[@varName]
 
+        @$arrayTbl.find("td").removeClass()
+
+        # equalize the lengths
         while frameArray.length < @theArray.length
             @chopLastCell()
+        while frameArray.length > @theArray.length
+            @appendCellRaw(null)
 
+        # apply CSS rules
+        for [compare, indexName, className] in @cssRules
+            index = frame[indexName]
+            if !isNaN(parseInt(index)) and @firstIndex <= index < frameArray.length
+                $col = @getNthColumn(index)
+                $selector = switch compare 
+                    when "<"  then $col.prevAll() 
+                    when "<=" then $col.prevAll().add($col)
+                    when "="  then $col
+                    when ">"  then $col.nextAll()
+                    when ">=" then $col.nextAll().add($col)
+                $selector.addClass(className)
+
+        # apply the "changed" class after applying the other css rules
         showChange = type in @showChanges
-
         for i,v of frameArray
-            if i >= @theArray.length
-                @appendCellRaw(v, showChange)
+            @setCellRaw(i, v, showChange)
+
+        indices = {}
+        for indexName in @showIndices
+            index = frame[indexName]
+            if indices[index]?
+                indices[index].push(indexName)
             else
-                @setCellRaw(i, v, showChange)
+                indices[index] = [indexName]
+
+        @$arrayTbl.find("tr.array-annotations td").empty()
+        for i in [@firstIndex...frameArray.length]
+            @getNthAnnotation(i).html( indices[i].join(", ") ) if indices[i]?
+
 
 
     # TODO this is just the default
@@ -119,47 +147,41 @@ class LiveArrayMockup
 
 
         
-    editKeyDown: (event) ->
-        k = event.keyCode
-        shift = event.shiftKey
-        
-        # enter key
-        if k is 13
+    editKeyDown: (event) -> switch event.keyCode
+        when 13 # enter key
             @endEditing(yes)
             return false
 
-        # tab, space
-        if (!shift and k is 9) or k is 32
+        when 32 # space
             @startEditingNext()
             return false
 
-        # shift-tab
-        if shift && k is 9
-            @startEditingPrev()
-            return false
-        
-        # backspace
-        if k is 8 && @$editBox.val() is ""
-            @startEditingPrev()
+        when 9 # tab
+            if event.shiftKey
+                @startEditingPrev()
+            else
+                @startEditingNext()
             return false
 
-        # left-arrow
-        if k is 37
+        when 8 # backspace
+            if @$editBox.val() is ""
+                @startEditingPrev()
+                return false
+
+        when 37 # left-arrow
             elt = @$editBox.get(0)
             if elt.selectionStart == 0 and elt.selectionEnd == 0
                 @startEditingPrev()
                 return false
 
-        # right-arrow
-        if k is 39
+        when 39 # right-arrow
             txt = @$editBox.val();
             elt = @$editBox.get(0)
             if elt.selectionStart == txt.length and elt.selectionEnd == txt.length
                 @startEditingNext()
                 return false
 
-        # escape
-        if k is 27
+        when 27 # escape
             @endEditing(no)
             return false
         
@@ -172,6 +194,12 @@ class LiveArrayMockup
         # :nth-child() selector is 1-indexed
         i = n - @firstIndex + 1
         @$arrayTbl.find("tr td:nth-child(" + i + ")")
+
+    getNthAnnotation: (n) ->
+        # :nth-child() selector is 1-indexed
+        i = n - @firstIndex + 1
+        @$arrayTbl.find("tr.array-annotations td:nth-child(" + i + ")")
+
 
     startEditingNext: ->
         if @editIndex is @theArray.length - 1 
