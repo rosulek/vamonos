@@ -4,9 +4,13 @@
 class Hardcoded extends Widget
 
     constructor: (@obj) ->
+
+    setup: (@stash) ->
         
-    changeMode: (mode_str) ->
+    setMode: (mode_str) ->
         return unless mode_str is 'input'
-        @vars[name] = value for name, value of @obj
+        @stash[name] = value for name, value of @obj
+
+    render: () ->
 
 Common.VamonosExport { Widget: { Hardcoded } }
