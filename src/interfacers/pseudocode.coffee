@@ -47,29 +47,26 @@ class Pseudocode extends Interfacer
             )
         )
 
-        # trim common space
-        min = 21394189812938
-        for line in html_lines
-            ws = line.match(/^\s*/)[0].length
-            min = ws if ws < min
+        minWhitespace = (line.match(/^\s*/)[0].length for line in html_lines)
+                            .reduce((a,b) -> if a < b then a else b)
 
-        n = 1
+        lineNumber = 1
 
         # add each line
         for line in html_lines
-            [lineNumber, className] = 
+            [lineNumberStr, className] = 
                 if line.match /^\s*\/\//
                     ["" , "pseudocode-comment"]
                 else 
-                    [n++, "pseudocode-text"]
+                    [lineNumber++, "pseudocode-text"]
 
-            indent_num = Math.floor((line.match(/^\s*/)[0].length - min) / 4 )
+            indent_num = Math.floor((line.match(/^\s*/)[0].length - minWhitespace) / 4 )
             indent = ("<span class=pseudocode-indent></span>" for [] in length:indent_num).join("")
 
             @$tbl.append(
-                $("<tr>", {class: "pseudocode-line", "vamonos-linenumber": lineNumber}).append(
+                $("<tr>", {class: "pseudocode-line", "vamonos-linenumber": lineNumberStr}).append(
                     $("<td>", {class: "pseudocode-gutter"}),
-                    $("<td>", {class: "pseudocode-line-number", text: lineNumber}),
+                    $("<td>", {class: "pseudocode-line-number", text: lineNumberStr}),
                     $("<td>", {class: className, html: (indent + line) }),
                 )
             )
