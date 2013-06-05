@@ -93,7 +93,7 @@ class Visualizer
         return if @active
         @active = yes
         for ui in @interfacers 
-            ui.changeMode("active") 
+            ui.setMode("active") 
 
     showFrame: (transition) ->
         for ui in @interfacers
