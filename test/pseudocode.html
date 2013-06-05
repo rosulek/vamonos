@@ -1,37 +1,24 @@
-<html>
-    <head>
-        <link rel="stylesheet" href="vamonos-default.css">
-        <script src="../deps/jquery.min.js"></script>
-        <script src="../deps/jquery-ui.min.js"></script>
-        <script src="vamonos.js"></script>
-    <style type="text/css">
-        .container {
-            display: inline-block;
-            vertical-align: middle;
-            padding: 10px;
-            margin: 10px;
-            border: 1px solid black;
-            -moz-box-shadow: 5px 5px 5px #ccc;
-            -webkit-box-shadow: 5px 5px 5px #ccc;
-            box-shadow: 5px 5px 5px #ccc;
-        }
-        h1 { margin: 32px 0 0 0; }
-        h1:first-child { margin: 0px; }
-    </style>
-    </head>
+<html><head>
+    <title>Vamonos test: Pseudocode UI element</title>
+    <link rel="stylesheet" type="text/css" href="../src/css/vamonos-default.css">
+    <link rel="stylesheet" type="text/css" href="tests.css">
+    <script type="text/javascript" src="../deps/jquery.min.js"></script>
+    <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../lib/vamonos.js"></script>
 
-    <body>
-        <div id="pseudocode" class="container" title="InsertionSort(A):">
-            for j = 2 to A.length           
-                key = A[j]
-                i = j - 1
-                // DUDE THIS IS CRAZY GIVE ME A PIZZA
-                while i &gt; 0 and A[i] &gt; key
-                    A[i + 1]  = A[i]                
-                    i = i - 1
-                A[i + 1] = key
-        </div>
-    </body>
+</head><body>
+    <div id="pseudocode" class="container" title="InsertionSort(A):">
+        for j = 2 to A.length           
+            key = A[j]
+            i = j - 1
+            // DUDE THIS IS CRAZY GIVE ME A PIZZA
+            while i &gt; 0 and A[i] &gt; key
+                A[i + 1]  = A[i]                
+                i = i - 1
+            A[i + 1] = key
+    </div>
+
+</body>
     <script>
         p = new Vamonos.Interfacers.Pseudocode({
             container: "pseudocode",
