@@ -20,7 +20,11 @@ class Pseudocode extends Interfacer
 
     render: (frame, type) ->
 
-        # change highlighted line to frames line number
+        @$tbl.find("tr").removeClass("pseudocode-active")
+
+        # change highlighted line to frame's line number
+        @$tbl.find("tr[vamonos-linenumber=#{ frame._lineNumber }]")
+             .addClass("pseudocode-active") 
 
             
 
@@ -34,10 +38,10 @@ class Pseudocode extends Interfacer
         html_lines = $container.html().split(/\r\n|\r|\n/).filter((l) -> l.match /\S/)
 
         # create table
-        $tbl = $("<table>", {class: "pseudocode"})
+        @$tbl = $("<table>", {class: "pseudocode"})
 
         # create title
-        $tbl.append(
+        @$tbl.append(
             $("<tr>", {class: "pseudocode-header"}).append(
                 $("<td>", {class: "pseudocode-title", colspan: 3, text: title})
             )
@@ -62,15 +66,15 @@ class Pseudocode extends Interfacer
             indent_num = Math.floor((line.match(/^\s*/)[0].length - min) / 4 )
             indent = ("<span class=pseudocode-indent></span>" for [] in length:indent_num).join("")
 
-            $tbl.append(
-                $("<tr>", {class: "pseudocode-line", "vamanos-linenumber": lineNumber}).append(
+            @$tbl.append(
+                $("<tr>", {class: "pseudocode-line", "vamonos-linenumber": lineNumber}).append(
                     $("<td>", {class: "pseudocode-gutter"}),
                     $("<td>", {class: "pseudocode-line-number", text: lineNumber}),
                     $("<td>", {class: className, html: (indent + line) }),
                 )
             )
             
-        $container.html($tbl)
+        $container.html(@$tbl)
 
 
 Common.VamonosExport { Interfacers: { Pseudocode } }
