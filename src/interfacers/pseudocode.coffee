@@ -63,7 +63,7 @@ class Pseudocode extends Interfacer
             indent = ("<span class=pseudocode-indent></span>" for [] in length:indent_num).join("")
 
             $tbl.append(
-                $("<tr>", {class: "pseudocode-line"}).append(
+                $("<tr>", {class: "pseudocode-line", "vamanos-linenumber": lineNumber}).append(
                     $("<td>", {class: "pseudocode-gutter"}),
                     $("<td>", {class: "pseudocode-line-number", text: lineNumber}),
                     $("<td>", {class: className, html: (indent + line) }),
