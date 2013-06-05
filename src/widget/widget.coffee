@@ -1,4 +1,4 @@
-class Interfacer
+class Widget
 
     constructor: ->
 

@@ -1,7 +1,7 @@
 #_require ../common.coffee
-#_require ./interfacer.coffee
+#_require ./widget.coffee
 
-class VArray extends Interfacer
+class VArray extends Widget
 
     constructor: ({container, @defaultArray, @varName, ignoreIndexZero,
                     showChanges, @cssRules, @showIndices}) ->
@@ -249,6 +249,6 @@ class VArray extends Interfacer
         # "refresh" each DOM element so that CSS transitions can restart
         $col.each( -> $(this).replaceWith( $(this).clone() ) )
         
-Common.VamonosExport { Interfacers: { Array: VArray } }
+Common.VamonosExport { Widget: { Array: VArray } }
 
     

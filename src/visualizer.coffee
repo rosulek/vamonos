@@ -10,19 +10,19 @@
 
 class Visualizer
 
-    constructor: ({varNames, interfacers, @controls, @algorithm}) ->
+    constructor: ({varNames, widgets, @controls, @algorithm}) ->
         @active             = no
         @currentFrameNumber = 0
 
         @varNames           = Common.arrayify(varNames)
-        @interfacers        = Common.arrayify(interfacers)
+        @widgets            = Common.arrayify(widgets)
 
         # create the vars object
         @vars = {}
         @vars[v] = undefined for v in @varNames
 
-        # pass a reference to the vars object to each interfacer
-        ui.setup(@vars) for ui in @interfacers
+        # pass a reference to the vars object to each widget
+        ui.setup(@vars) for ui in @widgets
 
 
     ###
@@ -34,7 +34,7 @@ class Visualizer
 
 
     ###
-    #   Frame controls - move frame and send message to interfacers
+    #   Frame controls - move frame and send message to widgets
     ###
     nextFrame: ->
         return if @currentFrameNumber >= @frames.length
@@ -56,7 +56,7 @@ class Visualizer
     #   Visualizer.generate()
     #
     #   Initializes the frame array, runs the algorithm, and activates
-    #   interfacers.
+    #   widgets.
     ###
     generate: ->
         @clear() if @active
@@ -87,26 +87,26 @@ class Visualizer
 
 
     ###
-    #   Interfacer controls - send a message to all interfacers
+    #   Interfacer controls - send a message to all widgets
     ###
     activate: -> 
         return if @active
         @active = yes
-        for ui in @interfacers 
+        for ui in @widgets 
             ui.setMode("active") 
 
     showFrame: (transition) ->
-        for ui in @interfacers
+        for ui in @widgets
             ui.render(@currentFrame(), transition) 
 
     deactivate: ->
         return unless @active
         @active = no
-        for ui in @interfacers
+        for ui in @widgets
             ui.changeMode("edit") 
 
     clear: ->
-        for ui in @interfacers
+        for ui in @widgets
             ui.clear() 
 
 

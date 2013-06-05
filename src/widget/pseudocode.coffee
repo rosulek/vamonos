@@ -1,7 +1,7 @@
 #_require ../common.coffee
-#_require ./interfacer.coffee
+#_require ./widget.coffee
 
-class Pseudocode extends Interfacer
+class Pseudocode extends Widget
 
     keywords: "for while if else elseif elsif elif begin end then repeat until
                to downto by return error throw and or"
@@ -86,4 +86,4 @@ class Pseudocode extends Interfacer
         $container.html(@$tbl)
 
 
-Common.VamonosExport { Interfacers: { Pseudocode } }
+Common.VamonosExport { Widget: { Pseudocode } }

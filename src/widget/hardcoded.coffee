@@ -1,7 +1,7 @@
-#_require ./interfacer.coffee
+#_require ./widget.coffee
 #_require ../common.coffee
 
-class Hardcoded extends Interfacer
+class Hardcoded extends Widget
 
     constructor: (@obj) ->
         
@@ -9,4 +9,4 @@ class Hardcoded extends Interfacer
         return unless mode_str is 'input'
         @vars[name] = value for name, value of @obj
 
-Common.VamonosExport { Interfacers: { Hardcoded } }
+Common.VamonosExport { Widget: { Hardcoded } }
