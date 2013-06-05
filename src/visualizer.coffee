@@ -10,9 +10,10 @@
 
 class Visualizer
 
-    constructor: ({widgets, @algorithm}) ->
+    constructor: ({widgets, @algorithm, @maxFrames}) ->
         @currentFrameNumber = 0
         @widgets            = Common.arrayify(widgets)
+        @maxFrames         ?= 250
 
         # create the stash object
         @stash = { _breakpoints: [] }
@@ -30,12 +31,15 @@ class Visualizer
     #   widgets.
     ###
     generate: ->
+        @activate()
         @frames = []
         @currentFrameNumber = 0
-        @algorithm(this)
+        try
+            @algorithm(this)
+        catch error
+            alert("Too many frames. Are you sure you don't have an infinite loop?")
         @currentFrameNumber = 0
         f._numFrames = @frames.length for f in @frames
-        @activate()
         @nextFrame()
         
 
@@ -51,6 +55,8 @@ class Visualizer
     ###
     line: (n) ->
         return unless n in @stash._breakpoints
+        throw "too many frames" if @currentFrameNumber >= @maxFrames
+
         newFrame              = Common.clone(@stash)
         newFrame._lineNumber  = n
         newFrame._frameNumber = ++@currentFrameNumber

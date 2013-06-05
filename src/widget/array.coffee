@@ -72,8 +72,8 @@ class VArray extends Widget
 
         # apply the "changed" class after applying the other css rules
         showChange = type in @showChanges
-        for i,v of frameArray
-            @setCellRaw(i, v, showChange)
+        for i in [@firstIndex...frameArray.length]
+            @setCellRaw(i, frameArray[i], showChange)
 
         indices = {}
         for indexName in @showIndices
@@ -234,7 +234,8 @@ class VArray extends Widget
 
         oldhtml = $cell.html()
 
-        # first index might be null, but we still have to "display" it
+        # normally, there are no null elements in @theArray. the exception
+        # is the first cell, and we still have to "display" it
         newhtml = if @theArray[index]? \
                     then "" + @rawToTxt( @theArray[index] ) \
                     else ""
