@@ -14,15 +14,12 @@ class Pseudocode extends Widget
         
     # if user breakpoints is set enable/disable clicking in the gutter
     # to the set breakpoints
-    changeMode: (mode_str) ->
+    setMode: (mode_str) ->
         return unless mode_str is 'input'
-        @vars[name] = value for name, value of @obj
+        @stash[name] = value for name, value of @obj
 
-        #  clear highlighted line
-        
-    setup: (args...) ->
-        super(args)
-        @vars._breakpoints = @breakpoints
+    setup: (@stash) ->
+        @stash._breakpoints = @breakpoints
 
     render: (frame, type) ->
 
