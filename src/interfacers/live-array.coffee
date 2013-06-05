@@ -10,8 +10,8 @@ class LiveArray extends Interfacer
         @editIndex  = null
         @firstIndex = if ignoreIndexZero then 1 else 0
 
-        showChanges ?= ["next"]
-        @showChanges = Common.arrayify(showChanges)
+        # TODO check that this works
+        @showChanges = Common.arrayify(showChanges ? "next")
 
         @$arrayTbl = $("<table>", {class: "array"}).append( 
             $("<tr>", {class: "array-indices"}),
