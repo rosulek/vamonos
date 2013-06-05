@@ -36,7 +36,7 @@ class Common
     #
     #   exports names to the global Vamonos namespace
     ###
-    @vamonos_export: (obj) ->
+    @VamonosExport: (obj) ->
         # node uses exports as the module namespace. check to see if it's
         # there. otherwise, use 'this' - the browser window.
         root = exports ? window
@@ -62,13 +62,12 @@ class Common
                 ret[name] = val
         ret
 
-
     ###
     #   Common.clone(obj)
     #
-    #   Deep clones an object and returns it.
+    #   Clones an object deeply and returns it.
     #
-    #   Inline javascript.
+    #   Inline javascript (sorry!)
     ###
     `Common.clone = function (src) {
         function mixin(dest, source, copyFunc) {
@@ -125,3 +124,29 @@ class Common
 
     };`
 
+    ###
+    #   Common.addTableRow(jQtable)
+    #   
+    #   Appends a new row to a jquery table.
+    #
+    #   Inline javascript (sorry!)
+    ###
+    `Common.addTableRow = function (jQtable){
+        jQtable.each(function(){
+            var $table = $(this);
+            // Number of td's in the last table row
+            var n = $('tr:last td', this).length;
+            var tds = '<tr>';
+            for(var i = 0; i < n; i++){
+                tds += '<td>&nbsp;</td>';
+            }
+            tds += '</tr>';
+            if($('tbody', this).length > 0){
+                $('tbody', this).append(tds);
+            }else {
+                $(this).append(tds);
+            }
+        });
+    };`
+
+Common.VamonosExport { Common }

@@ -1,7 +1,7 @@
-#_require ./generic.coffee
+#_require ./interfacer.coffee
 #_require ../common.coffee
 
-class Hardcoded extends GenericInterfacer
+class Hardcoded extends Interfacer
 
     constructor: (@obj) ->
         
@@ -9,4 +9,4 @@ class Hardcoded extends GenericInterfacer
         return unless mode_str is 'input'
         @vars[name] = value for name, value of @obj
 
-Common.vamonos_export { Interfacers: { Hardcoded } }
+Common.VamonosExport { Interfacers: { Hardcoded } }

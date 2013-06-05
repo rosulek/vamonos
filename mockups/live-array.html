@@ -1,0 +1,94 @@
+<html><head>
+    <title>Vamonos mockups</title>
+    <link rel="stylesheet" type="text/css" href="../src/css/vamonos-default.css">
+    <script type="text/javascript" src="../deps/jquery.min.js"></script>
+    <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="live-array.js"></script>
+    <style type="text/css">
+        .container {
+            display: inline-block;
+            vertical-align: middle;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid black;
+            -moz-box-shadow: 5px 5px 5px #ccc;
+            -webkit-box-shadow: 5px 5px 5px #ccc;
+            box-shadow: 5px 5px 5px #ccc;
+        }
+        h1 { margin: 32px 0 0 0; }
+        h1:first-child { margin: 0px; }
+
+        .inline-input {
+            display: inline;
+            border: 0px;
+            background: none;
+            font: inherit;
+            padding: 0px;
+            margin: 0px;
+            text-align: center;
+        }
+        table.array tr.array-cells td.editing,
+        .indices-inside table.array tr.array-indices td.editing {
+            background: #9f9;
+        }
+        .inline-input:focus {
+            outline: none;
+        }
+    </style>
+
+</head>
+<body>
+
+    <h1>Live-editable array input</h1>
+
+    <div class="container">
+
+        <table border=0>
+            <tr><td>mode</td><td><select id="mode"><option>edit</option><option>display</option></select></td></tr>
+            <tr><td colspan=2><hr></td></tr>
+            <tr><td>render</td><td>
+                <select id="type"><option>next</option><option>prev</option><option>scroll</option><option>init</option></select>
+                <button id="render">go</button>
+            </td></tr>
+            <tr><td>A</td><td><input style="width: 80px" id="A" value="3,1,4,1,5"></td></tr>
+            <tr><td>i</td><td><input style="width: 20px" id="i"></td></tr>
+            <tr><td>j</td><td><input style="width: 20px" id="j"></td></tr>
+        </table>
+    </div>
+
+    <div id="myarray" class="container"></div>
+
+
+
+
+    <script type="text/javascript">
+        var stash = {}
+        var x = new LiveArrayMockup({ 
+            varName: "A",
+            container: $("#myarray"),
+            defaultArray: [3,1,4,1,5],
+            cssRules: [
+                [">", "j", "shaded"]
+            ],
+            showIndices: ["i", "j"],
+            ignoreIndexZero: false              
+        });
+
+        x.setup(stash);
+        x.setMode("edit");
+
+        $("#render").on("click", function() {
+            x.render({
+                A: $("#A").val().split(/,/),
+                i: $("#i").val(),
+                j: $("#j").val(),
+            }, $("#type").val() );
+        });
+
+        $("#mode").on("change", function() {
+            x.setMode( this.value );
+        });
+    </script>
+
+
+</head></html>
