@@ -60,8 +60,10 @@ class Visualizer
     ###
     generate: ->
         @clear() if @active
-        @frames = []
+        @frames             = []
+        @currentFrameNumber = 0
         @algorithm(this)
+        f._numFrames = @frames.length for f in @frames
         @activate()
         @showFrame("init")
         
@@ -78,8 +80,9 @@ class Visualizer
     ###
     line: (n) ->
         return unless n in @vars._breakpoints
-        newFrame = Common.clone(@vars)
-        newFrame._lineNumber = n
+        newFrame              = Common.clone(@vars)
+        newFrame._lineNumber  = n
+        newFrame._frameNumber = ++@currentFrameNumber
         frames.push(newFrame)
 
 
@@ -100,7 +103,7 @@ class Visualizer
         return unless @active
         @active = no
         for ui in @interfacers
-            ui.changeMode("inactive") 
+            ui.changeMode("edit") 
 
     clear: ->
         for ui in @interfacers
