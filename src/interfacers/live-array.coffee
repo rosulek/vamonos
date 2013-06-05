@@ -4,15 +4,14 @@
 class LiveArray extends Interfacer
 
     constructor: ({container, @defaultArray, @varName, ignoreIndexZero,
-                    @showChanges, @cssRules, @showIndices}) ->
+                    showChanges, @cssRules, @showIndices}) ->
         @$container = Common.jqueryify(container)
         @$editBox   = null
         @editIndex  = null
         @firstIndex = if ignoreIndexZero then 1 else 0
 
-        # TODO arrayify @showChanges
-
-        @showChanges ?= ["next"]
+        showChanges ?= ["next"]
+        @showChanges = Common.arrayify(showChanges)
 
         @$arrayTbl = $("<table>", {class: "array"}).append( 
             $("<tr>", {class: "array-indices"}),
