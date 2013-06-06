@@ -4,7 +4,7 @@
 
 class Controls
 
-    constructor: ({container, @showWhileSliding, noStopGoButton, autoPlay}) ->
+    constructor: ({container, showWhileSliding, noStopGoButton, autoPlay}) ->
         @$container = Common.jqueryify(container)
         @$buttons    = $("<div>", {class: "controls-buttons"});
 
@@ -18,7 +18,8 @@ class Controls
 
         @slider = new Vamonos.Widget.ControlSlider({
             container: @$container,
-            frameLabelFirst: yes
+            frameLabelFirst: yes,
+            showWhileSliding: showWhileSliding
         })
 
 
