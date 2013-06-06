@@ -4,7 +4,24 @@
 #
 #   src/visualizer.coffee :: exports Vamonos.Visualizer
 #
-#   Sets up control and maintains state for the visualization.
+#   Controls widgets, runs algorithm, and maintains state for the visualization.
+#
+#   Constructor Arguments:
+#
+#       widgets:        An array of Vamanos.Widget objects. These set up the
+#                       stash and breakpoints, display variables and control
+#                       the visualizer.
+#
+#       algorithm:      The algorithm itself, coded as a javascript function
+#                       that takes a visualizer as input and calls the
+#                       visualizer's line(n) method at places corresponding
+#                       to pseudocode lines.
+#
+#       maxFrames:      The maximum number of frames that the line method will
+#                       generate before throwing an error. Default is 250.
+#
+#       autoStart:      Should the visualizer start in display mode? Defaults
+#                       to false.
 #
 ###
 
@@ -14,6 +31,7 @@ class Visualizer
         @currentFrameNumber = 0
         @widgets            = Common.arrayify(widgets)
         @maxFrames         ?= 250
+        autoStart          ?= false
 
         # create the stash object
         @stash = { _breakpoints: [] }
@@ -21,7 +39,7 @@ class Visualizer
         # pass a reference to the stash object to each widget
         ui.setup(@stash, this) for ui in @widgets
 
-        @deactivate()
+        @editMode()
         @generate() if autoStart
 
 
@@ -32,7 +50,7 @@ class Visualizer
     #   widgets.
     ###
     generate: ->
-        @activate()
+        @editMode()
         @frames = []
         @currentFrameNumber = 0
 
@@ -42,13 +60,15 @@ class Visualizer
             @algorithm(this)
             @line(0)
         catch err
-            alert("Too many frames. You may have an infinite loop. Visualization has been truncated to the first #{@maxFrames} frames.")
-        
+            alert("Too many frames. You may have an infinite loop. " +
+                  "Visualization has been truncated to the first " +
+                  "#{@maxFrames} frames.")
+
 
         @currentFrameNumber = 0
         f._numFrames = @frames.length for f in @frames
         @nextFrame()
-        
+
 
     ###
     #   Visualizer.line(number)
@@ -73,11 +93,25 @@ class Visualizer
         newFrame._frameNumber = ++@currentFrameNumber
         @frames.push(newFrame)
 
+    ###
+    #   Mode controls - tell all widgets to change modes.
+    ###
+    displayMode: ->
+        return if @mode is "display"
+        for ui in @widgets
+            ui.setMode("display")
+        @mode = "display"
+
+    editMode: ->
+        return if @mode is "edit"
+        for ui in @widgets
+            ui.setMode("edit")
+        @mode = "edit"
 
     ###
-    #   Frame controls - move frame and send message to widgets
-    #  
-    #   frame numbers are 1-indexed
+    #   Frame controls - move frame and send message to widgets.
+    #
+    #   Frame numbers are 1-indexed.
     ###
     nextFrame: ->
         @goToFrame(@currentFrameNumber + 1, "next")
@@ -95,21 +129,5 @@ class Visualizer
             ui.render(@frames[@currentFrameNumber-1], type)
 
 
-    ###
-    #   Interfacer controls - send a message to all widgets
-    ###
-    activate: -> 
-        return if @mode is "display"
-        for ui in @widgets 
-            ui.setMode("display") 
-        @mode = "display"
 
-    deactivate: ->
-        return if @mode is "edit"
-        for ui in @widgets
-            ui.setMode("edit") 
-        @mode = "edit"
-
-
-# Export the Visualizer object to the global namespace
 Common.VamonosExport { Visualizer }
