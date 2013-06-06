@@ -22,21 +22,8 @@ class Controls
             showWhileSliding: showWhileSliding
         })
 
-
-    setup: (stash, target) ->
-        @buttons.setup(stash, target)
-        @slider.setup(stash, target)
-
-    setMode: (mode) ->
-        @buttons.setMode(mode)
-        @slider.setMode(mode)
-
-    render: (frame, type) ->
-        @buttons.render(frame, type)
-        @slider.render(frame, type)
-
-    clear: () ->
-        @buttons.clear()
-        @slider.clear()
+    event: (event, options...) ->
+        @buttons.event(event, options...)
+        @slider.event(event, options...)
 
 Common.VamonosExport { Widget: { Controls } }

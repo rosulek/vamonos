@@ -5,14 +5,11 @@ class ModeLine
     constructor: ({container, @editModeText, @displayModeText}) ->
         @$container = Common.jqueryify(container)
 
-    setup: ->
-        
-    setMode: (mode_str) -> switch mode_str
-        when "edit"
+    event: (event, options...) -> switch event
+        when "editStart"
             @$container.html(@editModeText)
-        when "display"
+        when "displayStart"
             @$container.html(@displayModeText)
         
-    render: ->
 
 Common.VamonosExport { Widget: { ModeLine } }

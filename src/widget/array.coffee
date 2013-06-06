@@ -22,7 +22,7 @@ class VArray
     event: (event, options...) -> switch event
         when "setup"
             @stash = options[0]
-            @theArray = stash[@varName] = []
+            @theArray = @stash[@varName] = []
 
             @stash[v] = null for [_, v, _] in @cssRules
             @stash[v] = null for v in @showIndices            
@@ -47,10 +47,6 @@ class VArray
             # shallow copy of @theArray
             @$arrayTbl.off("click")
             @defaultArray = @theArray.slice(0)
-
-        when "displayStart"
-
-        when "displayStop"
 
         when "render"
             @render(options...)

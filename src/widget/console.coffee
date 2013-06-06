@@ -2,13 +2,11 @@
 
 class Console
 
-    setup: ->
-        console.log("widget setup")
-        
-    setMode: (mode_str) ->
-        console.log("widget setMode: " + mode_str)
+    event: (event, options...) ->
+        if options.length > 0 
+            console.log "widget event '#{event}', options:", options 
+        else
+            console.log "widget event '#{event}'"
 
-    render: (frame, type) ->
-        console.log("widget render, type=#{type}, frame: ", frame)
 
 Common.VamonosExport { Widget: { Console } }

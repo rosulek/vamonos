@@ -78,8 +78,8 @@ class Visualizer
 
 
     tellWidgets: (event, options...) ->
-        for ui in @widgets
-            ui.event(event, options...)
+        for widget in @widgets
+            widget.event(event, options...)
 
     ###
     #   Visualizer.runAlgorithm()
