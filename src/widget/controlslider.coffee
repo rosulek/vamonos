@@ -41,10 +41,12 @@ class ControlSlider
     setMode: (mode) -> switch mode
         when "edit"
             @$slider.slider("option", "min", 0)
-            @$container.addClass("controls-disabled")
+            @$slider.addClass("controls-disabled")
+            @$frameLabel.addClass("controls-disabled")
             @writeLabel("-", "-")
         when "display"
-            @$container.removeClass("controls-disabled")
+            @$slider.removeClass("controls-disabled")
+            @$frameLabel.removeClass("controls-disabled")
 
 
     render: (frame, type) ->

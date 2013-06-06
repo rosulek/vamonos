@@ -17,33 +17,45 @@
 
 .background-highlight-pulse () {
     -webkit-animation: background-highlight-pulse 0.6s ease-in-out;
+    -moz-animation: background-highlight-pulse 0.6s ease-in-out;
+    -o-animation: background-highlight-pulse 0.6s ease-in-out;
     animation: background-highlight-pulse 0.6s ease-in-out;
 }
 
 .no-animation () {
     -webkit-animation: none;
+    -moz-animation: none;
+    -o-animation: none;
     animation: none;
 }
 
-.ease-bg () {
-    -webkit-transition: background-color 0.2s ease-in-out;
-    -moz-transition: background-color 0.2s ease-in-out;
-    -o-transition: background-color 0.2s ease-in-out;
-    transition: background-color 0.2s ease-in-out;
+
+.ease(@properties) {
+    transition-property: @properties;
+    -webkit-transition-property: @properties;
+    -moz-transition-property: @properties;
+    -o-transition-property: @properties;
+
+    transition-duration: 0.2s;
+    transition-timing-function: ease-in-out;
+    -webkit-transition-duration: 0.2s;
+    -webkit-transition-timing-function: ease-in-out;
+    -moz-transition-duration: 0.2s;
+    -moz-transition-timing-function: ease-in-out;
+    -o-transition-duration: 0.2s;
+    -o-transition-timing-function: ease-in-out;
 }
 
-.ease-all () {
-    -webkit-transition: all 0.2s ease-in-out;
-    -moz-transition: all 0.2s ease-in-out;
-    -o-transition: all 0.2s ease-in-out;
-    transition: all 0.2s ease-in-out;
+/////////////
+
+.box-shadow(@offset, @grow, @color) {
+    -webkit-box-shadow: @offset @offset @grow @color;
+    -moz-box-shadow: @offset @offset @grow @color;
+    box-shadow: @offset @offset @grow @color;
 }
 
-
-.box-shadow(@color) {
-    -webkit-box-shadow: 5px 5px 10px @color;
-    -moz-box-shadow: 5px 5px 10px @color;
-    box-shadow: 5px 5px 10px @color;
+.default-box-shadow(@color) {
+    .box-shadow(5px, 10px, @color);
 }
 
 .border-radius(@amt) {
@@ -98,7 +110,7 @@ table.array {
     .indices-inside & tr.array-indices td, tr.array-cells td {
         border: 1px solid @border-color;
         background-color: @normal-item-bg-color;
-        .ease-bg();
+        .ease(background-color);
 
         &.shaded {
             background-color: @dark-shaded-color;
@@ -163,7 +175,7 @@ table.pseudocode {
     }
 
     td.pseudocode-line-number, td.pseudocode-gutter, td.pseudocode-text, td.pseudocode-comment {
-        .ease-bg;   // ease highlighting of active line
+        .ease(background-color);   // ease highlighting of active line
     }
 
     td.pseudocode-line-number {
@@ -278,7 +290,7 @@ table.pseudocode {
         cursor: move;
     }
     &.ui-draggable-dragging, &.vertex-drag-onto {
-        .box-shadow(@shadow-color);
+        .default-box-shadow(@shadow-color);
     }
     &.vertex-drag-onto {
         cursor: default;
@@ -286,7 +298,7 @@ table.pseudocode {
 
     &.vertex-deletable:hover {
         background: @alert-color;
-        .box-shadow(@shadow-color);
+        .default-box-shadow(@shadow-color);
         cursor: crosshair;
     }
 
@@ -404,7 +416,7 @@ table.pseudocode {
     width: 250px;
     margin: 12px auto 12px auto;
 
-    .ease-all();
+    .ease(width, background-color, border-color;);
 
     .ui-slider-handle {
         position: absolute;
@@ -414,26 +426,28 @@ table.pseudocode {
         background: @med-shaded-color;
         .border-radius(3px);
 
-        -webkit-box-shadow: 2px 2px 2px @med-shaded-color;
-        -moz-box-shadow: 2px 2px 2px @med-shaded-color;
-        box-shadow: 2px 2px 2px @med-shaded-color;
+        .box-shadow(2px, 2px, @med-shaded-color);
 
         width: 8px;
         height: 16px;
         top: -5px;
         margin-left:-5px; 
+
+        .ease(background-color, border-color;);
     }
 
     .ui-slider-handle:focus {
         outline: none;
     }
 
-    .controls-disabled & {
-        width: 0px;
+    &.controls-disabled {
         border-color: transparent;
+        background-color: transparent;
 
         .ui-slider-handle {
-            display: none;
+            .box-shadow(0px, 0px, transparent);
+            border-color: transparent;
+            background-color: transparent;
         }
     }
 }
@@ -473,7 +487,7 @@ table.matrix {
     }
     td {
         background-color: @normal-item-bg-color; 
-        .ease-bg();       
+        .ease(background-color);
 
         &.changed {
             .background-highlight-pulse();
