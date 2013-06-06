@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use File::Basename;
 
-@ARGV or die help();
+@ARGV == 1 or die usage();
 
 my ($file, $dir) = fileparse($ARGV[0]);
 
@@ -24,3 +24,13 @@ $data =~ s{<link rel="stylesheet" href="(.+?)">}
           { qq[<style type="text/css">] . slurp($1) . qq[</style>] }ge;
 
 print $data;
+
+sub usage {
+    <<END;
+usage:
+    $0: TARGET
+
+    Fetches javascript and css files from TARGET html file.
+    Adds them to the html file and prints the whole thing to stdout.
+END
+}
