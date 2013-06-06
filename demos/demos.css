@@ -9,6 +9,14 @@
     box-shadow: 5px 5px 5px #ccc;
 }
 
+.information {
+    width: 500px;
+    padding: 10px;
+    background: #FCFBBB;
+    border: 1px solid #ecefab;
+    margin: 10px auto 10px auto;
+}
+
 .vamonos {
     text-align: center;
 }
