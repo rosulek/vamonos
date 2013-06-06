@@ -1,9 +1,26 @@
 #_require ../common.coffee
 
+###
+#   Vamonos.Widget.Pseudocode({ container, editableBreakpoints, breakpoints })
+#
+#   Widget object: 
+#       Formats pseudocode nicely with syntax highlighting.
+#       Shows current line in visualization.
+#       Allows custom setting of breakpoints.
+#   
+#   Arguments:
+#       container:              the id of the DOM element target
+#
+#       breakpoints:            initial array of line numbers to break at
+#                               (every line by default)
+#
+#       editableBreakpoints:    allow users to modify breakpoints?
+#                               (true by default)
+###
 class Pseudocode
 
-    constructor: ({container, @userBreakpoints, @breakpoints}) ->
-        @userBreakpoints ?= true
+    constructor: ({container, @editableBreakpoints, @breakpoints}) ->
+        @editableBreakpoints ?= true
 
         # sets @$tbl as the jquery selector for the pseudocode table
         nLines = @formatContainer(Common.jqueryify(container))
@@ -19,11 +36,11 @@ class Pseudocode
     setMode: (mode) ->
         if mode is 'edit'
             @$tbl.find("tr.pseudocode-active").removeClass("pseudocode-active")
-            @enableBreakpointSelection() if @userBreakpoints
+            @enableBreakpointSelection() if @editableBreakpoints
 
         else if mode is 'display'
             @showBreakpoints()
-            @disableBreakpointSelection() if @userBreakpoints
+            @disableBreakpointSelection() if @editableBreakpoints
 
     render: (frame, type) ->
         @$tbl.find("tr").removeClass("pseudocode-active")
