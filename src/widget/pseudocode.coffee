@@ -1,21 +1,32 @@
 #_require ../common.coffee
-#_require ./widget.coffee
 
-class Pseudocode extends Widget
+###
+#   Vamonos.Widget.Pseudocode({ container, editableBreakpoints, breakpoints })
+#
+#   Widget object: 
+#       Formats pseudocode nicely with syntax highlighting.
+#       Shows current line in visualization.
+#       Allows custom setting of breakpoints.
+#   
+#   Arguments:
+#       container:              the id of the DOM element target
+#
+#       breakpoints:            initial array of line numbers to break at
+#                               (every line by default)
+#
+#       editableBreakpoints:    allow users to modify breakpoints?
+#                               (true by default)
+###
+class Pseudocode
 
-    keywords: "for while if else elseif elsif elif begin end then repeat until
-               to downto by return error throw and or"
-                   .split(/\s+/)
-                   .sort((a,b) -> b.length - a.length)
-                   .join("|")
+    constructor: ({container, @editableBreakpoints, @breakpoints}) ->
+        @editableBreakpoints ?= true
 
-
-    constructor: ({container, @userBreakpoints, @breakpoints}) ->
-        @userBreakpoints ?= true
-        # sets @$tbl as the jquery selector for the pseudocode object
+        # sets @$tbl as the jquery selector for the pseudocode table
         nLines = @formatContainer(Common.jqueryify(container))
-        @breakpoints ?= [1..nLines]
 
+        # if breakpoints are not defined, set one for every line
+        @breakpoints ?= [1..nLines]
 
     setup: (@stash) ->
         @stash._breakpoints = @breakpoints
@@ -25,98 +36,117 @@ class Pseudocode extends Widget
     setMode: (mode) ->
         if mode is 'edit'
             @$tbl.find("tr.pseudocode-active").removeClass("pseudocode-active")
-            @enableBreakpointSelection() if @userBreakpoints
+            @enableBreakpointSelection() if @editableBreakpoints
 
         else if mode is 'display'
             @showBreakpoints()
-            @disableBreakpointSelection() if @userBreakpoints
-
-    disableBreakpointSelection: ->
-        @$tbl.find("td.pseudocode-gutter")
-             .off("click")
-
-    enableBreakpointSelection: ->
-        @$tbl.find("td.pseudocode-gutter")
-             .on("click", (event) =>
-                 @breakPointToggle(
-                     $(event.target).closest("tr").attr("vamonos-linenumber"),
-                     $(event.target)))
-
-    breakPointToggle: (n, $e) ->
-        n = parseInt(n, 10)
-        if n in @stash._breakpoints
-            @removeBreakpoint(n)
-
-        else
-            @ensureBreakpoint(n)
-
-
-
-    ensureBreakpoint: (n) ->
-        return if n in @stash._breakpoints
-        @getNthPseudocodeLine(n)
-            .find("td.pseudocode-gutter")
-            .append($("<div>", {class: "pseudocode-breakpoint"}))
-        @stash._breakpoints.push(n)
-
-    removeBreakpoint: (n) ->
-        return unless n in @stash._breakpoints
-        @getNthPseudocodeLine(n)
-            .find("td.pseudocode-gutter")
-            .find("div.pseudocode-breakpoint")
-            .remove()
-        @stash._breakpoints.splice(@stash._breakpoints.indexOf(n), 1)
-
-    showBreakpoints: ->
-        @$tbl.find("td.pseudocode-gutter div.pseudocode-breakpoint").remove()
-        for n in @breakpoints
-            @getNthPseudocodeLine(n)
-                .find("td.pseudocode-gutter")
-                .append($("<div>", {class: "pseudocode-breakpoint"}))
-
-    getNthPseudocodeLine: (n) ->
-        @$tbl.find("tr[vamonos-linenumber=#{ n }]")
+            @disableBreakpointSelection() if @editableBreakpoints
 
     render: (frame, type) ->
-
         @$tbl.find("tr").removeClass("pseudocode-active")
-
-        # change highlighted line to frame's line number
         @$tbl.find("tr[vamonos-linenumber=#{ frame._lineNumber }]")
              .addClass("pseudocode-active")
 
 
+    ###
+    #   Widget.Pseudocode.keywords
+    #
+    #   List of special words to be bold in the formatted pseudocode.
+    ###
+    keywords: "for while if else elseif elsif elif begin end then repeat until
+               to downto by return error throw and or"
+                   .split(/\s+/)
+                   .sort((a,b) -> b.length - a.length)
+
+    ###
+    #   Widget.Pseudocode.enableBreakpointSelection()
+    #
+    #   Sets a callback from a click event in all pseudocode gutters to the
+    #   toggleBreakpoint method.
+    ###
+    enableBreakpointSelection: ->
+        @$tbl.find("td.pseudocode-gutter").on("click", (event) =>
+            @toggleBreakpoint(
+                $(event.target).closest("tr").attr("vamonos-linenumber")))
+
+    ###
+    #   Widget.Pseudocode.disableBreakpointSelection()
+    #
+    #   Removes the click event callback from all pseudocode gutters.
+    ###
+    disableBreakpointSelection: ->
+        @$tbl.find("td.pseudocode-gutter")
+             .off("click")
+
+    ###
+    #   Widget.Pseudocode.toggleBreakpoint( n )
+    #
+    #   Toggles the cute dot in the gutter and corresponding breakpoint
+    #   in the stash.
+    ###
+    toggleBreakpoint: (n) ->
+        n = parseInt(n, 10)
+        gutter = @getLine(n).find("td.pseudocode-gutter")
+        if n in @stash._breakpoints
+            gutter.append($("<div>", {class: "pseudocode-breakpoint"}))
+            @stash._breakpoints.push(n)
+        else
+            return unless n in @stash._breakpoints
+            gutter.find("div.pseudocode-breakpoint").remove()
+            @stash._breakpoints.splice(@stash._breakpoints.indexOf(n), 1)
+
+    ###
+    #   Widget.Pseudocode.showBreakpoints()
+    #
+    #   Marks the pseudocode gutter corresponding to current breakpoints.
+    ###
+    showBreakpoints: ->
+        @$tbl.find("td.pseudocode-gutter div.pseudocode-breakpoint")
+             .remove()                       # Clear all old breakpoints.
+        for n in @breakpoints
+            @getLine(n)
+                .find("td.pseudocode-gutter")
+                .append($("<div>", {class: "pseudocode-breakpoint"}))
+
+    ###
+    #   Widget.Pseudocode.getLine( n )
+    #
+    #   Returns a jQuery selector of the nth pseudocode line.
+    ###
+    getLine: (n) ->
+        @$tbl.find("tr[vamonos-linenumber=#{ n }]")
+
+    ###
+    #   Widget.Pseudocode.formatContainer( $container )
+    #
+    #   Takes a jquery selector of a pseudocode div element. Cuts it up and
+    #   formats it nicely. Returns the number of pseudocode lines found (not
+    #   counting comments).
+    #
+    #   Creates @$tbl attribute.
+    ###
     formatContainer: ($container) ->
-        #get title, remove title
         title = $container.attr("title")
         $container.removeAttr("title")
+        html_lines = $container.html()
+            .split(/\r\n|\r|\n/)
+            .filter((l) -> l.match /\S/)
 
-        # get html as an array of lines, remove the html from div
-        html_lines = $container.html().split(/\r\n|\r|\n/).filter((l) -> l.match /\S/)
-
-        # create table
+        # Create the table we will be modifying.
+        # Set it as an attribute of this object.
         @$tbl = $("<table>", {class: "pseudocode"})
 
-        # create title
+        # Create title row in pseudocode table.
         @$tbl.append(
             $("<tr>", {class: "pseudocode-header"}).append(
-                $("<td>", {class: "pseudocode-title", colspan: 3, text: title})
-            )
-        )
+                $("<td>", {class: "pseudocode-title", colspan: 3, text: title})))
 
-        # add bold keywords but not to comments
-        pattern    = new RegExp("\\b(#{@keywords})\\b", "g")
-        html_lines = for line in html_lines
-            if line.match /^\s*\/\//
-                line
-            else
-                line.replace(pattern, (s) -> "<b>#{s}</b>")
-
-
+        # Determine the minimum number of leading spaces among pseudocode lines.
         minWhitespace = (line.match(/^\s*/)[0].length for line in html_lines)
                             .reduce((a,b) -> if a < b then a else b)
 
-        # add each line to the table while adding tabs
+        # Add each line to the table while adding formatting.
+        keywordsPattern = new RegExp("\\b(#{@keywords.join("|")})\\b", "gi")
         lineNumber = 1
         for line in html_lines
             [lineNumberStr, className] =
@@ -125,17 +155,24 @@ class Pseudocode extends Widget
                 else
                     [lineNumber++, "pseudocode-text"]
 
-            indent_num = Math.floor((line.match(/^\s*/)[0].length - minWhitespace) / 4 )
-            indent = ("<span class=pseudocode-indent></span>" for [] in length:indent_num).join("")
+            # Make keywords bold on all lines but comments.
+            unless className is "pseudocode-comment"
+                line = line.replace(keywordsPattern, (s) -> "<b>#{s}</b>")
 
+            # The number of indents is the number of spaces beyond the minimum
+            # whitespace divided by 4.
+            numIndents = Math.floor((line.match(/^\s*/)[0].length - minWhitespace) / 4)
+            indents = Array(numIndents+1).join("<span class=pseudocode-indent></span>")
+
+            # Add the formatted pseudocode line to the table we created earlier.
             @$tbl.append(
-                $("<tr>", {class: "pseudocode-line", "vamonos-linenumber": lineNumberStr}).append(
-                    $("<td>", {class: "pseudocode-gutter"}),
-                    $("<td>", {class: "pseudocode-line-number", text: lineNumberStr}),
-                    $("<td>", {class: className, html: (indent + line) }),
-                )
-            )
+                $("<tr>", {class: "pseudocode-line", "vamonos-linenumber": lineNumberStr})
+                    .append(
+                        $("<td>", {class: "pseudocode-gutter"}),
+                        $("<td>", {class: "pseudocode-line-number", text: lineNumberStr}),
+                        $("<td>", {class: className, html: (indents + line) })))
 
+        # Add the table to the DOM.
         $container.html(@$tbl)
         return lineNumber
 

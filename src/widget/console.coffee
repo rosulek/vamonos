@@ -1,7 +1,6 @@
-#_require ./widget.coffee
 #_require ../common.coffee
 
-class Console extends Widget
+class Console
 
     constructor: () ->
 

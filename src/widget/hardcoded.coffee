@@ -1,16 +1,15 @@
-#_require ./widget.coffee
 #_require ../common.coffee
 
-class Hardcoded extends Widget
-
-    constructor: (@obj) ->
+class Hardcoded
+    constructor: ({@breakpoints, @vars}) ->
 
     setup: (@stash) ->
-        
-    setMode: (mode_str) ->
-        return unless mode_str is 'input'
-        @stash[name] = value for name, value of @obj
 
-    render: () ->
+    setMode: (mode) ->
+        if mode is "edit"
+            @stash._breakpoints = @breakpoints
+            @stash[name] = value for name, value of @vars
+
+    render: (frame, type) ->
 
 Common.VamonosExport { Widget: { Hardcoded } }
