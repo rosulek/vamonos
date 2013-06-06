@@ -1,6 +1,6 @@
 #_require ../common.coffee
 
-class Controls
+class Controls extends GenericWidget
 
     constructor: ({container, noStopButton, noSlider, noFrameNumber, @showWhileSliding}) ->
         @$container = Common.jqueryify(container)
@@ -32,21 +32,6 @@ class Controls
             
         @$prevButton.on("click", => @target.prevFrame())
 
-    slideEvent: (event,ui) ->
-        if @showWhileSliding
-            @target.jumpFrame( ui.value )
-        else
-            @writeLabel( ui.value )
-
-    setup: (@stash, @target) ->
-        
-
-    writeLabel: (value) ->
-        value ?= @$slider.slider("option", "value")
-        max    = @$slider.slider("option", "max")
-        @$frameLabel.html( "#{value} / #{max}" )
-        
-
     setMode: (mode_str) ->
         switch mode_str
             when "edit"
@@ -66,6 +51,15 @@ class Controls
         @$slider.slider("option", "value", frame._frameNumber)
         @writeLabel()
 
-    clear: () ->
+    writeLabel: (value) ->
+        value ?= @$slider.slider("option", "value")
+        max    = @$slider.slider("option", "max")
+        @$frameLabel.html( "#{value} / #{max}" )
+
+    slideEvent: (event,ui) ->
+        if @showWhileSliding
+            @target.jumpFrame( ui.value )
+        else
+            @writeLabel( ui.value )
 
 Common.VamonosExport { Widget: { Controls } }

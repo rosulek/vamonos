@@ -1,6 +1,6 @@
 #_require ../common.coffee
 
-class VArray
+class VArray extends GenericWidget
 
     constructor: ({container, @defaultArray, @varName, ignoreIndexZero,
                     showChanges, @cssRules, @showIndices}) ->

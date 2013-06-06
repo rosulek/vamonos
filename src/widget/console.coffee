@@ -1,6 +1,6 @@
 #_require ../common.coffee
 
-class Console
+class Console extends GenericWidget
 
     setup: ->
         console.log("widget setup")
