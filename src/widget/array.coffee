@@ -19,14 +19,15 @@ class VArray
         @$container.append(@$arrayTbl)
 
 
-    setup: (@stash) ->
-        @theArray = stash[@varName] = []
+    event: (event, options...) -> switch event
+        when "setup"
+            @stash = options[0]
+            @theArray = stash[@varName] = []
 
-        @stash[v] = null for [_, v, _] in @cssRules
-        @stash[v] = null for v in @showIndices            
+            @stash[v] = null for [_, v, _] in @cssRules
+            @stash[v] = null for v in @showIndices            
 
-    setMode: (mode) ->
-        if mode is "edit"
+        when "editStart"
             @theArray.length = 0
             @theArray.push(null) if @firstIndex is 1        
 
@@ -42,10 +43,18 @@ class VArray
 
             @$arrayTbl.on("click", "tr.array-cells td", {}, (e) => @tdClick(e) )
         
-        else if mode is "display"
+        when "editStop"
             # shallow copy of @theArray
-            @defaultArray = @theArray.slice(0)
             @$arrayTbl.off("click")
+            @defaultArray = @theArray.slice(0)
+
+        when "displayStart"
+
+        when "displayStop"
+
+        when "render"
+            @render(options...)
+
 
     render: (frame, type) ->
         frameArray = frame[@varName]

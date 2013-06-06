@@ -24,13 +24,13 @@ class ControlButtons
         @$container.append(@$stopGoButton) unless noStopGoButton
         @$container.append(@$prevButton, @$nextButton, @$playPauseButton)
 
-        @$nextButton.on("click", => @target.nextFrame())
-        @$prevButton.on("click", => @target.prevFrame())
+        @$nextButton.on("click", => @visualizer.trigger("nextFrame"))
+        @$prevButton.on("click", => @visualizer.trigger("prevFrame"))
         @$stopGoButton.on("click", =>
             if @mode is "edit"
-                @target.runAlgorithm()
+                @visualizer.trigger("runAlgorithm")
             else if @mode is "display"
-                @target.editMode()
+                @visualizer.trigger("editMode")
         )
         @$playPauseButton.on("click", =>
             if @playing then @pausePlaying() else @startPlaying()
@@ -52,50 +52,48 @@ class ControlButtons
         if @atLastFrame
             @pausePlaying()
         else
-            @target.nextFrame()
+            @visualizer.trigger("nextFrame")
             setTimeout( (=> @timedPlay()), 1000)
                     
-
-    setup: (stash, @target) ->
-
-    setMode: (mode_str) ->
-        switch mode_str
-            when "edit"
-                @$stopGoButton.html(GO)
-                @$prevButton.attr("disabled", "true");
-                @$nextButton.attr("disabled", "true");
-                @$playPauseButton.attr("disabled", "true");
-                @$container.addClass("controls-disabled")
-                @pausePlaying()
-
-            when "display"
-                @$stopGoButton.html(STOP)
-                @$prevButton.removeAttr("disabled");
-                @$nextButton.removeAttr("disabled");
-                @$playPauseButton.removeAttr("disabled");
-                @$container.removeClass("controls-disabled")
-
-                @startPlaying() if @autoPlay
-
-        @mode = mode_str
-
-    render: (frame, type) ->
-        @atLastFrame = (frame._frameNumber is frame._numFrames)
-
-        if @atLastFrame
-            @$nextButton.attr("disabled", "true")
-            @$playPauseButton.attr("disabled", "true")
-            @pausePlaying()
-        else
-            @$nextButton.removeAttr("disabled")
-            @$playPauseButton.removeAttr("disabled")
-
-        if frame._frameNumber is 1
-            @$prevButton.attr("disabled", "true")
-        else
-            @$prevButton.removeAttr("disabled")
+    event: (event, options...) -> switch event
+        when "setup"
+            [stash, @visualizer] = options
         
+        when "editStart"
+            @$stopGoButton.html(GO)
+            @$prevButton.attr("disabled", "true");
+            @$nextButton.attr("disabled", "true");
+            @$playPauseButton.attr("disabled", "true");
+            @$container.addClass("controls-disabled")
+            @pausePlaying()
+            @mode = "edit"
 
-    clear: () ->
+        when "displayStart"
+            @$stopGoButton.html(STOP)
+            @$prevButton.removeAttr("disabled");
+            @$nextButton.removeAttr("disabled");
+            @$playPauseButton.removeAttr("disabled");
+            @$container.removeClass("controls-disabled")
+            @mode = "display"
+            @startPlaying() if @autoPlay
+
+        when "render"
+            [frame, type] = options
+
+            @atLastFrame = (frame._frameNumber is frame._numFrames)
+
+            if @atLastFrame
+                @$nextButton.attr("disabled", "true")
+                @$playPauseButton.attr("disabled", "true")
+                @pausePlaying()
+            else
+                @$nextButton.removeAttr("disabled")
+                @$playPauseButton.removeAttr("disabled")
+
+            if frame._frameNumber is 1
+                @$prevButton.attr("disabled", "true")
+            else
+                @$prevButton.removeAttr("disabled")
+        
 
 Common.VamonosExport { Widget: { ControlButtons } }

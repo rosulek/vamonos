@@ -1,7 +1,5 @@
 #_require ../common.coffee
 
-# TODO: @showWhileSliding not implemented
-
 class ControlSlider
 
     constructor: ({container, @showWhileSliding, frameLabelFirst}) ->
@@ -18,18 +16,36 @@ class ControlSlider
         @$slider.slider({
             min:0, max:0, value:0,
             slide: (event,ui) => @slideEvent(event,ui)
-            stop:  => @visualizer.jumpFrame( @$slider.slider("option", "value") )
+            stop:  => @visualizer.trigger("jumpFrame", @$slider.slider("option", "value") )
         })
 
 
     slideEvent: (event,ui) ->
         if @showWhileSliding
-            @visualizer.jumpFrame( ui.value )
+            @visualizer.trigger("jumpFrame", ui.value )
         else
             @writeLabel( ui.value )
 
-    setup: (stash, @visualizer) ->
-        
+    event: (event, options...) -> switch event
+        when "setup"
+            [stash, @visualizer] = options
+
+        when "editStart"
+            @$slider.slider("option", "min", 0)
+            @$slider.addClass("controls-disabled")
+            @$frameLabel.addClass("controls-disabled")
+            @writeLabel("-", "-")
+
+        when "displayStart"
+            @$slider.removeClass("controls-disabled")
+            @$frameLabel.removeClass("controls-disabled")
+
+        when "render"
+            [frame, type] = options
+            @$slider.slider("option", "max",   frame._numFrames)
+            @$slider.slider("option", "value", frame._frameNumber)
+            @writeLabel()
+ 
 
     writeLabel: (value, max) ->
         value ?= @$slider.slider("option", "value")
@@ -37,23 +53,5 @@ class ControlSlider
         @$slider.slider("option", "min", 1)
         @$frameLabel.html( "#{value} / #{max}" )
         
-
-    setMode: (mode) -> switch mode
-        when "edit"
-            @$slider.slider("option", "min", 0)
-            @$slider.addClass("controls-disabled")
-            @$frameLabel.addClass("controls-disabled")
-            @writeLabel("-", "-")
-        when "display"
-            @$slider.removeClass("controls-disabled")
-            @$frameLabel.removeClass("controls-disabled")
-
-
-    render: (frame, type) ->
-        @$slider.slider("option", "max",   frame._numFrames)
-        @$slider.slider("option", "value", frame._frameNumber)
-        @writeLabel()
-
-    clear: () ->
 
 Common.VamonosExport { Widget: { ControlSlider } }
