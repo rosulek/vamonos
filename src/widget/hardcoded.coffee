@@ -3,8 +3,8 @@
 class Hardcoded
     constructor: ({@breakpoints, @vars}) ->
 
-    event: (event, options...) ->
-        if event is "editStart"
+    event: (event, options...) -> switch event
+        when "editStart"
             @stash._breakpoints = @breakpoints
             @stash[name] = value for name, value of @vars
 
