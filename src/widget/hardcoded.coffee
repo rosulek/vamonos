@@ -1,7 +1,6 @@
-#_require ./widget.coffee
 #_require ../common.coffee
 
-class Hardcoded extends Widget
+class Hardcoded
 
     constructor: (@obj) ->
 

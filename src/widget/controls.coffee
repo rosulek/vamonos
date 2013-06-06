@@ -1,7 +1,6 @@
-#_require ./widget.coffee
 #_require ../common.coffee
 
-class Controls extends Widget
+class Controls
 
     constructor: ({container, noStopButton, noSlider, noFrameNumber, @showWhileSliding}) ->
         @$container = Common.jqueryify(container)

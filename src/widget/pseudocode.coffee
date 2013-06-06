@@ -1,5 +1,4 @@
 #_require ../common.coffee
-#_require ./widget.coffee
 
 class Pseudocode
 
