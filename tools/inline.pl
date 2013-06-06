@@ -1,4 +1,9 @@
 #!/usr/bin/perl
+use File::Basename;
+
+@ARGV or die help();
+
+my ($file, $dir) = fileparse($ARGV[0]);
 
 local $/;
 
@@ -8,7 +13,9 @@ sub slurp {
     return scalar <$fh>;
 }
 
-my $data = <>;
+chdir $dir;
+open my $fh, "<", $file or die "$file: $!";
+my $data = <$fh>;
 
 $data =~ s{<script type="text/javascript" src="(.+?)"></script>}
           { qq[<script type="text/javascript">] . slurp($1) . qq[</script>] }ge;
