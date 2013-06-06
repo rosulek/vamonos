@@ -20,6 +20,8 @@ task 'build', 'Build single application file from source files', ->
     exec "coffee #{ to_single_file } #{ from_files }", (err, stdout, stderr) ->
         throw err if err
 
+    console.log "Compiling LESS to CSS"
+
     lessfile = './src/less/vamonos.less'
     csstarget = './lib/vamonos.css'
 

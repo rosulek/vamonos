@@ -1,7 +1,6 @@
-#_require ./widget.coffee
 #_require ../common.coffee
 
-class ModeLine extends Widget
+class ModeLine
 
     constructor: ({container, @editModeText, @displayModeText}) ->
         @$container = Common.jqueryify(container)
