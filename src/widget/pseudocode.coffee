@@ -90,12 +90,11 @@ class Pseudocode
         n = parseInt(n, 10)
         gutter = @getLine(n).find("td.pseudocode-gutter")
         if n in @stash._breakpoints
-            gutter.append($("<div>", {class: "pseudocode-breakpoint"}))
-            @stash._breakpoints.push(n)
-        else
-            return unless n in @stash._breakpoints
             gutter.find("div.pseudocode-breakpoint").remove()
             @stash._breakpoints.splice(@stash._breakpoints.indexOf(n), 1)
+        else
+            gutter.append($("<div>", {class: "pseudocode-breakpoint"}))
+            @stash._breakpoints.push(n)
 
     ###
     #   Widget.Pseudocode.showBreakpoints()
