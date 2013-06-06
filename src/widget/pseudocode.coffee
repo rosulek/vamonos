@@ -1,14 +1,15 @@
 #_require ../common.coffee
 
 ###
-#   Vamonos.Widget.Pseudocode({ container, editableBreakpoints, breakpoints })
+#
+#   src/widget/pseudocode.coffee :: exports Vamonos.Widget.Pseudocode
 #
 #   Widget object: 
 #       Formats pseudocode nicely with syntax highlighting.
 #       Shows current line in visualization.
 #       Allows custom setting of breakpoints.
 #   
-#   Arguments:
+#   Constructor Arguments:
 #       container:              the id of the DOM element target
 #
 #       breakpoints:            initial array of line numbers to break at
@@ -16,6 +17,7 @@
 #
 #       editableBreakpoints:    allow users to modify breakpoints?
 #                               (true by default)
+#
 ###
 class Pseudocode
 

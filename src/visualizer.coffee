@@ -40,17 +40,17 @@ class Visualizer
         ui.setup(@stash, this) for ui in @widgets
 
         @editMode()
-        @generate() if autoStart
+        @runAlgorithm() if autoStart
 
 
     ###
-    #   Visualizer.generate()
+    #   Visualizer.runAlgorithm()
     #
     #   Initializes the frame array, runs the algorithm, and activates
     #   widgets.
     ###
-    generate: ->
-        @editMode()
+    runAlgorithm: ->
+        @displayMode()
         @frames = []
         @currentFrameNumber = 0
 

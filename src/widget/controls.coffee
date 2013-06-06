@@ -22,10 +22,10 @@ class Controls
             stop:  => @target.jumpFrame( @$slider.slider("option", "value") )
         })
 
-        @$stopButton.on("click", => @target.deactivate() )
+        @$stopButton.on("click", => @target.editMode() )
         @$nextButton.on("click", =>
             if @mode is "edit"
-                @target.generate()
+                @target.runAlgorithm()
             else if @mode is "display"
                 @target.nextFrame()
         )
