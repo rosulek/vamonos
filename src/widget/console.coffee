@@ -2,9 +2,7 @@
 
 class Console
 
-    constructor: () ->
-
-    setup: (@stash) ->
+    setup: ->
         console.log("widget setup")
         
     setMode: (mode_str) ->
@@ -12,8 +10,5 @@ class Console
 
     render: (frame, type) ->
         console.log("widget render, type=#{type}, frame: ", frame)
-
-    clear: () ->
-        console.log("widget clear")
 
 Common.VamonosExport { Widget: { Console } }
