@@ -37,39 +37,12 @@ class Visualizer
         @stash = { _breakpoints: [] }
 
         # pass a reference to the stash object to each widget
-        ui.setup(@stash, this) for ui in @widgets
+        @tellWidgets("setup", @stash, @)
 
-        @editMode()
-        @runAlgorithm() if autoStart
-
-
-    ###
-    #   Visualizer.runAlgorithm()
-    #
-    #   Initializes the frame array, runs the algorithm, and activates
-    #   widgets.
-    ###
-    runAlgorithm: ->
-        @frames = []
-        @currentFrameNumber = 0
-
-        @displayMode()
-
-
-        try
-            # there's always a "before" & "after" snapshot
-            @line(0)
-            @algorithm(this)
-            @line(0)
-        catch err
-            alert("Too many frames. You may have an infinite loop. " +
-                  "Visualization has been truncated to the first " +
-                  "#{@maxFrames} frames.")
-
-        @currentFrameNumber = 0
-        f._numFrames = @frames.length for f in @frames
-        @nextFrame()
-
+        if autoStart
+            @runAlgorithm() 
+        else
+            @editMode() 
 
     ###
     #   Visualizer.line(number)
@@ -94,20 +67,56 @@ class Visualizer
         newFrame._frameNumber = ++@currentFrameNumber
         @frames.push(newFrame)
 
-    ###
-    #   Mode controls - tell all widgets to change modes.
-    ###
-    displayMode: ->
-        return if @mode is "display"
+
+    trigger: (event, options...) ->
+        switch event
+            when "runAlgorithm" then @runAlgorithm()
+            when "editMode"     then @editMode()
+            when "nextFrame"    then @nextFrame()
+            when "prevFrame"    then @prevFrame()
+            when "jumpFrame"    then @jumpFrame(options...)
+
+
+    tellWidgets: (event, options...) ->
         for ui in @widgets
-            ui.setMode("display")
+            ui.event(event, options...)
+
+    ###
+    #   Visualizer.runAlgorithm()
+    #
+    #   Initializes the frame array, runs the algorithm, and activates
+    #   widgets.
+    ###
+    runAlgorithm: ->
+        return if @mode is "display"
+        @frames = []
+        @currentFrameNumber = 0
+
+        @tellWidgets("editStop")
+
+        try
+            # there's always a "before" & "after" snapshot
+            @line(0)
+            @algorithm(this)
+            @line(0)
+        catch err
+            alert("Too many frames. You may have an infinite loop. " +
+                  "Visualization has been truncated to the first " +
+                  "#{@maxFrames} frames.")
+
+        @currentFrameNumber = 0
+        f._numFrames = @frames.length for f in @frames
+
         @mode = "display"
+        @tellWidgets("displayStart")
+        @nextFrame()
+
 
     editMode: ->
         return if @mode is "edit"
-        for ui in @widgets
-            ui.setMode("edit")
+        @tellWidgets("displayEnd")
         @mode = "edit"
+        @tellWidgets("editStart")
 
     ###
     #   Frame controls - move frame and send message to widgets.
@@ -124,10 +133,10 @@ class Visualizer
         @goToFrame(n, "jump")
 
     goToFrame: (n, type) ->
+        return unless @mode is "display"
         return unless 1 <= n <= @frames.length
         @currentFrameNumber = n
-        for ui in @widgets
-            ui.render(@frames[@currentFrameNumber-1], type)
+        @tellWidgets("render", @frames[@currentFrameNumber-1], type)
 
 
 

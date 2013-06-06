@@ -30,25 +30,26 @@ class Pseudocode
         # if breakpoints are not defined, set one for every line
         @breakpoints ?= [1..nLines]
 
-    setup: (@stash) ->
-        @stash._breakpoints = @breakpoints
-        @showBreakpoints()
+    event: (event, options...) ->
+        switch event
+            when "setup"
+                [@stash] = options
+                @stash._breakpoints = @breakpoints
+                @showBreakpoints()
 
+            when "editStart"
+                @$tbl.find("tr.pseudocode-active").removeClass("pseudocode-active")
+                @enableBreakpointSelection() if @editableBreakpoints
 
-    setMode: (mode) ->
-        if mode is 'edit'
-            @$tbl.find("tr.pseudocode-active").removeClass("pseudocode-active")
-            @enableBreakpointSelection() if @editableBreakpoints
+            when "displayStart"
+                @showBreakpoints()
+                @disableBreakpointSelection() if @editableBreakpoints
 
-        else if mode is 'display'
-            @showBreakpoints()
-            @disableBreakpointSelection() if @editableBreakpoints
-
-    render: (frame, type) ->
-        @$tbl.find("tr").removeClass("pseudocode-active")
-        @$tbl.find("tr[vamonos-linenumber=#{ frame._lineNumber }]")
-             .addClass("pseudocode-active")
-
+            when "render"
+                [frame, type] = options
+                @$tbl.find("tr").removeClass("pseudocode-active")
+                @$tbl.find("tr[vamonos-linenumber=#{ frame._lineNumber }]")
+                     .addClass("pseudocode-active")
 
     ###
     #   Widget.Pseudocode.keywords

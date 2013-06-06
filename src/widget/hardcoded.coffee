@@ -3,13 +3,10 @@
 class Hardcoded
     constructor: ({@breakpoints, @vars}) ->
 
-    setup: ->
-
-    setMode: (mode) ->
-        if mode is "edit"
+    event: (event, options...) ->
+        if event is "editStart"
             @stash._breakpoints = @breakpoints
             @stash[name] = value for name, value of @vars
 
-    render: ->
 
 Common.VamonosExport { Widget: { Hardcoded } }
