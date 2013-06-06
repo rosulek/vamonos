@@ -30,12 +30,11 @@ class Pseudocode
         @$tbl.find("tr[vamonos-linenumber=#{ frame._lineNumber }]")
              .addClass("pseudocode-active")
 
-    ###########################################################################
 
     ###
     #   Widget.Pseudocode.keywords
     #
-    #   List of special words to be bold in the pseudocode.
+    #   List of special words to be bold in the formatted pseudocode.
     ###
     keywords: "for while if else elseif elsif elif begin end then repeat until
                to downto by return error throw and or"
@@ -105,7 +104,7 @@ class Pseudocode
     #
     #   Takes a jquery selector of a pseudocode div element. Cuts it up and
     #   formats it nicely. Returns the number of pseudocode lines found (not
-    #   counting comments). 
+    #   counting comments).
     #
     #   Creates @$tbl attribute.
     ###
@@ -116,7 +115,7 @@ class Pseudocode
             .split(/\r\n|\r|\n/)
             .filter((l) -> l.match /\S/)
 
-        # Create the table we will be modifying. 
+        # Create the table we will be modifying.
         # Set it as an attribute of this object.
         @$tbl = $("<table>", {class: "pseudocode"})
 
