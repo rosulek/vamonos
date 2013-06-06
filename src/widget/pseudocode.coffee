@@ -19,7 +19,7 @@
 #                               (true by default)
 #
 ###
-class Pseudocode extends GenericWidget
+class Pseudocode
 
     constructor: ({container, @editableBreakpoints, @breakpoints}) ->
         @editableBreakpoints ?= true
@@ -33,6 +33,7 @@ class Pseudocode extends GenericWidget
     setup: (@stash) ->
         @stash._breakpoints = @breakpoints
         @showBreakpoints()
+
 
     setMode: (mode) ->
         if mode is 'edit'
