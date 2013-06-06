@@ -50,9 +50,11 @@ class Visualizer
     #   widgets.
     ###
     runAlgorithm: ->
-        @displayMode()
         @frames = []
         @currentFrameNumber = 0
+
+        @displayMode()
+
 
         try
             # there's always a "before" & "after" snapshot
@@ -63,7 +65,6 @@ class Visualizer
             alert("Too many frames. You may have an infinite loop. " +
                   "Visualization has been truncated to the first " +
                   "#{@maxFrames} frames.")
-
 
         @currentFrameNumber = 0
         f._numFrames = @frames.length for f in @frames

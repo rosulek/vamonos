@@ -393,17 +393,16 @@ table.pseudocode {
 
 
 /////////////////
-// JQUERY SLIDER
+// CONTROLS
 
 .controls-slider.ui-slider {
     height: 8px;
     position: relative;
-    text-align: left;
+    text-align: center;
     border: 1px solid @med-shaded-color;
     background: @normal-item-bg-color;
-    display: inline-block;
-    width: 200px;
-    margin: 0 8px 0 8px;
+    width: 250px;
+    margin: 12px auto 12px auto;
 
     .ease-all();
 
@@ -431,8 +430,7 @@ table.pseudocode {
 
     .controls-disabled & {
         width: 0px;
-        border-width: 0px;
-        margin: 0px;
+        border-color: transparent;
 
         .ui-slider-handle {
             display: none;
@@ -440,13 +438,26 @@ table.pseudocode {
     }
 }
 
-span.controls-frame-number {
+div.controls-buttons, div.controls-frame-number {
+    display: inline-block;
+}
 
-    padding-left: 4px;
+button.controls-button {
+    width: 48px;
+    height: 24px;
+    vertical-align: middle;
 
-    .controls-disabled & {
-        display: none;
+    margin: 2px;
+
+    &:disabled {
+        color: #ccc;
     }
+}
+
+
+.controls-frame-number {
+    width: 64px;
+    text-align: center;
 }
 
 //////////////////////
