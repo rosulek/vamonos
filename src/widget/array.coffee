@@ -107,21 +107,6 @@ class VArray
 
     # TODO this is just the default
 
-    txtToRaw: (txt) ->
-        return Infinity if txt.match(/^\+?(inf(inity)?|\u221E)$/i)
-        return -Infinity if txt.match(/^-(inf(inity)?|\u221E)$/i)
-        if isNaN(parseInt(txt)) then null else parseInt(txt)
-
-    rawToTxt: (raw) ->
-        return "" unless raw?
-        return "\u221E"  if raw is Infinity
-        return "-\u221E" if raw is -Infinity
-        return "" + raw        
-
-    txtValid: (txt) -> @txtToRaw(txt)?
-
-
-
     tdClick: (event) ->
         # ignore clicks on existing inputbox
         return if @$editBox? and event.target is @$editBox.get(0)
@@ -138,20 +123,20 @@ class VArray
 
         @editIndex = index
         @$editBox = $("<input>", {class: "inline-input"})
-        @$editBox.val( @rawToTxt(@theArray[index]) )
+        @$editBox.val( Common.rawToTxt(@theArray[index]) )
         @$editBox.width( $cell.width() );           
         @$editBox.on("blur",    (e) => @stopEditingCell(yes) )
         @$editBox.on("keydown", (e) => @editKeyDown(e) ) 
 
         $cell.html( @$editBox )
         @getNthColumn(index).addClass("editing")
-        @$editBox.focus();
-        @$editBox.select();
+        @$editBox.focus()
+        @$editBox.select()
 
 
     startEditingNextCell: ->
         if @editIndex is @theArray.length - 1 
-            return unless @txtValid( @$editBox.val() )
+            return unless Common.txtValid( @$editBox.val() )
             @arrayPushRaw(null) 
 
         @startEditingCell(@editIndex + 1)
@@ -168,11 +153,11 @@ class VArray
         last = @editIndex == @theArray.length - 1
         txt  = $cell.children("input").val()
         dead = last and @editIndex isnt @firstIndex and \
-               ( (save and !@txtValid(txt)) or (!save and !@theArray[@editIndex]?) )
+               ( (save and not Common.txtValid(txt)) or (not save and not @theArray[@editIndex]?) )
 
         if dead
             @arrayChopLast()                        
-        else if save and @txtValid(txt)
+        else if save and Common.txtValid(txt)
             @arraySetFromTxt(@editIndex, txt)
 
         @getNthColumn(@editIndex).removeClass("editing")
@@ -242,7 +227,7 @@ class VArray
         newindex = @theArray.length
         @theArray.push(val);
         @$arrayTbl.find("tr.array-indices").append("<td>" + newindex + "</td>")
-        @$arrayTbl.find("tr.array-cells").append( $("<td>", {text: @rawToTxt(val)}) )
+        @$arrayTbl.find("tr.array-cells").append( $("<td>", {text: Common.rawToTxt(val)}) )
         @$arrayTbl.find("tr.array-annotations").append("<td></td>")
 
         @markChanged(newindex) if showChanges
@@ -252,7 +237,7 @@ class VArray
         @$arrayTbl.find("td:last-child").remove()
     
     arraySetFromTxt: (index, txtVal, showChanges) ->
-        @arraySetFromRaw(index, @txtToRaw(txtVal), showChanges)
+        @arraySetFromRaw(index, Common.txtToRaw(txtVal), showChanges)
 
     arraySetFromRaw: (index, rawVal, showChanges) ->
         @theArray[index] = rawVal
@@ -266,7 +251,7 @@ class VArray
         # also, we must always cast to strings, or else comparison will fail
         # between integer 1 and string "1"
 
-        newhtml = if @theArray[index]? then "" + @rawToTxt( @theArray[index] ) else ""
+        newhtml = if @theArray[index]? then "" + Common.rawToTxt( @theArray[index] ) else ""
 
         if oldhtml isnt newhtml
             $cell.html(newhtml)
