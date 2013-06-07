@@ -91,7 +91,7 @@ class Visualizer
         @frames = []
         @currentFrameNumber = 0
 
-        @tellWidgets("editStop")
+        @tellWidgets("editStop") if @mode is "edit"
 
         try
             # there's always a "before" & "after" snapshot

@@ -1,0 +1,91 @@
+<html><head>
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="demos.css">
+    <script type="text/javascript" src="../deps/jquery.min.js"></script>
+    <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../lib/vamonos.js"></script>
+
+</head><body>
+
+    <h1>Insertion Sort</h1>
+
+
+    <div class="vamonos">
+        <div class="information" id="modeline"></div>
+        <br>
+        <div class="container no-gutter" id="pseudocode" title="SelectionSort(A):">
+            for i = 0 to A.length-2
+                m = i
+                for j = i+1 to A.length-1
+                    if A[j] &lt; A[m]
+                        m = j
+                swap A[i] and A[m]
+        </div>
+        <br>
+        <div id="controls"></div>
+        <br>
+        <div class="container" id="array"></div>
+    </div>
+
+    <script type="text/javascript">
+        var myviz = new Vamonos.Visualizer({
+            widgets: [
+                new Vamonos.Widget.Console(),
+                new Vamonos.Widget.Array({
+                    container: "array",
+                    defaultArray: [6, 3, 1, 4, 1, 5, 9],
+                    ignoreIndexZero: false,
+                    varName: "A",
+                    cssRules: [
+                        ["<", "i", "shaded"]
+                    ],
+                    showIndices: ["i", "j", "m"],
+                }),
+
+                new Vamonos.Widget.Pseudocode({
+                    container: "pseudocode",
+                    userBreakPoints: false,
+                }),
+
+                new Vamonos.Widget.Controls({
+                    container: "controls",
+                    noRunStopButton: true,
+                }),
+
+                new Vamonos.Widget.ModeLine({
+                    container: "modeline",
+                    editModeText: "The visualization is in <b>editing mode</b> now. You can set breakpoints and change the input array. When you're ready, press the <b>run</b> button.",
+                    displayModeText: "The visualization is in <b>display mode</b> now. You can step through the execution of the algorithm using the controls. To go back to editing mode, press the <b>stop</b> button."
+                })
+            ],
+
+            autoStart: true,
+
+            algorithm: function (viz) {
+                with (viz.stash) {
+                    for (i = 0; viz.line(1), i < A.length-1; i++) {
+                        viz.line(2);
+                        m = i;
+                        for (j = i+1; viz.line(3), j < A.length; j++) {
+                            viz.line(4);
+                            if (A[j] < A[m]) {
+                                viz.line(5);
+                                m = j
+                            }
+                        }
+                        j = null;
+                        viz.line(6);
+                        var tmp = A[i];
+                        A[i] = A[m];
+                        A[m] = tmp;
+                        m = null;
+                    }
+                }
+            }
+        });
+
+    </script>
+
+</body>
+</html>

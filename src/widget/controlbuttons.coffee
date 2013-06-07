@@ -6,14 +6,14 @@ class ControlButtons
     PLAY  = "&#x25b6;"
     PAUSE = "&#x25ae;&#x25ae;"
     STOP  = "stop"
-    GO    = "run"
+    RUN   = "run"
     NEXT  = "&#x25ae;&#x25B6;"
     PREV  = "&#x25c0;&#x25ae;"
 
-    constructor: ({container, noStopGoButton, @autoPlay}) ->
+    constructor: ({container, noRunStopButton, @autoPlay}) ->
         @$container = Common.jqueryify(container)
 
-        @$stopGoButton    = $("<button>", {class: "controls-button", html: GO})
+        @$runStopButton    = $("<button>", {class: "controls-button", html: RUN})
         @$prevButton      = $("<button>", {class: "controls-button", html: PREV})
         @$nextButton      = $("<button>", {class: "controls-button", html: NEXT})
         @$playPauseButton = $("<button>", {class: "controls-button", html: PLAY})
@@ -21,12 +21,12 @@ class ControlButtons
         @playing = no
         @atLastFrame = no
 
-        @$container.append(@$stopGoButton) unless noStopGoButton
+        @$container.append(@$runStopButton) unless noRunStopButton
         @$container.append(@$prevButton, @$nextButton, @$playPauseButton)
 
         @$nextButton.on("click", => @visualizer.trigger("nextFrame"))
         @$prevButton.on("click", => @visualizer.trigger("prevFrame"))
-        @$stopGoButton.on("click", =>
+        @$runStopButton.on("click", =>
             if @mode is "edit"
                 @visualizer.trigger("runAlgorithm")
             else if @mode is "display"
@@ -60,7 +60,7 @@ class ControlButtons
             [stash, @visualizer] = options
         
         when "editStart"
-            @$stopGoButton.html(GO)
+            @$runStopButton.html(RUN)
             @$prevButton.attr("disabled", "true");
             @$nextButton.attr("disabled", "true");
             @$playPauseButton.attr("disabled", "true");
@@ -68,7 +68,7 @@ class ControlButtons
             @mode = "edit"
 
         when "displayStart"
-            @$stopGoButton.html(STOP)
+            @$runStopButton.html(STOP)
             @$prevButton.removeAttr("disabled");
             @$nextButton.removeAttr("disabled");
             @$playPauseButton.removeAttr("disabled");
