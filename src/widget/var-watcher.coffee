@@ -9,33 +9,30 @@ class VarWatcher
         @$container.hide()
 
 
-    event: (event, options...) -> 
-        switch event
-            when "setup"
-                [@stash, vis] = options
-                @stash[v] = null for v in @watch
+    event: (event, options...) -> switch event
+        when "setup"
+            [@stash, vis] = options
+            @stash[v] = null for v in @watch
 
-            when "editStop"
-                @stash[v] = null for v in @watch
-                
-            when "render"
-                @showVars(options...)
+        when "editStop"
+            @stash[v] = null for v in @watch
+            
+        when "render"
+            @showVars(options...)
 
-            when "displayStart"
-                @show()
+        when "displayStart"
+            @show()
 
-            when "displayStop"
-                @hide()
+        when "displayStop"
+            @hide()
 
     showVars: (frame) ->
         @clear()
-        vals = for v in @watch
-            str = if frame[v]?
-                Common.rawToTxt(frame[v]) 
-            else
-                "<i>undef</i>"
-            "<i>#{v}</i> = #{str}"
-        @$container.html(vals.join("<br>"))
+        $tbl = $("<table>")
+        for v in @watch
+            val = if frame[v]? then Common.rawToTxt(frame[v]) else "<i>undef</i>"
+            $tbl.append("<tr><td><i>#{ v }</i></td><td> &nbsp=&nbsp #{ val } </td></tr>")
+        @$container.html($tbl)
 
     clear: ->
         @$container.html("")
