@@ -12,6 +12,19 @@
 
 class Common
 
+    @txtToRaw: (txt) ->
+        return Infinity if txt.match(/^\+?(inf(inity)?|\u221E)$/i)
+        return -Infinity if txt.match(/^-(inf(inity)?|\u221E)$/i)
+        if isNaN(parseInt(txt)) then null else parseInt(txt)
+
+    @rawToTxt: (raw) ->
+        return "" unless raw?
+        return "\u221E"  if raw is Infinity
+        return "-\u221E" if raw is -Infinity
+        return "" + raw        
+
+    @txtValid: (txt) -> @txtToRaw(txt)?
+
     ###
     #   Common.arrayify( obj )
     #

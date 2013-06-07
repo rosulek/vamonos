@@ -10,6 +10,7 @@
 @shadow-color: #aaa;
 
 @highlight-background-color: #FCFBBB;
+@highlight-secondary-background-color: #EBFAEB;
 @highlight-text-color: red;
 @alert-color: #F77F6F;
 
@@ -244,7 +245,7 @@ table.pseudocode {
         }
     }
 
-    tr.pseudocode-active {
+    tr.pseudocode-previous {
         td.pseudocode-text, td.pseudocode-comment  {
             background-color: @highlight-background-color;
         }
@@ -256,6 +257,17 @@ table.pseudocode {
         }
     }
 
+    tr.pseudocode-active {
+        td.pseudocode-text, td.pseudocode-comment  {
+            background-color: @highlight-secondary-background-color;
+        }
+        td.pseudocode-line-number {
+            background-color: multiply(@highlight-secondary-background-color, @pseudocode-line-number-bg-color);
+        }
+        td.pseudocode-gutter {
+            background-color: multiply(@highlight-secondary-background-color, @pseudocode-gutter-color, 50%);
+        }
+    }
 }
 
 

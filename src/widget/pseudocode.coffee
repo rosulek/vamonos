@@ -21,8 +21,9 @@
 ###
 class Pseudocode
 
-    constructor: ({container, @editableBreakpoints, @breakpoints}) ->
+    constructor: ({container, @editableBreakpoints, @breakpoints, showPreviousLine}) ->
         @editableBreakpoints ?= true
+        @showPreviousLine    ?= true
 
         # sets @$tbl as the jquery selector for the pseudocode table
         nLines = @formatContainer(Common.jqueryify(container))
@@ -37,18 +38,35 @@ class Pseudocode
             @showBreakpoints()
 
         when "editStart"
-            @$tbl.find("tr.pseudocode-active").removeClass("pseudocode-active")
             @enableBreakpointSelection() if @editableBreakpoints
 
         when "displayStart"
             @disableBreakpointSelection() if @editableBreakpoints
             @showBreakpoints()
 
+        when "displayStop"
+            @clear()
+            @previous = null if @showPreviousLine
+
         when "render"
             [frame, type] = options
-            @$tbl.find("tr").removeClass("pseudocode-active")
-            @$tbl.find("tr[vamonos-linenumber=#{ frame._lineNumber }]")
-                    .addClass("pseudocode-active")
+            @render(frame)
+
+    render: (frame) ->
+        @clear()
+
+        @addClassToLine(@previous, "pseudocode-previous") if @previous? and @showPreviousLine
+        @addClassToLine(frame._lineNumber, "pseudocode-active")
+
+        @previous = frame._lineNumber if @showPreviousLine
+        
+    clear: () ->
+        @$tbl.find("tr").removeClass("pseudocode-active")
+        @$tbl.find("tr").removeClass("pseudocode-previous") if @showPreviousLine
+
+    addClassToLine: (n, klass) ->
+        @$tbl.find("tr[vamonos-linenumber=#{ n }]")
+                .addClass(klass)
 
     ###
     #   Widget.Pseudocode.keywords
