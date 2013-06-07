@@ -16,6 +16,7 @@
         <br>
         <div class="container no-gutter" id="pseudocode" title="SelectionSort(A):">
             for i = 0 to A.length-2
+                # find smallest item in A[i..]
                 m = i
                 for j = i+1 to A.length-1
                     if A[j] &lt; A[m]
@@ -45,12 +46,13 @@
 
                 new Vamonos.Widget.Pseudocode({
                     container: "pseudocode",
-                    userBreakPoints: false,
+                    editableBreakPoints: false,
                 }),
 
                 new Vamonos.Widget.Controls({
                     container: "controls",
                     noRunStopButton: true,
+                    autoPlay: true
                 }),
 
                 new Vamonos.Widget.ModeLine({

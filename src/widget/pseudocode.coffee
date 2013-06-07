@@ -151,7 +151,7 @@ class Pseudocode
         lineNumber = 1
         for line in html_lines
             [lineNumberStr, className] =
-                if line.match /^\s*\/\//
+                if line.match /^\s*(\/\/|\#)/
                     ["" , "pseudocode-comment"]
                 else
                     [lineNumber++, "pseudocode-text"]
