@@ -46,7 +46,6 @@ class Pseudocode
 
         when "displayStop"
             @clear()
-            @previous = null if @showPreviousLine
 
         when "render"
             [frame, type] = options
@@ -55,14 +54,12 @@ class Pseudocode
     render: (frame) ->
         @clear()
 
-        if @showPreviousLine and @previous isnt frame._lineNumber
-            @addClassToLine(@previous, "pseudocode-previous") if @previous?
+        if @showPreviousLine and frame._prevLine isnt frame._lineNumber
+            @addClassToLine(frame._prevLine, "pseudocode-previous")
             @addClassToLine(frame._lineNumber, "pseudocode-next")
         else
             @addClassToLine(frame._lineNumber, "pseudocode-active")
 
-        @previous = frame._lineNumber if @showPreviousLine
-        
     clear: () ->
         if @showPreviousLine
             @$tbl.find("tr").removeClass("pseudocode-next")

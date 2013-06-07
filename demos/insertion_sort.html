@@ -73,7 +73,7 @@
 
             algorithm: function (viz) {
                 with (viz.stash) {
-                    for (j = 2; j < A.length; viz.line(1), j++) {
+                    for (viz.line(1), j = 2; j < A.length; viz.line(1), j++) {
                         viz.line(2);
                         key = A[j];
                         viz.line(3);

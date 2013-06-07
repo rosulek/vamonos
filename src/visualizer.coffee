@@ -59,13 +59,17 @@ class Visualizer
     #
     ###
     line: (n) ->
-        return unless n in @stash._breakpoints or n is 0
-        throw "too many frames" if @currentFrameNumber >= @maxFrames
+        if n in @stash._breakpoints or n is 0
+            throw "too many frames" if @currentFrameNumber >= @maxFrames
 
-        newFrame              = Common.clone(@stash)
-        newFrame._lineNumber  = n
-        newFrame._frameNumber = ++@currentFrameNumber
-        @frames.push(newFrame)
+            newFrame              = Common.clone(@stash)
+            newFrame._lineNumber  = n
+            newFrame._prevLine    = @prevLine
+            newFrame._frameNumber = ++@currentFrameNumber
+            @frames.push(newFrame)
+        
+        @prevLine = n
+        throw "too many lines" if ++@numCallsToLine > 10000
 
 
     trigger: (event, options...) -> switch event
@@ -88,8 +92,11 @@ class Visualizer
     ###
     runAlgorithm: ->
         return if @mode is "display"
-        @frames = []
+
+        @frames             = []
         @currentFrameNumber = 0
+        @prevLine           = 0
+        @numCallsToLine     = 0
 
         @tellWidgets("editStop") if @mode is "edit"
 
@@ -99,9 +106,15 @@ class Visualizer
             @algorithm(this)
             @line(0)
         catch err
-            alert("Too many frames. You may have an infinite loop. " +
-                  "Visualization has been truncated to the first " +
-                  "#{@maxFrames} frames.")
+            switch err
+                when "too many frames"
+                    alert("Too many frames. You may have an infinite loop. " +
+                          "Visualization has been truncated to the first " +
+                          "#{@maxFrames} frames.")
+                when "too many lines"
+                    alert("Your algorithm has executed for over 10000 instructions. " +
+                          "You may have an infinite loop. " +
+                          "Visualization has been truncated.")
 
         @currentFrameNumber = 0
         f._numFrames = @frames.length for f in @frames
