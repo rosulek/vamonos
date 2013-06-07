@@ -52,8 +52,8 @@
             ignoreIndexZero: false              
         });
 
-        x.setup(stash);
-        x.setMode("edit");
+        x.event("setup", stash)
+        x.event("editStart")
 
         $("#render").on("click", function() {
             x.render({
@@ -64,7 +64,13 @@
         });
 
         $("#mode").on("change", function() {
-            x.setMode( this.value );
+            if (this.value === "edit") {
+                x.event("displayStop");
+                x.event("editStart");
+            } else if (this.value === "display") {
+                x.event("editStop");
+                x.event("displayStart");
+            }
         });
     </script>
 
