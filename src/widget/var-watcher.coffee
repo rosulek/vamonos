@@ -31,7 +31,7 @@ class VarWatcher
         $tbl = $("<table>")
         for v in @watch
             val = if frame[v]? then Common.rawToTxt(frame[v]) else "<i>undef</i>"
-            $tbl.append("<tr><td><i>#{ v }</i></td><td> &nbsp=&nbsp #{ val } </td></tr>")
+            $tbl.append("<tr><td align='right'><i>#{ v }</i></td><td> &nbsp=&nbsp #{ val } </td></tr>")
         @$container.html($tbl)
 
     clear: ->
