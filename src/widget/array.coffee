@@ -3,7 +3,7 @@
 class VArray
 
     constructor: ({container, @defaultArray, @varName, ignoreIndexZero,
-                    showChanges, @cssRules, @showIndices}) ->
+                    showChanges, @cssRules, @showIndices, showLabel}) ->
         @$container = Common.jqueryify(container)
         @$editBox   = null
         @editIndex  = null
@@ -17,6 +17,13 @@ class VArray
             $("<tr>", {class: "array-annotations"})
         )
         @$container.append(@$arrayTbl)
+
+        # interestingly, "if blah" and "if blah is true" are different
+        showLabel = @varName + ":" if showLabel is true
+
+        if typeof showLabel is "string"
+            @$arrayTbl.find("tr").append('<th></th>')
+            @$arrayTbl.find("tr.array-cells th").html(showLabel)
 
     event: (event, options...) -> switch event
         when "setup"
@@ -127,7 +134,9 @@ class VArray
         return if @$editBox? and event.target is @$editBox.get(0)
 
         # .index() is 0-based index among siblings
-        @startEditingCell( $(event.target).index() + @firstIndex ) 
+        i = @$arrayTbl.find("tr.array-cells td").index( $(event.target).closest("td") )
+
+        @startEditingCell( i + @firstIndex ) 
 
     startEditingCell: (index) ->
         return if index is @editIndex
@@ -174,6 +183,8 @@ class VArray
             @arrayChopLast()                        
         else if save and @txtValid(txt)
             @arraySetFromTxt(@editIndex, txt)
+        else
+            @arraySetFromRaw(@editIndex, @theArray[@editIndex])
 
         @getNthColumn(@editIndex).removeClass("editing")
 
@@ -219,20 +230,19 @@ class VArray
             @stopEditingCell(no)
             return false
         
+    # :nth-of-type() selector is 1-indexed
 
     getNthCell: (n) ->
-        # .eq() is 0-indexed
-        @$arrayTbl.find("tr.array-cells").children().eq(n - @firstIndex)
+        i = n - @firstIndex + 1
+        @$arrayTbl.find("tr.array-cells td:nth-of-type(#{i})")
 
     getNthColumn: (n) ->
-        # :nth-child() selector is 1-indexed
         i = n - @firstIndex + 1
-        @$arrayTbl.find("tr td:nth-child(#{i})")
+        @$arrayTbl.find("tr td:nth-of-type(#{i})")
 
     getNthAnnotation: (n) ->
-        # :nth-child() selector is 1-indexed
         i = n - @firstIndex + 1
-        @$arrayTbl.find("tr.array-annotations td:nth-child(#{i})")
+        @$arrayTbl.find("tr.array-annotations td:nth-of-type(#{i})")
 
 
     # these are the only "approved" ways to edit the array.

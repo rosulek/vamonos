@@ -91,14 +91,14 @@ table.array {
     border-collapse: collapse;
     display: inline;
 
-    td {
+    td,th {
+        font-weight: normal;
         margin: 0px;
-        border-spacing: 0px;
         vertical-align: middle;
         text-align: center;
     }
 
-    tr.array-cells td {
+    tr.array-cells td, tr.array-cells th {
         min-width: @array-cell-size;     
         height: @array-cell-size;     
     }
@@ -108,9 +108,10 @@ table.array {
     }
 
     th {
-        border: 0px;
+        border: 1px solid transparent;
+        border-right-width: 0px;
         background: inherit;
-        padding-right: 8px;
+        padding-right: 4px;
     }
 
     .indices-inside & tr.array-indices td, tr.array-cells td {

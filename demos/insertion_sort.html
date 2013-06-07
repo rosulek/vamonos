@@ -42,6 +42,7 @@
                         [">", "j", "shaded"]
                     ],
                     showIndices: ["i", "j"],
+                    showLabel: true,
                 }),
 
                 new Vamonos.Widget.Pseudocode({
@@ -51,8 +52,8 @@
 
                 new Vamonos.Widget.Controls({
                     container: "controls",
+                    showWhileSliding: true
                 }),
-
 
                 new Vamonos.Widget.ModeLine({
                     container: "modeline",
@@ -78,7 +79,9 @@
                         }
                         viz.line(7);
                         A[i + 1] = key;
+                        i = null;
                     }
+                    j = null;
                 }
             }
         });
