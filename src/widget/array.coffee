@@ -109,9 +109,15 @@ class VArray
     # TODO this is just the default
 
     txtToRaw: (txt) ->
+        return Infinity if txt.match(/^\+?(inf(inity)?|\u221E)$/i)
+        return -Infinity if txt.match(/^-(inf(inity)?|\u221E)$/i)
         if isNaN(parseInt(txt)) then null else parseInt(txt)
 
-    rawToTxt: (txt) -> txt
+    rawToTxt: (raw) ->
+        return "" unless raw?
+        return "\u221E"  if raw is Infinity
+        return "-\u221E" if raw is -Infinity
+        return "" + raw        
 
     txtValid: (txt) -> @txtToRaw(txt)?
 
@@ -132,8 +138,8 @@ class VArray
         $cell = @getNthCell(index)
 
         @editIndex = index
-        @$editBox = $("<input class='inline-input'>")
-        @$editBox.val(@theArray[index])
+        @$editBox = $("<input>", {class: "inline-input"})
+        @$editBox.val( @rawToTxt(@theArray[index]) )
         @$editBox.width( $cell.width() );           
         @$editBox.on("blur",    (e) => @stopEditingCell(yes) )
         @$editBox.on("keydown", (e) => @editKeyDown(e) ) 
