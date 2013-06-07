@@ -37,7 +37,7 @@ class Pseudocode
             @showBreakpoints()
 
         when "editStart"
-            @$tbl.find("tr.pseudocode-active").removeClass("pseudocode-active")
+            @clear()
             @enableBreakpointSelection() if @editableBreakpoints
 
         when "displayStart"
@@ -46,9 +46,23 @@ class Pseudocode
 
         when "render"
             [frame, type] = options
-            @$tbl.find("tr").removeClass("pseudocode-active")
-            @$tbl.find("tr[vamonos-linenumber=#{ frame._lineNumber }]")
-                    .addClass("pseudocode-active")
+            @render(frame)
+
+    render: (frame) ->
+        @clear()
+
+        @addClassToLine(@previous, "pseudocode-previous") if @previous?
+        @addClassToLine(frame._lineNumber, "pseudocode-active")
+
+        @previous = frame._lineNumber
+        
+    clear: () ->
+        @$tbl.find("tr").removeClass("pseudocode-active")
+        @$tbl.find("tr").removeClass("pseudocode-previous")
+
+    addClassToLine: (n, klass) ->
+        @$tbl.find("tr[vamonos-linenumber=#{ n }]")
+                .addClass(klass)
 
     ###
     #   Widget.Pseudocode.keywords
