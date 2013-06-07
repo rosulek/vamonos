@@ -21,26 +21,16 @@ class VArray
 
     event: (event, options...) -> switch event
         when "setup"
-            @stash = options[0]
-            @theArray = @stash[@varName] = []
+            [@stash, visualizer] = options
 
+            # setup defaults in the stash (in case no edit mode happens)
+
+            @theArray = @stash[@varName] = @defaultArray.slice() # shallow copy
             @stash[v] = null for [_, v, _] in @cssRules
             @stash[v] = null for v in @showIndices            
 
         when "editStart"
-            @theArray.length = 0
-            @theArray.push(null) if @firstIndex is 1        
-
-            @$arrayTbl.find("tr").empty()
-
-            if @defaultArray? and @defaultArray.length > @firstIndex
-                @appendCellRaw(v) for v in @defaultArray[@firstIndex..]
-            else 
-                @appendCellRaw(null)
-
-            # reset array indices in the stash
-            @stash[v] = null for v in @showIndices            
-
+            @arrayReset(@defaultArray)
             @$arrayTbl.on("click", "tr.array-cells td", {}, (e) => @tdClick(e) )
         
         when "editStop"
@@ -48,25 +38,46 @@ class VArray
             @$arrayTbl.off("click")
             @defaultArray = @theArray.slice(0)
 
+            # reset array indices in the stash
+            @stash[v] = null for [_, v, _] in @cssRules
+            @stash[v] = null for v in @showIndices            
+
+        when "displayStart"
+            # @defaultArray is the "input" that was passed into the algorithm.
+            # in display mode, the first "render" event will highlight changes
+            # from this baseline. so when display mode starts, the array widget
+            # must be in a state where is both displaying @defaultArray, and
+            # @theArray matches @defaultArray
+            #
+            # there are two reasons to reset to @defualtArray here.
+            #
+            # 1. between edit & display modes, @theArray (in the stash) was
+            #    modified by the algorithm
+            #
+            # 2. there never was an edit mode, in which case the array widget
+            #    is not displaying anything
+
+            @arrayReset(@defaultArray)
+
         when "render"
             @render(options...)
 
 
     render: (frame, type) ->
-        frameArray = frame[@varName]
+        newArray = frame[@varName]
 
         @$arrayTbl.find("td").removeClass()
 
         # equalize the lengths
-        while frameArray.length < @theArray.length
-            @chopLastCell()
-        while frameArray.length > @theArray.length
-            @appendCellRaw(null)
+        while newArray.length < @theArray.length
+            @arrayChopLast()
+        while newArray.length > @theArray.length
+            @arrayPushRaw(null)
 
         # apply CSS rules
         for [compare, indexName, className] in @cssRules
             index = frame[indexName]
-            if !isNaN(parseInt(index)) and @firstIndex <= index < frameArray.length
+            if !isNaN(parseInt(index)) and @firstIndex <= index < newArray.length
                 $col = @getNthColumn(index)
                 $selector = switch compare 
                     when "<"        then $col.prevAll() 
@@ -78,19 +89,19 @@ class VArray
 
         # apply the "changed" class after applying the other css rules
         showChange = type in @showChanges
-        for i in [@firstIndex...frameArray.length]
-            @setCellRaw(i, frameArray[i], showChange)
+        for i in [@firstIndex...newArray.length]
+            @arraySetFromRaw(i, newArray[i], showChange)
 
         indices = {}
         for indexName in @showIndices
-            index = frame[indexName]
-            if indices[index]?
-                indices[index].push(indexName)
+            loc = frame[indexName]
+            if indices[loc]?
+                indices[loc].push(indexName)
             else
-                indices[index] = [indexName]
+                indices[loc] = [indexName]
 
         @$arrayTbl.find("tr.array-annotations td").empty()
-        for i in [@firstIndex...frameArray.length]
+        for i in [@firstIndex...newArray.length]
             @getNthAnnotation(i).html( indices[i].join(", ") ) if indices[i]?
 
 
@@ -111,12 +122,12 @@ class VArray
         return if @$editBox? and event.target is @$editBox.get(0)
 
         # .index() is 0-based index among siblings
-        @startEditing( $(event.target).index() + @firstIndex ) 
+        @startEditingCell( $(event.target).index() + @firstIndex ) 
 
-    startEditing: (index) ->
+    startEditingCell: (index) ->
         return if index is @editIndex
         if (@editIndex?)
-            @endEditing(yes)
+            @stopEditingCell(yes)
 
         $cell = @getNthCell(index)
 
@@ -124,7 +135,7 @@ class VArray
         @$editBox = $("<input class='inline-input'>")
         @$editBox.val(@theArray[index])
         @$editBox.width( $cell.width() );           
-        @$editBox.on("blur",    (e) => @endEditing(yes) )
+        @$editBox.on("blur",    (e) => @stopEditingCell(yes) )
         @$editBox.on("keydown", (e) => @editKeyDown(e) ) 
 
         $cell.html( @$editBox )
@@ -133,63 +144,74 @@ class VArray
         @$editBox.select();
 
 
-    endEditing: (save) ->
+    startEditingNextCell: ->
+        if @editIndex is @theArray.length - 1 
+            return unless @txtValid( @$editBox.val() )
+            @arrayPushRaw(null) 
+
+        @startEditingCell(@editIndex + 1)
+
+
+    startEditingPrevCell: ->
+        @startEditingCell(@editIndex - 1) if @editIndex > @firstIndex
+
+
+    stopEditingCell: (save) ->
         return unless @editIndex? and @$editBox?
         $cell = @getNthCell(@editIndex)
 
         last = @editIndex == @theArray.length - 1
         txt  = $cell.children("input").val()
-        dead = last and @editIndex != @firstIndex and \
+        dead = last and @editIndex isnt @firstIndex and \
                ( (save and !@txtValid(txt)) or (!save and !@theArray[@editIndex]?) )
 
         if dead
-            @chopLastCell()                        
+            @arrayChopLast()                        
         else if save and @txtValid(txt)
-            @setCellTxt(@editIndex, txt)
+            @arraySetFromTxt(@editIndex, txt)
 
         @getNthColumn(@editIndex).removeClass("editing")
 
         @editIndex = null
         @$editBox = null
 
-
         
     editKeyDown: (event) -> switch event.keyCode
         when 13 # enter key
-            @endEditing(yes)
+            @stopEditingCell(yes)
             return false
 
         when 32 # space
-            @startEditingNext()
+            @startEditingNextCell()
             return false
 
         when 9 # tab
             if event.shiftKey
-                @startEditingPrev()
+                @startEditingPrevCell()
             else
-                @startEditingNext()
+                @startEditingNextCell()
             return false
 
         when 8 # backspace
             if @$editBox.val() is ""
-                @startEditingPrev()
+                @startEditingPrevCell()
                 return false
 
         when 37 # left-arrow
             elt = @$editBox.get(0)
             if elt.selectionStart == 0 and elt.selectionEnd == 0
-                @startEditingPrev()
+                @startEditingPrevCell()
                 return false
 
         when 39 # right-arrow
             txt = @$editBox.val();
             elt = @$editBox.get(0)
             if elt.selectionStart == txt.length and elt.selectionEnd == txt.length
-                @startEditingNext()
+                @startEditingNextCell()
                 return false
 
         when 27 # escape
-            @endEditing(no)
+            @stopEditingCell(no)
             return false
         
 
@@ -208,17 +230,10 @@ class VArray
         @$arrayTbl.find("tr.array-annotations td:nth-child(#{i})")
 
 
-    startEditingNext: ->
-        if @editIndex is @theArray.length - 1 
-            return unless @txtValid( @$editBox.val() )
-            @appendCellRaw(null) 
+    # these are the only "approved" ways to edit the array.
+    # they affect what is displayed and also the underlying @theArray
 
-        @startEditing(@editIndex + 1)
-
-    startEditingPrev: ->
-        @startEditing(@editIndex - 1) if @editIndex > @firstIndex
-
-    appendCellRaw: (val, showChanges) ->
+    arrayPushRaw: (val, showChanges) ->
         newindex = @theArray.length
         @theArray.push(val);
         @$arrayTbl.find("tr.array-indices").append("<td>" + newindex + "</td>")
@@ -227,27 +242,45 @@ class VArray
 
         @markChanged(newindex) if showChanges
 
-    chopLastCell: ->
+    arrayChopLast: ->
         @theArray.length--;
         @$arrayTbl.find("td:last-child").remove()
     
-    setCellTxt: (index, txtVal, showChanges) ->
-        @setCellRaw(index, @txtToRaw(txtVal), showChanges)
+    arraySetFromTxt: (index, txtVal, showChanges) ->
+        @arraySetFromRaw(index, @txtToRaw(txtVal), showChanges)
 
-    setCellRaw: (index, rawVal, showChanges) ->
+    arraySetFromRaw: (index, rawVal, showChanges) ->
         @theArray[index] = rawVal
         $cell = @getNthCell(index)
 
         oldhtml = $cell.html()
 
         # normally, there are no null elements in @theArray. the exception
-        # is the first cell, and we still have to "display" it
-        newhtml = if @theArray[index]? \
-                    then "" + @rawToTxt( @theArray[index] ) \
-                    else ""
+        # is the first cell, and we still have to "display" it.
 
-        $cell.html(newhtml)
-        @markChanged(index) if showChanges and oldhtml != newhtml
+        # also, we must always cast to strings, or else comparison will fail
+        # between integer 1 and string "1"
+
+        newhtml = if @theArray[index]? then "" + @rawToTxt( @theArray[index] ) else ""
+
+        if oldhtml isnt newhtml
+            $cell.html(newhtml)
+            @markChanged(index) if showChanges
+
+
+    arrayReset: (newArray) ->
+        @theArray.length = 0
+        @theArray.push(null) for [0...@firstIndex]
+        @$arrayTbl.find("tr").empty()
+
+        if newArray? and newArray.length > @firstIndex
+            @arrayPushRaw(v) for v in newArray[@firstIndex..]
+        else 
+            # can't display an empty array
+            @arrayPushRaw(null)
+
+
+
 
     markChanged: (index) ->
         $col = @getNthColumn(index)
@@ -258,4 +291,3 @@ class VArray
         
 Common.VamonosExport { Widget: { Array: VArray } }
 
-    

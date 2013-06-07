@@ -113,7 +113,7 @@ class Visualizer
 
     editMode: ->
         return if @mode is "edit"
-        @tellWidgets("displayStop")
+        @tellWidgets("displayStop") if @mode is "display"
         @mode = "edit"
         @tellWidgets("editStart")
 
