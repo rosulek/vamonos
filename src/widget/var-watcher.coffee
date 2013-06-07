@@ -14,6 +14,9 @@ class VarWatcher
             when "setup"
                 [@stash, vis] = options
                 @stash[v] = null for v in @watch
+
+            when "editStop"
+                @stash[v] = null for v in @watch
                 
             when "render"
                 @showVars(options...)
