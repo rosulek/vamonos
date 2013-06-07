@@ -13,13 +13,13 @@ class ControlButtons
     constructor: ({container, noRunStopButton, @autoPlay}) ->
         @$container = Common.jqueryify(container)
 
-        @$runStopButton    = $("<button>", {class: "controls-button", html: RUN})
+        @$runStopButton   = $("<button>", {class: "controls-button", html: RUN})
         @$prevButton      = $("<button>", {class: "controls-button", html: PREV})
         @$nextButton      = $("<button>", {class: "controls-button", html: NEXT})
         @$playPauseButton = $("<button>", {class: "controls-button", html: PLAY})
 
-        @playing = no
-        @atLastFrame = no
+        @playInterval = null
+        @atLastFrame  = no
 
         @$container.append(@$runStopButton) unless noRunStopButton
         @$container.append(@$prevButton, @$nextButton, @$playPauseButton)
@@ -33,27 +33,19 @@ class ControlButtons
                 @visualizer.trigger("editMode")
         )
         @$playPauseButton.on("click", =>
-            if @playing then @pausePlaying() else @startPlaying()
+            if @playInterval? then @stopPlaying() else @startPlaying()
         )
 
     startPlaying: ->
-        return if @playing or @atLastFrame
+        return if @playInterval? or @atLastFrame
         @$playPauseButton.html(PAUSE)
-        @playing = yes
-        setTimeout( (=> @timedPlay()), 500)
+        @playInterval = setInterval( (=> @visualizer.trigger("nextFrame")), 1000)
 
-    pausePlaying: ->
-        return unless @playing
-        @playing = no
+    stopPlaying: ->
+        return unless @playInterval?
+        clearTimeout(@playInterval)
+        @playInterval = null
         @$playPauseButton.html(PLAY)
-
-    timedPlay: ->
-        return unless @playing
-        if @atLastFrame
-            @pausePlaying()
-        else
-            @visualizer.trigger("nextFrame")
-            setTimeout( (=> @timedPlay()), 1000)
                     
     event: (event, options...) -> switch event
         when "setup"
@@ -77,7 +69,7 @@ class ControlButtons
             @startPlaying() if @autoPlay
 
         when "displayStop"
-            @pausePlaying()
+            @stopPlaying()
 
         when "render"
             [frame, type] = options
@@ -87,7 +79,7 @@ class ControlButtons
             if @atLastFrame
                 @$nextButton.attr("disabled", "true")
                 @$playPauseButton.attr("disabled", "true")
-                @pausePlaying()
+                @stopPlaying()
             else
                 @$nextButton.removeAttr("disabled")
                 @$playPauseButton.removeAttr("disabled")
