@@ -68,13 +68,12 @@ class Visualizer
         @frames.push(newFrame)
 
 
-    trigger: (event, options...) ->
-        switch event
-            when "runAlgorithm" then @runAlgorithm()
-            when "editMode"     then @editMode()
-            when "nextFrame"    then @nextFrame()
-            when "prevFrame"    then @prevFrame()
-            when "jumpFrame"    then @jumpFrame(options...)
+    trigger: (event, options...) -> switch event
+        when "runAlgorithm" then @runAlgorithm()
+        when "editMode"     then @editMode()
+        when "nextFrame"    then @nextFrame()
+        when "prevFrame"    then @prevFrame()
+        when "jumpFrame"    then @jumpFrame(options...)
 
 
     tellWidgets: (event, options...) ->
@@ -133,8 +132,7 @@ class Visualizer
         @goToFrame(n, "jump")
 
     goToFrame: (n, type) ->
-        return unless @mode is "display"
-        return unless 1 <= n <= @frames.length
+        return unless @mode is "display" and 1 <= n <= @frames.length
         @currentFrameNumber = n
         @tellWidgets("render", @frames[@currentFrameNumber-1], type)
 
