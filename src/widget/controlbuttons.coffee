@@ -65,7 +65,6 @@ class ControlButtons
             @$nextButton.attr("disabled", "true");
             @$playPauseButton.attr("disabled", "true");
             @$container.addClass("controls-disabled")
-            @pausePlaying()
             @mode = "edit"
 
         when "displayStart"
@@ -76,6 +75,9 @@ class ControlButtons
             @$container.removeClass("controls-disabled")
             @mode = "display"
             @startPlaying() if @autoPlay
+
+        when "displayStop"
+            @pausePlaying()
 
         when "render"
             [frame, type] = options
