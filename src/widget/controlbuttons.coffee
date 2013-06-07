@@ -3,12 +3,12 @@
 
 class ControlButtons
 
-    PLAY  = "&#x25b6;"
-    PAUSE = "&#x25ae;&#x25ae;"
+    PLAY  = "\u25b6"
+    PAUSE = "\u25ae\u25ae"
     STOP  = "stop"
     RUN   = "run"
-    NEXT  = "&#x25ae;&#x25B6;"
-    PREV  = "&#x25c0;&#x25ae;"
+    NEXT  = "\u25ae\u25B6"
+    PREV  = "\u25c0\u25ae"
 
     constructor: ({container, noRunStopButton, @autoPlay}) ->
         @$container = Common.jqueryify(container)
@@ -24,8 +24,14 @@ class ControlButtons
         @$container.append(@$runStopButton) unless noRunStopButton
         @$container.append(@$prevButton, @$nextButton, @$playPauseButton)
 
-        @$nextButton.on("click", => @visualizer.trigger("nextFrame"))
-        @$prevButton.on("click", => @visualizer.trigger("prevFrame"))
+        @$nextButton.on("click", =>
+            @visualizer.trigger("nextFrame")
+            @stopPlaying()
+        )
+        @$prevButton.on("click", => 
+            @visualizer.trigger("prevFrame")
+            @stopPlaying()
+        )
         @$runStopButton.on("click", =>
             if @mode is "edit"
                 @visualizer.trigger("runAlgorithm")

@@ -107,6 +107,12 @@ table.array {
         color: @numbering-color;
     }
 
+    th {
+        border: 0px;
+        background: inherit;
+        padding-right: 8px;
+    }
+
     .indices-inside & tr.array-indices td, tr.array-cells td {
         border: 1px solid @border-color;
         background-color: @normal-item-bg-color;
@@ -130,11 +136,6 @@ table.array {
             background-color: @editing-bg-color;
         }
 
-        &.array-title {
-            border: 0px;
-            background: inherit;
-            padding-right: 8px;
-        }
     }
 
     .indices-inside & {

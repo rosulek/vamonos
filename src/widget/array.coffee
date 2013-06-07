@@ -18,7 +18,6 @@ class VArray
         )
         @$container.append(@$arrayTbl)
 
-
     event: (event, options...) -> switch event
         when "setup"
             [@stash, visualizer] = options
@@ -277,7 +276,7 @@ class VArray
     arrayReset: (newArray) ->
         @theArray.length = 0
         @theArray.push(null) for [0...@firstIndex]
-        @$arrayTbl.find("tr").empty()
+        @$arrayTbl.find("tr td").remove()
 
         if newArray? and newArray.length > @firstIndex
             @arrayPushRaw(v) for v in newArray[@firstIndex..]
