@@ -10,7 +10,6 @@
 @shadow-color: #aaa;
 
 @highlight-background-color: #FCFBBB;
-@highlight-secondary-background-color: #EBFAEB;
 @highlight-text-color: red;
 @alert-color: #F77F6F;
 
@@ -247,6 +246,36 @@ table.pseudocode {
 
     tr.pseudocode-previous {
         td.pseudocode-text, td.pseudocode-comment  {
+            background: -moz-linear-gradient(left, @highlight-background-color 0%, rgba(255,255,255,0.5) 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, right top, color-stop(0%,@highlight-background-color), color-stop(100%,rgba(255,255,255,0.5))); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(left, @highlight-background-color 0%,rgba(255,255,255,0.5) 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(left, @highlight-background-color 0%,rgba(255,255,255,0.5) 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(left, @highlight-background-color 0%,rgba(255,255,255,0.5) 100%); /* IE10+ */
+            background: linear-gradient(to right, @highlight-background-color 0%,rgba(255,255,255,0.5) 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f1da36', endColorstr='#80ffffff',GradientType=1 ); /* IE6-9 */
+        }
+        td.pseudocode-line-number {
+            background-color: multiply(@highlight-background-color, @pseudocode-line-number-bg-color);
+        }
+        td.pseudocode-gutter {
+            background-color: multiply(@highlight-background-color, @pseudocode-gutter-color, 50%);
+        }
+    }
+
+    tr.pseudocode-next {
+        td.pseudocode-text, td.pseudocode-comment  {
+            background: -moz-linear-gradient(left, rgba(255,255,255,0.5) 0%, @highlight-background-color 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(255,255,255,0.5)), color-stop(100%,@highlight-background-color)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(left, rgba(255,255,255,0.5) 0%,@highlight-background-color 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(left, rgba(255,255,255,0.5) 0%,@highlight-background-color 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(left, rgba(255,255,255,0.5) 0%,@highlight-background-color 100%); /* IE10+ */
+            background: linear-gradient(to right, rgba(255,255,255,0.5) 0%,@highlight-background-color 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#80ffffff', endColorstr='#f1da36',GradientType=1 ); /* IE6-9 */
+        }
+    }
+
+    tr.pseudocode-active {
+        td.pseudocode-text, td.pseudocode-comment  {
             background-color: @highlight-background-color;
         }
         td.pseudocode-line-number {
@@ -257,17 +286,6 @@ table.pseudocode {
         }
     }
 
-    tr.pseudocode-active {
-        td.pseudocode-text, td.pseudocode-comment  {
-            background-color: @highlight-secondary-background-color;
-        }
-        td.pseudocode-line-number {
-            background-color: multiply(@highlight-secondary-background-color, @pseudocode-line-number-bg-color);
-        }
-        td.pseudocode-gutter {
-            background-color: multiply(@highlight-secondary-background-color, @pseudocode-gutter-color, 50%);
-        }
-    }
 }
 
 

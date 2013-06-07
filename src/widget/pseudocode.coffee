@@ -55,14 +55,19 @@ class Pseudocode
     render: (frame) ->
         @clear()
 
-        @addClassToLine(@previous, "pseudocode-previous") if @previous? and @showPreviousLine
-        @addClassToLine(frame._lineNumber, "pseudocode-active")
+        if @showPreviousLine and @previous isnt frame._lineNumber
+            @addClassToLine(@previous, "pseudocode-previous") if @previous?
+            @addClassToLine(frame._lineNumber, "pseudocode-next")
+        else
+            @addClassToLine(frame._lineNumber, "pseudocode-active")
 
         @previous = frame._lineNumber if @showPreviousLine
         
     clear: () ->
+        if @showPreviousLine
+            @$tbl.find("tr").removeClass("pseudocode-next")
+            @$tbl.find("tr").removeClass("pseudocode-previous")
         @$tbl.find("tr").removeClass("pseudocode-active")
-        @$tbl.find("tr").removeClass("pseudocode-previous") if @showPreviousLine
 
     addClassToLine: (n, klass) ->
         @$tbl.find("tr[vamonos-linenumber=#{ n }]")
