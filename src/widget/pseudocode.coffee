@@ -37,12 +37,15 @@ class Pseudocode
             @showBreakpoints()
 
         when "editStart"
-            @clear()
             @enableBreakpointSelection() if @editableBreakpoints
 
         when "displayStart"
             @disableBreakpointSelection() if @editableBreakpoints
             @showBreakpoints()
+
+        when "displayStop"
+            @clear()
+            @previous = null
 
         when "render"
             [frame, type] = options
