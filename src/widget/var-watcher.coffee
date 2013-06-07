@@ -29,7 +29,12 @@ class VarWatcher
 
     showVars: (frame) ->
         @clear()
-        vals = ("<i>#{v}</i> = #{frame[v] ? "<i>undef</i>"}" for v in @watch)
+        vals = for v in @watch
+            str = if frame[v]?
+                Common.rawToTxt(frame[v]) 
+            else
+                "<i>undef</i>"
+            "<i>#{v}</i> = #{str}"
         @$container.html(vals.join("<br>"))
 
     clear: ->
