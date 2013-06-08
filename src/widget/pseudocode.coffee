@@ -67,8 +67,7 @@ class Pseudocode
         @$tbl.find("tr").removeClass("pseudocode-active")
 
     addClassToLine: (n, klass) ->
-        @$tbl.find("tr[vamonos-linenumber=#{ n }]")
-                .addClass(klass)
+        @$tbl.find("tr[vamonos-linenumber=#{ n }]").addClass(klass) if Common.isNumber(n)
 
     ###
     #   Widget.Pseudocode.keywords
@@ -107,8 +106,12 @@ class Pseudocode
     #   in the stash.
     ###
     toggleBreakpoint: (n) ->
-        n = parseInt(n)
-        return if isNaN(n)
+        return unless Common.isNumber(n)
+
+        # otherwise can get 2 copies of a breakpoint in @stash._breakpoints,
+        # one for string and one for int
+        n = parseInt(n) 
+
         gutter = @getLine(n).find("td.pseudocode-gutter")
         if n in @stash._breakpoints
             gutter.find("div.pseudocode-breakpoint").remove()

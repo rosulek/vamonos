@@ -25,6 +25,9 @@ class Common
 
     @txtValid: (txt) -> @txtToRaw(txt)?
 
+    @isNumber: (val) ->
+        return ! isNaN(parseInt(val))
+    
     ###
     #   Common.arrayify( obj )
     #
