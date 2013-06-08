@@ -1,7 +1,7 @@
 class WidgetTest
 
     HTML: """
-        <div id="wt-controls" class="container">
+        <div id="wt-controls">
             <table>
                 <tr id="wt-constructor-tr"><th colspan=2>widget constructor:</th></tr>
                 <tr><td></td><td><button id="wt-constructor">create widget</button></td></tr>
@@ -9,26 +9,38 @@ class WidgetTest
                 <tr><td colspan=2>
                     <button class="wt-event-button" id="wt-setup">setup</button>
                     <button class="wt-event-button" id="wt-editStart">editStart</button>
-                    <button class="wt-event-button" id="wt-editStop">editStop</button>
-                </th></tr>
-                <tr><td colspan=2>
+                    <button class="wt-event-button" id="wt-editStop">editStop</button><br>
                     <button class="wt-event-button" id="wt-displayStart">displayStart</button>
                     <button class="wt-event-button" id="wt-displayStop">displayStop</button>
+                    <button class="wt-event-button" id="wt-destroy">destroy</button>
                 </th></tr>
                 <tr><th colspan=2>render event:</th></tr>
                 <tr id="wt-render-tr"><td>varname</td><td>value</td></tr>
-                <tr><td><input class="wt-varname" id="wt-varname1"></td><td><input id="wt-varvalue1"></td></tr>
-                <tr><td><input class="wt-varname" id="wt-varname2"></td><td><input id="wt-varvalue2"></td></tr>
-                <tr><td><input class="wt-varname" id="wt-varname3"></td><td><input id="wt-varvalue3"></td></tr>
-                <tr><td></td><td><button id="wt-render">send event</button></td></tr>
-                <tr><th colspan=2>other:</th></tr>
-                <tr><td colspan=2><button id="wt-showstash">show stash</button></td></tr>
-                <tr id="wt-css-tr"><th colspan=2>css options:</th></tr>
+                <tr><td><input class="wt-varname" id="wt-varname1"></td><td><input type="text" id="wt-varvalue1"></td></tr>
+                <tr><td><input class="wt-varname" id="wt-varname2"></td><td><input type="text" id="wt-varvalue2"></td></tr>
+                <tr><td><input class="wt-varname" id="wt-varname3"></td><td><input type="text" id="wt-varvalue3"></td></tr>
+                <tr><td>
+                    <select id="wt-render-type">
+                        <option>next</option>                
+                        <option>prev</option>                
+                        <option>init</option>                
+                        <option>jump</option></select>
+                </td><td><button id="wt-render">send event</button></td></tr>
+                <tr><th colspan=2>stash:</th></tr>
+                <tr><td colspan=2><textarea id="wt-stash"></textarea></td></tr>
+                <tr><td colspan=2>
+                    <button id="wt-showstash">show stash</button>
+                    <button id="wt-setstash">set stash</button>
+                </td></tr>
+                <tr id="wt-css-tr"><th colspan=2>container css options:</th></tr>
             </table>
         </div>
-        <div class="container">
+        <div id="wt-log-container">
+            <b>log:</b>
             <textarea id="wt-log"></textarea>
         </div>
+
+        <b id="wt-widget-title">widget:</b>
         <div id="wt-container" class="container"></div>
     """
 
@@ -47,7 +59,7 @@ class WidgetTest
                 when "bool"
                     @constructorOptions[attr] = $("<input>", {type: "checkbox"})
                 when "string", "json"
-                    @constructorOptions[attr] = $("<input>", {value: defaultVal})
+                    @constructorOptions[attr] = $("<input>", {type: "text", value: defaultVal})
 
             $("#wt-constructor-tr").after( $("<tr>").append(
                 $("<td>", {text: attr}), $("<td>").append(@constructorOptions[attr])
@@ -68,7 +80,7 @@ class WidgetTest
                 @widget.event(e)
                 @log("sent '#{e}' event")
             )
-        setupEventButton(e) for e in ["displayStart", "displayStop", "editStart", "editStop"]
+        setupEventButton(e) for e in ["displayStart", "displayStop", "editStart", "editStop", "destroy"]
 
         $("#wt-render").on("click", =>
             frame = {}
@@ -78,15 +90,20 @@ class WidgetTest
                 if (varname + value).length > 0
                     frame[varname] = @JSONparse(value)
 
-            @widget.event("render", frame)
-            @log("sent 'render' event with frame=" + JSON.stringify(frame))
+            type = $("#wt-render-type").val()
+            @widget.event("render", frame, type)
+            @log("sent 'render' event: type=#{type}, frame=" + JSON.stringify(frame))
         )
 
         for i in [1,2,3]
             $("#wt-varname#{i}").val( defaultFrameVars[i-1] ) if defaultFrameVars[i-1]?
 
         $("#wt-showstash").on("click", =>
-            @log("stash: " + JSON.stringify(@stash))
+            $("#wt-stash").val(JSON.stringify(@stash))
+        )
+        $("#wt-setstash").on("click", =>
+            @stash = JSON.parse( $("#wt-stash").val() )
+            @log("set stash to: " + $("#wt-stash").val())
         )
 
         addCssOption = (opt) =>

@@ -1,3 +1,8 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
 .container {
     display: inline-block;
     vertical-align: middle;
@@ -9,19 +14,65 @@
     box-shadow: 5px 5px 5px #ccc;
 }
 
-#wt-log {
-    width: 300px;
-    height: 400px;
+#wt-controls {
+/*    width: 300px; */
+    height: 100%;
+    float: left;
+    margin: 0;
+    background: #eee;
+    overflow-y: auto;
+    padding: 8px;
+    display: inline-block;
+}
+
+#wt-controls th {
+    background: #ccc;
+    text-align: left;
+}
+#wt-controls td:first-child {
+    text-align: right;
+}
+#wt-controls td[colspan="2"]:first-child {
+    text-align: center;
+}
+
+#wt-controls td:first-child input {
+    width: 80px;
+}
+#wt-controls td:nth-child(2) input[type="text"] {
+    width: 120px;
 }
 
 .wt-active-button {
     font-weight: bold;
 }
 
-.wt-varname {
-    width: 60px;
+
+#wt-stash {
+    width: 95%;
+    height: 50px;
 }
 
-h1 { margin: 32px 0 0 0; }
-h1:first-child { margin: 0px; }
 
+
+#wt-log-container {
+    width: 300px;
+    height: 100%;
+    float: left;
+    background: #ccc;
+    margin: 0 8px 0 0;
+    padding: 8px;
+}
+
+#wt-log {
+    width: 100%;
+    height: 92%;
+    background: #eee;
+}
+
+
+
+#wt-widget-title {
+    margin: 8px;
+    display: block;
+}

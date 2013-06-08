@@ -4,7 +4,7 @@ var WidgetTest,
 
 WidgetTest = (function() {
 
-  WidgetTest.prototype.HTML = "<div id=\"wt-controls\" class=\"container\">\n    <table>\n        <tr id=\"wt-constructor-tr\"><th colspan=2>widget constructor:</th></tr>\n        <tr><td></td><td><button id=\"wt-constructor\">create widget</button></td></tr>\n        <tr><th colspan=2>basic events:</th></tr>\n        <tr><td colspan=2>\n            <button class=\"wt-event-button\" id=\"wt-setup\">setup</button>\n            <button class=\"wt-event-button\" id=\"wt-editStart\">editStart</button>\n            <button class=\"wt-event-button\" id=\"wt-editStop\">editStop</button>\n        </th></tr>\n        <tr><td colspan=2>\n            <button class=\"wt-event-button\" id=\"wt-displayStart\">displayStart</button>\n            <button class=\"wt-event-button\" id=\"wt-displayStop\">displayStop</button>\n        </th></tr>\n        <tr><th colspan=2>render event:</th></tr>\n        <tr id=\"wt-render-tr\"><td>varname</td><td>value</td></tr>\n        <tr><td><input class=\"wt-varname\" id=\"wt-varname1\"></td><td><input id=\"wt-varvalue1\"></td></tr>\n        <tr><td><input class=\"wt-varname\" id=\"wt-varname2\"></td><td><input id=\"wt-varvalue2\"></td></tr>\n        <tr><td><input class=\"wt-varname\" id=\"wt-varname3\"></td><td><input id=\"wt-varvalue3\"></td></tr>\n        <tr><td></td><td><button id=\"wt-render\">send event</button></td></tr>\n        <tr><th colspan=2>other:</th></tr>\n        <tr><td colspan=2><button id=\"wt-showstash\">show stash</button></td></tr>\n        <tr id=\"wt-css-tr\"><th colspan=2>css options:</th></tr>\n    </table>\n</div>\n<div class=\"container\">\n    <textarea id=\"wt-log\"></textarea>\n</div>\n<div id=\"wt-container\" class=\"container\"></div>";
+  WidgetTest.prototype.HTML = "<div id=\"wt-controls\">\n    <table>\n        <tr id=\"wt-constructor-tr\"><th colspan=2>widget constructor:</th></tr>\n        <tr><td></td><td><button id=\"wt-constructor\">create widget</button></td></tr>\n        <tr><th colspan=2>basic events:</th></tr>\n        <tr><td colspan=2>\n            <button class=\"wt-event-button\" id=\"wt-setup\">setup</button>\n            <button class=\"wt-event-button\" id=\"wt-editStart\">editStart</button>\n            <button class=\"wt-event-button\" id=\"wt-editStop\">editStop</button><br>\n            <button class=\"wt-event-button\" id=\"wt-displayStart\">displayStart</button>\n            <button class=\"wt-event-button\" id=\"wt-displayStop\">displayStop</button>\n            <button class=\"wt-event-button\" id=\"wt-destroy\">destroy</button>\n        </th></tr>\n        <tr><th colspan=2>render event:</th></tr>\n        <tr id=\"wt-render-tr\"><td>varname</td><td>value</td></tr>\n        <tr><td><input class=\"wt-varname\" id=\"wt-varname1\"></td><td><input type=\"text\" id=\"wt-varvalue1\"></td></tr>\n        <tr><td><input class=\"wt-varname\" id=\"wt-varname2\"></td><td><input type=\"text\" id=\"wt-varvalue2\"></td></tr>\n        <tr><td><input class=\"wt-varname\" id=\"wt-varname3\"></td><td><input type=\"text\" id=\"wt-varvalue3\"></td></tr>\n        <tr><td>\n            <select id=\"wt-render-type\">\n                <option>next</option>                \n                <option>prev</option>                \n                <option>init</option>                \n                <option>jump</option></select>\n        </td><td><button id=\"wt-render\">send event</button></td></tr>\n        <tr><th colspan=2>stash:</th></tr>\n        <tr><td colspan=2><textarea id=\"wt-stash\"></textarea></td></tr>\n        <tr><td colspan=2>\n            <button id=\"wt-showstash\">show stash</button>\n            <button id=\"wt-setstash\">set stash</button>\n        </td></tr>\n        <tr id=\"wt-css-tr\"><th colspan=2>container css options:</th></tr>\n    </table>\n</div>\n<div id=\"wt-log-container\">\n    <b>log:</b>\n    <textarea id=\"wt-log\"></textarea>\n</div>\n\n<b id=\"wt-widget-title\">widget:</b>\n<div id=\"wt-container\" class=\"container\"></div>";
 
   function WidgetTest(_arg) {
     var addCssOption, attr, cssOptions, defaultFrameVars, defaultVal, e, i, o, preprocessContainer, setupEventButton, type, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4,
@@ -36,6 +36,7 @@ WidgetTest = (function() {
         case "string":
         case "json":
           this.constructorOptions[attr] = $("<input>", {
+            type: "text",
             value: defaultVal
           });
       }
@@ -60,7 +61,7 @@ WidgetTest = (function() {
         return _this.log("sent '" + e + "' event");
       });
     };
-    _ref3 = ["displayStart", "displayStop", "editStart", "editStop"];
+    _ref3 = ["displayStart", "displayStop", "editStart", "editStop", "destroy"];
     for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
       e = _ref3[_j];
       setupEventButton(e);
@@ -77,8 +78,9 @@ WidgetTest = (function() {
           frame[varname] = _this.JSONparse(value);
         }
       }
-      _this.widget.event("render", frame);
-      return _this.log("sent 'render' event with frame=" + JSON.stringify(frame));
+      type = $("#wt-render-type").val();
+      _this.widget.event("render", frame, type);
+      return _this.log(("sent 'render' event: type=" + type + ", frame=") + JSON.stringify(frame));
     });
     _ref4 = [1, 2, 3];
     for (_k = 0, _len2 = _ref4.length; _k < _len2; _k++) {
@@ -88,7 +90,11 @@ WidgetTest = (function() {
       }
     }
     $("#wt-showstash").on("click", function() {
-      return _this.log("stash: " + JSON.stringify(_this.stash));
+      return $("#wt-stash").val(JSON.stringify(_this.stash));
+    });
+    $("#wt-setstash").on("click", function() {
+      _this.stash = JSON.parse($("#wt-stash").val());
+      return _this.log("set stash to: " + $("#wt-stash").val());
     });
     addCssOption = function(opt) {
       var $checkbox;
