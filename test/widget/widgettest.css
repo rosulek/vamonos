@@ -1,0 +1,27 @@
+.container {
+    display: inline-block;
+    vertical-align: middle;
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid black;
+    -moz-box-shadow: 5px 5px 5px #ccc;
+    -webkit-box-shadow: 5px 5px 5px #ccc;
+    box-shadow: 5px 5px 5px #ccc;
+}
+
+#wt-log {
+    width: 300px;
+    height: 400px;
+}
+
+.wt-active-button {
+    font-weight: bold;
+}
+
+.wt-varname {
+    width: 60px;
+}
+
+h1 { margin: 32px 0 0 0; }
+h1:first-child { margin: 0px; }
+
