@@ -76,7 +76,7 @@ class Pseudocode
     #   List of special words to be bold in the formatted pseudocode.
     ###
     keywords: "for while if else elseif elsif elif begin end then repeat until
-               to downto by return error throw and or"
+               to downto by return error throw and or swap"
                    .split(/\s+/)
                    .sort((a,b) -> b.length - a.length)
 
@@ -107,7 +107,8 @@ class Pseudocode
     #   in the stash.
     ###
     toggleBreakpoint: (n) ->
-        n = parseInt(n, 10)
+        n = parseInt(n)
+        return if isNaN(n)
         gutter = @getLine(n).find("td.pseudocode-gutter")
         if n in @stash._breakpoints
             gutter.find("div.pseudocode-breakpoint").remove()
