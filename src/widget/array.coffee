@@ -83,7 +83,7 @@ class VArray
         # apply CSS rules
         for [compare, indexName, className] in @cssRules
             index = frame[indexName]
-            if Common.isNumber(index)) and @firstIndex <= index < newArray.length
+            if Common.isNumber(index) and @firstIndex <= index < newArray.length
                 $col = @getNthColumn(index)
                 $selector = switch compare 
                     when "<"        then $col.prevAll() 

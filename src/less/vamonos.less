@@ -65,6 +65,15 @@
 }
 
 
+///////////////////
+// COMMON THINGS
+
+.variable-name() {
+    font-weight: normal;
+    font-style: italic;
+}
+
+
 /////////////////
 // INLINE INPUT
 
@@ -106,12 +115,16 @@ table.array {
         font-size: @numbering-size;
         color: @numbering-color;
     }
-
+    tr.array-annotations td {
+        .variable-name();
+    }
+    
     th {
         border: 1px solid transparent;
         border-right-width: 0px;
         background: inherit;
         padding-right: 4px;
+        .variable-name();
     }
 
     .indices-inside & tr.array-indices td, tr.array-cells td {
@@ -511,6 +524,26 @@ button.controls-button {
     width: 64px;
     text-align: center;
 }
+
+
+//////////////////////
+// VAR WATCHER
+
+table.var-watcher {
+    border-collapse: collapse;
+    td {
+        margin: 0;
+        padding: 2px;
+    }
+    td:first-child {
+        text-align: right;
+        .variable-name();
+    }
+    & tr.changed {
+        .background-highlight-pulse;
+    }
+}
+
 
 //////////////////////
 // MATRIX
