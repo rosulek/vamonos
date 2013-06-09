@@ -93,7 +93,7 @@ WidgetTest = (function() {
       return $("#wt-stash").val(JSON.stringify(_this.stash));
     });
     $("#wt-setstash").on("click", function() {
-      _this.stash = JSON.parse($("#wt-stash").val());
+      _this.stash = JSONparse($("#wt-stash").val());
       return _this.log("set stash to: " + $("#wt-stash").val());
     });
     addCssOption = function(opt) {
@@ -144,6 +144,9 @@ WidgetTest = (function() {
 
   WidgetTest.prototype.JSONparse = function(txt) {
     try {
+      var tmp;
+
+      return eval("tmp = " + txt);
       return JSON.parse(txt);
     } catch (err) {
       return txt;

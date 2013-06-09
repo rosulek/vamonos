@@ -99,20 +99,36 @@ class VArray
             @arraySetFromRaw(i, newArray[i], showChange)
 
         indices = {}
-        for indexName in @showIndices
-            loc = frame[indexName]
-            if indices[loc]?
-                indices[loc].push(indexName)
+        for i in @showIndices
+            if i in frame
+                target = frame[i]
+                displayName = i
             else
-                indices[loc] = [indexName]
+                ## attempting to use unlikely variable names, as keys in `frame`
+                ## would overwrite them. seems hackish that the eval has access
+                ## to everything currently in this scope. also `with' does not
+                ## appear to override variable name `this`
+                __arrayTmp1 = i
+                __arrayTmp2 = null
+                try
+                    `with (frame) { __arrayTmp2 = eval(__arrayTmp1); }`
+                catch err
+                    console.log("error interpreting `#{i}` as a virtual array index: #{err}")
+                target = __arrayTmp2
+                displayName = i
+
+            console.log(indices)
+
+            if indices[target]?
+                indices[target].push(displayName)
+            else
+                indices[target] = [displayName]
 
         @$arrayTbl.find("tr.array-annotations td").empty()
         for i in [@firstIndex...newArray.length]
             @getNthAnnotation(i).html( indices[i].join(", ") ) if indices[i]?
 
 
-
-    # TODO this is just the default
 
     tdClick: (event) ->
         # ignore clicks on existing inputbox

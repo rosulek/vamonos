@@ -102,7 +102,7 @@ class WidgetTest
             $("#wt-stash").val(JSON.stringify(@stash))
         )
         $("#wt-setstash").on("click", =>
-            @stash = JSON.parse( $("#wt-stash").val() )
+            @stash = JSONparse( $("#wt-stash").val() )
             @log("set stash to: " + $("#wt-stash").val())
         )
 
@@ -140,6 +140,8 @@ class WidgetTest
         
     JSONparse: (txt) ->
         try
+            `var tmp`
+            return eval("tmp = " + txt)
             return JSON.parse(txt)
         catch err
             return txt
