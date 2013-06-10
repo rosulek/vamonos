@@ -60,14 +60,32 @@
                     array: {
                         target: $("table.array"),
                         dir: "sw",
-                        tooltip: "This is the input array. You can click on it to edit it!",
+                        tooltip: "Here is the array that will be used as input to this algorithm. "
+                               + "But since the visualization is <b>edit</b> mode, you can "
+                               + "change this array by clicking on it and typing new values.",
+                        on: { clickTarget: "arrayappend", display: "displaycontrols" },
+                        delay: 2000
+                    },
+                    arrayappend: {
+                        target: $("table.array"),
+                        dir: "ne",
+                        tooltip: "You can easily add more elements to the array, by pressing "
+                               + "the right-arrow or the tab key while in the last cell.",
+                        on: { clickTarget: "arraychop", display: "displaycontrols" },
+                        delay: 2000
+                    },
+                    arraychop: {
+                        target: $("table.array"),
+                        dir: "ne",
+                        tooltip: "You can remove elements from the array (using the delete or backspace "
+                               + "keys), too, but only from the end of the array.",
                         on: { clickTarget: "breakpoints", display: "displaycontrols" },
-                        delay: 5000
+                        delay: 2000
                     },
                     breakpoints: {
                         target: $("#pseudocode"),
                         dir: "w",
-                        tooltip: "You can also click breakpoints to toggle them.",
+                        tooltip: "In edit mode, you can also toggle breakpoints.",
                         on: { clickTarget: "run", display: "displaycontrols" }
                     },
                     run: {
@@ -80,9 +98,9 @@
                     displaycontrols: {
                         target: $("#controls"),
                         dir: "e",
-                        tooltip: "Use these controls to step through the algorithm. To modify "
-                               + "the input array or breakpoints again, press the <b>stop</b> button.",
-                        on: { clickTarget: "linenumbers", edit: "end" },
+                        tooltip: "The visualization is now in <b>playback</b> mode. Use these "
+                               + "controls to step through the algorithm.",
+                        on: { clickTarget: "linenumbers", edit: "inf" },
                         delay: 3000
                     },
                     linenumbers: {
@@ -90,17 +108,34 @@
                         dir: "e",
                         tooltip: "The gray line is the one that has just executed, and "
                                + "the yellow line is the one about to execute.",
-                        on: { frame: "highlights", edit: "end" },
-                        delay: 4000,
+                        on: { frame: "highlights", edit: "inf" },
+                        delay: 3000,
                     },
                     highlights: {
                         target: $("#array"),
                         dir: "e",
                         tooltip: "When you step forward through the frames, "
                                + "changes to the array are highlighted.",
-                        on: { frame: "end" },
-                        delay: 4000
+                        on: { frame: "stop" },
+                        delay: 3000
                     },
+                    stop: {
+                        target: $(".controls-buttons"),
+                        dir: "w",
+                        tooltip: "The <b>stop</b> button will take you back to editing mode.",
+                        on: { clickTarget: "waitinf", frame: "waitinf", edit: "inf" },
+                        delay: 2000
+                    },
+                    waitinf: {
+                        on: { edit: "inf" }
+                    },
+                    inf: {
+                        target: $("#array"),
+                        dir: "s",
+                        tooltip: "This time, try to input <b>infinity</b> into the array!",
+                        on: { clickTarget: "end" },
+                        delay: 2000        
+                    }
 
                 })
             ],
