@@ -1,46 +1,48 @@
 {exec} = require 'child_process'
 Rehab  = require 'rehab'
 
-coffee_compiler = "tools/coffee"
-
 ###
 #   cake build
 #
-#   concatenate all source files into a single coffee file and then compile.
+#   concatenate all source files into a single coffee file and then compiles.
 #
 #   resolves dependencies that are sigaled with the tag:
 #       "#_require ./relative_location_of_filename.coffee"
 ###
 
 compileAll = ->
-    console.log "Building project from src/*.coffee to lib/vamonos.js"
+    console.log "Building project..."
 
     files = new Rehab().process('./src')
 
-    to_single_file = "--join lib/vamonos.js"
-    from_files     = "--compile #{files.join(' ')}"
+    coffee_compiler = "tools/coffee"
+    output_js   = "lib/vamonos.js"
+    coffeefiles = files.join(' ')
 
-    exec "#{coffee_compiler} #{ to_single_file } #{ from_files }",
-         (err, stdout, stderr) ->
-            console.log stdout if stdout.trim().length > 0
-            throw err if err
+    exec "#{coffee_compiler} --join #{ output_js } --compile #{ coffeefiles }",
+        (err, stdout, stderr) -> throw err if err
 
-    console.log "Compiling LESS to CSS"
+    console.log "...compiled lib/vamonos.js"
 
+    less_compiler   = "tools/lessc"
     lessfile = './src/less/vamonos.less'
     csstarget = './lib/vamonos.css'
 
-    exec "lessc #{ lessfile } #{ csstarget }", (err, stdout, stderr) ->
-        console.log stdout if stdout.trim().length > 0
-        throw err if err
+    exec "#{less_compiler} #{ lessfile } #{ csstarget }",
+        (err, stdout, stderr) -> throw err if err
 
-mostRecentCompile = 0
+    console.log "...compiled lib/vamonos.css"
+
+
+lastCompile = 0
 compileIfChanged = ->
-    exec "find src -printf '%T@\n' | sort -n | tail -1", (e, stdout, stderr) -> 
-        time = parseFloat(stdout)
-        if time > mostRecentCompile
-            compileAll()
-            mostRecentCompile = time 
+    exec "find src -printf '%T@\n' | sort -n | tail -1", 
+        (e, stdout, stderr) -> 
+            modDate = parseFloat(stdout)
+            if modDate > lastCompile
+                compileAll()
+                mostRecentCompile = time 
+
 
 task 'build', 'Build all coffeescript and less files to the lib directory', ->
     compileAll()
