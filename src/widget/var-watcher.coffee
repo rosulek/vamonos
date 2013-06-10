@@ -10,7 +10,6 @@ class VarWatcher
     event: (event, options...) -> switch event
         when "setup"
             [@stash, vis] = options
-            @stash[v]     = null for v in @watch
             @tblRows      = {}
 
             @tblRows[variable] = $("<tr>").append(
@@ -23,9 +22,6 @@ class VarWatcher
             $table.append(row) for _, row of @tblRows
             @$container.html($table)
 
-        when "editStop"
-            @stash[v] = null for v in @watch
-            
         when "render"
             @showVars(options...)
 

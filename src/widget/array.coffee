@@ -30,10 +30,11 @@ class VArray
             [@stash, visualizer] = options
 
             # setup defaults in the stash (in case no edit mode happens)
-
             @theArray = @stash[@varName] = @defaultArray.slice() # shallow copy
-            @stash[v] = null for [_, v, _] in @cssRules
-            @stash[v] = null for v in @showIndices            
+
+            # register varName as an input
+            @stash._input.push @varName
+
 
         when "editStart"
             @arrayReset(@defaultArray)

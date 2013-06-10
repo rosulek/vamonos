@@ -33,10 +33,7 @@ class Visualizer
         @maxFrames         ?= 250
         autoStart          ?= false
 
-        # create the stash object
-        @stash = { _breakpoints: [] }
-
-        # pass a reference to the stash object to each widget
+        @stash = { _breakpoints: [], _input: [] }
         @tellWidgets("setup", @stash, @)
 
         if autoStart
@@ -87,11 +84,14 @@ class Visualizer
     ###
     #   Visualizer.runAlgorithm()
     #
-    #   Initializes the frame array, runs the algorithm, and activates
-    #   widgets.
+    #   Initializes the frame and stash arrays, runs the algorithm, and
+    #   activates widgets.
     ###
     runAlgorithm: ->
         return if @mode is "display"
+
+        # initialize stash except for input vars registered by widgets
+        @stash[v] = null for v of @stash when not v in @stash._input
 
         @frames             = []
         @currentFrameNumber = 0
