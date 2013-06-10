@@ -21,7 +21,7 @@
 ###
 class Pseudocode
 
-    constructor: ({container, @editableBreakpoints, @breakpoints, showPreviousLine}) ->
+    constructor: ({container, @editableBreakpoints, @breakpoints, @showPreviousLine}) ->
         @editableBreakpoints ?= true
         @showPreviousLine    ?= true
 

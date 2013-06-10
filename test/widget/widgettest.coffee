@@ -102,7 +102,7 @@ class WidgetTest
             $("#wt-stash").val(JSON.stringify(@stash))
         )
         $("#wt-setstash").on("click", =>
-            @stash = JSONparse( $("#wt-stash").val() )
+            @stash = @JSONparse( $("#wt-stash").val() )
             @log("set stash to: " + $("#wt-stash").val())
         )
 

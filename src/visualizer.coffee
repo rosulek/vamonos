@@ -108,7 +108,8 @@ class Visualizer
         catch err
             switch err
                 when "too many frames"
-                    alert("Too many frames. You may have an infinite loop. " +
+                    alert("Too many frames. You may have an infinite loop, or you may " +
+                          "want to consider setting fewer breakpoints. " +
                           "Visualization has been truncated to the first " +
                           "#{@maxFrames} frames.")
                 when "too many lines"
