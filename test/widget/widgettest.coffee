@@ -40,7 +40,7 @@ class WidgetTest
             <textarea id="wt-log"></textarea>
         </div>
 
-        <b id="wt-widget-title">widget:</b>
+        <div id="wt-widget-title">widget:</div>
         <div id="wt-container" class="container"></div>
     """
 

@@ -15,8 +15,8 @@ body {
 }
 
 #wt-controls {
-/*    width: 300px; */
     height: 100%;
+    box-sizing: border-box;
     float: left;
     margin: 0;
     background: #eee;
@@ -58,6 +58,7 @@ body {
 #wt-log-container {
     width: 300px;
     height: 100%;
+    box-sizing: border-box;
     float: left;
     background: #ccc;
     margin: 0 8px 0 0;
@@ -73,6 +74,6 @@ body {
 
 
 #wt-widget-title {
-    margin: 8px;
-    display: block;
+    padding: 8px;
+    font-weight: bold;
 }

@@ -465,7 +465,14 @@ table.pseudocode {
     border: 1px solid @med-shaded-color;
     background: @normal-item-bg-color;
     width: 250px;
-    margin: 12px auto 12px auto;
+    display: inline-block;
+    margin: 0 8px 0 8px;
+
+    // when used with the "combined controls", slider goes on its own line
+    .controls-combined & {
+        margin-top: 12px;
+        display: block;
+    }
 
     .ease(width, background-color, border-color;);
 
@@ -503,10 +510,6 @@ table.pseudocode {
     }
 }
 
-div.controls-buttons, div.controls-frame-number {
-    display: inline-block;
-}
-
 button.controls-button {
     width: 48px;
     height: 24px;
@@ -519,9 +522,19 @@ button.controls-button {
     }
 }
 
-
 .controls-frame-number {
     width: 64px;
+    text-align: center;
+    display: inline-block;
+
+    &.controls-disabled {
+        color: transparent;
+    }
+}
+.controls-buttons {
+    display: inline-block;
+}
+.controls-combined {
     text-align: center;
 }
 

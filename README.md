@@ -39,9 +39,3 @@ Contributors:
 * Pat Kujawa
 * Eric Spaulding
 
-Future Goals
-------------
-
-* *Pseudocode Compiler.* It would be nice to be able to make a full algorithm
-     visualization directly in the web browser by starting from a basic graph
-     or array template.
