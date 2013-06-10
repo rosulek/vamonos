@@ -100,34 +100,35 @@ class VArray
 
         indices = {}
         for i in @showIndices
-            if i in frame
-                target = frame[i]
-                displayName = i
-            else
-                ## attempting to use unlikely variable names, as keys in `frame`
-                ## would overwrite them. seems hackish that the eval has access
-                ## to everything currently in this scope. also `with' does not
-                ## appear to override variable name `this`
-                __arrayTmp1 = i
-                __arrayTmp2 = null
-                try
-                    `with (frame) { __arrayTmp2 = eval(__arrayTmp1); }`
-                catch err
-                    console.log("error interpreting `#{i}` as a virtual array index: #{err}")
-                target = __arrayTmp2
-                displayName = i
-
-            console.log(indices)
+            target = @virtualIndex(frame, i)
 
             if indices[target]?
-                indices[target].push(displayName)
+                indices[target].push(i)
             else
-                indices[target] = [displayName]
+                indices[target] = [i]
 
         @$arrayTbl.find("tr.array-annotations td").empty()
         for i in [@firstIndex...newArray.length]
             @getNthAnnotation(i).html( indices[i].join(", ") ) if indices[i]?
 
+    virtualIndex: (frame, indexStr) ->
+        return null unless indexStr.match(/^([a-zA-Z_]+|\d+)((-|\+)([a-zA-Z_]+|\d+))*$/g)
+        tokens = indexStr.match(/[a-zA-Z_]+|-|\+|\d+/g)
+        prevOp = "+"
+        total  = 0
+
+        for t in tokens
+            if prevOp?  # expecting a varname or constant
+                thisTerm = if Common.isNumber(t) then parseInt(t) else frame[t]
+                return null unless thisTerm?
+                switch prevOp
+                    when "+" then total += thisTerm
+                    when "-" then total -= thisTerm
+                prevOp = null
+            else prevOp = t
+        return total
+                    
+                
 
 
     tdClick: (event) ->
