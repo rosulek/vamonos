@@ -3,30 +3,25 @@
 class VarWatcher
     
     constructor: ({container, watch, showChanges}) ->
-        @$container = Common.jqueryify(container)
-        @watch      = Common.arrayify(watch)
-        @hidden     = yes
-#        @$container.hide()
-
+        @$container  = Common.jqueryify(container)
+        @watch       = Common.arrayify(watch)
         @showChanges = Common.arrayify(showChanges ? "next")
 
     event: (event, options...) -> switch event
         when "setup"
             [@stash, vis] = options
-            @stash[v] = null for v in @watch
+            @stash[v]     = null for v in @watch
+            @tblRows      = {}
 
-            @$table = $("<table>", {class: "var-watcher"})
+            @tblRows[variable] = $("<tr>").append(
+                $("<td>", {text: variable}),
+                $("<td>", {text: "="}),
+                $("<td>", {text: ""})
+            ) for variable in @watch
 
-            @tblRows = {}
-            for v in @watch
-                @tblRows[v] = $("<tr>").append(
-                    $("<td>", {text: v}),
-                    $("<td>", {text: "="}),
-                    $("<td>", {text: ""})
-                )
-                @$table.append(@tblRows[v])
-                        
-            @$container.html(@$table)
+            $table = $("<table>", {class: "var-watcher"})
+            $table.append(row) for _, row of @tblRows
+            @$container.html($table)
 
         when "editStop"
             @stash[v] = null for v in @watch
@@ -34,19 +29,13 @@ class VarWatcher
         when "render"
             @showVars(options...)
 
-#        when "displayStart"
-#            @show()
-
         when "displayStop"
-#            @hide()
             @clear()
-#            showVars({}, "none")
 
     showVars: (frame, type) ->
-#        @clear()
         for v in @watch
             newval = if frame[v]? then Common.rawToTxt(frame[v]) else "<i>undef</i>"
-            cell = @tblRows[v].find("td:nth-child(3)")
+            cell   = @tblRows[v].find("td:nth-child(3)")
             oldval = cell.html()
             if newval isnt oldval and type in @showChanges
                 @tblRows[v].addClass("changed")
@@ -60,9 +49,6 @@ class VarWatcher
 
     clear: ->
         e.find("td:nth-child(3)").html("") for v,e of @tblRows
-
-    hide: ->
-        @$container.slideUp()
 
     show: ->
         @$container.show() if @hidden
