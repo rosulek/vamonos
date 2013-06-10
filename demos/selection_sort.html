@@ -61,8 +61,8 @@
                         target: $("table.array"),
                         dir: "sw",
                         tooltip: "Here is the array that will be used as input to this algorithm. "
-                               + "But since the visualization is <b>edit</b> mode, you can "
-                               + "change this array by clicking on it and typing new values.",
+                               + "But since the visualization is in <b>edit</b> mode, you can "
+                               + "change the array by clicking on it and typing new values.",
                         on: { clickTarget: "arrayappend", display: "displaycontrols" },
                         delay: 2000
                     },
@@ -100,7 +100,7 @@
                         dir: "e",
                         tooltip: "The visualization is now in <b>playback</b> mode. Use these "
                                + "controls to step through the algorithm.",
-                        on: { clickTarget: "linenumbers", edit: "inf" },
+                        on: { clickTarget: "linenumbers", edit: "nonnumeric" },
                         delay: 3000
                     },
                     linenumbers: {
@@ -108,7 +108,7 @@
                         dir: "e",
                         tooltip: "The gray line is the one that has just executed, and "
                                + "the yellow line is the one about to execute.",
-                        on: { frame: "highlights", edit: "inf" },
+                        on: { frame: "highlights", edit: "nonnumeric" },
                         delay: 3000,
                     },
                     highlights: {
@@ -123,19 +123,34 @@
                         target: $(".controls-buttons"),
                         dir: "w",
                         tooltip: "The <b>stop</b> button will take you back to editing mode.",
-                        on: { clickTarget: "waitinf", frame: "waitinf", edit: "inf" },
-                        delay: 2000
+                        on: { clickTarget: "waitinf", frame: "waitinf", edit: "nonnumeric" },
+                        delay: 3000
                     },
-                    waitinf: {
-                        on: { edit: "inf" }
+                    wait: {
+                        on: { edit: "nonnumeric" }
+                    },
+                    nonnumeric: {
+                        target: $("#array"),
+                        tooltip: "What happens when you put non-numeric data in the array?",
+                        dir: "s",
+                        on: { clickTarget: "inf" },
+                        delay: 2000        
                     },
                     inf: {
                         target: $("#array"),
                         dir: "s",
-                        tooltip: "This time, try to input <b>infinity</b> into the array!",
+                        tooltip: "What happens when you put <b>infinity</b> in the array?",
                         on: { clickTarget: "end" },
                         delay: 2000        
+                    },
+                    end: {
+                        target: $("#pseudocode"),
+                        dir: "e",
+                        tooltip: "This concludes your quick introduction to <b>Vamonos</b>! Enjoy!",
+                        on: { frame: "endforreal", display: "endforreal", edit: "endforreal" },
+                        delay: 2000
                     }
+                    
                 })
             ],
 
