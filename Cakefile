@@ -1,4 +1,4 @@
-{spawn, exec} = require 'child_process'
+{exec} = require 'child_process'
 Rehab  = require 'rehab'
 
 coffee_compiler = "tools/coffee"
@@ -22,7 +22,7 @@ compileAll = ->
 
     exec "#{coffee_compiler} #{ to_single_file } #{ from_files }",
          (err, stdout, stderr) ->
-            console.log stdout
+            console.log stdout if stdout.trim().length > 0
             throw err if err
 
     console.log "Compiling LESS to CSS"
@@ -31,14 +31,8 @@ compileAll = ->
     csstarget = './lib/vamonos.css'
 
     exec "lessc #{ lessfile } #{ csstarget }", (err, stdout, stderr) ->
-        console.log stdout
+        console.log stdout if stdout.trim().length > 0
         throw err if err
-
-task 'build', 'Build all coffeescript and less files to the lib directory', ->
-    compileAll()
-
-task 'watch', 'Automatically watch directories and recompile when changed', ->
-    setInterval(compileIfChanged, 500)
 
 mostRecentCompile = 0
 compileIfChanged = ->
@@ -48,6 +42,8 @@ compileIfChanged = ->
             compileAll()
             mostRecentCompile = time 
 
-                
-        
+task 'build', 'Build all coffeescript and less files to the lib directory', ->
+    compileAll()
 
+task 'watch', 'Automatically watch directories and recompile when changed', ->
+    setInterval(compileIfChanged, 500)
