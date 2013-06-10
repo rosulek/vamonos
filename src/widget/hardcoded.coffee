@@ -6,6 +6,8 @@ class Hardcoded
     event: (event, options...) -> switch event
         when "setup"
             [stash, visualizer] = options
-            stash[name] = value for name, value of @vars
+            for name, value of @vars
+                stash[name] = value 
+                stash._input.push name
 
 Common.VamonosExport { Widget: { Hardcoded } }
