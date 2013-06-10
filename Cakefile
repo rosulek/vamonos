@@ -1,6 +1,8 @@
 {exec} = require 'child_process'
 Rehab  = require 'rehab'
 
+coffee_compiler = "tools/coffee"
+
 ###
 #   cake build
 #
@@ -9,6 +11,7 @@ Rehab  = require 'rehab'
 #   resolves dependencies that are sigaled with the tag:
 #       "#_require ./relative_location_of_filename.coffee"
 ###
+
 task 'build', 'Build single application file from source files', ->
     console.log "Building project from src/*.coffee to lib/vamonos.js"
 
@@ -17,8 +20,10 @@ task 'build', 'Build single application file from source files', ->
     to_single_file = "--join lib/vamonos.js"
     from_files     = "--compile #{files.join(' ')}"
 
-    exec "coffee #{ to_single_file } #{ from_files }", (err, stdout, stderr) ->
-        throw err if err
+    exec "#{coffee_compiler} #{ to_single_file } #{ from_files }",
+         (err, stdout, stderr) ->
+            console.log stdout
+            throw err if err
 
     console.log "Compiling LESS to CSS"
 
@@ -26,4 +31,5 @@ task 'build', 'Build single application file from source files', ->
     csstarget = './lib/vamonos.css'
 
     exec "lessc #{ lessfile } #{ csstarget }", (err, stdout, stderr) ->
+        console.log stdout
         throw err if err
