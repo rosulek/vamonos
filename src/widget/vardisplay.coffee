@@ -21,7 +21,7 @@ class VarDisplay
             ) for variable in @watch
 
             $table = $("<table>", {class: "var-watcher"})
-            $table.append(row) for _, row of @tblRows
+            $table.append(@tblRows[v]) for v in @watch
 
             @$container.html($table)
 
