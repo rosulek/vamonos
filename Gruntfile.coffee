@@ -5,6 +5,7 @@ module.exports = (grunt) ->
         coffee:
             files: 
                 src: [
+                    'src/data-structures/*'
                     'src/common.coffee'
                     'src/*.coffee'
                     'src/widget/*.coffee'
