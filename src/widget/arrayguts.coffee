@@ -3,11 +3,15 @@
 class ArrayGuts
 
     constructor: ({tableContainer, @defaultArray, @varName, ignoreIndexZero, @displayOnly
-                    showChanges, @cssRules, @showIndices, _dummyIndexZero, showLabel}) ->
+                    showChanges, @cssRules, @showIndices, _dummyIndexZero, showLabel,
+                    cellFormat, cellParse}) ->
         @$editBox   = null
         @editIndex  = null
         @firstIndex = if ignoreIndexZero then 1 else 0
         @defaultArray ?= []
+
+        @rawToTxt   = cellFormat ? Common.rawToTxt
+        @txtToRaw   = cellParse  ? Common.txtToRaw
 
         @showChanges = Common.arrayify(showChanges ? "next")
 
@@ -170,7 +174,7 @@ class ArrayGuts
 
         @editIndex = index
         @$editBox = $("<input>", {class: "inline-input"})
-        @$editBox.val( Common.rawToTxt(@theArray[index]) )
+        @$editBox.val( @rawToTxt(@theArray[index]) )
         @$editBox.width( $cell.width() );           
         @$editBox.on("blur",    (e) => @stopEditingCell(yes) )
         @$editBox.on("keydown", (e) => @editKeyDown(e) ) 
@@ -275,7 +279,7 @@ class ArrayGuts
         newindex = @theArray.length
         @theArray.push(val);
         @$rowIndices.append("<td>" + newindex + "</td>")
-        @$rowCells.append( $("<td>", {text: Common.rawToTxt(val)}) )
+        @$rowCells.append( $("<td>", {text: @rawToTxt(val)}) )
         @$rowAnnotations.append("<td></td>")
 
         @markChanged(newindex) if showChanges
@@ -285,7 +289,7 @@ class ArrayGuts
         row.find("td:last-child").remove() for row in [@$rowIndices, @$rowCells, @$rowAnnotations]
     
     arraySetFromTxt: (index, txtVal, showChanges) ->
-        @arraySetFromRaw(index, Common.txtToRaw(txtVal), showChanges)
+        @arraySetFromRaw(index, @txtToRaw(txtVal), showChanges)
 
     arraySetFromRaw: (index, rawVal, showChanges) ->
         @theArray[index] = rawVal
@@ -299,7 +303,7 @@ class ArrayGuts
         # also, we must always cast to strings, or else comparison will fail
         # between integer 1 and string "1"
 
-        newhtml = if @theArray[index]? then "" + Common.rawToTxt( @theArray[index] ) else ""
+        newhtml = if @theArray[index]? then "" + @rawToTxt( @theArray[index] ) else ""
 
         if oldhtml isnt newhtml
             $cell.html(newhtml)

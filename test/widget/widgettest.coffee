@@ -139,6 +139,7 @@ class WidgetTest
         @log("got a trigger from the widget of type '#{type}', args=" + JSON.stringify(args))
         
     JSONparse: (txt) ->
+        return null if txt.length is 0
         try
             `var tmp`
             return eval("tmp = " + txt)

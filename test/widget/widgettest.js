@@ -145,6 +145,9 @@ WidgetTest = (function() {
   };
 
   WidgetTest.prototype.JSONparse = function(txt) {
+    if (txt.length === 0) {
+      return null;
+    }
     try {
       var tmp;
 

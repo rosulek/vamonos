@@ -13,14 +13,14 @@
     <div class="vamonos">
         <div class="container" id="pseudocode" title="RodCut(price):">
             opt = [0]
-            sol = [null]
+            sol = [[]]
             for k = 1 to price.length
                 opt[k] = 0
                 sol[k] = null
                 for i = 1 to k
                     if opt[k] &lt; opt[k-i] + price[i]
                         opt[k] = opt[k-i] + price[i]
-                        sol[k] = i
+                        sol[k] = sol[k-i] + [i]
         </div>
         <br>
         <div id="controls"></div>
@@ -31,7 +31,7 @@
     <script type="text/javascript">
         var myviz = new Vamonos.Visualizer({
             widgets: [
-                new Vamonos.Widget.Console(),
+//                new Vamonos.Widget.Console(),
 
                 new Vamonos.Widget.ParallelArrays({
                     container: "arrays",
@@ -52,7 +52,8 @@
                         {
                             varName: "sol",
                             showIndices: ["k"],
-                            displayOnly: true
+                            displayOnly: true,
+                            cellFormat: function(x) { return x ? "["+x.join(",")+"]" : "" }
                         }
                     ]
                 }),
@@ -73,13 +74,13 @@
 
             algorithm: function (viz) {
                 with (viz.stash) {
-                    opt = []
-                    sol = []
-                    while (opt.length < price.length) { opt.push(undefined); }
-                    while (sol.length < price.length) { sol.push(undefined); }
+                    opt = [0]
+//                    while (opt.length < price.length) { opt.push(undefined); }
                     viz.line(1);
 
-                    opt[0] = 0;
+                    sol = [[]]
+//                    while (sol.length < price.length) { sol.push(undefined); }
+
                     viz.line(2);
                     for (var _k = 1; _k < price.length; _k++) {
                         viz.line(3);
@@ -96,7 +97,7 @@
                                 viz.line(8);
                                 opt[k] = opt[k-i] + price[i];
                                 viz.line(9);
-                                sol[k] = i;
+                                sol[k] = sol[k-i].concat([i]);
                             }
                         }
                         i = null;
