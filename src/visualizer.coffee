@@ -117,6 +117,9 @@ class Visualizer
                     alert("Your algorithm has executed for over 10000 instructions. " +
                           "You may have an infinite loop. " +
                           "Visualization has been truncated.")
+                else
+                    console.log "[ALGORITHM ERROR] #{err.name}: #{err.message}"
+
 
         @currentFrameNumber = 0
         f._numFrames = @frames.length for f in @frames
