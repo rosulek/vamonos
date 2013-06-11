@@ -1,6 +1,6 @@
 #_require ../common.coffee
 
-class VarWatcher
+class VarDisplay
     
     constructor: ({container, watch, showChanges}) ->
         @$container  = Common.jqueryify(container)
@@ -55,4 +55,4 @@ class VarWatcher
 
 
 
-Common.VamonosExport { Widget: { VarWatcher } }
+Common.VamonosExport { Widget: { VarDisplay } }

@@ -33,7 +33,7 @@ class Visualizer
         @maxFrames         ?= 250
         autoStart          ?= false
 
-        @stash = { _breakpoints: [], _inputVars: [] }
+        @stash = { _breakpoints: [], _inputVars: [], _watchVars: [] }
         @tellWidgets("setup", @stash, @)
 
         if autoStart
