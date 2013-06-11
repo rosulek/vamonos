@@ -1,0 +1,97 @@
+<html><head>
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="demos.css">
+    <script type="text/javascript" src="../deps/jquery.min.js"></script>
+    <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../lib/vamonos.js"></script>
+
+</head><body>
+
+    <h1>Breath First Search</h1>
+
+
+    <div class="vamonos">
+        <div class="container" id="pseudocode" title="BFS(G,s):">
+            for each vertex u &in; G.V - {s}
+                u.color = white
+                s.color = gray
+            Q = &empty;
+            Q.enqueue(s)
+            while Q &ne; &empty;
+                u = Q.dequeue()
+                for each v &in; G.Adj[u]
+                    if v.color == white
+                    v.color = gray
+                    Q.enqueue(v)
+                u.color = black
+        </div>
+        <br>
+        <div id="controls"></div>
+        <br>
+        <div class="container" id="graph"></div>
+    </div>
+
+    <script type="text/javascript">
+
+        var myviz = new Vamonos.Visualizer({
+            widgets: [
+
+                new Vamonos.Widget.Graph({
+                    container: "graph",
+                    vertices: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
+                    edges: { a: ['b', 'e'], b: ['a', 'f'], c: ['f', 'g'],
+                             d: ['c', 'g', 'h'], e: ['a'], f: ['b', 'c', 'g'],
+                             g: ['c', 'f', 'd', 'h'], h: ['g', 'd'] },
+                    s: "b",
+                    varName: "G",
+                             
+                }),
+
+                new Vamonos.Widget.Queue({
+                    container: "queue",
+                    varName: "Q",
+                }),
+
+                new Vamonos.Widget.Pseudocode({
+                    container: "pseudocode",
+                }),
+
+                new Vamonos.Widget.Controls({
+                    container: "controls",
+                    showWhileSliding: true
+                }),
+
+            ],
+
+            algorithm: function (viz) {
+                with (viz.stash) {
+                    for (var i = G.V.length - 1; viz.line(1), i >= 0; i--) {
+                        u = G.V[i];
+                        if (s === u) {
+                            continue;
+                        }
+                        u.color = "white";                  viz.line(2);
+                    }
+                    s.color = "gray";                       viz.line(3);
+                    Q.length = 0;                           viz.line(4);
+                    Q.push(s);                              viz.line(5);
+                    while (viz.line(6), Q.length !== 0) {
+                        u = Q.pop();                        viz.line(7);
+                        for (var j = G.Adj[u].length; viz.line(8), j >= 0; j--) {
+                            v = G.Adj[u][i];
+                            if (viz.line(9), v.color === "white") {
+                                v.color = "gray";           viz.line(10);
+                                Q.push(v);                  viz.line(11);
+                            }
+                        }
+                        u.color = "black";                  viz.line(12);
+                    }
+                }
+            }
+        });
+
+    </script>
+
+</body>
+</html>
