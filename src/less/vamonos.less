@@ -122,26 +122,6 @@ table.array {
     }
     th {
         text-align: right;
-    }
-
-    tr.array-cells td, tr.array-cells th {
-        height: @array-cell-size;     
-    }
-    tr.array-cells td {
-        min-width: @array-cell-size;     
-    }
-    tr.array-cells th {
-        min-width: (@array-cell-size - 4);     
-    }
-    tr.array-indices td {
-        font-size: @numbering-size;
-        color: @numbering-color;
-    }
-    tr.array-annotations td {
-        .variable-name();
-    }
-    
-    th {
         border: 1px solid transparent;
         border-right-width: 0px;
         background: inherit;
@@ -149,6 +129,31 @@ table.array {
         .variable-name();
     }
 
+    tr.array-cells {
+        td, th {
+            height: @array-cell-size;     
+        }
+        td {
+            min-width: @array-cell-size;     
+        }
+//        th {
+//            min-width: (@array-cell-size - 4);
+//        }
+    }
+    tr.array-indices {
+        td, th {
+            font-size: @numbering-size;
+            color: @numbering-color;
+            height: (2 + @array-cell-size/2);
+        }
+    }
+    tr.array-annotations {
+        td, th {
+            .variable-name();
+            height: @array-cell-size;
+        }
+    }
+    
     .indices-inside & tr.array-indices td, tr.array-cells td {
         border: 1px solid @border-color;
         background-color: @normal-item-bg-color;
