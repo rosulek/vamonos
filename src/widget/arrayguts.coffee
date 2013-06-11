@@ -45,9 +45,9 @@ class ArrayGuts
             
             # ensure array indices exist in the stash
             for [_,i,_] in @cssRules
-                @stash[v] = null for v in @virtualIndexDependents(i)
+                @stash[v] ?= null for v in @virtualIndexDependents(i)
             for i in @showIndices
-                @stash[v] = null for v in @virtualIndexDependents(i)
+                @stash[v] ?= null for v in @virtualIndexDependents(i)
            
 
         when "editStart"

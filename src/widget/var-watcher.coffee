@@ -10,8 +10,10 @@ class VarWatcher
     event: (event, options...) -> switch event
         when "setup"
             [@stash, vis] = options
-            @tblRows      = {}
 
+            @stash[v] ?= null for v in @watch
+
+            @tblRows = {}
             @tblRows[variable] = $("<tr>").append(
                 $("<td>", {text: variable}),
                 $("<td>", {text: "="}),
@@ -20,6 +22,7 @@ class VarWatcher
 
             $table = $("<table>", {class: "var-watcher"})
             $table.append(row) for _, row of @tblRows
+
             @$container.html($table)
 
         when "render"
