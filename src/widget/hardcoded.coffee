@@ -9,8 +9,6 @@ class Hardcoded
             for name, value of @vars
                 stash[name] = value 
                 stash._inputVars.push name
-            for p in @breakpoints 
-                unless p in @stash._breakpoints
-                    @stash._breakpoints.push p 
+            Common.insertSet(p, @stash._breakpoints) for p in @breakpoints
 
 Common.VamonosExport { Widget: { Hardcoded } }
