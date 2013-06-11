@@ -12,6 +12,9 @@
 
 class Common
 
+    @insertSet: (item, arraySet) ->
+        arraySet.push item unless item in arraySet
+
     @txtToRaw: (txt) ->
         return Infinity if txt.match(/^\+?(inf(inity)?|\u221E)$/i)
         return -Infinity if txt.match(/^-(inf(inity)?|\u221E)$/i)
