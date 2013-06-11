@@ -140,6 +140,7 @@ class Common
 
     };`
 
+
     ###
     #   Common.addTableRow(jQtable)
     #   

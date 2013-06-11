@@ -56,7 +56,7 @@ class Visualizer
     #
     ###
     line: (n) ->
-        if n in @stash._breakpoints or n is 0
+        if @takeSnapshot(n)
             throw "too many frames" if @currentFrameNumber >= @maxFrames
 
             newFrame              = Common.clone(@stash)
@@ -68,6 +68,20 @@ class Visualizer
         @prevLine = n
         throw "too many lines" if ++@numCallsToLine > 10000
 
+    takeSnapshot: (n) ->
+        return true if n is 0
+        return n in @stash._breakpoints if @stash._breakpoints.length > 0
+        return @diff(@frames[@frames.length-1], @stash, @stash._watchVars) if @stash._watchVars?
+        return false
+        
+    # this is somewhat hacky, comparing stringifications
+    diff: (left, right, vars) ->
+        tleft = {}
+        tright = {}
+        for v in vars
+            tleft[v]  = left[v]
+            tright[v] = right[v]
+        return JSON.stringify(tleft) isnt JSON.stringify(tright)
 
     trigger: (event, options...) -> switch event
         when "runAlgorithm" then @runAlgorithm()
