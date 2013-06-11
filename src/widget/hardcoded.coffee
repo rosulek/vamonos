@@ -8,6 +8,6 @@ class Hardcoded
             [stash, visualizer] = options
             for name, value of @vars
                 stash[name] = value 
-                stash._input.push name
+                stash._inputVars.push name
 
 Common.VamonosExport { Widget: { Hardcoded } }

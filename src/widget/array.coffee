@@ -3,7 +3,7 @@
 class VArray
 
     constructor: ({container, @defaultArray, @varName, ignoreIndexZero,
-                    showChanges, @cssRules, @showIndices, showLabel}) ->
+                    showChanges, @cssRules, @showIndices, _dummyIndexZero, showLabel}) ->
         @$container = Common.jqueryify(container)
         @$editBox   = null
         @editIndex  = null
@@ -17,6 +17,8 @@ class VArray
             $("<tr>", {class: "array-annotations"})
         )
         @$container.append(@$arrayTbl)
+
+        @$arrayTbl.find("tr").append("<th></th>") if ignoreIndexZero and _dummyIndexZero
 
         # interestingly, "if blah" and "if blah is true" are different
         showLabel = @varName + ":" if showLabel is true
@@ -33,7 +35,7 @@ class VArray
             @theArray = @stash[@varName] = @defaultArray.slice() # shallow copy
 
             # register varName as an input
-            @stash._input.push @varName
+            @stash._inputVars.push @varName
 
 
         when "editStart"
@@ -296,9 +298,6 @@ class VArray
         else 
             # can't display an empty array
             @arrayPushRaw(null)
-
-
-
 
     markChanged: (index) ->
         $col = @getNthColumn(index)

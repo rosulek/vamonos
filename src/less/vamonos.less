@@ -120,8 +120,13 @@ table.array {
     }
 
     tr.array-cells td, tr.array-cells th {
-        min-width: @array-cell-size;     
         height: @array-cell-size;     
+    }
+    tr.array-cells td {
+        min-width: @array-cell-size;     
+    }
+    tr.array-cells th {
+        min-width: (@array-cell-size - 4);     
     }
     tr.array-indices td {
         font-size: @numbering-size;

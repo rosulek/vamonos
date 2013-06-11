@@ -33,7 +33,7 @@ class Visualizer
         @maxFrames         ?= 250
         autoStart          ?= false
 
-        @stash = { _breakpoints: [], _input: [] }
+        @stash = { _breakpoints: [], _inputVars: [] }
         @tellWidgets("setup", @stash, @)
 
         if autoStart
@@ -91,7 +91,7 @@ class Visualizer
         return if @mode is "display"
 
         # initialize stash except for input vars registered by widgets
-        @stash[v] = null for v of @stash when not v in @stash._input
+        @stash[v] = null for v of @stash when not v in @stash._inputVars
 
         @frames             = []
         @currentFrameNumber = 0

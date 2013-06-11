@@ -69,7 +69,7 @@ class WidgetTest
         $("#wt-setup").on("click", =>
             $(".wt-event-button").removeClass("wt-active-button")
             $("#wt-setup").addClass("wt-active-button")
-            @widget.event("setup", @stash = {}, @)
+            @widget.event("setup", @stash = {_inputVars: []}, @)
             @log("sent 'setup' event")
         )
 
