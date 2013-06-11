@@ -5,7 +5,6 @@
     <script type="text/javascript" src="../deps/jquery.min.js"></script>
     <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
     <script type="text/javascript" src="../lib/vamonos.js"></script>
-    <script type="text/javascript" src="../deps/jquery.qtip-1.0.0-rc3.min.js"></script>
 
 </head><body>
 
@@ -29,90 +28,6 @@
     </div>
 
     <script type="text/javascript">
-        var tip1, tip2, tip3;
-        var already = 0;
-
-        tip3 = function() {
-            $("#pseudocode").off("click");
-            setTimeout( function() {
-                $("table.pseudocode").qtip("destroy");
-                $(".controls-buttons").qtip({
-                    content: "When you're happy with the input and breakpoints, press the <b>run</b> button to execute the algorithm.",
-                    show: { when: false, ready: true, delay: 2000 },
-                    hide: false,
-                    position: { corner: { target: 'leftMiddle', tooltip:'rightMiddle'}},
-                    style: {name: 'cream', tip: 'rightMiddle'}
-                });
-            }, 1000);
-        };
-
-        tip2 = function() {
-            $("#array").off("click");
-            setTimeout( function() {
-                $("table.array tr.array-cells td:nth-child(2)").qtip("destroy");
-                $("table.pseudocode").qtip({
-                    content: "You can also click breakpoints to toggle them",
-                    show: { when: false, ready: true, delay: 2000 },
-                    hide: false,
-                    position: { corner: { target: 'leftMiddle', tooltip:'rightMiddle'}},
-                    style: {name: 'cream', tip: 'rightMiddle'}
-                });
-                $("#pseudocode").on("click", tip3);
-            }, 3000);
-        };
-
-        tip1 = function() {
-            $("table.array tr.array-cells td:nth-child(2)").qtip({
-                content: "This is the input array. You can click on it to edit it!",
-                show: { when: false, ready: true, delay: 100 },
-                hide: false,
-                position: { corner: { target: 'bottomMiddle', tooltip:'topRight'}},
-                style: {name: 'cream', tip: 'topRight'}
-            });
-            $("#array").on("click", tip2);
-        }
-
-        var tip4 = function() {
-            $(".controls-buttons").qtip({
-                content: "Use these controls to step through the algorithm. To modify the input array or breakpoints again, press the <b>stop</b> button.",
-                show: { when: false, ready: true, delay: 2000 },
-                hide: false,
-                position: { corner: { target: 'leftMiddle', tooltip:'rightMiddle'}},
-                style: {name: 'cream', tip: 'rightMiddle'}
-            });
-            $(".controls-buttons").on("click", function() {
-                setTimeout( function() { $(".controls-buttons").qtip("destroy"); }, 1000);
-            });
-        };
-
-
-        var qtips = {
-            setup: function() {},
-            event: function(mode) {
-                if (already) return;
-                switch (mode) {
-                    case "editStart":
-                        tip1();
-                        break;
-                    case "editStop":
-                        $("#pseudocode").off("click");
-                        $("#array").off("click");
-                        try{ $("table.pseudocode").qtip("destroy"); } catch(e) {}
-                        try{ $("table.array tr.array-cells td:nth-child(2)").qtip("destroy"); } catch(e) {}
-                        try{ $(".controls-buttons").qtip("destroy"); } catch(e) {}
-                        break;
-                    case "displayStart":
-                        setTimeout(tip4, 100);
-                        break;
-                    case "displayStop":
-                        try{ $(".controls-buttons").qtip("destroy"); } catch(e) {}
-                        $(".controls-buttons").off("click");
-                        already = 1;
-                }
-            }
-        };
-
-
         var myviz = new Vamonos.Visualizer({
             widgets: [
 
@@ -135,10 +50,7 @@
                 new Vamonos.Widget.Controls({
                     container: "controls",
                     showWhileSliding: true
-                }),
-
-                qtips
-
+                })
             ],
 
 //            autoStart: true,
