@@ -1,9 +1,7 @@
-#_require ../common.coffee
-
 class ControlSlider
 
     constructor: ({container, @showWhileSliding, frameLabelFirst}) ->
-        @$container = Common.jqueryify(container)
+        @$container = Vamonos.jqueryify(container)
 
         @$slider = $("<div>", {class: "controls-slider"})
         @$frameLabel = $("<div>", {class: "controls-frame-number", text: "- / -"})
@@ -58,5 +56,4 @@ class ControlSlider
         @$slider.slider("option", "min", 1)
         @$frameLabel.html( "#{value} / #{max}" )
         
-
-Common.VamonosExport { Widget: { ControlSlider } }
+Vamonos.export { Widget: { ControlSlider } }

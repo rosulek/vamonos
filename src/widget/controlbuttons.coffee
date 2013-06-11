@@ -1,6 +1,3 @@
-#_require ../common.coffee
-
-
 class ControlButtons
 
     PLAY  = "\u25b6"
@@ -11,7 +8,7 @@ class ControlButtons
     PREV  = "\u25c0\u25ae"
 
     constructor: ({container, noRunStopButton, @autoPlay}) ->
-        @$container = Common.jqueryify(container)
+        @$container = Vamonos.jqueryify(container)
 
         @$runStopButton   = $("<button>", {class: "controls-button", html: RUN})
         @$prevButton      = $("<button>", {class: "controls-button", html: PREV})
@@ -95,5 +92,4 @@ class ControlButtons
             else
                 @$prevButton.removeAttr("disabled")
         
-
-Common.VamonosExport { Widget: { ControlButtons } }
+Vamonos.export { Widget: { ControlButtons } }

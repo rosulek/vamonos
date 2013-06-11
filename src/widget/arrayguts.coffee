@@ -1,5 +1,3 @@
-#_require ../common.coffee
-
 class ArrayGuts
 
     constructor: ({tableContainer, @defaultArray, @varName, ignoreIndexZero, @displayOnly
@@ -10,11 +8,11 @@ class ArrayGuts
         @firstIndex = if ignoreIndexZero then 1 else 0
         @defaultArray ?= []
 
-        @rawToTxt   = cellFormat ? Common.rawToTxt
-        @txtToRaw   = cellParse  ? Common.txtToRaw
+        @rawToTxt   = cellFormat ? Vamonos.rawToTxt
+        @txtToRaw   = cellParse  ? Vamonos.txtToRaw
         @txtValid   = (txt) -> return @txtToRaw(txt)?
 
-        @showChanges = Common.arrayify(showChanges ? "next")
+        @showChanges = Vamonos.arrayify(showChanges ? "next")
 
         @$rowIndices     = $("<tr>", {class: "array-indices"})
         @$rowCells       = $("<tr>", {class: "array-cells"})
@@ -106,7 +104,7 @@ class ArrayGuts
         # apply CSS rules
         for [compare, indexName, className] in @cssRules
             index = @virtualIndex(frame, indexName)
-            if Common.isNumber(index) and @firstIndex <= index < newArray.length
+            if Vamonos.isNumber(index) and @firstIndex <= index < newArray.length
                 $col = @getNthColumn(index)
                 $selector = switch compare 
                     when "<"        then $col.prevAll() 
@@ -142,7 +140,7 @@ class ArrayGuts
 
         for t in tokens
             if prevOp?  # expecting a varname or constant
-                thisTerm = if Common.isNumber(t) then parseInt(t) else frame[t]
+                thisTerm = if Vamonos.isNumber(t) then parseInt(t) else frame[t]
                 return null unless thisTerm?
                 switch prevOp
                     when "+" then total += thisTerm
@@ -328,6 +326,5 @@ class ArrayGuts
         
         # "refresh" each DOM element so that CSS transitions can restart
         $col.each( -> $(this).replaceWith( $(this).clone() ) )
-        
-Common.VamonosExport { Widget: { ArrayGuts } }
 
+Vamonos.export { Widget: { ArrayGuts } }

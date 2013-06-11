@@ -1,6 +1,5 @@
-#_require ../common.coffee
-
 class Hardcoded
+
     constructor: ({@vars, @breakpoints}) ->
 
     event: (event, options...) -> switch event
@@ -11,6 +10,6 @@ class Hardcoded
                 stash._inputVars.push name
 
             if @breakpoints
-                Common.insertSet(p, @stash._breakpoints) for p in @breakpoints
+                Vamonos.insertSet(p, @stash._breakpoints) for p in @breakpoints
 
-Common.VamonosExport { Widget: { Hardcoded } }
+Vamonos.export { Widget: { Hardcoded } }

@@ -1,5 +1,3 @@
-#_require ./common.coffee
-
 ###
 #
 #   src/visualizer.coffee :: exports Vamonos.Visualizer
@@ -29,7 +27,7 @@ class Visualizer
 
     constructor: ({widgets, @algorithm, @maxFrames, autoStart}) ->
         @currentFrameNumber = 0
-        @widgets            = Common.arrayify(widgets)
+        @widgets            = Vamonos.arrayify(widgets)
         @maxFrames         ?= 250
         autoStart          ?= false
 
@@ -59,7 +57,7 @@ class Visualizer
         if @takeSnapshot(n)
             throw "too many frames" if @currentFrameNumber >= @maxFrames
 
-            newFrame              = Common.clone(@stash)
+            newFrame              = Vamonos.clone(@stash)
             newFrame._lineNumber  = n
             newFrame._prevLine    = @prevLine
             newFrame._frameNumber = ++@currentFrameNumber
@@ -169,5 +167,4 @@ class Visualizer
         @tellWidgets("render", @frames[@currentFrameNumber-1], type)
 
 
-
-Common.VamonosExport { Visualizer }
+Vamonos.export { Visualizer }

@@ -1,9 +1,7 @@
-#_require ../common.coffee
-
 class ModeLine
 
     constructor: ({container, @editModeText, @displayModeText}) ->
-        @$container = Common.jqueryify(container)
+        @$container = Vamonos.jqueryify(container)
 
     event: (event, options...) -> switch event
         when "editStart"
@@ -11,5 +9,4 @@ class ModeLine
         when "displayStart"
             @$container.html(@displayModeText)
         
-
-Common.VamonosExport { Widget: { ModeLine } }
+Vamonos.export { Widget: { ModeLine } }

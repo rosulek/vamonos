@@ -1,5 +1,3 @@
-#_require ../common.coffee
-
 class Console
 
     event: (event, options...) ->
@@ -8,5 +6,4 @@ class Console
         else
             console.log "widget event '#{event}'"
 
-
-Common.VamonosExport { Widget: { Console } }
+Vamonos.export { Widget: { Console } }

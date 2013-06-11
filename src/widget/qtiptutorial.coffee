@@ -67,4 +67,4 @@ class QTipTutorial
 
         setTimeout( helper, @currState.delay )
 
-Common.VamonosExport { Widget: { QTipTutorial } }
+Vamonos.export { Widget: { QTipTutorial } }

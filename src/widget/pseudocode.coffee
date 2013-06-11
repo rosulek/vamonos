@@ -1,5 +1,3 @@
-#_require ../common.coffee
-
 ###
 #
 #   src/widget/pseudocode.coffee :: exports Vamonos.Widget.Pseudocode
@@ -26,7 +24,7 @@ class Pseudocode
         @showPreviousLine    ?= true
 
         # sets @$tbl as the jquery selector for the pseudocode table
-        nLines = @formatContainer(Common.jqueryify(container))
+        nLines = @formatContainer(Vamonos.jqueryify(container))
 
         # if breakpoints are not defined, set one for every line
         @breakpoints ?= [1..nLines]
@@ -67,7 +65,7 @@ class Pseudocode
         @$tbl.find("tr").removeClass("pseudocode-active")
 
     addClassToLine: (n, klass) ->
-        @$tbl.find("tr[vamonos-linenumber=#{ n }]").addClass(klass) if Common.isNumber(n)
+        @$tbl.find("tr[vamonos-linenumber=#{ n }]").addClass(klass) if Vamonos.isNumber(n)
 
     ###
     #   Widget.Pseudocode.keywords
@@ -106,7 +104,7 @@ class Pseudocode
     #   in the stash.
     ###
     toggleBreakpoint: (n) ->
-        return unless Common.isNumber(n)
+        return unless Vamonos.isNumber(n)
 
         # otherwise can get 2 copies of a breakpoint in @stash._breakpoints,
         # one for string and one for int
@@ -201,5 +199,4 @@ class Pseudocode
         $container.html(@$tbl)
         return lineNumber
 
-
-Common.VamonosExport { Widget: { Pseudocode } }
+Vamonos.export { Widget: { Pseudocode } }

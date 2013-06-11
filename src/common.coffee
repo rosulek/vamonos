@@ -2,6 +2,7 @@
 #
 #   src/common.coffee
 #
+#   Initializes namespace.
 #   Common functions for use in Vamonos
 #
 #   usage: include "#_require ./relative_path_to_common.coffee" at top of
@@ -10,52 +11,52 @@
 #
 ###
 
-class Common
-
-    @insertSet: (item, arraySet) ->
+root = exports ? window
+root.Vamonos = 
+    insertSet: (item, arraySet) ->
         arraySet.push item unless item in arraySet
 
-    @txtToRaw: (txt) ->
+    txtToRaw: (txt) ->
         return Infinity if txt.match(/^\+?(inf(inity)?|\u221E)$/i)
         return -Infinity if txt.match(/^-(inf(inity)?|\u221E)$/i)
         if isNaN(parseInt(txt)) then null else parseInt(txt)
 
-    @rawToTxt: (raw) ->
+    rawToTxt: (raw) ->
         return "" unless raw?
         return "\u221E"  if raw is Infinity
         return "-\u221E" if raw is -Infinity
         return "" + raw        
 
-    @txtValid: (txt) -> @txtToRaw(txt)?
+    txtValid: (txt) -> @txtToRaw(txt)?
 
-    @isNumber: (val) ->
+    isNumber: (val) ->
         return ! isNaN(parseInt(val))
     
     ###
-    #   Common.arrayify( obj )
+    #   Vamonos.arrayify( obj )
     #
     #   wraps obj in an array if it is not an array already
     ###
-    @arrayify: (obj) ->
+    arrayify: (obj) ->
         if obj instanceof Array then obj else [obj]
 
 
     ###
-    #   Common.jqueryify( obj )
+    #   Vamonos.jqueryify( obj )
     #
     #   if obj is a string, presumably a div-id, it gets converted to 
     #   jquery form.
     ###
-    @jqueryify: (obj) ->
+    jqueryify: (obj) ->
         if typeof obj is 'string' then $("#" + obj) else obj
 
 
     ###
-    #   Common.vamonos_export({ obj1, obj2 })
+    #   Vamonos.vamonos_export({ obj1, obj2 })
     #
     #   exports names to the global Vamonos namespace
     ###
-    @VamonosExport: (obj) ->
+    export: (obj) ->
         # node uses exports as the module namespace. check to see if it's
         # there. otherwise, use 'this' - the browser window.
         root = exports ? window
@@ -67,11 +68,11 @@ class Common
         @mixin( root.Vamonos, obj )
 
     ### 
-    #   Common.mixin(dest, src)
+    #   Vamonos.mixin(dest, src)
     #
     #   Add all attributes of src object to dest object, recursively
     ###
-    @mixin: (dest, src) ->
+    mixin: (dest, src) ->
         for name, val of src
             if (typeof dest[name] is 'object') and (typeof src[name] is 'object')
                 @mixin( dest[name], src[name])
@@ -79,13 +80,13 @@ class Common
                 dest[name] = src[name]
 
     ###
-    #   Common.clone(obj)
+    #   Vamonos.clone(obj)
     #
     #   Clones an object deeply and returns it.
     #
     #   Inline javascript (sorry!)
     ###
-    `Common.clone = function (src) {
+    clone: `function (src) {
         function mixin(dest, source, copyFunc) {
             var name, s, i, empty = {};
             for(name in source){
@@ -122,7 +123,7 @@ class Common
             r = [];
             for(i = 0, l = src.length; i < l; ++i){
                 if(i in src){
-                    r.push(Common.clone(src[i]));
+                    r.push(Vamonos.clone(src[i]));
                 }
             }
             // we don't clone functions for performance reasons
@@ -136,19 +137,18 @@ class Common
             // generic objects
             r = src.constructor ? new src.constructor() : {}; //BUG Doesn't handle CSSStyleDeclaration types
         }
-        return mixin(r, src, Common.clone);
-
-    };`
+        return mixin(r, src, Vamonos.clone);
+    }`
 
 
     ###
-    #   Common.addTableRow(jQtable)
+    #   Vamonos.addTableRow(jQtable)
     #   
     #   Appends a new row to a jquery table.
     #
     #   Inline javascript (sorry!)
     ###
-    `Common.addTableRow = function (jQtable){
+    addTableRow: `function (jQtable){
         jQtable.each(function(){
             var $table = $(this);
             // Number of td's in the last table row
@@ -164,6 +164,5 @@ class Common
                 $(this).append(tds);
             }
         });
-    };`
+    }`
 
-Common.VamonosExport { Common }

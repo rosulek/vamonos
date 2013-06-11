@@ -1,11 +1,9 @@
-#_require ../common.coffee
-
 class VarDisplay
     
     constructor: ({container, watch, showChanges}) ->
-        @$container  = Common.jqueryify(container)
-        @watch       = Common.arrayify(watch)
-        @showChanges = Common.arrayify(showChanges ? "next")
+        @$container  = Vamonos.jqueryify(container)
+        @watch       = Vamonos.arrayify(watch)
+        @showChanges = Vamonos.arrayify(showChanges ? "next")
 
     event: (event, options...) -> switch event
         when "setup"
@@ -33,7 +31,7 @@ class VarDisplay
 
     showVars: (frame, type) ->
         for v in @watch
-            newval = if frame[v]? then Common.rawToTxt(frame[v]) else "<i>undef</i>"
+            newval = if frame[v]? then Vamonos.rawToTxt(frame[v]) else "<i>undef</i>"
             cell   = @tblRows[v].find("td:nth-child(3)")
             oldval = cell.html()
             if newval isnt oldval and type in @showChanges
@@ -53,6 +51,4 @@ class VarDisplay
         @$container.show() if @hidden
         @$container.slideDown()
 
-
-
-Common.VamonosExport { Widget: { VarDisplay } }
+Vamonos.export { Widget: { VarDisplay } }

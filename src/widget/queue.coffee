@@ -1,9 +1,7 @@
-#_require ../common.coffee
-
 class Queue
 
     constructor: ({container, @varName}) ->
-        @$container = Common.jqueryify(container)
+        @$container = Vamonos.jqueryify(container)
 
     event: (event, options...) -> switch event
 
@@ -13,5 +11,4 @@ class Queue
         when "editStop"
             @stash[@varName] = null
 
-
-Common.VamonosExport { Widget: { Queue } }
+Vamonos.export { Widget: { Queue } }
