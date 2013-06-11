@@ -41,7 +41,7 @@ compileIfChanged = ->
             modDate = parseFloat(stdout)
             if modDate > lastCompile
                 compileAll()
-                mostRecentCompile = time 
+                lastCompile = modDate 
 
 
 task 'build', 'Build all coffeescript and less files to the lib directory', ->
