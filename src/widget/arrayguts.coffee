@@ -2,11 +2,12 @@
 
 class ArrayGuts
 
-    constructor: ({tableContainer, @defaultArray, @varName, ignoreIndexZero,
+    constructor: ({tableContainer, @defaultArray, @varName, ignoreIndexZero, @displayOnly
                     showChanges, @cssRules, @showIndices, _dummyIndexZero, showLabel}) ->
         @$editBox   = null
         @editIndex  = null
         @firstIndex = if ignoreIndexZero then 1 else 0
+        @defaultArray ?= []
 
         @showChanges = Common.arrayify(showChanges ? "next")
 
@@ -34,22 +35,28 @@ class ArrayGuts
             # setup defaults in the stash (in case no edit mode happens)
             @theArray = @stash[@varName] = @defaultArray.slice() # shallow copy
 
-            # register varName as an input
-            @stash._inputVars.push @varName
-
+            # register varName as an input if needed
+            @stash._inputVars.push @varName unless @displayOnly
+            
+            # ensure array indices exist in the stash
+            for [_,i,_] in @cssRules
+                @stash[v] = null for v in @virtualIndexDependents(i)
+            for i in @showIndices
+                @stash[v] = null for v in @virtualIndexDependents(i)
+           
 
         when "editStart"
             @arrayReset(@defaultArray)
-            @$rowCells.on("click", "td", {}, (e) => @tdClick(e) )
+            if @displayOnly
+                row.hide() for row in [@$rowIndices, @$rowCells, @$rowAnnotations]
+            else
+                @$rowCells.on("click", "td", {}, (e) => @tdClick(e) )
         
         when "editStop"
-            # shallow copy of @theArray
-            @$rowCells.off("click")
-            @defaultArray = @theArray.slice(0)
-
-            # reset array indices in the stash
-            @stash[v] = null for [_, v, _] in @cssRules
-            @stash[v] = null for v in @showIndices            
+            if ! @displayOnly
+                @$rowCells.off("click")
+                # shallow copy of @theArray
+                @defaultArray = @theArray.slice(0)          
 
         when "displayStart"
             # @defaultArray is the "input" that was passed into the algorithm.
@@ -66,6 +73,14 @@ class ArrayGuts
             # 2. there never was an edit mode, in which case the array widget
             #    is not displaying anything
 
+            if @displayOnly
+                row.show() for row in [@$rowIndices, @$rowCells, @$rowAnnotations]
+
+                # if this array is display-only, then @theArray (in the stash) would
+                # have gotten reset to null. however, it's not so important that
+                # @theArray corresponds to what's in the stash, as that's for input only
+                @theArray = []
+
             @arrayReset(@defaultArray)
 
         when "render"
@@ -73,7 +88,7 @@ class ArrayGuts
 
 
     render: (frame, type) ->
-        newArray = frame[@varName]
+        newArray = frame[@varName] ? []
 
         row.find("td").removeClass() for row in [@$rowIndices, @$rowCells, @$rowAnnotations]
 
@@ -85,7 +100,7 @@ class ArrayGuts
 
         # apply CSS rules
         for [compare, indexName, className] in @cssRules
-            index = frame[indexName]
+            index = @virtualIndex(frame, indexName)
             if Common.isNumber(index) and @firstIndex <= index < newArray.length
                 $col = @getNthColumn(index)
                 $selector = switch compare 
@@ -131,7 +146,10 @@ class ArrayGuts
             else prevOp = t
         return total
                     
-                
+    virtualIndexDependents: (indexStr) ->
+        return [] unless indexStr.match(/^([a-zA-Z_]+|\d+)((-|\+)([a-zA-Z_]+|\d+))*$/g)
+        return indexStr.match(/([a-zA-Z_]+)/g)
+
 
 
     tdClick: (event) ->

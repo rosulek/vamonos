@@ -1,0 +1,112 @@
+<html><head>
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="demos.css">
+    <script type="text/javascript" src="../deps/jquery.min.js"></script>
+    <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../lib/vamonos.js"></script>
+
+</head><body>
+
+    <h1>Rod-cutting Dynamic Programming</h1>
+
+    <div class="vamonos">
+        <div class="container" id="pseudocode" title="RodCut(price):">
+            opt = [0]
+            sol = [null]
+            for k = 1 to price.length
+                opt[k] = 0
+                sol[k] = null
+                for i = 1 to k
+                    if opt[k] &lt; opt[k-i] + price[i]
+                        opt[k] = opt[k-i] + price[i]
+                        sol[k] = i
+        </div>
+        <br>
+        <div id="controls"></div>
+        <br>
+        <div class="container" id="arrays"></div>
+    </div>
+
+    <script type="text/javascript">
+        var myviz = new Vamonos.Visualizer({
+            widgets: [
+                new Vamonos.Widget.Console(),
+
+                new Vamonos.Widget.ParallelArrays({
+                    container: "arrays",
+                    showLabel: true,
+                    cssRules: [[">", "k", "shaded"]],
+                    arrays: [
+                        {
+                            varName: "price",
+                            defaultArray: [0, 1,5,8,9,10,17,17,20,24],
+                            ignoreIndexZero: true,
+                            showIndices: ["i"],
+                        },
+                        {
+                            varName: "opt",
+                            showIndices: ["k", "k-i"],
+                            displayOnly: true
+                        },
+                        {
+                            varName: "sol",
+                            showIndices: ["k"],
+                            displayOnly: true
+                        }
+                    ]
+                }),
+
+                new Vamonos.Widget.Pseudocode({
+                    container: "pseudocode",
+                    breakpoints: [7]
+                }),
+
+                new Vamonos.Widget.Controls({
+                    container: "controls",
+                    showWhileSliding: false
+                }),
+
+            ],
+
+//            autoStart: true,
+
+            algorithm: function (viz) {
+                with (viz.stash) {
+                    opt = []
+                    sol = []
+                    while (opt.length < price.length) { opt.push(undefined); }
+                    while (sol.length < price.length) { sol.push(undefined); }
+                    viz.line(1);
+
+                    opt[0] = 0;
+                    viz.line(2);
+                    for (var _k = 1; _k < price.length; _k++) {
+                        viz.line(3);
+                        k = _k;
+                        viz.line(4);
+                        opt[k] = 0;
+                        viz.line(5);
+                        sol[k] = null;
+                        for(var _i=1; _i<=k; _i++) {
+                            viz.line(6);
+                            i = _i;
+                            viz.line(7);
+                            if (opt[k] < opt[k-i] + price[i]) {
+                                viz.line(8);
+                                opt[k] = opt[k-i] + price[i];
+                                viz.line(9);
+                                sol[k] = i;
+                            }
+                        }
+                        i = null;
+                    }
+                    k = null;
+                }
+            }
+        });
+
+    </script>
+
+</body>
+</html>

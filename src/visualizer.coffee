@@ -90,8 +90,9 @@ class Visualizer
     runAlgorithm: ->
         return if @mode is "display"
 
-        # initialize stash except for input vars registered by widgets
-        @stash[v] = null for v of @stash when not v in @stash._inputVars
+        # initialize stash except for reserved things and input vars registered by widgets
+        for v of @stash
+            @stash[v] = null unless v.match(/^_/) or v in @stash._inputVars
 
         @frames             = []
         @currentFrameNumber = 0
