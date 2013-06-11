@@ -12,6 +12,7 @@ class ArrayGuts
 
         @rawToTxt   = cellFormat ? Common.rawToTxt
         @txtToRaw   = cellParse  ? Common.txtToRaw
+        @txtValid   = (txt) -> return @txtToRaw(txt)?
 
         @showChanges = Common.arrayify(showChanges ? "next")
 
@@ -187,7 +188,7 @@ class ArrayGuts
 
     startEditingNextCell: ->
         if @editIndex is @theArray.length - 1 
-            return unless Common.txtValid( @$editBox.val() )
+            return unless @txtValid( @$editBox.val() )
             @arrayPushRaw(null) 
 
         @startEditingCell(@editIndex + 1)
@@ -204,11 +205,11 @@ class ArrayGuts
         last = @editIndex == @theArray.length - 1
         txt  = $cell.children("input").val()
         dead = last and @editIndex isnt @firstIndex and \
-               ( (save and not Common.txtValid(txt)) or (not save and not @theArray[@editIndex]?) )
+               ( (save and not @txtValid(txt)) or (not save and not @theArray[@editIndex]?) )
 
         if dead
             @arrayChopLast()                        
-        else if save and Common.txtValid(txt)
+        else if save and @txtValid(txt)
             @arraySetFromTxt(@editIndex, txt)
         else
             @arraySetFromRaw(@editIndex, @theArray[@editIndex])
