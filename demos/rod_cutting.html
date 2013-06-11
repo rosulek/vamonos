@@ -12,8 +12,8 @@
 
     <div class="vamonos">
         <div class="container" id="pseudocode" title="RodCut(price):">
-            opt = [0]
-            sol = [[]]
+            opt[0] = 0
+            sol[0] = []
             for k = 1 to price.length
                 opt[k] = 0
                 sol[k] = null
@@ -31,8 +31,6 @@
     <script type="text/javascript">
         var myviz = new Vamonos.Visualizer({
             widgets: [
-//                new Vamonos.Widget.Console(),
-
                 new Vamonos.Widget.ParallelArrays({
                     container: "arrays",
                     showLabel: true,
@@ -66,25 +64,15 @@
                 new Vamonos.Widget.Controls({
                     container: "controls",
                     showWhileSliding: true
-                }),
-
-                new Vamonos.Widget.Hardcoded({ vars: {
-                    _watchVars: ['i', 'sol']
-                }})
-
+                })
             ],
-
-//            autoStart: true,
 
             algorithm: function (viz) {
                 with (viz.stash) {
                     opt = [0]
-//                    while (opt.length < price.length) { opt.push(undefined); }
                     viz.line(1);
 
                     sol = [[]]
-//                    while (sol.length < price.length) { sol.push(undefined); }
-
                     viz.line(2);
                     for (var _k = 1; _k < price.length; _k++) {
                         viz.line(3);
