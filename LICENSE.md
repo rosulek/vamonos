@@ -31,8 +31,6 @@ Vamonos includes or depends upon the following third-party software, either in
 whole or in part. Each third-party software package is provided under its own
 license.
 
-## Included / runtime dependencies: ##
-
 ## jQuery ##
 
 jQuery is distributed under the MIT license, which is reproduced above.
