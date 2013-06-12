@@ -43,19 +43,39 @@
 
                 new Vamonos.Widget.Console(),
 
-                new Vamonos.Widget.Graph({
-                    container: "graph",
-                    vertices: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
-                    adjacencyList: { a: ['b', 'e'], b: ['a', 'f'], c: ['f', 'g'],
-                                     d: ['c', 'g', 'h'], e: ['a'], f: ['b', 'c', 'g'],
-                                     g: ['c', 'f', 'd', 'h'], h: ['g', 'd'] },
-                    startVertex: "b",
-                    graphName: "G",
-                }),
-
-                new Vamonos.Widget.Queue({
-                    container: "queue",
-                    varName: "Q",
+                new Vamonos.Widget.Hardcoded({
+                    vars: {
+                        G: new Vamonos.DataStructure.Graph({
+                            vertices : [
+                                {id: 'v0', xcPos: 100, ycPos: 081},
+                                {id: 'v1', xcPos: 329, ycPos: 012},
+                                {id: 'v2', xcPos: 272, ycPos: 104},
+                                {id: 'v3', xcPos: 393, ycPos: 272},
+                                {id: 'v4', xcPos: 052, ycPos: 217},
+                                {id: 'v5', xcPos: 131, ycPos: 325},
+                                {id: 'v6', xcPos: 267, ycPos: 369},
+                                {id: 'v7', xcPos: 497, ycPos: 353},
+                                {id: 'v8', xcPos: 514, ycPos: 155},
+                                {id: 'v9', xcPos: 253, ycPos: 200}
+                            ],
+                            edges : [
+                                {source: 'v0',target: 'v1'},
+                                {source: 'v0',target: 'v2'},
+                                {source: 'v1',target: 'v3'},
+                                {source: 'v1',target: 'v8'},
+                                {source: 'v2',target: 'v4'},
+                                {source: 'v2',target: 'v3'},
+                                {source: 'v4',target: 'v0'},
+                                {source: 'v1',target: 'v2'},
+                                {source: 'v3',target: 'v4'},
+                                {source: 'v4',target: 'v5'},
+                                {source: 'v5',target: 'v6'},
+                                {source: 'v6',target: 'v7'},
+                                {source: 'v8',target: 'v7'},
+                                {source: 'v2',target: 'v9'}
+                            ]
+                        })
+                    }
                 }),
 
                 new Vamonos.Widget.Pseudocode({
@@ -72,34 +92,46 @@
             algorithm: function (viz) {
                 with (viz.stash) {
 
-                    s = "b";
+                    s = G.vertices[1];
 
-                    for (var i = G.V.length - 1; viz.line(1), i >= 0; i--) {
-                        u = G.V[i];
-                        if (s === u) {
+                    for (var i = G.vertices.length - 1; viz.line(1), i >= 0; i--) {
+                        u = G.vertices[i];
+                        if (u === s) {
                             continue;
                         }
-                        G[u].color = "white";                          viz.line(2);
+                        u.color = "white";
+                        viz.line(2);
                     }
 
-                    G[s].color = "gray";                            viz.line(3);
-                    Q = [];                                         viz.line(4);
-                    Q.push(s);                                      viz.line(5);
+                    s.color = "gray";
+                    viz.line(3);
 
-                    while (viz.line(6), Q.length > 0) {
+                    Q = new Vamonos.DataStructure.Queue();
+                    viz.line(4);
 
-                        u = Q.pop();                                viz.line(7);
+                    Q.enqueue(s);
+                    viz.line(5);
 
-                        for (var j = 0;  viz.line(8), j < G.Adj[u].length; j++) {
-                            v = G.Adj[u][j];
+                    while (viz.line(6), !Q.isEmpty()) {
 
-                            if (viz.line(9), G[v].color === "white") {
-                                G[v].color = "gray";                viz.line(10);
-                                Q.push(v);                          viz.line(11);
+                        u = Q.dequeue();
+                        viz.line(7);
+
+                        var adj = G.getNeighbors(u);
+                        for (var j = 0; j < adj.length; j++) {
+                            v = adj[j];
+                            viz.line(8);
+
+                            if (viz.line(9), v.color === "white") {
+                                v.color = "gray";
+                                viz.line(10);
+                                Q.enqueue(v);
+                                viz.line(11);
                             }
 
                         }
-                        G[u].color = "black";                          viz.line(12);
+                        u.color = "black";
+                        viz.line(12);
                     }
                 }
             }

@@ -134,8 +134,9 @@ root.Vamonos =
             r = function(){ return src.apply(this, arguments); };
         }
         else{
-            // generic objects
-            r = src.constructor ? new src.constructor() : {}; //BUG Doesn't handle CSSStyleDeclaration types
+          // generic objects
+            //r = src.constructor ? new src.constructor() : {}; //BUG Doesn't handle CSSStyleDeclaration types
+            r = {};
         }
         return mixin(r, src, Vamonos.clone);
     }`
