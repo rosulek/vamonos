@@ -23,6 +23,33 @@
 #
 ###
 
+
+###*
+# The test project
+#
+# @project tester
+# @title The Tester
+# @icon http://a.img
+# @url http://one.url
+# @url http://two.url
+# @author admo
+# @contributor davglass
+# @contributor entropy
+###
+
+
+###*
+# Just a test
+#
+# @class Visualizer
+# @constructor
+# @param options {Object} asdfasdf
+#   @param options.widgets {Array} list of widgets
+#   @param options.algorithm {Function} callback
+#   @param options.maxFrames {Number} something
+#   @param options.autoStart {Boolean} whether to auto start
+###
+
 class Visualizer
 
     constructor: ({widgets, @algorithm, @maxFrames, autoStart}) ->
