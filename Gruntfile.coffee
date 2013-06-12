@@ -6,7 +6,7 @@ module.exports = (grunt) ->
             files: 
                 src: [
                     'src/vamonos.coffee'
-                    'src/data-structures/*'
+                    'src/data-structure/*'
                     'src/*.coffee'
                     'src/widget/*.coffee'
                     'src/**/*.coffee'
