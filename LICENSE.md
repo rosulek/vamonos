@@ -22,6 +22,9 @@ Licensed under the MIT license:
 > OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 > SOFTWARE.
 
+Executive summary: You can use Vamonos as you like, but must include the
+copyright notice and license in any derivative works.
+
 # Third-Party Software #
 
 Vamonos includes or depends upon the following third-party software, either in
@@ -30,35 +33,20 @@ license.
 
 ## Included / runtime dependencies: ##
 
-### jQuery ###
+## jQuery ##
 
 jQuery is distributed under the MIT license, which is reproduced above.
 
 Copyright 2013 jQuery Foundation and other contributors, http://jquery.com/
 
-### jsPlumb ###
+## jsPlumb ##
 
 jsPlumb is dual-licensed under both the MIT license (reproduced above) and GPLv2.
 
 Copyright (c) 2013 Simon Porritt, http://jsplumb.org/
 
-### qTip ###
+## qTip ##
 
 qTip is distributed under the MIT license, which is reproduced above.
 
 Copyright (c) 2009 Craig Thompson, http://craigsworks.com
-
-
-## Build dependencies: ##
-
-### coffeescript ###
-
-Coffeescript is distributed under the MIT license, which is reproduced above.
-
-Copyright (c) 2009-2013 Jeremy Ashkenas
-
-### less.js ###
-
-less.js is distributed under the Apache license version 2.0.
-
-Copyright (c) 2009-2013 Alexis Sellier & The Core Less Team
