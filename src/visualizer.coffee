@@ -131,7 +131,7 @@ class Visualizer
 
         # initialize stash except for reserved things and input vars registered by widgets
         for v of @stash
-            @stash[v] = null unless v.match(/^_/) or v in @stash._inputVars
+            @stash[v] = undefined unless v.match(/^_/) or v in @stash._inputVars
 
         @frames             = []
         @currentFrameNumber = 0
@@ -157,7 +157,7 @@ class Visualizer
                           "You may have an infinite loop. " +
                           "Visualization has been truncated.")
                 else
-                    console.log "[ALGORITHM ERROR] #{err.name}: #{err.message}"
+                    throw err
 
 
         @currentFrameNumber = 0

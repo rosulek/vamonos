@@ -5,8 +5,8 @@ module.exports = (grunt) ->
         coffee:
             files: 
                 src: [
-                    'src/data-structures/*'
-                    'src/common.coffee'
+                    'src/vamonos.coffee'
+                    'src/data-structure/*'
                     'src/*.coffee'
                     'src/widget/*.coffee'
                     'src/**/*.coffee'
