@@ -18,14 +18,18 @@
 ###
 class Pseudocode
 
-    constructor: ({container, @editableBreakpoints, @breakpoints, @showPreviousLine}) ->
-        @editableBreakpoints ?= true
-        @showPreviousLine    ?= true
+    constructor: ({container, @editableBreakpoints, @breakpoints, @showPreviousLine, setAllBreakpoints}) ->
+        @editableBreakpoints ?= yes
+        @showPreviousLine    ?= yes
+        setAllBreakpoints    ?= no
 
         # sets @$tbl as the jquery selector for the pseudocode table
         nLines = @formatContainer(Vamonos.jqueryify(container))
 
-        @breakpoints ?= []
+        if setAllBreakpoints
+            @breakpoints = [1..nLines]
+        else
+            @breakpoints ?= []
 
     event: (event, options...) -> switch event
         when "setup"
