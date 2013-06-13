@@ -4,8 +4,13 @@
     <link rel="stylesheet" href="demos.css">
     <script type="text/javascript" src="../deps/jquery.min.js"></script>
     <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="../deps/jquery.jsplumb.min.js"></script>
+    <script type="text/javascript" src="../deps/jquery-jsplumb.min.js"></script>
     <script type="text/javascript" src="../lib/vamonos.js"></script>
+
+    <style type="text/css">
+        .black { background-color: black; }
+        .gray  { background-color: gray; }
+    </style>
 
 </head><body>
 
@@ -13,30 +18,28 @@
 
 
     <div class="vamonos">
-        <table>
-            <tr><td>
-                <div class="container" id="pseudocode" title="BFS(G,s):">
-                    for each vertex u &in; G.V - {s}
-                        u.color = white
-                    s.color = gray
-                    Q = &empty;
-                    Q.enqueue(s)
-                    while Q &ne; &empty;
-                        u = Q.dequeue()
-                        for each v &in; G.Adj[u]
-                            if v.color == white
-                                v.color = gray
-                                Q.enqueue(v)
-                        u.color = black
-                </div>
-                <br>
-                <div id="controls"></div>
+        <table><tr><td>
+        <div class="container" id="pseudocode" title="BFS(G,s):">
+            for each vertex u &in; G.V - {s}
+                u.color = white
+            s.color = gray
+            Q = &empty;
+            Q.enqueue(s)
+            while Q &ne; &empty;
+                u = Q.dequeue()
+                for each v &in; G.Adj[u]
+                    if v.color == white
+                        v.color = gray
+                        Q.enqueue(v)
+                u.color = black
+        </div>
         <br>
+        <div id="controls"></div>
         </td><td valign='top'>
-            <div class="container" id="graph"></div>
-            <br>
             <div class="container" id="display"></div>
         </td></tr></table>
+        <div class="container" id="graph"></div>
+        <br>
     </div>
 
     <script type="text/javascript">
@@ -46,42 +49,52 @@
 
                 new Vamonos.Widget.Console(),
 
-                new Vamonos.Widget.Hardcoded({
-                    G: new Vamonos.DataStructure.Graph({
-                        vertices : [
-                            {id: 'v0', xcPos: 100, ycPos: 081},
-                            {id: 'v1', xcPos: 329, ycPos: 012},
-                            {id: 'v2', xcPos: 272, ycPos: 104},
-                            {id: 'v3', xcPos: 393, ycPos: 272},
-                            {id: 'v4', xcPos: 052, ycPos: 217},
-                            {id: 'v5', xcPos: 131, ycPos: 325},
-                            {id: 'v6', xcPos: 267, ycPos: 369},
-                            {id: 'v7', xcPos: 497, ycPos: 353},
-                            {id: 'v8', xcPos: 514, ycPos: 155},
-                            {id: 'v9', xcPos: 253, ycPos: 200}
-                        ],
-                        edges : [
-                            {source: 'v0',target: 'v1'},
-                            {source: 'v0',target: 'v2'},
-                            {source: 'v1',target: 'v3'},
-                            {source: 'v1',target: 'v8'},
-                            {source: 'v2',target: 'v4'},
-                            {source: 'v2',target: 'v3'},
-                            {source: 'v4',target: 'v0'},
-                            {source: 'v1',target: 'v2'},
-                            {source: 'v3',target: 'v4'},
-                            {source: 'v4',target: 'v5'},
-                            {source: 'v5',target: 'v6'},
-                            {source: 'v6',target: 'v7'},
-                            {source: 'v8',target: 'v7'},
-                            {source: 'v2',target: 'v9'}
-                        ]
-                    })
-                }),
-
                 new Vamonos.Widget.Graph({
                     varName: "G",
-                    container: "graph"
+                    container: "graph",
+                    showVertices: ["u", "v"],
+                    renderVertexContents: function(v, $vtx) {
+                        if (v.color == "gray") {
+                            $vtx.addClass('gray');
+                        }
+                        if (v.color == "black") {
+                            $vtx.addClass('black');
+                        }
+                        $vtx.append("<div class='vertex-nw-label'>" + v.id + "</div>");
+                    },
+                    renderEdgeStyle: function (edge) {
+                        return {lineWidth: 2};
+                    },
+                    defaultGraph: new Vamonos.DataStructure.Graph({
+                        vertices : [
+                            {id: 'v0', x: 100, y: 081},
+                            {id: 'v1', x: 329, y: 012},
+                            {id: 'v2', x: 272, y: 104},
+                            {id: 'v3', x: 393, y: 272},
+                            {id: 'v4', x: 052, y: 217},
+                            {id: 'v5', x: 131, y: 325},
+                            {id: 'v6', x: 267, y: 369},
+                            {id: 'v7', x: 497, y: 353},
+                            {id: 'v8', x: 514, y: 155},
+                            {id: 'v9', x: 253, y: 200}
+                        ],
+                        edges : [
+                            {source: 'v0', target: 'v1'},
+                            {source: 'v0', target: 'v2'},
+                            {source: 'v1', target: 'v3'},
+                            {source: 'v1', target: 'v8'},
+                            {source: 'v2', target: 'v4'},
+                            {source: 'v2', target: 'v3'},
+                            {source: 'v4', target: 'v0'},
+                            {source: 'v1', target: 'v2'},
+                            {source: 'v3', target: 'v4'},
+                            {source: 'v4', target: 'v5'},
+                            {source: 'v5', target: 'v6'},
+                            {source: 'v6', target: 'v7'},
+                            {source: 'v8', target: 'v7'},
+                            {source: 'v2', target: 'v9'}
+                        ]
+                    })
                 }),
 
                 new Vamonos.Widget.VarDisplay({
