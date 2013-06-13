@@ -30,7 +30,7 @@ class Pseudocode
     event: (event, options...) -> switch event
         when "setup"
             [@stash] = options
-            @stash._breakpoints = @breakpoints
+            Vamonos.insertSet(b, @stash._breakpoints) for b in @breakpoints
             @showBreakpoints()
 
         when "editStart"
@@ -124,7 +124,7 @@ class Pseudocode
     showBreakpoints: ->
         @$tbl.find("td.pseudocode-gutter div.pseudocode-breakpoint")
              .remove()                       # Clear all old breakpoints.
-        for n in @breakpoints
+        for n in @stash._breakpoints
             @getLine(n)
                 .find("td.pseudocode-gutter")
                 .append($("<div>", {class: "pseudocode-breakpoint"}))
