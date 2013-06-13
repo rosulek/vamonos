@@ -2,6 +2,7 @@ class Queue
 
     constructor: ->
         @initialize()
+        @type = 'queue'
 
     initialize: () ->
         @guts = []
@@ -15,6 +16,12 @@ class Queue
 
     isEmpty: () ->
         @guts.length == 0
+
+    toString: () ->
+        if @isEmpty() 
+            "[ ]"
+        else
+            "[#{(Vamonos.rawToTxt(elem) for elem in @guts).join(", ")}]"
 
 
 Vamonos.export { DataStructure: { Queue } }
