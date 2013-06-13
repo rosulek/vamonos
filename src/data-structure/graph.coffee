@@ -15,7 +15,7 @@ class Graph
         @_adjHash[s][t]
 
     getNeighbors: (v) ->
-        @getVertex(target) for target, edge of @_adjHash 
+        @getVertex(target) for target, edge of @_adjHash[v.id]
 
     getOutgoingEdges: (v) ->
 
