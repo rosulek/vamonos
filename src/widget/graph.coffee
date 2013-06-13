@@ -1,8 +1,10 @@
 class Graph
 
-    constructor: ({container, @vertices, @adjacencyList, @startVertex, @graphName}) ->
+    constructor: ({container, @varName}) ->
 
         @$container = Vamonos.jqueryify(container)
+
+        @$container.html("GRAPH GOES HERE")
         
         
     event: (event, options...) -> switch event
@@ -10,12 +12,5 @@ class Graph
         when "setup"
             [@stash, visualizer] = options
 
-            for v in [@graphName, @startVertex, @vertices...]
-                Vamonos.insertSet(v, @stash._inputVars) 
-
-            G     = @stash[@graphName]     = {}
-            G[v]  = {} for v in @vertices
-            G.Adj = @adjacencyList
-            G.V   = @vertices
 
 Vamonos.export { Widget: { Graph } }
