@@ -8,7 +8,6 @@ module.exports = (grunt) ->
                     'src/vamonos.coffee'
                     'src/data-structure/*'
                     'src/*.coffee'
-                    'src/widget/*.coffee'
                     'src/**/*.coffee'
                 ]
                 dest: 'lib/<%= pkg.name %>.js'
