@@ -72,90 +72,26 @@ root.Vamonos =
     #
     #   Add all attributes of src object to dest object, recursively
     ###
-    mixin: (dest, src) ->
+    mixin: (dest, src, copyFunc) ->
         for name, val of src
             if (typeof dest[name] is 'object') and (typeof src[name] is 'object')
                 @mixin( dest[name], src[name])
             else
-                dest[name] = src[name]
+                dest[name] = if copyFunc? then copyFunc(src[name]) else src[name]
+        return dest
 
     ###
     #   Vamonos.clone(obj)
     #
     #   Clones an object deeply and returns it.
-    #
-    #   Inline javascript (sorry!)
     ###
-    clone: `function (src) {
-        function mixin(dest, source, copyFunc) {
-            var name, s, i, empty = {};
-            for(name in source){
-                // the (!(name in empty) || empty[name] !== s) condition avoids copying properties in "source"
-                // inherited from Object.prototype.  For example, if dest has a custom toString() method,
-                // don't overwrite it with the toString() method that source inherited from Object.prototype
-                s = source[name];
-                if(!(name in dest) || (dest[name] !== s && (!(name in empty) || empty[name] !== s))){
-                    dest[name] = copyFunc ? copyFunc(s) : s;
-                }
-            }
-            return dest;
-        }
+    clone: (src) ->
+        return src                                  if not src or typeof src isnt "object" 
+        return src                                  if Object.prototype.toString.call(src) is "[object Function]"
+        return src.cloneNode(true)                  if src.nodeType and "cloneNode" in src    # DOM Node
+        return new Date(src.getTime())              if src instanceof Date
+        return new RegExp(src)                      if src instanceof RegExp
+        r  = (Vamonos.clone(elem) for elem in src)  if src instanceof Array 
+        r ?= {}                                     # otherwise
+        Vamonos.mixin(r, src, @clone)
 
-        if(!src || typeof src != "object" || Object.prototype.toString.call(src) === "[object Function]"){
-            // null, undefined, any non-object, or function
-            return src; // anything
-        }
-        if(src.nodeType && "cloneNode" in src){
-            // DOM Node
-            return src.cloneNode(true); // Node
-        }
-        if(src instanceof Date){
-            // Date
-            return new Date(src.getTime()); // Date
-        }
-        if(src instanceof RegExp){
-            // RegExp
-            return new RegExp(src);   // RegExp
-        }
-        var r, i, l;
-        if(src instanceof Array){
-            // array
-            r = [];
-            for(i = 0, l = src.length; i < l; ++i){
-                if(i in src){
-                    r.push(Vamonos.clone(src[i]));
-                }
-            }
-            // we don't clone functions for performance reasons
-            // UNCOMMENTED by MJR
-        }
-        else if(typeof source === 'function'){
-            // function
-            r = function(){ return src.apply(this, arguments); };
-        }
-        else{
-          // generic objects
-            //r = src.constructor ? new src.constructor() : {}; //BUG Doesn't handle CSSStyleDeclaration types
-            r = {};
-        }
-        return mixin(r, src, Vamonos.clone);
-    }`
-
-
-    ###
-    #   Vamonos.addTableRow(jQtable)
-    #   
-    #   Appends a new row to a jquery table.
-    ###
-    addTableRow: (jQtable) ->
-        jQtable.each () ->
-            $table = $(@)
-            # Number of td's in the last table row
-            n = $('tr:last td', this).length
-            tds = '<tr>'
-            tds += '<td>&nbsp;</td>' for [0...n]
-            tds += '</tr>'
-            if $('tbody', this).length > 0
-                $('tbody', this).append(tds)
-            else
-                $(this).append(tds)
