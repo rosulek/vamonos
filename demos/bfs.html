@@ -31,8 +31,10 @@
                 <br>
                 <div id="controls"></div>
         <br>
-        </td><td>
+        </td><td valign='top'>
             <div class="container" id="graph"></div>
+            <br>
+            <div class="container" id="display"></div>
         </td></tr></table>
     </div>
 
@@ -76,6 +78,16 @@
                     })
                 }),
 
+                new Vamonos.Widget.Graph({
+                    varName: "G",
+                    container: "graph"
+                }),
+
+                new Vamonos.Widget.VarDisplay({
+                    container: "display",
+                    watch: ["u[id,color]", "v[id,color]", "Q"]
+                }),
+
                 new Vamonos.Widget.Pseudocode({
                     container: "pseudocode",
                     setAllBreakpoints: true
@@ -90,47 +102,36 @@
 
             algorithm: function (viz) {
                 with (viz.stash) {
-
+                    var _ = function(n){ viz.line(n); }; 
                     s = G.vertices[1];
 
-                    for (var i = G.vertices.length - 1; viz.line(1), i >= 0; i--) {
-                        u = G.vertices[i];
-                        if (u === s) {
-                            continue;
-                        }
-                        u.color = "white";
-                        viz.line(2);
+                    for (var i = G.vertices.length - 1; i >= 0; i--) {
+                        if (u === s) { continue }
+                        _(1); u = G.vertices[i];
+                        _(2); u.color = "white";
                     }
 
-                    s.color = "gray";
-                    viz.line(3);
+                    _(3); s.color = "gray";
 
-                    Q = new Vamonos.DataStructure.Queue();
-                    viz.line(4);
+                    _(4); viz.stash.Q = new Vamonos.DataStructure.Queue();
 
-                    Q.enqueue(s);
-                    viz.line(5);
+                    _(5); Q.enqueue(s);
 
-                    while (viz.line(6), !Q.isEmpty()) {
+                    while (_(6), !Q.isEmpty()) {
 
-                        u = Q.dequeue();
-                        viz.line(7);
+                        _(7); u = Q.dequeue();
 
                         var adj = G.neighbors(u);
                         for (var j = 0; j < adj.length; j++) {
-                            v = adj[j];
-                            viz.line(8);
+                            _(8); v = adj[j];
 
-                            if (viz.line(9), v.color === "white") {
-                                v.color = "gray";
-                                viz.line(10);
-                                Q.enqueue(v);
-                                viz.line(11);
+                            if (_(9), v.color === "white") {
+                                _(10); v.color = "gray";
+                                _(11); Q.enqueue(v);
                             }
 
                         }
-                        u.color = "black";
-                        viz.line(12);
+                        _(12); u.color = "black";
                     }
                 }
             }
