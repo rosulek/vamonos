@@ -1,22 +1,26 @@
 class ArrayGuts
 
-    constructor: ({tableContainer, @defaultArray, @varName, ignoreIndexZero, @displayOnly
+    constructor: ({tableContainer, @defaultInput, @varName, ignoreIndexZero, @displayOnly
                     showChanges, @cssRules, @showIndices, _dummyIndexZero, showLabel,
                     cellFormat, cellParse}) ->
-        @$editBox   = null
-        @editIndex  = null
-        @firstIndex = if ignoreIndexZero then 1 else 0
-        @defaultArray ?= []
+
+        @$editBox      = null
+        @editIndex     = null
+        @firstIndex    = if ignoreIndexZero then 1 else 0
+        @defaultInput ?= []
+        @showChanges   = Vamonos.arrayify(showChanges ? "next")
 
         @rawToTxt   = cellFormat ? Vamonos.rawToTxt
         @txtToRaw   = cellParse  ? Vamonos.txtToRaw
         @txtValid   = (txt) -> return @txtToRaw(txt)?
 
-        @showChanges = Vamonos.arrayify(showChanges ? "next")
 
         @$rowIndices     = $("<tr>", {class: "array-indices"})
         @$rowCells       = $("<tr>", {class: "array-cells"})
         @$rowAnnotations = $("<tr>", {class: "array-annotations"})
+
+        @$cells        = []
+        @$annotations  = []
 
         tableContainer.append( @$rowIndices, @$rowCells, @$rowAnnotations )
 
@@ -36,10 +40,10 @@ class ArrayGuts
             [@stash, visualizer] = options
 
             # setup defaults in the stash (in case no edit mode happens)
-            @theArray = @stash[@varName] = @defaultArray.slice() # shallow copy
+            @theArray = @stash[@varName] = @defaultInput.slice() # shallow copy
 
             # register varName as an input if needed
-            @stash._inputVars.push @varName unless @displayOnly
+            @stash._inputVars.push(@varName) unless @displayOnly
             
             # ensure array indices exist in the stash
             for [_,i,_] in @cssRules
@@ -49,24 +53,25 @@ class ArrayGuts
            
 
         when "editStart"
-            @arrayReset(@defaultArray)
+            @arrayReset(@defaultInput)
             if @displayOnly
                 row.hide() for row in [@$rowIndices, @$rowCells, @$rowAnnotations]
             else
-                @$rowCells.on("click", "td", {}, (e) => @tdClick(e) )
+                @$rowCells.on("click.arrayguts", "td", {}, (e) => @tdClick(e) )
         
         when "editStop"
             if ! @displayOnly
-                @$rowCells.off("click")
+                @$rowCells.off("click.arrayguts")
                 # shallow copy of @theArray
-                @defaultArray = @theArray.slice(0)          
+                @defaultInput = @theArray.slice(0)
+                @stopEditingCell(false)        
 
         when "displayStart"
-            # @defaultArray is the "input" that was passed into the algorithm.
+            # @defaultInput is the "input" that was passed into the algorithm.
             # in display mode, the first "render" event will highlight changes
             # from this baseline. so when display mode starts, the array widget
-            # must be in a state where is both displaying @defaultArray, and
-            # @theArray matches @defaultArray
+            # must be in a state where is both displaying @defaultInput, and
+            # @theArray matches @defaultInput
             #
             # there are two reasons to reset to @defualtArray here.
             #
@@ -84,7 +89,7 @@ class ArrayGuts
                 # @theArray corresponds to what's in the stash, as that's for input only
                 @theArray = []
 
-            @arrayReset(@defaultArray)
+            @arrayReset(@defaultInput)
 
         when "render"
             @render(options...)
@@ -105,13 +110,13 @@ class ArrayGuts
         for [compare, indexName, className] in @cssRules
             index = @virtualIndex(frame, indexName)
             if Vamonos.isNumber(index) and @firstIndex <= index < newArray.length
-                $col = @getNthColumn(index)
+                $cell = @$cells[index]
                 $selector = switch compare 
-                    when "<"        then $col.prevAll() 
-                    when "<="       then $col.prevAll().add($col)
-                    when "=", "=="  then $col
-                    when ">"        then $col.nextAll()
-                    when ">="       then $col.nextAll().add($col)
+                    when "<"        then $cell.prevAll() 
+                    when "<="       then $cell.prevAll().add($cell)
+                    when "=", "=="  then $cell
+                    when ">"        then $cell.nextAll()
+                    when ">="       then $cell.nextAll().add($cell)
                 $selector.addClass(className)
 
         # apply the "changed" class after applying the other css rules
@@ -122,15 +127,12 @@ class ArrayGuts
         indices = {}
         for i in @showIndices
             target = @virtualIndex(frame, i)
-
-            if indices[target]?
-                indices[target].push(i)
-            else
-                indices[target] = [i]
+            indices[target] ?= []
+            indices[target].push(i)
 
         @$rowAnnotations.find("td").empty()
         for i in [@firstIndex...newArray.length]
-            @getNthAnnotation(i).html( indices[i].join(", ") ) if indices[i]?
+            @$annotations[i].html( indices[i].join(", ") ) if indices[i]?
 
     virtualIndex: (frame, indexStr) ->
         return null unless indexStr.match(/^([a-zA-Z_]+|\d+)((-|\+)([a-zA-Z_]+|\d+))*$/g)
@@ -169,17 +171,17 @@ class ArrayGuts
         if (@editIndex?)
             @stopEditingCell(yes)
 
-        $cell = @getNthCell(index)
+        $cell = @$cells[index]
 
         @editIndex = index
         @$editBox = $("<input>", {class: "inline-input"})
         @$editBox.val( @rawToTxt(@theArray[index]) )
         @$editBox.width( $cell.width() );           
-        @$editBox.on("blur",    (e) => @stopEditingCell(yes) )
-        @$editBox.on("keydown", (e) => @editKeyDown(e) ) 
+        @$editBox.on("blur.arrayguts",    (e) => @stopEditingCell(yes) )
+        @$editBox.on("keydown.arrayguts", (e) => @editKeyDown(e) ) 
 
         $cell.html( @$editBox )
-        @getNthColumn(index).addClass("editing")
+        $cell.addClass("editing")
         @$editBox.focus()
         @$editBox.select()
 
@@ -198,7 +200,7 @@ class ArrayGuts
 
     stopEditingCell: (save) ->
         return unless @editIndex? and @$editBox?
-        $cell = @getNthCell(@editIndex)
+        $cell = @$cells[@editIndex]
 
         last = @editIndex == @theArray.length - 1
         txt  = $cell.children("input").val()
@@ -212,7 +214,7 @@ class ArrayGuts
         else
             @arraySetFromRaw(@editIndex, @theArray[@editIndex])
 
-        @getNthColumn(@editIndex).removeClass("editing")
+        $cell.removeClass("editing")
 
         @editIndex = null
         @$editBox = null
@@ -255,21 +257,6 @@ class ArrayGuts
         when 27 # escape
             @stopEditingCell(no)
             return false
-        
-    # :nth-of-type() selector is 1-indexed
-
-    getNthCell: (n) ->
-        i = n - @firstIndex + 1
-        @$rowCells.find("td:nth-of-type(#{i})")
-
-    getNthColumn: (n) ->
-        i = n - @firstIndex + 1
-        @$rowIndices.add(@$rowCells).add(@$rowAnnotations).find("td:nth-of-type(#{i})")
-
-    getNthAnnotation: (n) ->
-        i = n - @firstIndex + 1
-        @$rowAnnotations.find("td:nth-of-type(#{i})")
-
 
     # these are the only "approved" ways to edit the array.
     # they affect what is displayed and also the underlying @theArray
@@ -277,14 +264,24 @@ class ArrayGuts
     arrayPushRaw: (val, showChanges) ->
         newindex = @theArray.length
         @theArray.push(val);
+
+        $newCell = $("<td>", {text: @rawToTxt(val)})
+        $newAnnotation = $("<td>")
+
+        @$cells.push( $newCell )
+        @$annotations.push( $newAnnotation )
+    
         @$rowIndices.append("<td>" + newindex + "</td>")
-        @$rowCells.append( $("<td>", {text: @rawToTxt(val)}) )
-        @$rowAnnotations.append("<td></td>")
+        @$rowCells.append( $newCell )
+        @$rowAnnotations.append( $newAnnotation )
 
         @markChanged(newindex) if showChanges
 
     arrayChopLast: ->
         @theArray.length--;
+        @$cells.length--;
+        @$annotations.length--;
+
         row.find("td:last-child").remove() for row in [@$rowIndices, @$rowCells, @$rowAnnotations]
     
     arraySetFromTxt: (index, txtVal, showChanges) ->
@@ -292,7 +289,7 @@ class ArrayGuts
 
     arraySetFromRaw: (index, rawVal, showChanges) ->
         @theArray[index] = rawVal
-        $cell = @getNthCell(index)
+        $cell = @$cells[index]
 
         oldhtml = $cell.html()
 
@@ -311,20 +308,27 @@ class ArrayGuts
 
     arrayReset: (newArray) ->
         @theArray.length = 0
-        @theArray.push(null) for [0...@firstIndex]
+        @$cells.length = 0
+        @$annotations.length = 0
+
+        for [0...@firstIndex]
+            @theArray.push(null) 
+            @$cells.push(null)
+            @$annotations.push(null)
+
         row.find("td").remove() for row in [@$rowIndices, @$rowCells, @$rowAnnotations]
 
-        if newArray? and newArray.length > @firstIndex
+        if newArray?.length > @firstIndex
             @arrayPushRaw(v) for v in newArray[@firstIndex..]
         else 
             # can't display an empty array
             @arrayPushRaw(null)
 
     markChanged: (index) ->
-        $col = @getNthColumn(index)
-        $col.addClass("changed")
+        $cell = @$cells[index]
+        $cell.addClass("changed")
         
-        # "refresh" each DOM element so that CSS transitions can restart
-        $col.each( -> $(this).replaceWith( $(this).clone() ) )
+        # "refresh" DOM element so that CSS transitions can restart
+        $cell.replaceWith( $cell.clone() )
 
 Vamonos.export { Widget: { ArrayGuts } }
