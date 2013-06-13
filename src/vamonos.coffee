@@ -93,5 +93,5 @@ root.Vamonos =
         return new RegExp(src)                      if src instanceof RegExp
         r  = (Vamonos.clone(elem) for elem in src)  if src instanceof Array 
         r ?= {}                                     # otherwise
-        Vamonos.mixin(r, src, @clone)
+        Vamonos.mixin(r, src, Vamonos.clone)
 
