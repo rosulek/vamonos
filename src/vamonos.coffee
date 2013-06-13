@@ -146,24 +146,16 @@ root.Vamonos =
     #   Vamonos.addTableRow(jQtable)
     #   
     #   Appends a new row to a jquery table.
-    #
-    #   Inline javascript (sorry!)
     ###
-    addTableRow: `function (jQtable){
-        jQtable.each(function(){
-            var $table = $(this);
-            // Number of td's in the last table row
-            var n = $('tr:last td', this).length;
-            var tds = '<tr>';
-            for(var i = 0; i < n; i++){
-                tds += '<td>&nbsp;</td>';
-            }
-            tds += '</tr>';
-            if($('tbody', this).length > 0){
-                $('tbody', this).append(tds);
-            }else {
-                $(this).append(tds);
-            }
-        });
-    }`
-
+    addTableRow: (jQtable) ->
+        jQtable.each () ->
+            $table = $(@)
+            # Number of td's in the last table row
+            n = $('tr:last td', this).length
+            tds = '<tr>'
+            tds += '<td>&nbsp;</td>' for [0...n]
+            tds += '</tr>'
+            if $('tbody', this).length > 0
+                $('tbody', this).append(tds)
+            else
+                $(this).append(tds)
