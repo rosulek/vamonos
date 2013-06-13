@@ -23,8 +23,10 @@ root.Vamonos =
 
     rawToTxt: (raw) ->
         return "" unless raw?
-        return "\u221E"  if raw is Infinity
-        return "-\u221E" if raw is -Infinity
+        return "\u221E"             if raw is Infinity
+        return "-\u221E"            if raw is -Infinity
+        return "vertex: #{raw.id}"  if typeof raw is 'object' and raw.type is 'vertex'
+        return "edge: #{raw.id}"    if typeof raw is 'object' and raw.type is 'edge'
         return "" + raw        
 
     txtValid: (txt) -> @txtToRaw(txt)?

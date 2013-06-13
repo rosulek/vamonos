@@ -11,6 +11,9 @@ class Graph
             @_adjHash[source][target] = e 
             e
 
+        v.type = 'vertex' for v in @vertices
+        e.type = 'edge'   for e in @edges
+
     edge: (s, t) ->
         @_adjHash[s][t]
 
