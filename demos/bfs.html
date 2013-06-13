@@ -116,7 +116,7 @@
                         u = Q.dequeue();
                         viz.line(7);
 
-                        var adj = G.getNeighbors(u);
+                        var adj = G.neighbors(u);
                         for (var j = 0; j < adj.length; j++) {
                             v = adj[j];
                             viz.line(8);

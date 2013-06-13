@@ -5,8 +5,8 @@ class Graph
         @_adjHash = {}
         @edges = for e in edges
             {source, target} = e
-            e.source = @getVertex(source)
-            e.target = @getVertex(target)
+            e.source = @vertex(source)
+            e.target = @vertex(target)
             @_adjHash[source] ?= {}
             @_adjHash[source][target] = e 
             e
@@ -14,17 +14,17 @@ class Graph
     edge: (s, t) ->
         @_adjHash[s][t]
 
-    getNeighbors: (v) ->
-        @getVertex(target) for target, edge of @_adjHash[v.id]
-
-    getOutgoingEdges: (v) ->
-
-    getIncomingEdges: (v) ->
-
-    mutateVertices: (f) ->
-
-    getVertex: (id_str) ->
+    vertex: (id_str) ->
         @vertices.filter(({id}) -> id is id_str)[0]
-    
+
+    neighbors: (v) ->
+        @vertex(target) for target, edge of @_adjHash[v.id]
+
+    outgoingEdges: (v) ->
+        @edges.filter(({source}) -> source is v)
+
+    incomingEdges: (v) ->
+        @edges.filter(({target}) -> target is v)
+
 
 Vamonos.export { DataStructure: { Graph } }
