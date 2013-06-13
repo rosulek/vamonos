@@ -120,8 +120,8 @@ class Matrix
 
     getCols: (matrix) ->
         c = []
-        for row in matrix
-            for k of row
+        for r of matrix
+            for k of matrix[r]
                 c.push("" + k) unless k in c
         return @smartSort(c)
 
@@ -149,8 +149,6 @@ class Matrix
 
         @$table.append( $newRow )
 
-        @markChanged($newRow.find("td")) if showChanges
-
     matrixEnsureColumn: (c, showChanges) ->
         return if c in @cols
 
@@ -160,8 +158,6 @@ class Matrix
         for r in @rows
             @$cells[r][c] = $("<td>")
             @$rows[r].append( @$cells[r][c] )
-
-        @markChanged(@$table.find("td:last-child")) if showChanges
 
 
     matrixSetFromRaw: (i , j, rawVal, showChanges) ->
@@ -177,7 +173,7 @@ class Matrix
 
         if oldhtml isnt newhtml
             $cell.html(newhtml)
-            @markChanged($cell) if showChanges
+            @markChanged(i,j) if showChanges
 
     matrixReset: () ->
         @theMatrix = {}
@@ -192,10 +188,12 @@ class Matrix
         )
 
 
-    markChanged: ($sel) ->
-        $sel.addClass("changed")
+    markChanged: (i,j) ->
+        @$cells[i][j].addClass("changed")
         # "refresh" DOM element so that CSS transitions can restart
-        $sel.each( (e) -> $(e).replaceWith( $(e).clone() ) )
+        dup = @$cells[i][j].clone()
+        @$cells[i][j].replaceWith(dup)
+        @$cells[i][j] = dup
 
     shallowCopy: (matrix) ->
         rows = @getRows(matrix)

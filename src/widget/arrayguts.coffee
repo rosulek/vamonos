@@ -327,8 +327,10 @@ class ArrayGuts
     markChanged: (index) ->
         $cell = @$cells[index]
         $cell.addClass("changed")
-        
+
         # "refresh" DOM element so that CSS transitions can restart
-        $cell.replaceWith( $cell.clone() )
+        dup = $cell.clone()
+        $cell.replaceWith( dup )
+        @$cells[index] = dup
 
 Vamonos.export { Widget: { ArrayGuts } }
