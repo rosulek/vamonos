@@ -23,7 +23,7 @@ class Graph
 
     mutateVertices: (f) ->
 
-    getVertexById: (id_str) ->
+    getVertex: (id_str) ->
         @vertices.filter(({id}) -> id is id_str)[0]
     
 
