@@ -41,7 +41,6 @@ class VarDisplay
     showVars: (frame, type) ->
         for variable in @watch
             {name, attrs} = variable
-            console.log attrs
 
             newval = unless frame[name]?
                 "<i>undef</i>"
