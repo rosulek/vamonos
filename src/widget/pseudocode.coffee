@@ -11,7 +11,6 @@
 #       container:              the id of the DOM element target
 #
 #       breakpoints:            initial array of line numbers to break at
-#                               (every line by default)
 #
 #       editableBreakpoints:    allow users to modify breakpoints?
 #                               (true by default)
@@ -26,8 +25,7 @@ class Pseudocode
         # sets @$tbl as the jquery selector for the pseudocode table
         nLines = @formatContainer(Vamonos.jqueryify(container))
 
-        # if breakpoints are not defined, set one for every line
-        @breakpoints ?= [1..nLines]
+        @breakpoints ?= []
 
     event: (event, options...) -> switch event
         when "setup"
