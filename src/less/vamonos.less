@@ -154,7 +154,7 @@ table.array {
         }
     }
     
-    .indices-inside & tr.array-indices td, tr.array-cells td {
+    tr.array-cells td {
         border: 1px solid @border-color;
         background-color: @normal-item-bg-color;
         .ease(background-color);
@@ -177,17 +177,6 @@ table.array {
             background-color: @editing-bg-color;
         }
 
-    }
-
-    .indices-inside & {
-        tr.array-cells td {
-            border-top-width: 0px;
-        }
-        tr.array-indices td {
-            border-bottom: 0px;
-            text-align: left;
-            padding-left: 2px;
-        }
     }
 
     .no-indices & {
@@ -574,17 +563,19 @@ table.var-watcher {
 //////////////////////
 // MATRIX
 
+@matrix-cell-size: (@array-cell-size - 4);
+
 table.matrix {
     border-collapse: collapse;
 
-    td, th {
+    td {
         text-align: center;
         vertical-align: middle;
-        padding: 4px;
-    }
-    td {
+
         background-color: @normal-item-bg-color; 
         .ease(background-color);
+        min-width: @matrix-cell-size;
+        min-height: @matrix-cell-size;
 
         &.changed {
             .background-highlight-pulse();
@@ -600,31 +591,47 @@ table.matrix {
         }
 
     }
-    th {
+    th.matrix-row-label, th.matrix-col-label {
         font-weight: normal;
         color: @numbering-color;
         font-size: @numbering-size;
     }
 
+    th.matrix-row-annotation, th.matrix-col-annotation {
+        .variable-name();        
+    }
+    th.matrix-row-annotation {
+        text-align: left;
+        vertical-align: middle;
+    }
+    th.matrix-col-annotation {
+        text-align: center;
+    }
+    th.matrix-row-label {
+        text-align: right;
+        vertical-align: middle;
+    }
+    th.matrix-col-label {
+        text-align: center;
+    }
 
     // BORDERS
 
-    th {
-        border-right: 1px solid #888;
+    th.matrix-col-annotation {
+        border-top: 1px solid @border-color;
     }
-    tr.matrix-label-row th {
-        border-bottom: 1px solid #888;
-        border-right-width: 0px;
+    th.matrix-row-annotation {
+        border-left: 1px solid @border-color;
+        padding-left: 3px;
     }
-    tr.matrix-label-row th:first-child {
-        border-bottom-width: 0px;
+    th.matrix-col-label {
+        border-bottom: 1px solid @border-color;
     }
-    tr:last-child td {
-        border-bottom: 1px solid #888;
+    th.matrix-row-label {
+        border-right: 1px solid @border-color;
+        padding-right: 3px;
     }
-    tr td:last-child {
-        border-right: 1px solid #888;
-    }
+
 }
 
 
