@@ -9,6 +9,8 @@ class ArrayGuts
         @firstIndex    = if ignoreIndexZero then 1 else 0
         @defaultInput ?= []
         @showChanges   = Vamonos.arrayify(showChanges ? "next")
+        @cssRules     ?= []
+        @showIndices  ?= []
 
         @rawToTxt   = cellFormat ? Vamonos.rawToTxt
         @txtToRaw   = cellParse  ? Vamonos.txtToRaw

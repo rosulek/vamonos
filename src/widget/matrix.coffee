@@ -13,11 +13,16 @@ class Matrix
 
         @rows           = []
         @cols           = []
+
         @$cells         = {}
         @$rows          = {}
 
+        @$colAnnotations = {}
+        @$rowAnnotations = {}
+
         @$table = $("<table>", {class: "matrix"})
         @$container.append(@$table)
+
 
     event: (event, options...) -> switch event
         when "setup"
@@ -41,13 +46,14 @@ class Matrix
 
         when "displayStart"
             @matrixReset()
+            @$table.show()
 
         when "render"
             @render(options...)
 
 
     render: (frame, type) ->
-        newMatrix = frame[@varName] ? []
+        newMatrix = frame[@varName] ? {}
 
         @$table.find("td").removeClass()
 
@@ -56,6 +62,15 @@ class Matrix
 
         for c in @getCols(newMatrix)
             @matrixEnsureColumn(c)
+
+        newRows = @getRows(newMatrix)
+        for r in @rows
+            @matrixRemoveRow(r) unless r in newRows
+
+        newCols = @getCols(newMatrix)
+        for c in @cols
+            @matrixRemoveCol(c) unless c in newCols
+
 
         # apply CSS rules
         for [type, compare, indexName, className] in @cssRules
@@ -77,30 +92,39 @@ class Matrix
 
         for r in @rows
             for c in @cols
-                @matrixSetFromRaw(r, c, newMatrix[r][c], showChange)
+                @matrixSetFromRaw(r, c, newMatrix[r]?[c], showChange)
 
-#        indices = {}
-#        for i in @showIndices
-#            target = @virtualIndex(frame, i)
-#
-#            if indices[target]?
-#                indices[target].push(i)
-#            else
-#                indices[target] = [i]
+        rowIndices = {}
+        colIndices = {}
+        
+        for [type, i] in @showIndices
+            home = if type is "row" then rowIndices else colIndices
+            target = "" + @virtualIndex(frame, i)
 
-#        @$rowAnnotations.find("td").empty()
-#        for i in [@firstIndex...newArray.length]
-#            @getNthAnnotation(i).html( indices[i].join(", ") ) if indices[i]?
+            if home[target]?
+                home[target].push(i)
+            else
+                home[target] = [i]
+
+        for r in @rows
+            @$rowAnnotations[r].html( if rowIndices[r]? then rowIndices[r].join(", ") else "" )
+        for c in @cols
+            @$colAnnotations[c].html( if colIndices[c]? then colIndices[c].join(", ") else "" )
+
 
     virtualIndex: (frame, indexStr) ->
         return null unless indexStr.match(/^([a-zA-Z_]+|\d+)((-|\+)([a-zA-Z_]+|\d+))*$/g)
         tokens = indexStr.match(/[a-zA-Z_]+|-|\+|\d+/g)
+
+        if tokens.length is 1
+            return frame[tokens[0]]
+
         prevOp = "+"
         total  = 0
 
         for t in tokens
             if prevOp?  # expecting a varname or constant
-                thisTerm = if Vamonos.isNumber(t) then parseInt(t) else frame[t]
+                thisTerm = if Vamonos.isNumber(t) then parseInt(t) else parseInt(frame[t])
                 return null unless thisTerm?
                 switch prevOp
                     when "+" then total += thisTerm
@@ -135,34 +159,84 @@ class Matrix
 
     # these are the only "approved" ways to edit the matrix
 
-    matrixEnsureRow: (r, showChanges) ->
-        return if r in @rows
+    matrixEnsureRow: (newRowName, showChanges) ->
+        newRowName = "" + newRowName
+        return if newRowName in @rows
 
-        @rows.push(r)
-        @theMatrix[r] = {}
-        @$rows[r] = $newRow = $("<tr>").append( $("<th>", {text: r}) )
+        @rows.push(newRowName)
+        @smartSort(@rows)
 
-        @$cells[r] = {}
+        newPos = @rows.indexOf(newRowName)
+
+        @theMatrix[newRowName] = {}
+        @$rows[newRowName] = $newRow = $("<tr>").append(
+            $("<th>", {class: "matrix-row-label", text: newRowName})
+        )
+
+        @$cells[newRowName] = {}
         for c in @cols
-            @$cells[r][c] = $("<td>")
-            $newRow.append( @$cells[r][c] )
+            $newRow.append( @$cells[newRowName][c] = $("<td>") )
 
-        @$table.append( $newRow )
+        $newRow.append( @$rowAnnotations[newRowName] = $("<th>", {class: "matrix-row-annotation"}) )
+        @$table.find("tr:nth-child(#{ newPos+1 })").after( $newRow )
 
-    matrixEnsureColumn: (c, showChanges) ->
-        return if c in @cols
+        $newRow.find("td").addClass('changed') if showChanges
 
-        @cols.push(c)
-        @$table.find("tr.matrix-label-row").append( $("<th>", {text: c}) )
+    matrixEnsureColumn: (newColName, showChanges) ->
+        newColName = "" + newColName
+        return if newColName in @cols
 
+        @cols.push(newColName)
+        @smartSort(@cols)
+
+        newPos = @cols.indexOf(newColName)
+
+        @$table.find("tr > :nth-child(#{ newPos + 1 })").each( (i,e) =>
+            if i is 0
+                $(e).after( $("<th>", {class: "matrix-col-label", text: newColName}) )
+            else if i == @rows.length + 1
+                $(e).after( @$colAnnotations[newColName] = $("<th>", {class: "matrix-col-annotation"}) )
+            else
+                $(e).after( @$cells[ @rows[i-1] ][ newColName ] = $("<td>") )
+        )
+
+        if showChanges
+            for r in @rows
+                @$cells[r][newColName].addClass("changed")
+
+    matrixRemoveRow: (rowName) ->
+        rowName = "" + rowName
+        return unless rowName in @rows
+        pos = @rows.indexOf(rowName)
+        
+        @rows.splice(pos, 1)
+
+        @$table.find("tr:nth-child(#{ pos + 2 })").remove()
+
+        delete @$rowAnnotations[rowName]
+        delete @$cells[rowName]
+        delete @theMatrix[rowName]
+
+
+    matrixRemoveCol: (colName) ->
+        colName = "" + colName
+        return unless colName in @cols
+        pos = @cols.indexOf(colName)
+        
+        @cols.splice(pos, 1)
+
+        @$table.find("tr > :nth-child(#{ pos + 2 })").remove()
+
+        delete @$colAnnotations[colName]
         for r in @rows
-            @$cells[r][c] = $("<td>")
-            @$rows[r].append( @$cells[r][c] )
+            delete @$cells[r][colName]
+            delete @theMatrix[r][colName]
 
 
     matrixSetFromRaw: (i , j, rawVal, showChanges) ->
         @theMatrix[i][j] = rawVal
         $cell = @$cells[i][j]
+        return unless $cell?
 
         oldhtml = $cell.html()
 
@@ -176,15 +250,17 @@ class Matrix
             @markChanged(i,j) if showChanges
 
     matrixReset: () ->
-        @theMatrix = {}
-        @$cells = {}
-        @rows = []
-        @$rows = {}
-        @cols = []
+        @theMatrix       = {}
+        @$cells          = {}
+        @rows            = []
+        @$rows           = {}
+        @cols            = []
+        @$rowAnnotations = {}
+        @$colAnnotations = {}
 
-        @$table.empty()
-        @$table.append(
-            $("<tr>", {class: "matrix-label-row"}).append($("<th>"))
+        # start with 4 empty corners
+        @$table.html(
+            "<tr><th></th><th></th></tr><tr><th></th><th></th></tr>"
         )
 
 
