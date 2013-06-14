@@ -8,8 +8,9 @@
     <script type="text/javascript" src="../lib/vamonos.js"></script>
 
     <style type="text/css">
-        .black { background-color: black; }
-        .gray  { background-color: gray; }
+        .black { background: black; }
+        .white { background: white; }
+        .gray  { background: gray; }
         .left  { text-align: left }
     </style>
 
@@ -54,14 +55,24 @@
                     varName: "G",
                     container: "graph",
                     showVertices: ["u", "v"],
-                    renderVertexContents: function(v, $vtx) {
-                        if (v.color == "gray") {
+                    vertexSetupFunc: function(v, $vtx) {
+                        $vtx.removeClass('white black gray')
+                        $vtx.append("<div class='vertex-nw-label'>" + v.id + "</div>");
+                    },
+                    vertexUpdateFunc: function(v, $vtx) {
+                        var clear = function () { 
+                            $vtx.removeClass('white black gray')
+                        };
+                        if (v.color == "white") {
+                            clear();
+                            $vtx.addClass('white');
+                        } else if (v.color == "gray") {
+                            clear();
                             $vtx.addClass('gray');
-                        }
-                        if (v.color == "black") {
+                        } else if (v.color == "black") {
+                            clear();
                             $vtx.addClass('black');
                         }
-                        $vtx.append("<div class='vertex-nw-label'>" + v.id + "</div>");
                     },
                     renderEdgeStyle: function (edge) {
                         return {lineWidth: 2};
@@ -118,7 +129,7 @@
             algorithm: function (viz) {
                 with (viz.stash) {
                     var _ = function(n){ viz.line(n); }; 
-                    s = G.vertices[1];
+                    s = G.vertices[0];
 
                     for (var i = G.vertices.length - 1; i >= 0; i--) {
                         if (u === s) { continue }

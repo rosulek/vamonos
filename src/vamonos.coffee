@@ -74,12 +74,12 @@ root.Vamonos =
     #
     #   Add all attributes of src object to dest object, recursively
     ###
-    mixin: (dest, src, copyFunc) ->
+    mixin: (dest, src) ->
         for name, val of src
             if (typeof dest[name] is 'object') and (typeof src[name] is 'object')
                 @mixin( dest[name], src[name])
             else
-                dest[name] = if copyFunc? then copyFunc(src[name]) else src[name]
+                dest[name] = src[name]
         return dest
 
     ###
@@ -87,13 +87,5 @@ root.Vamonos =
     #
     #   Clones an object deeply and returns it.
     ###
-    clone: (src) ->
-        return src                                  if not src or typeof src isnt "object" 
-        return src                                  if Object.prototype.toString.call(src) is "[object Function]"
-        return src.cloneNode(true)                  if src.nodeType and "cloneNode" in src    # DOM Node
-        return new Date(src.getTime())              if src instanceof Date
-        return new RegExp(src)                      if src instanceof RegExp
-        r  = (Vamonos.clone(elem) for elem in src)  if src instanceof Array 
-        r ?= {}                                     # otherwise
-        Vamonos.mixin(r, src, Vamonos.clone)
-
+    clone: (obj) ->
+        $.extend(true, {}, obj)

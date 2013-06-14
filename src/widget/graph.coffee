@@ -1,6 +1,6 @@
 class Graph
 
-    constructor: ({container, @varName, @defaultGraph, @renderVertexContents}) ->
+    constructor: ({container, @varName, @defaultGraph, @vertexSetupFunc, @vertexUpdateFunc}) ->
 
         @$outer = Vamonos.jqueryify(container)
         @$outer.css("width", "530px")
@@ -15,70 +15,80 @@ class Graph
 
         when "setup"
             [@stash, visualizer] = options
-            if @defaultGraph?
-                @stash._inputVars.push(@varName)
-                @stash[@varName] = @defaultGraph 
 
         when "render"
             [frame, type] = options
-            @clear()
-            @drawGraph(frame[@varName])
+            @drawGraph(frame[@varName]) unless @graphDrawn
+            @updateVertex(v) for v in frame[@varName].vertices
 
-    jsPlumbInit: (defaults) ->
-        defaults ?=
-            Connector: ["Straight", {stub: 2}]
+        when "displayStop"
+            @clear()
+
+        when "editStop"
+            if @defaultGraph?
+                @stash[@varName] = Vamonos.clone(@defaultGraph)
+
+
+    updateVertex: (vertex) ->
+        $v = @vertices.filter((v) -> v.attr("id") is vertex.id)[0]
+        @vertexUpdateFunc(vertex, $v)
+
+    # JsPlumb stuff #
+
+    jsPlumbInit: () -> 
+        @jsPlumbInstance = jsPlumb.getInstance 
+            Connector: ["Straight", {gap: 8}]
             PaintStyle: 
-                lineWidth: 3
+                lineWidth: 2
                 strokeStyle:"gray"
             Endpoint: "Blank"
             EndpointStyle:{ fillStyle:"black" }
             ConnectionOverlays: [ 
-                [ "PlainArrow", {width: 8, length:8, location:1, id:"arrow" } ]
-            ],
-            #Anchors: ["Perimiter", {shape:"circle"}]
-        @jsPlumbInstance = jsPlumb.getInstance(defaults)
-
-    getVertices: () ->
-        for vertexElem in @$inner.find('.vertex')
-            id: vertexElem.id
-            x: vertexElem.style.left
-            y: vertexElem.style.top
+                ["PlainArrow", {location:-4, width:8, length:8}]
+            ]
+            Anchor: [ "Perimeter", { shape: "Circle" } ]
 
     makeVertex: (vertex) ->
-        $newdiv = $("<div>", {class: 'vertex', id: vertex.id})
-        $newdiv.attr('id', vertex.id)
+        $v = $("<div>", {class: 'vertex', id: vertex.id})
+        $v.attr('id', vertex.id)
         $contents = $("<div>", class: "vertex-contents")
 
-        if @renderVertexContents?
-            @renderVertexContents(vertex, $contents)
+        if @vertexSetupFunc?
+            @vertexSetupFunc(vertex, $contents)
         else
             $contents.html(Vamonos.rawToTxt(vertex))
 
-        $newdiv.append($contents)
+        $v.append($contents)
 
         pos = @$inner.position()
-        $newdiv.css("left", vertex.x)
-        $newdiv.css("top",  vertex.y)
-        $newdiv.css("position", "absolute")
+        $v.css("left", vertex.x)
+        $v.css("top",  vertex.y)
+        $v.css("position", "absolute")
 
-        @$inner.append($newdiv)
+        @$inner.append($v)
 
-        @jsPlumbInstance.draggable($newdiv, {containment: "parent"})
-        @jsPlumbInstance.setDraggable($newdiv, false)
-
+        #TODO: draggable stuff requires jquery ui functionality
+        #@jsPlumbInstance.draggable($v, {containment: "parent"})
+        #@jsPlumbInstance.setDraggable($v, false)
         
-    # Destructures on an edge object
-    makeConnection: (source, target) ->
+        return $v
+
+    makeEdge: (edge) ->
         @jsPlumbInstance.connect
-            source: source
-            target: target
-        
+            source: edge.source.id
+            target: edge.target.id
+
     drawGraph: (G) ->
-        @makeVertex(v)                            for v in G.vertices
-        @makeConnection(e.source.id, e.target.id) for e in G.edges
+        @vertices = (@makeVertex(v) for v in G.vertices)
+        @edges    = (@makeEdge(e)   for e in G.edges)
+
+        @graphDrawn = yes
 
     clear: () ->
-        @jsPlumbInstance.reset()
-
+        @jsPlumbInit()
+        @$inner.html("")
+        @graphDrawn = no
+        @edges = []
+        @vertices = []
 
 Vamonos.export { Widget: { Graph } }
