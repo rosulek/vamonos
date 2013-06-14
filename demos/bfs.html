@@ -4,12 +4,13 @@
     <link rel="stylesheet" href="demos.css">
     <script type="text/javascript" src="../deps/jquery.min.js"></script>
     <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="../deps/jquery-jsplumb.min.js"></script>
+    <script type="text/javascript" src="../deps/jquery-jsplumb.js"></script>
     <script type="text/javascript" src="../lib/vamonos.js"></script>
 
     <style type="text/css">
         .black { background-color: black; }
         .gray  { background-color: gray; }
+        .left  { text-align: left }
     </style>
 
 </head><body>
@@ -17,7 +18,7 @@
     <h1>Breadth-First Search</h1>
 
 
-    <div class="vamonos">
+    <div class="vamonos left">
         <table><tr><td>
         <div class="container" id="pseudocode" title="BFS(G,s):">
             for each vertex u &in; G.V - {s}
@@ -35,11 +36,11 @@
         </div>
         <br>
         <div id="controls"></div>
-        </td><td valign='top'>
+        </td><td valign='top' align='left'>
             <div class="container" id="display"></div>
         </td></tr></table>
+                    
         <div class="container" id="graph"></div>
-        <br>
     </div>
 
     <script type="text/javascript">
