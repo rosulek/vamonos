@@ -1,0 +1,119 @@
+<html><head>
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="demos.css">
+    <script type="text/javascript" src="../deps/jquery.min.js"></script>
+    <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../lib/vamonos.js"></script>
+
+</head><body>
+
+    <h1>Matrix-chain Multiplication</h1>
+
+    <div class="vamonos">
+        <div class="container" id="pseudocode" title="MatrixChainMult(dim):">
+            for i = 1 to dim.length - 1
+                opt[i,i] = 0
+                sol[i,i] = "M i"
+            for l = 2 to dim.length
+                for i = 1 to dim.length - l
+                    k = i + l - 1
+                    opt[i,k] = &infin;
+                    for j = 1 to k-1
+                        if opt[i,k] &gt; dim[i-1]*dim[j]*dim[k] + best[i,j] + best[j+1,k]
+                            opt[i,k] = dim[i-1]*dim[j]*dim[k] + best[i,j] + best[j+1,k]
+                            sol[i,k] = "(sol[i][j] sol[j+1][k])"
+        </div>
+        <br>
+        <div id="controls"></div>
+        <br>
+        <div class="container" id="array"></div>
+        <br>
+        <div class="container" id="opt"></div>
+        <br>
+        <div class="container" id="sol"></div>
+    </div>
+
+    <script type="text/javascript">
+        var myviz = new Vamonos.Visualizer({
+            widgets: [
+                new Vamonos.Widget.Array({
+                    container: "array",
+                    showLabel: true,
+                    varName: "dim",
+                    defaultInput: [4, 3, 5, 1, 2, 7],
+                    showIndices: ["i-1", "j", "k"],
+                }),
+
+                new Vamonos.Widget.Matrix({
+                    container: "opt",
+                    varName: "opt",
+                    cssRules: [
+                        ["row", ">", "col", "shaded"]
+                    ],
+                    showIndices: [
+                        ["row", "i"],
+                        ["row", "j+1"],
+                        ["col", "j"],
+                        ["col", "k"]
+                    ]
+                }),
+
+                new Vamonos.Widget.Matrix({
+                    container: "sol",
+                    varName: "sol",
+                    cssRules: [
+                        ["row", ">", "col", "shaded"]
+                    ],
+                    showIndices: [
+                        ["row", "i"],
+                        ["row", "j+1"],
+                        ["col", "j"],
+                        ["col", "k"]
+                    ]
+                }),
+
+
+                new Vamonos.Widget.Pseudocode({
+                    container: "pseudocode",
+                    breakpoints: [3,7]
+                }),
+
+                new Vamonos.Widget.Controls({
+                    container: "controls",
+                    showWhileSliding: true
+                })
+            ],
+
+            algorithm: function (viz) {
+                var _ = function(l) { viz.line(l); };
+                var l;
+
+                with (viz.stash) {
+                    opt = {};
+                    sol = {};
+_(1);               for (i = 1; i < dim.length; _(1), i++) {
+_(2);                   opt[i] = {}; opt[i][i] = 0;
+_(3);                   sol[i] = {}; sol[i][i] = "M" + i;
+                    }
+_(4);               for (l = 2; l < dim.length; _(4), l++) {
+_(5);                   for (i = 1; i < dim.length - l + 1; _(5), i++) {
+_(6);                       k = i + l - 1;
+_(7);                       opt[i][k] = Infinity;
+_(8);                       for (j = 1; j < k; _(8), j++) {
+_(9);                           if (opt[i][k] > dim[i-1]*dim[j]*dim[k] + opt[i][j] + opt[j+1][k]) {
+_(10);                              opt[i][k] = dim[i-1]*dim[j]*dim[k] + opt[i][j] + opt[j+1][k];
+_(11);                              sol[i][k] = "(" + sol[i][j] + " " + sol[j+1][k] + ")";
+                                }
+                            }
+                        }
+                    }
+                    
+                }
+            }
+        });
+
+    </script>
+
+</body>
+</html>
