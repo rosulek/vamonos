@@ -1,5 +1,19 @@
 class Matrix
 
+    COMPARATOR: (str, a, b) -> 
+        if Vamonos.isNumber(a) and Vamonos.isNumber(b)
+            res = parseInt(a) - parseInt(b) 
+        else
+            res = a.localeCompare(b)
+        
+        switch str
+            when "<"        then return res < 0
+            when "<="       then return res <= 0
+            when "=", "=="  then return res == 0
+            when ">"        then return res > 0
+            when ">="       then return res >= 0
+            
+
     constructor: ({container, @defaultInput, @varName,
                     showChanges, @cssRules, @showIndices, cellFormat}) ->
 
@@ -32,7 +46,7 @@ class Matrix
             @theMatrix = @stash[@varName] = @shallowCopy( @defaultInput )
 
             # register varName as an input if needed
-            @stash._inputVars.push(@varName) unless @displayOnly
+            # @stash._inputVars.push(@varName) unless @displayOnly
             
             # ensure array indices exist in the stash
             for [_,_,i,_] in @cssRules
@@ -63,29 +77,32 @@ class Matrix
         for c in @getCols(newMatrix)
             @matrixEnsureColumn(c)
 
+        # loop over *copies* of @rows, @cols because the @matrixRemove
+        # methods modify them
+
         newRows = @getRows(newMatrix)
-        for r in @rows
+        for r in @rows[..]
             @matrixRemoveRow(r) unless r in newRows
 
         newCols = @getCols(newMatrix)
-        for c in @cols
+        for c in @cols[..]
             @matrixRemoveCol(c) unless c in newCols
 
-
         # apply CSS rules
-        for [type, compare, indexName, className] in @cssRules
-            index = @virtualIndex(frame, indexName)
-#            if Vamonos.isNumber(index) and @firstIndex <= index < newArray.length
-#
-#                if type is "row"
-#                    $row = @getNthColumn(index)
-#                    $selector = switch compare 
-#                        when "<"        then $col.prevAll() 
-#                        when "<="       then $col.prevAll().add($col)
-#                        when "=", "=="  then $col
-#                        when ">"        then $col.nextAll()
-#                        when ">="       then $col.nextAll().add($col)
-#                    $selector.addClass(className)
+        tmpFrame = {}
+        tmpFrame[v] = frame[v] for v of frame
+
+        for [leftIndex, compare, rightIndex, className] in @cssRules
+            for r in @rows
+                tmpFrame.row = r
+                for c in @cols
+                    tmpFrame.col = c
+
+                    left = @virtualIndex(tmpFrame, leftIndex)
+                    right = @virtualIndex(tmpFrame, rightIndex)
+
+                    @$cells[r][c].addClass(className) if @COMPARATOR( compare, left, right )
+
 
         # apply the "changed" class after applying the other css rules
         showChange = type in @showChanges

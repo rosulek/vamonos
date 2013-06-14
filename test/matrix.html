@@ -23,8 +23,7 @@
                 new Vamonos.Widget.Array({
                     container: "array",
                     varName: "A",
-                    defaultInput: ["m","i","k","e"],
-                    cssRules: [],
+                    defaultInput: ["a","b","c","d", "e","f","g"],
                     cellFormat: function (x) { return x; },
                     cellParse: function (x) { return x; }
                 }),
@@ -32,6 +31,11 @@
                 new Vamonos.Widget.Matrix({
                     container: "matrix",
                     varName: "M",
+                    cssRules: [
+                        ["row", "<", "col", "shaded"],
+                        ["row", "=", "x", "row-highlight"],
+                        ["col", "=", "y", "col-highlight"]
+                    ],
                     showIndices: [["row","x"], ["col","y"]],
                 }),
 
@@ -45,6 +49,7 @@
 //            autoStart: true,
 
             algorithm: function (viz) {
+                console.log(viz.stash.M);
                 with (viz.stash) {
                     M = {};
                     for (var i=0; i<A.length; i++) {
