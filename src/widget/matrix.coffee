@@ -1,18 +1,5 @@
 class Matrix
 
-    COMPARATOR: (str, a, b) -> 
-        if Vamonos.isNumber(a) and Vamonos.isNumber(b)
-            res = parseInt(a) - parseInt(b) 
-        else
-            res = a.localeCompare(b)
-        
-        switch str
-            when "<"        then return res < 0
-            when "<="       then return res <= 0
-            when "=", "=="  then return res == 0
-            when ">"        then return res > 0
-            when ">="       then return res >= 0
-            
 
     constructor: ({container, @defaultInput, @varName,
                     showChanges, @cssRules, @showIndices, cellFormat}) ->
@@ -37,17 +24,12 @@ class Matrix
         @$table = $("<table>", {class: "matrix"})
         @$container.append(@$table)
 
-
     event: (event, options...) -> switch event
         when "setup"
             [@stash, visualizer] = options
 
-            # setup defaults in the stash (in case no edit mode happens)
-            @theMatrix = @stash[@varName] = @shallowCopy( @defaultInput )
+            @stash[@varName] ?= null
 
-            # register varName as an input if needed
-            # @stash._inputVars.push(@varName) unless @displayOnly
-            
             # ensure array indices exist in the stash
             for [_,_,i,_] in @cssRules
                 @stash[v] ?= null for v in @virtualIndexDependents(i)
@@ -56,11 +38,11 @@ class Matrix
            
 
         when "editStart"
-            @$table.hide()
+            @$container.hide()
 
         when "displayStart"
             @matrixReset()
-            @$table.show()
+            @$container.show()
 
         when "render"
             @render(options...)
@@ -101,7 +83,7 @@ class Matrix
                     left = @virtualIndex(tmpFrame, leftIndex)
                     right = @virtualIndex(tmpFrame, rightIndex)
 
-                    @$cells[r][c].addClass(className) if @COMPARATOR( compare, left, right )
+                    @$cells[r][c].addClass(className) if @comparator( compare, left, right )
 
 
         # apply the "changed" class after applying the other css rules
@@ -298,5 +280,19 @@ class Matrix
                 res[r][c] = matrix[r][c]
         return res
         
+
+    comparator: (str, a, b) -> 
+        if Vamonos.isNumber(a) and Vamonos.isNumber(b)
+            res = parseInt(a) - parseInt(b) 
+        else
+            res = a.localeCompare(b)
+        
+        switch str
+            when "<"        then return res < 0
+            when "<="       then return res <= 0
+            when "=", "=="  then return res == 0
+            when ">"        then return res > 0
+            when ">="       then return res >= 0
+            
 
 Vamonos.export { Widget: { Matrix } }
