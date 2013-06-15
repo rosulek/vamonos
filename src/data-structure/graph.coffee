@@ -21,6 +21,9 @@ class Graph
     vertex: (id_str) ->
         @vertices.filter(({id}) -> id is id_str)[0]
 
+    eachVertex: (f) ->
+        f(v) for v in @vertices
+
     neighbors: (v) ->
         @vertex(target) for target, edge of @_adjHash[v.id]
 
