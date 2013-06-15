@@ -66,10 +66,8 @@ var myviz = new Vamonos.Visualizer({
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-dfs",
             setAllBreakpoints: true,
-            varName: "main",
             routine: function(viz) {
                 var _ = function(n){ viz.line(n) };
-                viz.stash._bind()
                 with (viz.stash) {
                     G.eachVertex(function(vtx){
 _(1);                   u = vtx;
@@ -84,7 +82,6 @@ _(6);                       visit(G, u);
                         }
                     });
                 }
-                viz.stash._return()
             }
         }),
 
@@ -92,9 +89,9 @@ _(6);                       visit(G, u);
             container: "pseudocode-visit",
             setAllBreakpoints: true,
             varName: "visit",
-            routine: function(viz, G, u) {
+            args: ["G", "u"],
+            routine: function(viz) {
                 var _ = function(n){ viz.line(n) };
-                viz.stash._bind({vars: {G: G, u: u}, context: "visit"});
                 with (viz.stash) {
 _(1);               time++;
 _(2);               u.d = time;
@@ -109,7 +106,6 @@ _(7);               u.color = "black";
 _(8);               time++;
 _(9);               u.f = time;
                 }
-                viz.stash._return()
             }
         }),
 
