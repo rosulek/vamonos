@@ -27,158 +27,157 @@
         <br>
         <div class="container" id="array"></div>
     </div>
-
-    <script type="text/javascript">
-
-        var myviz = new Vamonos.Visualizer({
-            widgets: [
-                new Vamonos.Widget.Array({
-                    container: "array",
-                    defaultInput: [6, 3, 1, 4, 1, 5, 9],
-                    ignoreIndexZero: false,
-                    varName: "A",
-                    cssRules: [
-                        ["<", "i", "shaded"]
-                    ],
-                    showIndices: ["i", "m", "j"],
-                    showLabel: true
-                }),
-
-                new Vamonos.Widget.Pseudocode({
-                    container: "pseudocode",
-                    editableBreakPoints: true,
-                }),
-
-                new Vamonos.Widget.Controls({
-                    container: "controls",
-                }),
-
-                new Vamonos.Widget.QTipTutorial({
-                    start: {
-                        on: {edit: "array"}
-                    },
-                    array: {
-                        target: $("table.array"),
-                        dir: "sw",
-                        tooltip: "Here is the array that will be used as input to this algorithm. "
-                               + "But since the visualization is in <b>edit</b> mode, you can "
-                               + "change the array by clicking on it and typing new values.",
-                        on: { clickTarget: "arrayappend", display: "displaycontrols" },
-                        delay: 2000
-                    },
-                    arrayappend: {
-                        target: $("table.array"),
-                        dir: "ne",
-                        tooltip: "You can easily add more elements to the array, by pressing "
-                               + "the right-arrow or the tab key while in the last cell.",
-                        on: { clickTarget: "arraychop", display: "displaycontrols" },
-                        delay: 2000
-                    },
-                    arraychop: {
-                        target: $("table.array"),
-                        dir: "ne",
-                        tooltip: "You can remove elements from the array (using the delete or backspace "
-                               + "keys), too, but only from the end of the array.",
-                        on: { clickTarget: "breakpoints", display: "displaycontrols" },
-                        delay: 2000
-                    },
-                    breakpoints: {
-                        target: $("#pseudocode"),
-                        dir: "w",
-                        tooltip: "In edit mode, you can also toggle breakpoints.",
-                        on: { clickTarget: "run", display: "displaycontrols" }
-                    },
-                    run: {
-                        target: $(".controls-buttons"),
-                        dir: "w",
-                        tooltip: "When you're happy with the input and breakpoints, "
-                               + "press the <b>run</b> button to execute the algorithm.",
-                        on: { clickTarget: "run", display: "displaycontrols" }
-                    },
-                    displaycontrols: {
-                        target: $("#controls"),
-                        dir: "e",
-                        tooltip: "The visualization is now in <b>playback</b> mode. Use these "
-                               + "controls to step through the algorithm.",
-                        on: { clickTarget: "linenumbers", edit: "nonnumeric" },
-                        delay: 3000
-                    },
-                    linenumbers: {
-                        target: $("#pseudocode"),
-                        dir: "e",
-                        tooltip: "The gray line is the one that has just executed, and "
-                               + "the yellow line is the one about to execute.",
-                        on: { frame: "highlights", edit: "nonnumeric" },
-                        delay: 3000,
-                    },
-                    highlights: {
-                        target: $("#array"),
-                        dir: "e",
-                        tooltip: "When you step forward through the frames, "
-                               + "changes to the array are highlighted.",
-                        on: { frame: "stop" },
-                        delay: 3000
-                    },
-                    stop: {
-                        target: $(".controls-buttons"),
-                        dir: "w",
-                        tooltip: "The <b>stop</b> button will take you back to editing mode.",
-                        on: { clickTarget: "wait", frame: "wait", edit: "nonnumeric" },
-                        delay: 3000
-                    },
-                    wait: {
-                        on: { edit: "nonnumeric" }
-                    },
-                    nonnumeric: {
-                        target: $("#array"),
-                        tooltip: "What happens when you put non-numeric data in the array?",
-                        dir: "s",
-                        on: { clickTarget: "inf" },
-                        delay: 2000        
-                    },
-                    inf: {
-                        target: $("#array"),
-                        dir: "s",
-                        tooltip: "What happens when you put <b>infinity</b> in the array?",
-                        on: { clickTarget: "end" },
-                        delay: 2000        
-                    },
-                    end: {
-                        target: $("#pseudocode"),
-                        dir: "e",
-                        tooltip: "This concludes your quick introduction to <b>Vamonos</b>! Enjoy!",
-                        on: { frame: "endforreal", display: "endforreal", edit: "endforreal" },
-                        delay: 2000
-                    }
-                    
-                })
-            ],
-
-            algorithm: function (viz) {
-                with (viz.stash) {
-                    for (viz.line(1), i = 0; i < A.length-1; viz.line(1), i++) {
-                        viz.line(2);
-                        m = i;
-                        for (viz.line(3), j = i+1; j < A.length; viz.line(3), j++) {
-                            viz.line(4);
-                            if (A[j] < A[m]) {
-                                viz.line(5);
-                                m = j
-                            }
-                        }
-                        j = null;
-                        viz.line(6);
-                        var tmp = A[i];
-                        A[i] = A[m];
-                        A[m] = tmp;
-                        m = null;
-                    }
-                    i = null;
-                }
-            }
-        });
-
-    </script>
-
 </body>
+
+<script type="text/javascript">
+
+    var myviz = new Vamonos.Visualizer({
+        widgets: [
+            new Vamonos.Widget.Array({
+                container: "array",
+                defaultInput: [6, 3, 1, 4, 1, 5, 9],
+                ignoreIndexZero: false,
+                varName: "A",
+                cssRules: [
+                    ["<", "i", "shaded"]
+                ],
+                showIndices: ["i", "m", "j"],
+                showLabel: true
+            }),
+
+            new Vamonos.Widget.Pseudocode({
+                container: "pseudocode",
+                editableBreakPoints: true,
+                routine: function (viz) {
+                    with (viz.stash) {
+                        for (viz.line(1), i = 0; i < A.length-1; viz.line(1), i++) {
+                            viz.line(2);
+                            m = i;
+                            for (viz.line(3), j = i+1; j < A.length; viz.line(3), j++) {
+                                viz.line(4);
+                                if (A[j] < A[m]) {
+                                    viz.line(5);
+                                    m = j
+                                }
+                            }
+                            j = null;
+                            viz.line(6);
+                            var tmp = A[i];
+                            A[i] = A[m];
+                            A[m] = tmp;
+                            m = null;
+                        }
+                        i = null;
+                    }
+                }
+            }),
+
+            new Vamonos.Widget.Controls({
+                container: "controls",
+            }),
+
+            new Vamonos.Widget.QTipTutorial({
+                start: {
+                    on: {edit: "array"}
+                },
+                array: {
+                    target: $("table.array"),
+                    dir: "sw",
+                    tooltip: "Here is the array that will be used as input to this algorithm. "
+                            + "But since the visualization is in <b>edit</b> mode, you can "
+                            + "change the array by clicking on it and typing new values.",
+                    on: { clickTarget: "arrayappend", display: "displaycontrols" },
+                    delay: 2000
+                },
+                arrayappend: {
+                    target: $("table.array"),
+                    dir: "ne",
+                    tooltip: "You can easily add more elements to the array, by pressing "
+                            + "the right-arrow or the tab key while in the last cell.",
+                    on: { clickTarget: "arraychop", display: "displaycontrols" },
+                    delay: 2000
+                },
+                arraychop: {
+                    target: $("table.array"),
+                    dir: "ne",
+                    tooltip: "You can remove elements from the array (using the delete or backspace "
+                            + "keys), too, but only from the end of the array.",
+                    on: { clickTarget: "breakpoints", display: "displaycontrols" },
+                    delay: 2000
+                },
+                breakpoints: {
+                    target: $("#pseudocode"),
+                    dir: "w",
+                    tooltip: "In edit mode, you can also toggle breakpoints.",
+                    on: { clickTarget: "run", display: "displaycontrols" }
+                },
+                run: {
+                    target: $(".controls-buttons"),
+                    dir: "w",
+                    tooltip: "When you're happy with the input and breakpoints, "
+                            + "press the <b>run</b> button to execute the algorithm.",
+                    on: { clickTarget: "run", display: "displaycontrols" }
+                },
+                displaycontrols: {
+                    target: $("#controls"),
+                    dir: "e",
+                    tooltip: "The visualization is now in <b>playback</b> mode. Use these "
+                            + "controls to step through the algorithm.",
+                    on: { clickTarget: "linenumbers", edit: "nonnumeric" },
+                    delay: 3000
+                },
+                linenumbers: {
+                    target: $("#pseudocode"),
+                    dir: "e",
+                    tooltip: "The gray line is the one that has just executed, and "
+                            + "the yellow line is the one about to execute.",
+                    on: { frame: "highlights", edit: "nonnumeric" },
+                    delay: 3000,
+                },
+                highlights: {
+                    target: $("#array"),
+                    dir: "e",
+                    tooltip: "When you step forward through the frames, "
+                            + "changes to the array are highlighted.",
+                    on: { frame: "stop" },
+                    delay: 3000
+                },
+                stop: {
+                    target: $(".controls-buttons"),
+                    dir: "w",
+                    tooltip: "The <b>stop</b> button will take you back to editing mode.",
+                    on: { clickTarget: "wait", frame: "wait", edit: "nonnumeric" },
+                    delay: 3000
+                },
+                wait: {
+                    on: { edit: "nonnumeric" }
+                },
+                nonnumeric: {
+                    target: $("#array"),
+                    tooltip: "What happens when you put non-numeric data in the array?",
+                    dir: "s",
+                    on: { clickTarget: "inf" },
+                    delay: 2000        
+                },
+                inf: {
+                    target: $("#array"),
+                    dir: "s",
+                    tooltip: "What happens when you put <b>infinity</b> in the array?",
+                    on: { clickTarget: "end" },
+                    delay: 2000        
+                },
+                end: {
+                    target: $("#pseudocode"),
+                    dir: "e",
+                    tooltip: "This concludes your quick introduction to <b>Vamonos</b>! Enjoy!",
+                    on: { frame: "endforreal", display: "endforreal", edit: "endforreal" },
+                    delay: 2000
+                }
+                
+            })
+        ],
+
+    });
+
+</script>
 </html>
