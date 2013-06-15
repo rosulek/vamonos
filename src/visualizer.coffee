@@ -52,9 +52,8 @@
 
 class Visualizer
 
-    constructor: ({widgets, @algorithm, @maxFrames, autoStart}) ->
+    constructor: ({@widgets, @maxFrames, autoStart}) ->
         @currentFrameNumber = 0
-        @widgets            = Vamonos.arrayify(widgets)
         @maxFrames         ?= 250
         autoStart          ?= false
 
@@ -142,10 +141,14 @@ class Visualizer
         try
             # there's always a "before" & "after" snapshot
             @line(0)
-            @algorithm(this)
+            throw "no main function" unless @stash.main?
+            @stash.main()
             @line(0)
         catch err
             switch err
+                when "no main function"
+                    alert("No main function was defined. Use a hardcoded or pseudocode " +
+                          "widget to define it. Visualization halted.")
                 when "too many frames"
                     alert("Too many frames. You may have an infinite loop, or you may " +
                           "want to consider setting fewer breakpoints. " +

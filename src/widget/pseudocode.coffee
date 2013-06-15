@@ -1,3 +1,7 @@
+# TODO: breakpoints cant be global anymore - need to be contextualized
+# TODO: when context switches to subroutine at first, prev line is wrong
+
+
 ###
 #
 #   src/widget/pseudocode.coffee :: exports Vamonos.Widget.Pseudocode
@@ -19,13 +23,17 @@
 class Pseudocode
 
     constructor: ({container, @editableBreakpoints, @breakpoints, 
-        @showPreviousLine, setAllBreakpoints, @varName, @routine}) ->
+        @showPreviousLine, setAllBreakpoints, @varName, @routine,
+        @args}) ->
 
+        @args                ?= []
         @varName             ?= "main"
         @editableBreakpoints ?= yes
         @showPreviousLine    ?= yes
         setAllBreakpoints    ?= yes
-        @mostRecent           = 0
+
+        # most recently displayed line
+        @mostRecent = 0
 
         # sets @$tbl as the jquery selector for the pseudocode table
         nLines = @formatContainer(Vamonos.jqueryify(container))
@@ -41,12 +49,17 @@ class Pseudocode
             Vamonos.insertSet(b, @stash._breakpoints) for b in @breakpoints
 
             if @routine?
-                if @varName is "main"
-                    visualizer.algorithm = @routine
-                else
-                    @stash._inputVars.push(@varName)
-                    @stash[@varName] = (args...) => 
-                        @routine(visualizer, args...)
+                @stash._inputVars.push(@varName)
+                @stash[@varName] = (args...) => 
+                    vars = {}
+                    vars[@args[i]] = args[i] for i in [0..args.length-1]
+                    visualizer.stash._bind(
+                        context: @varName
+                        vars: vars
+                    )
+                    @routine(visualizer, args...)
+                    visualizer.stash._return()
+
 
             @showBreakpoints()
 

@@ -3,8 +3,8 @@ class Stash
         @_breakpoints = []
         @_inputVars   = []
         @_watchVars   = []
-        @_stack       = []
         @_type        = "stash"
+        @_stack       = []
         @_callStack   = []
 
     _initialize: () ->
@@ -19,7 +19,6 @@ class Stash
         context = args.context ? "main"
         if @_context?
             @_callStack.push(@_context) 
-            console.log "pushed context", @_context
         @_context = context
 
         # save old scope
@@ -30,10 +29,7 @@ class Stash
 
     _return: () ->
         @_context = @_callStack.pop()
-        console.log "popped context", @_context
-
-        bindings = @_stack.pop()
-
+        bindings  = @_stack.pop()
         # delete new bindings not in old scope
         keys = (binding[0] for binding in bindings)
         delete @[key] for key of this when not key in keys
