@@ -5,10 +5,6 @@
 #   Initializes namespace.
 #   Common functions for use in Vamonos
 #
-#   usage: include "#_require ./relative_path_to_common.coffee" at top of
-#   source file so that the build script will load it before the file you are
-#   working on.
-#
 ### 
 root = exports ? window
 root.Vamonos = 
