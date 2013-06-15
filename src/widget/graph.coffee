@@ -1,12 +1,10 @@
 class Graph
 
-    constructor: ({container, @varName, @defaultGraph, @vertexSetupFunc, @vertexUpdateFunc,
-        @showVertices}) ->
+    constructor: ({container, @varName, @defaultGraph, @vertexSetupFunc,
+        @vertexUpdateFunc, @showVertices}) ->
 
         @$outer = Vamonos.jqueryify(container)
         @$inner = $("<div>", {class: "graph-inner-container"})
-        @$outer.css("width", "530px")
-        @$outer.css("height", "400px")
         @$outer.append(@$inner)
 
         @jsPlumbInit()
@@ -73,7 +71,7 @@ class Graph
 
     jsPlumbInit: () -> 
         @jsPlumbInstance = jsPlumb.getInstance 
-            Connector: ["Straight", {gap: 8}]
+            Connector: ["Straight", {gap: 6}]
             PaintStyle: 
                 lineWidth: 2
                 strokeStyle:"gray"

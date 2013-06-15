@@ -18,10 +18,14 @@
 ###
 class Pseudocode
 
-    constructor: ({container, @editableBreakpoints, @breakpoints, @showPreviousLine, setAllBreakpoints}) ->
+    constructor: ({container, @editableBreakpoints, @breakpoints, 
+        @showPreviousLine, setAllBreakpoints, @varName, @routine}) ->
+
+        @varName             ?= "main"
         @editableBreakpoints ?= yes
         @showPreviousLine    ?= yes
         setAllBreakpoints    ?= yes
+        @mostRecent           = 0
 
         # sets @$tbl as the jquery selector for the pseudocode table
         nLines = @formatContainer(Vamonos.jqueryify(container))
@@ -33,8 +37,17 @@ class Pseudocode
 
     event: (event, options...) -> switch event
         when "setup"
-            [@stash] = options
+            [@stash, visualizer] = options
             Vamonos.insertSet(b, @stash._breakpoints) for b in @breakpoints
+
+            if @routine?
+                if @varName is "main"
+                    visualizer.algorithm = @routine
+                else
+                    @stash._inputVars.push(@varName)
+                    @stash[@varName] = (args...) => 
+                        @routine(visualizer, args...)
+
             @showBreakpoints()
 
         when "editStart"
@@ -49,16 +62,25 @@ class Pseudocode
 
         when "render"
             [frame, type] = options
-            @render(frame)
+            @render(frame) 
 
     render: (frame) ->
+
         @clear()
 
-        if @showPreviousLine and frame._prevLine isnt frame._lineNumber
-            @addClassToLine(frame._prevLine, "pseudocode-previous")
-            @addClassToLine(frame._lineNumber, "pseudocode-next")
+        return unless @varName is frame._context or @varName in frame._callStack
+
+        [prev, next] = if frame._context is @varName
+            @mostRecent = frame._lineNumber
+            [frame._prevLine, frame._lineNumber]
         else
-            @addClassToLine(frame._lineNumber, "pseudocode-active")
+            [@mostRecent, @mostRecent]
+
+        if @showPreviousLine and next isnt prev
+            @addClassToLine(prev, "pseudocode-previous")
+            @addClassToLine(next, "pseudocode-next")
+        else
+            @addClassToLine(next, "pseudocode-active")
 
     clear: () ->
         if @showPreviousLine

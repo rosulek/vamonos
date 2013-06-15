@@ -12,7 +12,10 @@
         .black { background: black; }
         .white { background: white; }
         .gray  { background: gray; }
-        .left  { text-align: left }
+        td { 
+            vertical-align: top;
+            text-align: left;
+        }
     </style>
 
 </head>
@@ -20,177 +23,158 @@
 
     <h1>Depth-First Search</h1>
 
-    <div id="stack"></div><br>
-    <div id="pseudocode-dfs" class="container" title="DFS(G):">
-        DFS(G):
-        for each vertex u &in; G.V
-            u.color = white
-        time = 0
-        for each vertex u &in; G.V
-            if u.color == white
-                DFS-Visit(G,u)
-    </div><br>
+    <table>
+        <tr><td>
+            <div id="pseudocode-dfs" class="container" title="DFS(G):">
+                for each vertex u &in; G.V
+                    u.color = white
+                time = 0
+                for each vertex u &in; G.V
+                    if u.color == white
+                        DFS-Visit(G,u)
+            </div><br>
 
-    <div id="pseudocode-visit" class="container" title="DFS-Visit(G,u):">
-        time ++
-        u.d = time
-        u.color = gray
-        <b>for</b> each v &in; G.Adj[u]
-            <b>if</b> v.color == white
-                DFS-Visit(G,v)
-        u.color = black
-        time ++
-        u.f = time
-    </div><br>
-    <div id="controls" class="container"></div><br>
-    <div id="display" class="container"></div><br>
-    <div id="graph" class="container"></div><br>
+            <div id="pseudocode-visit" class="container" title="DFS-Visit(G,u):">
+                time ++
+                u.d = time
+                u.color = gray
+                <b>for</b> each v &in; G.Adj[u]
+                    <b>if</b> v.color == white
+                        DFS-Visit(G,v)
+                u.color = black
+                time ++
+                u.f = time
+            </div><br>
+            <div id="controls"></div><br>
+        </td><td>
+            <div id="display" class="container"></div><br>
+            <div id="graph" class="container" style="width:200; height:100;"></div><br>
+        </td></tr>
+    </table>
+</body>
 
-    <script type="text/javascript">
-        var myviz = new Vamonos.Visualizer({
-            widgets: [
-                new Vamonos.Widget.Console(),
+<script type="text/javascript">
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+        new Vamonos.Widget.Console(),
 
-                new Vamonos.Widget.VarDisplay({
-                    container: "display",
-                    watch: ["u[id,color]", "v[id,color]"]
-                }),
+        new Vamonos.Widget.VarDisplay({
+            container: "display",
+            watch: ["u[id,color,d,f]", "v[id,color,d,f]", "time"]
+        }),
 
-                new Vamonos.Widget.Pseudocode({
-                    container: "pseudocode-dfs",
-                    setAllBreakpoints: true,
-                    routine: {
-                        main: function(viz) {
-                            viz.vars.time = 0;
-                            viz.vars.stack = [];
-                            var G = viz.vars.graph;
-
-                            with(viz.vars) {
-
-                                var vs = G.V();
-                                vs.sort( function(a,b){ return b.name.localeCompare(a.name) });
-                                for (var i = vs.length - 1; i >= 0; i--) {
-                                    vs[i].color = "white";
-                                }
-
-                                for (var i = vs.length - 1; i >= 0; i--) {
-                                    vs[i].is_u = true;
-                                    viz.snapshot(4);
-                                    vs[i].is_u = false;
-                                    if (vs[i].color == "white") {
-                                        visit(vs[i]);
-                                    } 
-                                }
-                            }
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-dfs",
+            setAllBreakpoints: true,
+            varName: "main",
+            routine: function(viz) {
+                var _ = function(n){ viz.line(n) };
+                viz.stash._bind()
+                with (viz.stash) {
+                    G.eachVertex(function(vtx){
+_(1);                   u = vtx;
+_(2);                   u.color = "white";
+                    });
+                    u = undefined;
+_(3);               viz.stash.time = 0;
+                    G.eachVertex(function(vtx){
+_(4);                   u = vtx;
+_(5);                   if (u.color === "white") {
+_(6);                       visit(G, u);
                         }
-                    }
-                }),
+                    });
+                }
+                viz.stash._return()
+            }
+        }),
 
-                new Vamonos.Widget.Pseudocode({
-                    container: "pseudocode-visit",
-                    setAllBreakpoints: true,
-                    routine: {
-                        visit: function(viz, G, u) {
-                            var _ = function(n){ viz.line(n, "visit") } 
-                            stack.push(u);
-                            u.is_u = true;
-                            u.d = ++time;
-                            u.color = "gray";
-                            viz.snapshot(11);
-
-                            var vs = G.getNeighbors(u);
-                            vs.sort( function(a,b){ return b.name.localeCompare(a.name) });
-                            for (var i = vs.length - 1; i >= 0; i--) {
-                                v = vs[i];
-                                v.is_v = true;
-                                viz.snapshot(12);
-                                if (v.color == "white") {
-                                
-                                    v.pred = u;
-
-                                    v.is_v = false;
-                                    u.is_u = false;
-                                    visit(v);
-                                    u.is_u = true;
-                                }
-                                v.is_v = false;
-                            }
-
-                            u.color = "black";
-                            u.f = ++time;
-                            stack.pop();
-                            viz.snapshot(17);
-                            u.is_u = false;
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-visit",
+            setAllBreakpoints: true,
+            varName: "visit",
+            routine: function(viz, G, u) {
+                var _ = function(n){ viz.line(n) };
+                viz.stash._bind({vars: {G: G, u: u}, context: "visit"});
+                with (viz.stash) {
+_(1);               time++;
+_(2);               u.d = time;
+_(3);               u.color = "gray";
+                    G.eachNeighbor(u, function(vtx){
+_(4);                   v = vtx;
+_(5);                   if (v.color === "white") {
+_(6);                       visit(G, v);
                         }
-                    }
-                }),
+                    });
+_(7);               u.color = "black";
+_(8);               time++;
+_(9);               u.f = time;
+                }
+                viz.stash._return()
+            }
+        }),
 
-                new Vamonos.Widget.Controls({
-                    container: "controls",
-                    showWhileSliding: true
-                }),
+        new Vamonos.Widget.Controls({
+            container: "controls",
+            showWhileSliding: true
+        }),
 
-                new Vamonos.Widget.Graph({
-                    varName: "G",
-                    container: "graph",
-                    showVertices: {
-                        u: function ($vtx) { 
-                            $vtx.append("<div class='vertex-sw-label'>u</div>") 
-                        },
-                        v: function ($vtx) { 
-                            $vtx.append("<div class='vertex-se-label'>v</div>") 
-                        },
-                        s: function ($vtx) {
-                            $vtx.append("<div class='vertex-ne-label'>s</div>") 
-                        },
-                        clear: function ($vtx) { 
-                            $vtx.children(".vertex-se-label").remove();
-                            $vtx.children(".vertex-ne-label").remove();
-                            $vtx.children(".vertex-sw-label").remove();
-                        }
-                    },
-                    vertexSetupFunc: function(v, $vtx) {
-                        $vtx.removeClass('white black gray');
-                        $vtx.append(
-                            "<div class='vertex-nw-label'>" + v.id + "</div>"
-                        );
-                    },
-                    vertexUpdateFunc: function(v, $vtx) {
-                        var clearColor = function () { 
-                            $vtx.removeClass('white black gray')
-                        };
-                        if (v.color == "white") {
-                            clearColor();
-                            $vtx.addClass('white');
-                        } else if (v.color == "gray") {
-                            clearColor();
-                            $vtx.addClass('gray');
-                        } else if (v.color == "black") {
-                            clearColor();
-                            $vtx.addClass('black');
-                        }
-                    },
-                    defaultGraph: new Vamonos.DataStructure.Graph({
-                        vertices: [ 
-                            {id: "va", name:"a", x: 23,  y: 30},
-                            {id: "vb", name:"b", x: 73,  y: 30},
-                            {id: "vc", name:"c", x: 123, y: 30},
-                            {id: "vd", name:"d", x: 23,  y: 80},
-                            {id: "ve", name:"e", x: 73,  y: 80},
-                            {id: "vf", name:"f", x: 123, y: 80},
-                        ],
-                        edges: [
-                            {source: 'v0',target: 'v1'},
-                            {source: 'v0',target: 'v3'},
-                            {source: 'v1',target: 'v4'},
-                            {source: 'v2',target: 'v4'},
-                            {source: 'v2',target: 'v5'},
-                            {source: 'v3',target: 'v1'},
-                            {source: 'v4',target: 'v3'},
-                        ]
-                    })
-                })
-            ]})
-    </script>
-    </body>
+        new Vamonos.Widget.Graph({
+            varName: "G",
+            container: "graph",
+            showVertices: {
+                u: function ($vtx) { 
+                    $vtx.append("<div class='vertex-sw-label'>u</div>") 
+                },
+                v: function ($vtx) { 
+                    $vtx.append("<div class='vertex-se-label'>v</div>") 
+                },
+                clear: function ($vtx) { 
+                    $vtx.children(".vertex-se-label").remove();
+                    $vtx.children(".vertex-sw-label").remove();
+                }
+            },
+            vertexSetupFunc: function(v, $vtx) {
+                $vtx.removeClass('white black gray');
+                $vtx.append(
+                    "<div class='vertex-nw-label'>" + v.name + "</div>"
+                );
+            },
+            vertexUpdateFunc: function(v, $vtx) {
+                var clearColor = function () { 
+                    $vtx.removeClass('white black gray')
+                };
+                if (v.color == "white") {
+                    clearColor();
+                    $vtx.addClass('white');
+                } else if (v.color == "gray") {
+                    clearColor();
+                    $vtx.addClass('gray');
+                } else if (v.color == "black") {
+                    clearColor();
+                    $vtx.addClass('black');
+                }
+            },
+            defaultGraph: new Vamonos.DataStructure.Graph({
+                vertices: [ 
+                    {id: "v0", name:"a", x: 10,  y: 10},
+                    {id: "v1", name:"b", x: 100,  y: 10},
+                    {id: "v2", name:"c", x: 170, y: 10},
+                    {id: "v3", name:"d", x: 10,  y: 70},
+                    {id: "v4", name:"e", x: 100,  y: 70},
+                    {id: "v5", name:"f", x: 170, y: 70},
+                ],
+                edges: [
+                    {source: 'v0',target: 'v1'},
+                    {source: 'v0',target: 'v3'},
+                    {source: 'v1',target: 'v4'},
+                    {source: 'v2',target: 'v4'},
+                    {source: 'v2',target: 'v5'},
+                    {source: 'v3',target: 'v1'},
+                    {source: 'v4',target: 'v3'},
+                ]
+            })
+        })
+    ]
+})
+</script>
 </html>

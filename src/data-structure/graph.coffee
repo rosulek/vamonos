@@ -1,10 +1,12 @@
 class Graph
-    constructor: ({@vertices, edges, directed}) ->
-        @_type = 'graph'
-        directed ?= yes
-
-        @_adjHash = {}
-        @edges = for e in edges
+    constructor: ({vertices, edges, directed}) ->
+        
+        @vertices  = Vamonos.arrayify(vertices)
+        @_type     = 'graph'
+        @directed ?= yes
+        @_adjHash  = {}
+        
+        @edges = for e in Vamonos.arrayify(edges)
             {source, target} = e
             e.source = @vertex(source)
             e.target = @vertex(target)
@@ -35,6 +37,13 @@ class Graph
 
     incomingEdges: (v) ->
         @edges.filter(({target}) -> target is v)
+
+    clone: () ->
+        r = new Vamonos.DataStructure.Graph
+            vertices: Vamonos.clone(@vertices)
+            directed: @directed
+            edges: []
+        Vamonos.mixin(r, this, Vamonos.clone)
 
 
 Vamonos.export { DataStructure: { Graph } }

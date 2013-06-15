@@ -58,12 +58,7 @@ class Visualizer
         @maxFrames         ?= 250
         autoStart          ?= false
 
-        @stash = {
-            _breakpoints: []
-            _inputVars: []
-            _watchVars: []
-            _type: "stash"
-        }
+        @stash = new Vamonos.DataStructure.Stash()
 
         @tellWidgets("setup", @stash, @)
 
@@ -90,7 +85,7 @@ class Visualizer
         if @takeSnapshot(n)
             throw "too many frames" if @currentFrameNumber >= @maxFrames
 
-            newFrame              = Vamonos.clone(@stash)
+            newFrame              = @stash._clone()
             newFrame._lineNumber  = n
             newFrame._prevLine    = @prevLine
             newFrame._frameNumber = ++@currentFrameNumber
@@ -135,9 +130,7 @@ class Visualizer
     runAlgorithm: ->
         return if @mode is "display"
 
-        # initialize stash except for reserved things and input vars registered by widgets
-        for v of @stash
-            @stash[v] = undefined unless v.match(/^_/) or v in @stash._inputVars
+        @stash._initialize()
 
         @frames             = []
         @currentFrameNumber = 0
