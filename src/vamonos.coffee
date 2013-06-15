@@ -24,8 +24,8 @@ root.Vamonos =
         return "" unless raw?
         return "\u221E"         if raw is Infinity
         return "-\u221E"        if raw is -Infinity
-        return raw.id           if typeof raw is 'object' and raw.type.match /vertex|edge/
-        return raw.toString()   if typeof raw is 'object' and raw.type is 'queue'
+        return raw.id           if typeof raw is 'object' and raw._type?.match /vertex|edge/
+        return raw.toString()   if typeof raw is 'object' and raw._type is 'queue'
         return "" + raw        
 
     txtValid: (txt) -> @txtToRaw(txt)?
@@ -73,12 +73,12 @@ root.Vamonos =
     #
     #   Add all attributes of src object to dest object, recursively
     ###
-    mixin: (dest, src) ->
+    mixin: (dest, src, f) ->
         for name, val of src
             if (typeof dest[name] is 'object') and (typeof src[name] is 'object')
-                @mixin( dest[name], src[name])
+                @mixin(dest[name], val)
             else
-                dest[name] = src[name]
+                dest[name] = if f? then f(val) else val
         return dest
 
     ###
@@ -87,5 +87,9 @@ root.Vamonos =
     #   Clones an object deeply and returns it.
     ###
     clone: (obj) ->
+        return unless obj?
+        return obj.clone() if obj._type is 'queue'
+        return @mixin({}, obj, Vamonos.clone) if obj._type is 'stash'
+        return $.extend(true, [], obj) if obj instanceof Array
         return $.extend(true, {}, obj)
 

@@ -1,6 +1,6 @@
 class Graph
     constructor: ({@vertices, edges, directed}) ->
-        @type = 'graph'
+        @_type = 'graph'
         directed ?= yes
 
         @_adjHash = {}
@@ -12,8 +12,8 @@ class Graph
             @_adjHash[source][target] = e 
             e
 
-        v.type = 'vertex' for v in @vertices
-        e.type = 'edge'   for e in @edges
+        v._type = 'vertex' for v in @vertices
+        e._type = 'edge'   for e in @edges
 
     edge: (s, t) ->
         @_adjHash[s][t]
