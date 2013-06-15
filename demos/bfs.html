@@ -43,131 +43,117 @@
                     
         <div class="container" id="graph" style="width:530; height:400;"></div>
     </div>
+</body>
+<script type="text/javascript">
+    var myviz = new Vamonos.Visualizer({
+        widgets: [
+            new Vamonos.Widget.Console(),
 
-    <script type="text/javascript">
-
-        var myviz = new Vamonos.Visualizer({
-            widgets: [
-
-                new Vamonos.Widget.Console(),
-
-                new Vamonos.Widget.Graph({
-                    varName: "G",
-                    container: "graph",
-                    showVertices: {
-                        u:     function ($vtx) { $vtx.append("<div class='vertex-sw-label'>u</div>") },
-                        v:     function ($vtx) { $vtx.append("<div class='vertex-se-label'>v</div>") },
-                        s:     function ($vtx) { $vtx.append("<div class='vertex-ne-label'>s</div>") },
-                        clear: function ($vtx) { 
-                            $vtx.children(".vertex-se-label").remove();
-                            $vtx.children(".vertex-ne-label").remove();
-                            $vtx.children(".vertex-sw-label").remove();
-                        }
-                    },
-                    vertexSetupFunc: function(v, $vtx) {
-                        $vtx.removeClass('white black gray')
-                        $vtx.append("<div class='vertex-nw-label'>" + v.id + "</div>");
-                    },
-                    vertexUpdateFunc: function(v, $vtx) {
-                        var clearColor = function () { 
-                            $vtx.removeClass('white black gray')
-                        };
-                        if (v.color == "white") {
-                            clearColor();
-                            $vtx.addClass('white');
-                        } else if (v.color == "gray") {
-                            clearColor();
-                            $vtx.addClass('gray');
-                        } else if (v.color == "black") {
-                            clearColor();
-                            $vtx.addClass('black');
-                        }
-                    },
-                    defaultGraph: new Vamonos.DataStructure.Graph({
-                        vertices : [
-                            {id: 'v0', x: 100, y: 081},
-                            {id: 'v1', x: 329, y: 012},
-                            {id: 'v2', x: 272, y: 104},
-                            {id: 'v3', x: 393, y: 272},
-                            {id: 'v4', x: 052, y: 217},
-                            {id: 'v5', x: 131, y: 325},
-                            {id: 'v6', x: 267, y: 369},
-                            {id: 'v7', x: 497, y: 353},
-                            {id: 'v8', x: 514, y: 155},
-                            {id: 'v9', x: 253, y: 200}
-                        ],
-                        edges : [
-                            {source: 'v0', target: 'v1'},
-                            {source: 'v0', target: 'v2'},
-                            {source: 'v1', target: 'v3'},
-                            {source: 'v1', target: 'v8'},
-                            {source: 'v2', target: 'v4'},
-                            {source: 'v2', target: 'v3'},
-                            {source: 'v4', target: 'v0'},
-                            {source: 'v1', target: 'v2'},
-                            {source: 'v3', target: 'v4'},
-                            {source: 'v4', target: 'v5'},
-                            {source: 'v5', target: 'v6'},
-                            {source: 'v6', target: 'v7'},
-                            {source: 'v8', target: 'v7'},
-                            {source: 'v2', target: 'v9'}
-                        ]
-                    })
-                }),
-
-                new Vamonos.Widget.VarDisplay({
-                    container: "display",
-                    watch: ["s", "u[id,color]", "v[id,color]", "Q"]
-                }),
-
-                new Vamonos.Widget.Pseudocode({
-                    container: "pseudocode",
-                    setAllBreakpoints: true
-                }),
-
-                new Vamonos.Widget.Controls({
-                    container: "controls",
-                    showWhileSliding: true
-                }),
-
-            ],
-
-            algorithm: function (viz) {
-                with (viz.stash) {
-                    var _ = function(n){ viz.line(n); }; 
-
-                    viz.stash.s = G.vertices[0];
-
-                    for (var i = 0; i < G.vertices.length; i++) {
-                        if (G.vertices[i].id === s.id) { continue }
-                        _(1); u = G.vertices[i];
-                        _(2); u.color = "white";
+            new Vamonos.Widget.Graph({
+                varName: "G",
+                container: "graph",
+                showVertices: {
+                    u:     function ($vtx) { $vtx.append("<div class='vertex-sw-label'>u</div>") },
+                    v:     function ($vtx) { $vtx.append("<div class='vertex-se-label'>v</div>") },
+                    s:     function ($vtx) { $vtx.append("<div class='vertex-ne-label'>s</div>") },
+                    clear: function ($vtx) { 
+                        $vtx.children(".vertex-se-label").remove();
+                        $vtx.children(".vertex-ne-label").remove();
+                        $vtx.children(".vertex-sw-label").remove();
                     }
+                },
+                vertexSetupFunc: function(v, $vtx) {
+                    $vtx.removeClass('white black gray')
+                    $vtx.append("<div class='vertex-nw-label'>" + v.id + "</div>");
+                },
+                vertexUpdateFunc: function(v, $vtx) {
+                    var clearColor = function () { 
+                        $vtx.removeClass('white black gray')
+                    };
+                    if (v.color == "white") {
+                        clearColor();
+                        $vtx.addClass('white');
+                    } else if (v.color == "gray") {
+                        clearColor();
+                        $vtx.addClass('gray');
+                    } else if (v.color == "black") {
+                        clearColor();
+                        $vtx.addClass('black');
+                    }
+                },
+                defaultGraph: new Vamonos.DataStructure.Graph({
+                    vertices : [
+                        {id: 'v0', x: 100, y: 081},
+                        {id: 'v1', x: 329, y: 012},
+                        {id: 'v2', x: 272, y: 104},
+                        {id: 'v3', x: 393, y: 272},
+                        {id: 'v4', x: 052, y: 217},
+                        {id: 'v5', x: 131, y: 325},
+                        {id: 'v6', x: 267, y: 369},
+                        {id: 'v7', x: 497, y: 353},
+                        {id: 'v8', x: 514, y: 155},
+                        {id: 'v9', x: 253, y: 200}
+                    ],
+                    edges : [
+                        {source: 'v0', target: 'v1'},
+                        {source: 'v0', target: 'v2'},
+                        {source: 'v1', target: 'v3'},
+                        {source: 'v1', target: 'v8'},
+                        {source: 'v2', target: 'v4'},
+                        {source: 'v2', target: 'v3'},
+                        {source: 'v4', target: 'v0'},
+                        {source: 'v1', target: 'v2'},
+                        {source: 'v3', target: 'v4'},
+                        {source: 'v4', target: 'v5'},
+                        {source: 'v5', target: 'v6'},
+                        {source: 'v6', target: 'v7'},
+                        {source: 'v8', target: 'v7'},
+                        {source: 'v2', target: 'v9'}
+                    ]
+                })
+            }),
 
-                    _(3); s.color = "gray";
+            new Vamonos.Widget.VarDisplay({
+                container: "display",
+                watch: ["s", "u[id,color]", "v[id,color]", "Q"]
+            }),
 
-                    _(4); viz.stash.Q = new Vamonos.DataStructure.Queue();
-
-                    _(5); Q.enqueue(s);
-
-                    while (_(6), !Q.isEmpty()) {
-
-                        _(7); u = Q.dequeue();
-
-                        G.eachNeighbor(u, function(vtx) {
-                            _(8); v = vtx;
-                            if (_(9), v.color === "white") {
-                                _(10); v.color = "gray";
-                                _(11); Q.enqueue(v);
-                            }
-                        });
-                        _(12); u.color = "black";
+            new Vamonos.Widget.Pseudocode({
+                container: "pseudocode",
+                setAllBreakpoints: true,
+                routine: function (viz) {
+                    var _ = function(n){ viz.line(n); }; 
+                    with (viz.stash) {
+                        viz.stash.s = G.vertices[0];
+                        for (var i = 0; i < G.vertices.length; i++) {
+                            if (G.vertices[i].id === s.id) { continue }
+_(1);                           u = G.vertices[i];
+_(2);                           u.color = "white";
+                        }
+_(3);                       s.color = "gray";
+_(4);                       viz.stash.Q = new Vamonos.DataStructure.Queue();
+_(5);                       Q.enqueue(s);
+                        while (_(6), !Q.isEmpty()) {
+_(7);                           u = Q.dequeue();
+                            G.eachNeighbor(u, function(vtx) {
+_(8);                               v = vtx;
+                                if (_(9), v.color === "white") {
+_(10);                                  v.color = "gray";
+_(11);                                  Q.enqueue(v);
+                                }
+                            });
+_(12);                          u.color = "black";
+                        }
                     }
                 }
-            }
-        });
+            }),
 
-    </script>
+            new Vamonos.Widget.Controls({
+                container: "controls",
+                showWhileSliding: true
+            })
+        ],
+    });
 
-</body>
+</script>
 </html>
