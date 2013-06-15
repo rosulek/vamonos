@@ -84,6 +84,7 @@ root.Vamonos =
     ###
     clone: (obj) ->
         return unless obj?
+        return obj if (typeof obj).match /number|string/
         return obj.clone() if obj._type is 'queue'
         return @mixin({}, obj, Vamonos.clone) if obj._type is 'stash'
         return $.extend(true, [], obj) if obj instanceof Array
