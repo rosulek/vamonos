@@ -54,7 +54,16 @@
                 new Vamonos.Widget.Graph({
                     varName: "G",
                     container: "graph",
-                    showVertices: ["u", "v"],
+                    showVertices: {
+                        u:     function ($vtx) { $vtx.append("<div class='vertex-sw-label'>u</div>") },
+                        v:     function ($vtx) { $vtx.append("<div class='vertex-se-label'>v</div>") },
+                        s:     function ($vtx) { $vtx.append("<div class='vertex-ne-label'>s</div>") },
+                        clear: function ($vtx) { 
+                            $vtx.children(".vertex-se-label").remove();
+                            $vtx.children(".vertex-ne-label").remove();
+                            $vtx.children(".vertex-sw-label").remove();
+                        }
+                    },
                     vertexSetupFunc: function(v, $vtx) {
                         $vtx.removeClass('white black gray')
                         $vtx.append("<div class='vertex-nw-label'>" + v.id + "</div>");
@@ -108,7 +117,7 @@
 
                 new Vamonos.Widget.VarDisplay({
                     container: "display",
-                    watch: ["u[id,color]", "v[id,color]", "Q"]
+                    watch: ["s", "u[id,color]", "v[id,color]", "Q"]
                 }),
 
                 new Vamonos.Widget.Pseudocode({
@@ -127,9 +136,9 @@
                 with (viz.stash) {
                     var _ = function(n){ viz.line(n); }; 
 
-                    s = G.vertices[0];
+                    viz.stash.s = G.vertices[0];
 
-                    for (var i = G.vertices.length - 1; i >= 0; i--) {
+                    for (var i = 0; i < G.vertices.length; i++) {
                         if (G.vertices[i].id === s.id) { continue }
                         _(1); u = G.vertices[i];
                         _(2); u.color = "white";

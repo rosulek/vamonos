@@ -1,8 +1,7 @@
 class Graph
 
-    constructor: ({container, @varName, @defaultGraph, @vertexSetupFunc, @vertexUpdateFunc, showVertices}) ->
-
-        @showVertices = Vamonos.arrayify(showVertices)
+    constructor: ({container, @varName, @defaultGraph, @vertexSetupFunc, @vertexUpdateFunc,
+        @showVertices}) ->
 
         @$outer = Vamonos.jqueryify(container)
         @$inner = $("<div>", {class: "graph-inner-container"})
@@ -27,8 +26,20 @@ class Graph
                 @drawGraph(frame[@varName])
 
             @updateVertex(v) for v in frame[@varName].vertices
+            for name, func of @showVertices
+                continue if name is "clear" or not frame[name]
+                newv = frame[name]
+                unless @previousFrame[name]?
+                    func(@getVertexSelector(newv))
+                    continue
 
-            @previouslyRenderedFrame = Vamonos.clone(frame)
+                oldv = @previousFrame[name] 
+                if @varChanged(newv, oldv)
+                    @showVertices.clear(@getVertexSelector(oldv))
+                    func(@getVertexSelector(newv))
+
+
+            @previousFrame = frame
 
         when "displayStop"
             @clear()
@@ -37,16 +48,24 @@ class Graph
             if @defaultGraph?
                 @stash[@varName] = Vamonos.clone(@defaultGraph)
 
+    getVertexSelector: (vertex) ->
+        return unless @graphDrawn
+        @vertices.filter((v) -> v.attr("id") is vertex.id)[0]
+
     vertexChanged: (newv) ->
-        return false unless @previouslyRenderedFrame?
-        oldv = @previouslyRenderedFrame[@varName]
+        return true unless @previousFrame?
+        oldv = @previousFrame[@varName]
             .vertices.filter((v) -> v.id is newv.id)[0]
+        @varChanged(newv, oldv)
+
+    varChanged: (newv, oldv) ->
+        return false unless oldv?
         r1 = (oldv[k] == v for k, v of newv)
         r2 = (newv[k] == v for k, v of oldv)
         not r1.concat(r2).every((b) -> b)
 
     updateVertex: (vertex) ->
-        $v = @vertices.filter((v) -> v.attr("id") is vertex.id)[0]
+        $v = @getVertexSelector(vertex)
         @vertexUpdateFunc(vertex, $v) if @vertexUpdateFunc?
         $v.addClass("changed") if @vertexChanged(vertex)
 
@@ -107,5 +126,6 @@ class Graph
         @graphDrawn = no
         @edges = []
         @vertices = []
+        @previousFrame = undefined
 
 Vamonos.export { Widget: { Graph } }
