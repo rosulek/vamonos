@@ -24,6 +24,9 @@ class Graph
     neighbors: (v) ->
         @vertex(target) for target, edge of @_adjHash[v.id]
 
+    eachNeighbor: (v, f) ->
+        f(neighbor) for neighbor in @neighbors(v)
+
     outgoingEdges: (v) ->
         @edges.filter(({source}) -> source is v)
 

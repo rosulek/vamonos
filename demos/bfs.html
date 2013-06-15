@@ -41,7 +41,7 @@
             <div class="container" id="display"></div>
         </td></tr></table>
                     
-        <div class="container" id="graph"></div>
+        <div class="container" id="graph" style="width:530; height:400;"></div>
     </div>
 
     <script type="text/javascript">
@@ -154,16 +154,13 @@
 
                         _(7); u = Q.dequeue();
 
-                        var adj = G.neighbors(u);
-                        for (var j = 0; j < adj.length; j++) {
-                            _(8); v = adj[j];
-
+                        G.eachNeighbor(u, function(vtx) {
+                            _(8); v = vtx;
                             if (_(9), v.color === "white") {
                                 _(10); v.color = "gray";
                                 _(11); Q.enqueue(v);
                             }
-
-                        }
+                        });
                         _(12); u.color = "black";
                     }
                 }
