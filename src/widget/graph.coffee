@@ -1,15 +1,17 @@
 class Graph
 
-    constructor: ({container, @varName, @defaultGraph, @vertexSetupFunc, @vertexUpdateFunc}) ->
+    constructor: ({container, @varName, @defaultGraph, @vertexSetupFunc, @vertexUpdateFunc, showVertices}) ->
+
+        @showVertices = Vamonos.arrayify(showVertices)
 
         @$outer = Vamonos.jqueryify(container)
+        @$inner = $("<div>", {class: "graph-inner-container"})
         @$outer.css("width", "530px")
         @$outer.css("height", "400px")
-        @$inner = $("<div>", {class: "graph-inner-container"})
         @$outer.append(@$inner)
 
         @jsPlumbInit()
-        
+
         
     event: (event, options...) -> switch event
 
@@ -18,8 +20,15 @@ class Graph
 
         when "render"
             [frame, type] = options
-            @drawGraph(frame[@varName]) unless @graphDrawn
+
+            if @graphDrawn
+                $elem.removeClass("changed") for $elem in @vertices.concat(@edges)
+            else
+                @drawGraph(frame[@varName])
+
             @updateVertex(v) for v in frame[@varName].vertices
+
+            @previouslyRenderedFrame = Vamonos.clone(frame)
 
         when "displayStop"
             @clear()
@@ -28,10 +37,18 @@ class Graph
             if @defaultGraph?
                 @stash[@varName] = Vamonos.clone(@defaultGraph)
 
+    vertexChanged: (newv) ->
+        return false unless @previouslyRenderedFrame?
+        oldv = @previouslyRenderedFrame[@varName]
+            .vertices.filter((v) -> v.id is newv.id)[0]
+        r1 = (oldv[k] == v for k, v of newv)
+        r2 = (newv[k] == v for k, v of oldv)
+        not r1.concat(r2).every((b) -> b)
 
     updateVertex: (vertex) ->
         $v = @vertices.filter((v) -> v.attr("id") is vertex.id)[0]
-        @vertexUpdateFunc(vertex, $v)
+        @vertexUpdateFunc(vertex, $v) if @vertexUpdateFunc?
+        $v.addClass("changed") if @vertexChanged(vertex)
 
     # JsPlumb stuff #
 

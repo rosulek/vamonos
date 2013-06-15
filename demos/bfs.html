@@ -60,22 +60,19 @@
                         $vtx.append("<div class='vertex-nw-label'>" + v.id + "</div>");
                     },
                     vertexUpdateFunc: function(v, $vtx) {
-                        var clear = function () { 
+                        var clearColor = function () { 
                             $vtx.removeClass('white black gray')
                         };
                         if (v.color == "white") {
-                            clear();
+                            clearColor();
                             $vtx.addClass('white');
                         } else if (v.color == "gray") {
-                            clear();
+                            clearColor();
                             $vtx.addClass('gray');
                         } else if (v.color == "black") {
-                            clear();
+                            clearColor();
                             $vtx.addClass('black');
                         }
-                    },
-                    renderEdgeStyle: function (edge) {
-                        return {lineWidth: 2};
                     },
                     defaultGraph: new Vamonos.DataStructure.Graph({
                         vertices : [
@@ -129,10 +126,11 @@
             algorithm: function (viz) {
                 with (viz.stash) {
                     var _ = function(n){ viz.line(n); }; 
+
                     s = G.vertices[0];
 
                     for (var i = G.vertices.length - 1; i >= 0; i--) {
-                        if (u === s) { continue }
+                        if (G.vertices[i].id === s.id) { continue }
                         _(1); u = G.vertices[i];
                         _(2); u.color = "white";
                     }
