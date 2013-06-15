@@ -1,5 +1,6 @@
 class Graph
     constructor: ({@vertices, edges, directed}) ->
+        @type = 'graph'
         directed ?= yes
 
         @_adjHash = {}

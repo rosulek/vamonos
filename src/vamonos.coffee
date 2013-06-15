@@ -9,8 +9,7 @@
 #   source file so that the build script will load it before the file you are
 #   working on.
 #
-###
-
+### 
 root = exports ? window
 root.Vamonos = 
     insertSet: (item, arraySet) ->
@@ -88,4 +87,5 @@ root.Vamonos =
     #   Clones an object deeply and returns it.
     ###
     clone: (obj) ->
-        $.extend(true, {}, obj)
+        return $.extend(true, {}, obj)
+

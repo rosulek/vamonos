@@ -11,7 +11,7 @@ class Queue
     enqueue: (elem) ->
         @guts.push(elem)
 
-    dequeue: (elem) ->
+    dequeue: () ->
         @guts.pop()
 
     isEmpty: () ->

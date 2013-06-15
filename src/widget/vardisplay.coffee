@@ -56,6 +56,7 @@ class VarDisplay
 
             cell   = @tblRows[name].find("td:nth-child(3)")
             oldval = cell.html()
+
             if newval isnt oldval and type in @showChanges
                 @tblRows[name].addClass("changed")
                 cell.html(newval)
