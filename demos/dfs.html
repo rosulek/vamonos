@@ -60,7 +60,7 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.VarDisplay({
             container: "display",
-            watch: ["u[id,color,d,f]", "v[id,color,d,f]", "time"]
+            watch: ["u[name,color,d,f]", "v[name,color,d,f]", "time"]
         }),
 
         new Vamonos.Widget.Pseudocode({
@@ -103,6 +103,7 @@ _(5);                   if (v.color === "white") {
 _(6);                       visit(G, v);
                         }
                     });
+                    v = undefined;
 _(7);               u.color = "black";
 _(8);               time++;
 _(9);               u.f = time;
