@@ -23,14 +23,12 @@
 class Pseudocode
 
     constructor: ({container, @editableBreakpoints, @breakpoints, 
-        @showPreviousLine, setAllBreakpoints, @varName, @routine,
-        @args, @locals}) ->
+        setAllBreakpoints, @varName, @routine, @args, @locals}) ->
 
         @locals              ?= []
         @args                ?= []
         @varName             ?= "main"
         @editableBreakpoints ?= yes
-        @showPreviousLine    ?= yes
         setAllBreakpoints    ?= yes
 
         # most recently displayed line
@@ -78,24 +76,21 @@ class Pseudocode
 
         @clear()
 
-        return unless @varName is frame._context or @varName in frame._callStack.map((s) -> s.context)
+        if frame._prevLine.context is @varName
+            @addClassToLine(frame._prevLine.n, "pseudocode-previous")
 
-        [prev, next] = if frame._context is @varName
-            @mostRecent = frame._nextLine
-            [frame._prevLine, frame._nextLine]
-        else
-            [@mostRecent, @mostRecent]
+        if frame._nextLine.context is @varName
+            @addClassToLine(frame._nextLine.n, "pseudocode-next")
 
-        if @showPreviousLine and next isnt prev
-            @addClassToLine(prev, "pseudocode-previous")
-            @addClassToLine(next, "pseudocode-next")
-        else
-            @addClassToLine(next, "pseudocode-active")
+        if frame._context isnt @varName
+            calls = (c for c in frame._callStack when c.context is @varName)
+            mostRecentCall = calls[calls.length - 1]
+            @addClassToLine(mostRecentCall?.line ? 0, "pseudocode-active")
+
 
     clear: () ->
-        if @showPreviousLine
-            @$tbl.find("tr").removeClass("pseudocode-next")
-            @$tbl.find("tr").removeClass("pseudocode-previous")
+        @$tbl.find("tr").removeClass("pseudocode-next")
+        @$tbl.find("tr").removeClass("pseudocode-previous")
         @$tbl.find("tr").removeClass("pseudocode-active")
 
     addClassToLine: (n, klass) ->

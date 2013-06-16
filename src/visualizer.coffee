@@ -81,16 +81,23 @@ class Visualizer
     #
     ###
     line: (n) ->
+
+        # if context changed since last call of line(), tell the stash's
+        # call stack what the last line was.
+        if @prevLine? and @stash._context isnt @prevLine.context and @stash._callStack.length > 0
+            calls = (s for s in @stash._callStack when s.context is @prevLine.context)
+            s.line = @prevLine.n for s in calls when not s.line?
+
         if @takeSnapshot(n)
             throw "too many frames" if @currentFrameNumber >= @maxFrames
 
             newFrame              = @stash._clone()
-            newFrame._nextLine    = n
+            newFrame._nextLine    = { n, context: @stash._context }
             newFrame._prevLine    = @prevLine
             newFrame._frameNumber = ++@currentFrameNumber
             @frames.push(newFrame)
         
-        @prevLine = n
+        @prevLine = { n, context: @stash._context }
         throw "too many lines" if ++@numCallsToLine > 10000
 
     takeSnapshot: (n) ->

@@ -8,6 +8,7 @@ class Stash
         @_callStack   = []
 
     _initialize: () ->
+        @_context = "os"
         for v of this
             @[v] = undefined unless v.match(/^_/) or v in @_inputVars
 
@@ -46,6 +47,7 @@ class Stash
             {bindings, context} = @_callStack.pop()
             @[key] = val for key, val of save
             delete @[key] for key of @ when not key in bindings
+            @_context = context
 
 
 Vamonos.export { DataStructure: { Stash } }
