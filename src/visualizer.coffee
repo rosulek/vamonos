@@ -85,7 +85,7 @@ class Visualizer
             throw "too many frames" if @currentFrameNumber >= @maxFrames
 
             newFrame              = @stash._clone()
-            newFrame._lineNumber  = n
+            newFrame._nextLine    = n
             newFrame._prevLine    = @prevLine
             newFrame._frameNumber = ++@currentFrameNumber
             @frames.push(newFrame)

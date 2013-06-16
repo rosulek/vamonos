@@ -81,8 +81,8 @@ class Pseudocode
         return unless @varName is frame._context or @varName in frame._callStack.map((s) -> s.context)
 
         [prev, next] = if frame._context is @varName
-            @mostRecent = frame._lineNumber
-            [frame._prevLine, frame._lineNumber]
+            @mostRecent = frame._nextLine
+            [frame._prevLine, frame._nextLine]
         else
             [@mostRecent, @mostRecent]
 
