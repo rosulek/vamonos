@@ -565,6 +565,21 @@ table.var-watcher {
 
 table.callstack {
     border-collapse: collapse;
+    th {
+        border-top: 0px;
+        border-right: 0px;
+        border-left: 0px;
+        border-bottom: 1px solid black;
+    }
+    tr {
+        text-align: center;
+        border-left: 1px solid black;
+        border-right: 1px solid black;
+    }
+    tr.current {
+        background-color: @light-shaded-color;
+        border-bottom: 1px solid black;
+    }
     & tr.changed {
         .background-highlight-pulse;
     }

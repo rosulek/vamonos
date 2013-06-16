@@ -16,16 +16,16 @@ class CallStack
 
 
     render: (frame) ->
+
         @clear()
 
-        if frame._callStack.length is 0
-            $row = $("<tr>", {text: "empty"})
-            @$tbl.append($row)
-            return
+        return if frame._context is "os"
 
-        for c in frame._callStack
-            $row = $("<tr>", {text: "#{c.newcontext} called by #{c.context}"})
-            @$tbl.append($row)
+        for c in frame._callStack when c.context isnt "os"
+            @$tbl.append($("<tr>", {text: c.context}))
+
+        @$tbl.append($("<tr>", {class: "current", text: frame._context}))
+
 
 
     clear: () ->
