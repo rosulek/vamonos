@@ -38,10 +38,9 @@
         <br>
         <div id="controls"></div>
         </td><td valign='top' align='left'>
-            <div class="container" id="display"></div>
+            <div class="container" id="display"></div><br>
+            <div class="container" id="graph" style="width:200; height:100;"></div>
         </td></tr></table>
-                    
-        <div class="container" id="graph" style="width:530; height:400;"></div>
     </div>
 </body>
 <script type="text/javascript">
@@ -86,33 +85,22 @@
                     }
                 },
                 defaultGraph: new Vamonos.DataStructure.Graph({
-                    vertices : [
-                        {id: 'v0', x: 100, y: 081},
-                        {id: 'v1', x: 329, y: 012},
-                        {id: 'v2', x: 272, y: 104},
-                        {id: 'v3', x: 393, y: 272},
-                        {id: 'v4', x: 052, y: 217},
-                        {id: 'v5', x: 131, y: 325},
-                        {id: 'v6', x: 267, y: 369},
-                        {id: 'v7', x: 497, y: 353},
-                        {id: 'v8', x: 514, y: 155},
-                        {id: 'v9', x: 253, y: 200}
+                    vertices: [ 
+                        {id: "v0", x: 10,  y: 10},
+                        {id: "v1", x: 100, y: 10},
+                        {id: "v2", x: 170, y: 10},
+                        {id: "v3", x: 10,  y: 70},
+                        {id: "v4", x: 100, y: 70},
+                        {id: "v5", x: 170, y: 70},
                     ],
-                    edges : [
-                        {source: 'v0', target: 'v1'},
-                        {source: 'v0', target: 'v2'},
-                        {source: 'v1', target: 'v3'},
-                        {source: 'v1', target: 'v8'},
-                        {source: 'v2', target: 'v4'},
-                        {source: 'v2', target: 'v3'},
-                        {source: 'v4', target: 'v0'},
-                        {source: 'v1', target: 'v2'},
-                        {source: 'v3', target: 'v4'},
-                        {source: 'v4', target: 'v5'},
-                        {source: 'v5', target: 'v6'},
-                        {source: 'v6', target: 'v7'},
-                        {source: 'v8', target: 'v7'},
-                        {source: 'v2', target: 'v9'}
+                    edges: [
+                        {source: 'v0',target: 'v1'},
+                        {source: 'v0',target: 'v3'},
+                        {source: 'v1',target: 'v4'},
+                        {source: 'v2',target: 'v4'},
+                        {source: 'v2',target: 'v5'},
+                        {source: 'v3',target: 'v1'},
+                        {source: 'v4',target: 'v3'},
                     ]
                 })
             }),
@@ -122,6 +110,11 @@
                 watch: ["s", "u[id,color]", "v[id,color]", "Q"]
             }),
 
+            new Vamonos.Widget.Controls({
+                container: "controls",
+                showWhileSliding: true
+            }),
+
             new Vamonos.Widget.Pseudocode({
                 container: "pseudocode",
                 setAllBreakpoints: true,
@@ -129,33 +122,28 @@
                     var _ = function(n){ viz.line(n); }; 
                     with (viz.stash) {
                         viz.stash.s = G.vertices[0];
-                        for (var i = 0; i < G.vertices.length; i++) {
-                            if (G.vertices[i].id === s.id) { continue }
-_(1);                           u = G.vertices[i];
-_(2);                           u.color = "white";
-                        }
-_(3);                       s.color = "gray";
-_(4);                       viz.stash.Q = new Vamonos.DataStructure.Queue();
-_(5);                       Q.enqueue(s);
+                        G.eachVertex(function(vtx){
+                            if (vtx.id === s.id) { return }
+_(1);                       u = vtx;
+_(2);                       u.color = "white";
+                        });
+_(3);                   s.color = "gray";
+_(4);                   viz.stash.Q = new Vamonos.DataStructure.Queue();
+_(5);                   Q.enqueue(s);
                         while (_(6), !Q.isEmpty()) {
-_(7);                           u = Q.dequeue();
+_(7);                       u = Q.dequeue();
                             G.eachNeighbor(u, function(vtx) {
-_(8);                               v = vtx;
-                                if (_(9), v.color === "white") {
-_(10);                                  v.color = "gray";
-_(11);                                  Q.enqueue(v);
+_(8);                           v = vtx;
+_(9);                           if (v.color === "white") {
+_(10);                              v.color = "gray";
+_(11);                              Q.enqueue(v);
                                 }
                             });
-_(12);                          u.color = "black";
+_(12);                      u.color = "black";
                         }
                     }
                 }
             }),
-
-            new Vamonos.Widget.Controls({
-                container: "controls",
-                showWhileSliding: true
-            })
         ],
     });
 
