@@ -67,7 +67,7 @@
                 },
                 vertexSetupFunc: function(v, $vtx) {
                     $vtx.removeClass('white black gray')
-                    $vtx.append("<div class='vertex-nw-label'>" + v.id + "</div>");
+                    $vtx.append("<div class='vertex-nw-label'>" + v.name + "</div>");
                 },
                 vertexUpdateFunc: function(v, $vtx) {
                     var clearColor = function () { 
@@ -86,28 +86,29 @@
                 },
                 defaultGraph: new Vamonos.DataStructure.Graph({
                     vertices: [ 
-                        {id: "v0", x: 10,  y: 10},
-                        {id: "v1", x: 100, y: 10},
-                        {id: "v2", x: 170, y: 10},
-                        {id: "v3", x: 10,  y: 70},
-                        {id: "v4", x: 100, y: 70},
-                        {id: "v5", x: 170, y: 70},
+                        {id: "v0", name: "a", x: 10,  y: 10},
+                        {id: "v1", name: "b", x: 100, y: 10},
+                        {id: "v2", name: "c", x: 170, y: 10},
+                        {id: "v3", name: "d", x: 10,  y: 70},
+                        {id: "v4", name: "e", x: 100, y: 70},
+                        {id: "v5", name: "f", x: 170, y: 70},
                     ],
                     edges: [
                         {source: 'v0',target: 'v1'},
                         {source: 'v0',target: 'v3'},
                         {source: 'v1',target: 'v4'},
-                        {source: 'v2',target: 'v4'},
                         {source: 'v2',target: 'v5'},
                         {source: 'v3',target: 'v1'},
                         {source: 'v4',target: 'v3'},
+                        {source: 'v4',target: 'v2'},
+                        {source: 'v4',target: 'v5'},
                     ]
                 })
             }),
 
             new Vamonos.Widget.VarDisplay({
                 container: "display",
-                watch: ["s", "u[id,color]", "v[id,color]", "Q"]
+                watch: ["s[name,color]", "u[name,color]", "v[name,color]", "Q"]
             }),
 
             new Vamonos.Widget.Controls({
@@ -127,8 +128,8 @@
 _(1);                       u = vtx;
 _(2);                       u.color = "white";
                         });
-                        u = undefined;
-_(3);                   s.color = "gray";
+_(3);                   u = undefined;
+                        s.color = "gray";
 _(4);                   viz.stash.Q = new Vamonos.DataStructure.Queue();
 _(5);                   Q.enqueue(s);
                         while (_(6), !Q.isEmpty()) {
@@ -140,9 +141,10 @@ _(10);                              v.color = "gray";
 _(11);                              Q.enqueue(v);
                                 }
                             });
-                            v = undefined;
-_(12);                      u.color = "black";
+_(12);                      v = undefined;
+                            u.color = "black";
                         }
+                        u = undefined;
                     }
                 }
             }),
