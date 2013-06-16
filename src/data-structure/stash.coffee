@@ -14,28 +14,38 @@ class Stash
     _clone: () ->
         Vamonos.mixin(new Stash(), this, Vamonos.clone)
 
-    _bind: (args = {}) ->
-        vars    = args.vars ? {}
-        context = args.context ? "main"
-        if @_context?
-            @_callStack.push(@_context) 
-        @_context = context
+    _subroutine: ({name, argnames, locals, routine, visualizer}) ->
+        name     ?= "main"
+        argnames ?= []
+        locals   ?= []
+        
+        throw "Stash: need routine for _subroutine method" unless routine?
+        throw "Stash: need visualizer for _subroutine method" unless visualizer?
 
-        # save old scope
-        @_stack.push([key, @[key]] for key, val of vars)
+        @[name] = (args...) =>
+            # save local vars and args
+            save = {}
+            save[k] = @[k] for k in locals.concat(argnames)
 
-        # bind new vars
-        @[key] = val for key, val of vars
+            # bind arguments (positional only)
+            @[k] = v for [n, v] in ([argnames[i], args[i]] for i in [0..args.length-1])
 
-    _return: () ->
-        @_context = @_callStack.pop()
-        bindings  = @_stack.pop()
-        # delete new bindings not in old scope
-        keys = (binding[0] for binding in bindings)
-        delete @[key] for key of this when not key in keys
+            # push old context and bindings
+            @_callStack.push(
+                context: @_context ? "os"
+                bindings: (k for k in @ when k[0] isnt "_")
+            )
 
-        # restore bound arguments
-        @[key] = val for [key, val] in bindings
-            
+            # set new context
+            @_context = name
+
+            # call routine
+            routine(visualizer)
+
+            # clean up: pop call stack, restore overwritten locals and args
+            {bindings, context} = @_callStack.pop()
+            @[key] = val for key, val of save
+            delete @[key] for key of @ when not key in bindings
+
 
 Vamonos.export { DataStructure: { Stash } }

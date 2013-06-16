@@ -64,25 +64,13 @@ class Pseudocode
 
         if @routine?
             @stash._inputVars.push(@varName)
-            @stash[@varName] = (args...) => 
-                vars = {}
-                vars[@args[i]] = args[i] for i in [0..args.length-1]
-
-                save = {}
-                for v in @locals
-                    save[v] = @stash[v] 
-                    @stash[v] = undefined
-
-                visualizer.stash._bind(
-                    context: @varName
-                    vars: vars
-                )
-
-                @routine(visualizer, args...)
-
-                visualizer.stash._return()
-
-                @stash[v] = save[v] for v in @locals
+            @stash._subroutine(
+                name: @varName
+                locals: @locals
+                routine: @routine
+                argnames: @args
+                visualizer: visualizer
+            )
 
         @showBreakpoints()
 
@@ -90,7 +78,7 @@ class Pseudocode
 
         @clear()
 
-        return unless @varName is frame._context or @varName in frame._callStack
+        return unless @varName is frame._context or @varName in frame._callStack.map((s) -> s.context)
 
         [prev, next] = if frame._context is @varName
             @mostRecent = frame._lineNumber
