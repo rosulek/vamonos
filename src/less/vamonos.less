@@ -561,6 +561,17 @@ table.var-watcher {
 
 
 //////////////////////
+// CALL STACK
+
+table.callstack {
+    border-collapse: collapse;
+    & tr.changed {
+        .background-highlight-pulse;
+    }
+}
+
+
+//////////////////////
 // MATRIX
 
 @matrix-cell-size: (@array-cell-size - 4);

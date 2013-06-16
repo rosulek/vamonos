@@ -34,6 +34,7 @@ class Stash
             @_callStack.push(
                 context: @_context ? "os"
                 bindings: (k for k in @ when k[0] isnt "_")
+                newcontext: name
             )
 
             # set new context
