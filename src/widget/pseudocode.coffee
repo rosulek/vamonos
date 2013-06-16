@@ -1,7 +1,3 @@
-# TODO: breakpoints cant be global anymore - need to be contextualized
-# TODO: when context switches to subroutine at first, prev line is wrong
-
-
 ###
 #
 #   src/widget/pseudocode.coffee :: exports Vamonos.Widget.Pseudocode
@@ -46,19 +42,25 @@ class Pseudocode
         when "setup"
             [@stash, visualizer] = options
             @setup(visualizer)
+
         when "editStart"
             @enableBreakpointSelection() if @editableBreakpoints
+
         when "displayStart"
             @disableBreakpointSelection() if @editableBreakpoints
             @showBreakpoints()
+
         when "displayStop"
             @clear()
+
         when "render"
             [frame, type] = options
             @render(frame) 
 
     setup: (visualizer) ->
-        Vamonos.insertSet(b, @stash._breakpoints) for b in @breakpoints
+        @stash._breakpoints[@varName] ?= []
+        Vamonos.insertSet(b, @stash._breakpoints[@varName]) for b in @breakpoints
+        @showBreakpoints()
 
         if @routine?
             @stash._inputVars.push(@varName)
@@ -70,7 +72,6 @@ class Pseudocode
                 visualizer: visualizer
             )
 
-        @showBreakpoints()
 
     render: (frame) ->
 
@@ -78,7 +79,7 @@ class Pseudocode
 
         stackContexts = (call.context for call in frame._callStack)
         return unless @varName is frame._nextLine.context or 
-                      @varName is frame._prevLine.context or
+                      frame._context isnt "os" and @varName is frame._prevLine.context or
                       @varName in stackContexts
 
         if frame._prevLine.context is @varName
@@ -145,12 +146,12 @@ class Pseudocode
         n = parseInt(n) 
 
         gutter = @getLine(n).find("td.pseudocode-gutter")
-        if n in @stash._breakpoints
+        if n in @stash._breakpoints[@varName]
             gutter.find("div.pseudocode-breakpoint").remove()
-            @stash._breakpoints.splice(@stash._breakpoints.indexOf(n), 1)
+            @stash._breakpoints[@varName].splice(@stash._breakpoints[@varName].indexOf(n), 1)
         else
             gutter.append($("<div>", {class: "pseudocode-breakpoint"}))
-            @stash._breakpoints.push(n)
+            @stash._breakpoints[@varName].push(n)
 
     ###
     #   Widget.Pseudocode.showBreakpoints()
@@ -160,7 +161,7 @@ class Pseudocode
     showBreakpoints: ->
         @$tbl.find("td.pseudocode-gutter div.pseudocode-breakpoint")
              .remove()                       # Clear all old breakpoints.
-        for n in @stash._breakpoints
+        for n in @stash._breakpoints[@varName]
             @getLine(n)
                 .find("td.pseudocode-gutter")
                 .append($("<div>", {class: "pseudocode-breakpoint"}))

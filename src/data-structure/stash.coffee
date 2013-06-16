@@ -1,6 +1,6 @@
 class Stash
     constructor: () ->
-        @_breakpoints = []
+        @_breakpoints = {}
         @_inputVars   = []
         @_watchVars   = []
         @_type        = "stash"

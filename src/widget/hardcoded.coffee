@@ -19,6 +19,8 @@ class Hardcoded
                 @stash[name] = value 
 
     setBreakpoints: (breakpoints) ->
-        Vamonos.insertSet(b, @stash._breakpoints) for b in breakpoints
+        for context, points of breakpoints
+            @stash._breakpoints[context] ?= []
+            Vamonos.insertSet(b, @stash._breakpoints[context]) for b in points
 
 Vamonos.export { Widget: { Hardcoded } }
