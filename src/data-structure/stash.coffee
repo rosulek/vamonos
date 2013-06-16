@@ -4,7 +4,6 @@ class Stash
         @_inputVars   = []
         @_watchVars   = []
         @_type        = "stash"
-        @_stack       = []
         @_callStack   = []
 
     _initialize: () ->

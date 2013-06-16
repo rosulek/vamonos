@@ -76,6 +76,9 @@ class Pseudocode
 
         @clear()
 
+        stackContexts = (call.context for call in frame._callStack)
+        return unless @varName is frame._context or @varName in stackContexts
+
         if frame._prevLine.context is @varName
             @addClassToLine(frame._prevLine.n, "pseudocode-previous")
 
