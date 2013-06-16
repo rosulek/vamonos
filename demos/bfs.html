@@ -53,14 +53,18 @@
                 varName: "G",
                 container: "graph",
                 showVertices: {
-                    u:     function ($vtx) { $vtx.append("<div class='vertex-sw-label'>u</div>") },
-                    v:     function ($vtx) { $vtx.append("<div class='vertex-se-label'>v</div>") },
-                    s:     function ($vtx) { $vtx.append("<div class='vertex-ne-label'>s</div>") },
-                    clear: function ($vtx) { 
-                        $vtx.children(".vertex-se-label").remove();
-                        $vtx.children(".vertex-ne-label").remove();
-                        $vtx.children(".vertex-sw-label").remove();
-                    }
+                    u: {
+                        show: function($vtx){ $vtx.append("<div class='vertex-sw-label'>u</div>") },
+                        hide: function($vtx){ $vtx.children(".vertex-sw-label").remove() }
+                    },
+                    v: {
+                        show: function($vtx){ $vtx.append("<div class='vertex-se-label'>v</div>") },
+                        hide: function($vtx){ $vtx.children(".vertex-se-label").remove() }
+                    },
+                    s: {
+                        show: function($vtx){ $vtx.append("<div class='vertex-ne-label'>s</div>") },
+                        hide: function($vtx){ $vtx.children(".vertex-ne-label").remove() }
+                    },
                 },
                 vertexSetupFunc: function(v, $vtx) {
                     $vtx.removeClass('white black gray')

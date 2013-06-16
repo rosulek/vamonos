@@ -24,19 +24,17 @@ class Graph
                 @drawGraph(frame[@varName])
 
             @updateVertex(v) for v in frame[@varName].vertices
-            for name, func of @showVertices
-                continue if name is "clear" or not frame[name]
+            for name, funcs of @showVertices
+                {show, hide} = funcs
+                continue unless frame[name]?
                 newv = frame[name]
                 unless @previousFrame[name]?
-                    func(@getVertexSelector(newv))
+                    show(@vertexSelector(newv))
                     continue
-
                 oldv = @previousFrame[name] 
                 if @varChanged(newv, oldv)
-                    @showVertices.clear(@getVertexSelector(oldv))
-                    func(@getVertexSelector(newv))
-
-
+                    hide(@vertexSelector(oldv))
+                    show(@vertexSelector(newv))
             @previousFrame = frame
 
         when "displayStop"
@@ -46,7 +44,7 @@ class Graph
             if @defaultGraph?
                 @stash[@varName] = Vamonos.clone(@defaultGraph)
 
-    getVertexSelector: (vertex) ->
+    vertexSelector: (vertex) ->
         return unless @graphDrawn
         @vertices.filter((v) -> v.attr("id") is vertex.id)[0]
 
@@ -63,7 +61,7 @@ class Graph
         not r1.concat(r2).every((b) -> b)
 
     updateVertex: (vertex) ->
-        $v = @getVertexSelector(vertex)
+        $v = @vertexSelector(vertex)
         @vertexUpdateFunc(vertex, $v) if @vertexUpdateFunc?
         $v.addClass("changed") if @vertexChanged(vertex)
 
