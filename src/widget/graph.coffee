@@ -24,17 +24,7 @@ class Graph
                 @drawGraph(frame[@varName])
 
             @updateVertex(v) for v in frame[@varName].vertices
-            for name, funcs of @showVertices
-                {show, hide} = funcs
-                continue unless frame[name]?
-                newv = frame[name]
-                unless @previousFrame[name]?
-                    show(@vertexSelector(newv))
-                    continue
-                oldv = @previousFrame[name] 
-                if @varChanged(newv, oldv)
-                    hide(@vertexSelector(oldv))
-                    show(@vertexSelector(newv))
+            @runShowFuncs(frame)
             @previousFrame = frame
 
         when "displayStop"
@@ -43,6 +33,22 @@ class Graph
         when "editStop"
             if @defaultGraph?
                 @stash[@varName] = Vamonos.clone(@defaultGraph)
+
+    runShowFuncs: (frame) ->
+        @runShowVertices(frame)
+
+    runShowVertices: (frame) ->
+        for name, {show, hide} of @showVertices
+            newv = frame[name]
+            oldv = @previousFrame?[name] 
+            if newv? and not oldv?
+                show(@vertexSelector(newv))
+                continue
+            else if oldv? and not newv?
+                hide(@vertexSelector(oldv))
+            else if @varChanged(newv, oldv)
+                hide(@vertexSelector(oldv))
+                show(@vertexSelector(newv))
 
     vertexSelector: (vertex) ->
         return unless @graphDrawn

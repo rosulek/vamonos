@@ -24,8 +24,9 @@ class Pseudocode
 
     constructor: ({container, @editableBreakpoints, @breakpoints, 
         @showPreviousLine, setAllBreakpoints, @varName, @routine,
-        @args}) ->
+        @args, @locals}) ->
 
+        @locals              ?= []
         @args                ?= []
         @varName             ?= "main"
         @editableBreakpoints ?= yes
@@ -46,36 +47,44 @@ class Pseudocode
     event: (event, options...) -> switch event
         when "setup"
             [@stash, visualizer] = options
-            Vamonos.insertSet(b, @stash._breakpoints) for b in @breakpoints
-
-            if @routine?
-                @stash._inputVars.push(@varName)
-                @stash[@varName] = (args...) => 
-                    vars = {}
-                    vars[@args[i]] = args[i] for i in [0..args.length-1]
-                    visualizer.stash._bind(
-                        context: @varName
-                        vars: vars
-                    )
-                    @routine(visualizer, args...)
-                    visualizer.stash._return()
-
-
-            @showBreakpoints()
-
+            @setup(visualizer)
         when "editStart"
             @enableBreakpointSelection() if @editableBreakpoints
-
         when "displayStart"
             @disableBreakpointSelection() if @editableBreakpoints
             @showBreakpoints()
-
         when "displayStop"
             @clear()
-
         when "render"
             [frame, type] = options
             @render(frame) 
+
+    setup: (visualizer) ->
+        Vamonos.insertSet(b, @stash._breakpoints) for b in @breakpoints
+
+        if @routine?
+            @stash._inputVars.push(@varName)
+            @stash[@varName] = (args...) => 
+                vars = {}
+                vars[@args[i]] = args[i] for i in [0..args.length-1]
+
+                save = {}
+                for v in @locals
+                    save[v] = @stash[v] 
+                    @stash[v] = undefined
+
+                visualizer.stash._bind(
+                    context: @varName
+                    vars: vars
+                )
+
+                @routine(visualizer, args...)
+
+                visualizer.stash._return()
+
+                @stash[v] = save[v] for v in @locals
+
+        @showBreakpoints()
 
     render: (frame) ->
 

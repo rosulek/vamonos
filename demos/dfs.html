@@ -90,6 +90,7 @@ _(6);                       visit(G, u);
             setAllBreakpoints: true,
             varName: "visit",
             args: ["G", "u"],
+            locals: ["v"],
             routine: function(viz) {
                 var _ = function(n){ viz.line(n) };
                 with (viz.stash) {
@@ -118,16 +119,14 @@ _(9);               u.f = time;
             varName: "G",
             container: "graph",
             showVertices: {
-                u: function ($vtx) { 
-                    $vtx.append("<div class='vertex-sw-label'>u</div>") 
+                u: {
+                    show: function($vtx){ $vtx.append("<div class='vertex-sw-label'>u</div>") },
+                    hide: function($vtx){ $vtx.children(".vertex-sw-label").remove() }
                 },
-                v: function ($vtx) { 
-                    $vtx.append("<div class='vertex-se-label'>v</div>") 
+                v: {
+                    show: function($vtx){ $vtx.append("<div class='vertex-se-label'>v</div>") },
+                    hide: function($vtx){ $vtx.children(".vertex-se-label").remove() }
                 },
-                clear: function ($vtx) { 
-                    $vtx.children(".vertex-se-label").remove();
-                    $vtx.children(".vertex-sw-label").remove();
-                }
             },
             vertexSetupFunc: function(v, $vtx) {
                 $vtx.removeClass('white black gray');
