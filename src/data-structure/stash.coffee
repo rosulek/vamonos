@@ -40,13 +40,15 @@ class Stash
             @_context = name
 
             # call routine
-            procedure(visualizer)
+            ret = procedure(visualizer)
 
             # clean up: pop call stack, restore overwritten locals and args
             {bindings, context} = @_callStack.pop()
             @[key] = val for key, val of save
             delete @[key] for key of @ when not key in bindings
             @_context = context
+
+            return ret
 
 
 Vamonos.export { DataStructure: { Stash } }

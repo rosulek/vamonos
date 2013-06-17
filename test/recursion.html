@@ -1,0 +1,88 @@
+<html><head>
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="../demos/demos.css">
+    <script type="text/javascript" src="../deps/jquery.min.js"></script>
+    <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../lib/vamonos.js"></script>
+
+</head><body>
+
+    <div class="vamonos">
+        <table><tr><td>
+            <div class="container" id="main" title="Execute Fib(10):">
+                n = Fib(10) 
+            </div><br>
+            <div class="container" id="fib" title="Fib(n):">
+                if n &le; 2
+                    return n
+                n = n * Fib(n-1)
+                return n
+            </div><br>
+            <div id="controls"></div><br>
+        </td><td>
+            <div class="container" id="vars"></div><br>
+            <div class="container" id="stack"></div><br>
+        </td></tr></table>
+    </div>
+
+</body><script>
+
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+        new Vamonos.Widget.Pseudocode({
+            container: "main",
+            setAllBreakpoints: true,
+        }),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "fib",
+            procedureName: "fib",
+            setAllBreakpoints: true,
+        }),
+
+        new Vamonos.Widget.Controls({
+            container: "controls",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "vars",
+            watch: ["n"],
+        }),
+
+        new Vamonos.Widget.CallStack({
+            container: "stack",
+            procedureNames: { 
+                main: "Execute Fib(10)",
+                fib: "Fib",
+            },
+        }),
+    ],
+
+    algorithm: {
+        main: {
+            procedure: function(viz) {
+                var _ = function(n){ viz.line(n) };
+                with (viz.stash) {
+_(1);               n = fib(10);
+                }
+            }
+        },
+        
+        fib: {
+            args: ["n"],
+            procedure: function(viz) {
+                var _ = function(n){ viz.line(n) };
+                with (viz.stash) {
+_(1);               if (n <= 2) { 
+_(2);                   return n; 
+                    }
+_(3);               n = n * (fib(n-1));
+_(4);               return n;
+                }
+            }
+        }
+    }
+});
+
+</script></html>
