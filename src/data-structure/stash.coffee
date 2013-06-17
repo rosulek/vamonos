@@ -14,12 +14,12 @@ class Stash
     _clone: () ->
         Vamonos.mixin(new Stash(), this, Vamonos.clone)
 
-    _subroutine: ({name, argnames, locals, routine, visualizer}) ->
+    _subroutine: ({name, argnames, locals, procedure, visualizer}) ->
         name     ?= "main"
         argnames ?= []
         locals   ?= []
         
-        throw "Stash: need routine for _subroutine method" unless routine?
+        throw "Stash: need routine for _subroutine method" unless procedure?
         throw "Stash: need visualizer for _subroutine method" unless visualizer?
 
         @[name] = (args...) =>
@@ -40,7 +40,7 @@ class Stash
             @_context = name
 
             # call routine
-            routine(visualizer)
+            procedure(visualizer)
 
             # clean up: pop call stack, restore overwritten locals and args
             {bindings, context} = @_callStack.pop()

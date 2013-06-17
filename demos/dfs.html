@@ -71,50 +71,13 @@ var myviz = new Vamonos.Visualizer({
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-dfs",
             setAllBreakpoints: true,
-            routine: function(viz) {
-                var _ = function(n){ viz.line(n) };
-                with (viz.stash) {
-                    G.eachVertex(function(vtx){
-_(1);                   u = vtx;
-_(2);                   u.color = "white";
-                    });
-                    u = undefined;
-_(3);               viz.stash.time = 0;
-                    G.eachVertex(function(vtx){
-_(4);                   u = vtx;
-_(5);                   if (u.color === "white") {
-_(6);                       visit(G, u);
-                        }
-                    });
-                    u = undefined;
-                }
-            }
+            procedureName: "main",
         }),
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-visit",
             setAllBreakpoints: true,
-            varName: "visit",
-            args: ["G", "u"],
-            locals: ["v"],
-            routine: function(viz) {
-                var _ = function(n){ viz.line(n) };
-                with (viz.stash) {
-_(1);               time++;
-_(2);               u.d = time;
-_(3);               u.color = "gray";
-                    G.eachNeighbor(u, function(vtx){
-_(4);                   v = vtx;
-_(5);                   if (v.color === "white") {
-_(6);                       visit(G, v);
-                        }
-                    });
-                    v = undefined;
-_(7);               u.color = "black";
-_(8);               time++;
-_(9);               u.f = time;
-                }
-            }
+            procedureName: "visit",
         }),
 
         new Vamonos.Widget.Controls({
@@ -176,7 +139,53 @@ _(9);               u.f = time;
                 ]
             })
         })
-    ]
+    ],
+
+    algorithm: {
+        main: {
+            procedure: function(viz) {
+                var _ = function(n){ viz.line(n) };
+                with (viz.stash) {
+                    G.eachVertex(function(vtx){
+_(1);                   u = vtx;
+_(2);                   u.color = "white";
+                    });
+                    u = undefined;
+_(3);               viz.stash.time = 0;
+                    G.eachVertex(function(vtx){
+_(4);                   u = vtx;
+_(5);                   if (u.color === "white") {
+_(6);                       visit(G, u);
+                        }
+                    });
+                    u = undefined;
+                }
+            }
+        },
+
+        visit: {
+            args: ["G", "u"],
+            locals: ["v"],
+            procedure: function(viz) {
+                var _ = function(n){ viz.line(n) };
+                with (viz.stash) {
+_(1);               time++;
+_(2);               u.d = time;
+_(3);               u.color = "gray";
+                    G.eachNeighbor(u, function(vtx){
+_(4);                   v = vtx;
+_(5);                   if (v.color === "white") {
+_(6);                       visit(G, v);
+                        }
+                    });
+                    v = undefined;
+_(7);               u.color = "black";
+_(8);               time++;
+_(9);               u.f = time;
+                }
+            }
+        },
+    },
 })
 </script>
 </html>

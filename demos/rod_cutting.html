@@ -29,74 +29,74 @@
     </div>
 </body>
 <script type="text/javascript">
-    var myviz = new Vamonos.Visualizer({
-        widgets: [
-            new Vamonos.Widget.ParallelArrays({
-                container: "arrays",
-                showLabel: true,
-                cssRules: [[">", "k", "shaded"]],
-                arrays: [
-                    {
-                        varName: "price",
-                        defaultInput: [0, 1,5,8,9,10,17,17,20,24],
-                        ignoreIndexZero: true,
-                        showIndices: ["i"],
-                    },
-                    {
-                        varName: "opt",
-                        showIndices: ["k", "k-i"],
-                        displayOnly: true
-                    },
-                    {
-                        varName: "sol",
-                        showIndices: ["k"],
-                        displayOnly: true,
-                        cellFormat: function(x) { return x ? "["+x.join(",")+"]" : "" }
-                    }
-                ]
-            }),
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+        new Vamonos.Widget.ParallelArrays({
+            container: "arrays",
+            showLabel: true,
+            cssRules: [[">", "k", "shaded"]],
+            arrays: [
+                {
+                    varName: "price",
+                    defaultInput: [0, 1,5,8,9,10,17,17,20,24],
+                    ignoreIndexZero: true,
+                    showIndices: ["i"],
+                },
+                {
+                    varName: "opt",
+                    showIndices: ["k", "k-i"],
+                    displayOnly: true
+                },
+                {
+                    varName: "sol",
+                    showIndices: ["k"],
+                    displayOnly: true,
+                    cellFormat: function(x) { return x ? "["+x.join(",")+"]" : "" }
+                }
+            ]
+        }),
 
-            new Vamonos.Widget.Pseudocode({
-                container: "pseudocode",
-                breakpoints: [3,7],
-                setAllBreakpoints: false,
-                routine: function (viz) {
-                    with (viz.stash) {
-                        opt = [0]
-                        viz.line(1);
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode",
+            breakpoints: [3,7],
+            setAllBreakpoints: false,
+        }),
 
-                        sol = [[]]
-                        viz.line(2);
-                        for (var _k = 1; _k < price.length; _k++) {
-                            viz.line(3);
-                            k = _k;
-                            viz.line(4);
-                            opt[k] = 0;
-                            viz.line(5);
-                            sol[k] = null;
-                            for(var _i=1; _i<=k; _i++) {
-                                viz.line(6);
-                                i = _i;
-                                viz.line(7);
-                                if (opt[k] < opt[k-i] + price[i]) {
-                                    viz.line(8);
-                                    opt[k] = opt[k-i] + price[i];
-                                    viz.line(9);
-                                    sol[k] = sol[k-i].concat([i]);
-                                }
-                            }
-                            i = null;
-                        }
-                        k = null;
+        new Vamonos.Widget.Controls({
+            container: "controls",
+            showWhileSliding: true
+        })
+    ],
+    algorithm: function (viz) {
+        with (viz.stash) {
+            opt = [0]
+            viz.line(1);
+
+            sol = [[]]
+            viz.line(2);
+            for (var _k = 1; _k < price.length; _k++) {
+                viz.line(3);
+                k = _k;
+                viz.line(4);
+                opt[k] = 0;
+                viz.line(5);
+                sol[k] = null;
+                for(var _i=1; _i<=k; _i++) {
+                    viz.line(6);
+                    i = _i;
+                    viz.line(7);
+                    if (opt[k] < opt[k-i] + price[i]) {
+                        viz.line(8);
+                        opt[k] = opt[k-i] + price[i];
+                        viz.line(9);
+                        sol[k] = sol[k-i].concat([i]);
                     }
                 }
-            }),
-
-            new Vamonos.Widget.Controls({
-                container: "controls",
-                showWhileSliding: true
-            })
-        ],
-    });
+                i = null;
+            }
+            k = null;
+        }
+    }
+});
 </script>
 </html>

@@ -52,12 +52,14 @@
 
 class Visualizer
 
-    constructor: ({@widgets, @maxFrames, autoStart}) ->
+    constructor: ({@widgets, @maxFrames, algorithm, autoStart}) ->
         @currentFrameNumber = 0
         @maxFrames         ?= 250
         autoStart          ?= false
 
         @stash = new Vamonos.DataStructure.Stash()
+
+        @prepareAlgorithm(algorithm)
 
         @tellWidgets("setup", @stash, @)
 
@@ -65,6 +67,25 @@ class Visualizer
             @runAlgorithm() 
         else
             @editMode() 
+
+    prepareAlgorithm: (algorithm) -> switch typeof algorithm
+        when 'function'
+            @stash._inputVars.push("main")
+            @stash._subroutine
+                name: "main"
+                procedure: algorithm
+                visualizer: @
+
+        when 'object'
+            for procedureName, obj of algorithm
+                @stash._inputVars.push(procedureName)
+                @stash._subroutine
+                    name:       procedureName
+                    locals:     obj.locals
+                    argnames:   obj.args
+                    procedure:  obj.procedure
+                    visualizer: @
+
 
     ###
     #   Visualizer.line(number)

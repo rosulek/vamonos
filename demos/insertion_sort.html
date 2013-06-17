@@ -29,48 +29,50 @@
 </body>
 
 <script type="text/javascript">
-    var myviz = new Vamonos.Visualizer({
-        widgets: [
+var myviz = new Vamonos.Visualizer({
+    widgets: [
 
-            new Vamonos.Widget.Array({
-                container: "array",
-                defaultInput: [0, 3, 1, 4, 1, 5, 9],
-                ignoreIndexZero: true,
-                varName: "A",
-                cssRules: [
-                    [">", "j", "shaded"]
-                ],
-                showIndices: ["i", "j"],
-                showLabel: true,
-            }),
+        new Vamonos.Widget.Array({
+            container: "array",
+            defaultInput: [0, 3, 1, 4, 1, 5, 9],
+            ignoreIndexZero: true,
+            varName: "A",
+            cssRules: [
+                [">", "j", "shaded"]
+            ],
+            showIndices: ["i", "j"],
+            showLabel: true,
+        }),
 
-            new Vamonos.Widget.Pseudocode({
-                container: "pseudocode",
-                setAllBreakpoints: true,
-                routine: function (viz) {
-                    var _ = function(n){ viz.line(n) };
-                    with (viz.stash) {
-_(1);                   for (j = 2; j < A.length; viz.line(1), j++) {
-_(2);                       key = A[j];
-_(3);                       i = j - 1;
-                            while (_(4), i > 0 && A[i] > key) {
-_(5);                           A[i + 1] = A[i];
-_(6);                           i = i - 1;
-                            }
-_(7);                       A[i + 1] = key;
-                            i = null;
-                        }
-                        j = null;
-                    }
-                }
-            }),
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode",
+            setAllBreakpoints: true,
+        }),
 
-            new Vamonos.Widget.Controls({
-                container: "controls",
-                showWhileSliding: true
-            })
-        ],
-    });
+        new Vamonos.Widget.Controls({
+            container: "controls",
+            showWhileSliding: true
+        })
+    ],
+
+    algorithm: function (viz) {
+       var _ = function(n){ viz.line(n) };
+       with (viz.stash) {
+_(1);      for (j = 2; j < A.length; viz.line(1), j++) {
+_(2);          key = A[j];
+_(3);          i = j - 1;
+               while (_(4), i > 0 && A[i] > key) {
+_(5);              A[i + 1] = A[i];
+_(6);              i = i - 1;
+               }
+_(7);          A[i + 1] = key;
+               i = null;
+           }
+           j = null;
+       }
+    },
+
+});
 
 </script>
 

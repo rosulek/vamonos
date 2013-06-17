@@ -19,11 +19,11 @@
 class Pseudocode
 
     constructor: ({container, @editableBreakpoints, @breakpoints, 
-        setAllBreakpoints, @varName, @routine, @args, @locals}) ->
+        setAllBreakpoints, @procedureName}) ->
 
         @locals              ?= []
         @args                ?= []
-        @varName             ?= "main"
+        @procedureName       ?= "main"
         @editableBreakpoints ?= yes
         setAllBreakpoints    ?= yes
 
@@ -58,19 +58,9 @@ class Pseudocode
             @render(frame) 
 
     setup: (visualizer) ->
-        @stash._breakpoints[@varName] ?= []
-        Vamonos.insertSet(b, @stash._breakpoints[@varName]) for b in @breakpoints
+        @stash._breakpoints[@procedureName] ?= []
+        Vamonos.insertSet(b, @stash._breakpoints[@procedureName]) for b in @breakpoints
         @showBreakpoints()
-
-        if @routine?
-            @stash._inputVars.push(@varName)
-            @stash._subroutine(
-                name: @varName
-                locals: @locals
-                routine: @routine
-                argnames: @args
-                visualizer: visualizer
-            )
 
 
     render: (frame) ->
@@ -78,18 +68,18 @@ class Pseudocode
         @clear()
 
         stackContexts = (call.context for call in frame._callStack)
-        return unless @varName is frame._nextLine.context or 
-                      frame._context isnt "os" and @varName is frame._prevLine.context or
-                      @varName in stackContexts
+        return unless @procedureName is frame._nextLine.context or 
+                      frame._context isnt "os" and @procedureName is frame._prevLine.context or
+                      @procedureName in stackContexts
 
-        if frame._prevLine.context is @varName
+        if frame._prevLine.context is @procedureName
             @addClassToLine(frame._prevLine.n, "pseudocode-previous")
 
-        if frame._nextLine.context is @varName
+        if frame._nextLine.context is @procedureName
             @addClassToLine(frame._nextLine.n, "pseudocode-next")
 
-        if frame._context isnt @varName
-            calls = (c for c in frame._callStack when c.context is @varName)
+        if frame._context isnt @procedureName
+            calls = (c for c in frame._callStack when c.context is @procedureName)
             mostRecentCall = calls[calls.length - 1]
             @addClassToLine(mostRecentCall?.line ? 0, "pseudocode-active")
 
@@ -146,12 +136,12 @@ class Pseudocode
         n = parseInt(n) 
 
         gutter = @getLine(n).find("td.pseudocode-gutter")
-        if n in @stash._breakpoints[@varName]
+        if n in @stash._breakpoints[@procedureName]
             gutter.find("div.pseudocode-breakpoint").remove()
-            @stash._breakpoints[@varName].splice(@stash._breakpoints[@varName].indexOf(n), 1)
+            @stash._breakpoints[@procedureName].splice(@stash._breakpoints[@procedureName].indexOf(n), 1)
         else
             gutter.append($("<div>", {class: "pseudocode-breakpoint"}))
-            @stash._breakpoints[@varName].push(n)
+            @stash._breakpoints[@procedureName].push(n)
 
     ###
     #   Widget.Pseudocode.showBreakpoints()
@@ -161,7 +151,7 @@ class Pseudocode
     showBreakpoints: ->
         @$tbl.find("td.pseudocode-gutter div.pseudocode-breakpoint")
              .remove()                       # Clear all old breakpoints.
-        for n in @stash._breakpoints[@varName]
+        for n in @stash._breakpoints[@procedureName]
             @getLine(n)
                 .find("td.pseudocode-gutter")
                 .append($("<div>", {class: "pseudocode-breakpoint"}))
