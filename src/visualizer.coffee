@@ -174,9 +174,6 @@ class Visualizer
             @line(0)
         catch err
             switch err
-                when "no main function"
-                    alert("No main function was defined. Use a hardcoded or pseudocode " +
-                          "widget to define it. Visualization halted.")
                 when "too many frames"
                     alert("Too many frames. You may have an infinite loop, or you may " +
                           "want to consider setting fewer breakpoints. " +
