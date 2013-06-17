@@ -1,7 +1,7 @@
 class Graph
 
     constructor: ({container, @varName, @defaultGraph, @vertexSetupFunc,
-        @vertexUpdateFunc, @showVertices}) ->
+        @vertexUpdateFunc, @showVertices, @showEdges}) ->
 
         @$outer = Vamonos.jqueryify(container)
         @$inner = $("<div>", {class: "graph-inner-container"})
@@ -36,6 +36,7 @@ class Graph
 
     runShowFuncs: (frame) ->
         @runShowVertices(frame)
+        @runShowEdges(frame)
 
     runShowVertices: (frame) ->
         for name, {show, hide} of @showVertices
@@ -49,6 +50,21 @@ class Graph
             else if @varChanged(newv, oldv)
                 hide(@vertexSelector(oldv))
                 show(@vertexSelector(newv))
+
+    runShowEdges: (frame) ->
+        for edgeStr, {show, hide} of @showEdges
+            if edgeStr.match /->/ # directed
+                hide(e) for e in @shownEdges if @shownEdges?
+                [source, target] = edgeStr.split /->/ 
+                edges = frame[@varName].edges.filter (e) ->
+                    e.source?.id == frame[source]?.id and e.target?.id == frame[target]?.id
+                return unless edges.length > 0
+                connections = @edges.filter (e) ->
+                    e.sourceId == frame[source].id and e.targetId == frame[target].id
+                @shownEdges = for e in connections
+                    show(e)
+                    e
+
 
     vertexSelector: (vertex) ->
         return unless @graphDrawn

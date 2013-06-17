@@ -65,6 +65,22 @@ var myviz = new Vamonos.Visualizer({
                     hide: function($vtx){ $vtx.children(".vertex-ne-label").remove() }
                 },
             },
+            showEdges: {
+                "u->v": {
+                    show: function($edge){ 
+                        $edge.setPaintStyle({
+                            strokeStyle: "red",
+                            lineWidth: 3,
+                        });
+                    },
+                    hide: function($edge){
+                        $edge.setPaintStyle({
+                            strokeStyle: "gray",
+                            lineWidth: 2,
+                        });
+                    },
+                },
+            },
             vertexSetupFunc: function(v, $vtx) {
                 $vtx.removeClass('white black gray')
                 $vtx.append("<div class='vertex-nw-label'>" + v.name + "</div>");
