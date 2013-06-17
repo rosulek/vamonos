@@ -66,6 +66,10 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.CallStack({
             container: "stack",
+            procedureNames: {
+                main: "DFS",
+                visit: "DFS-Visit",
+            }
         }),
 
         new Vamonos.Widget.Pseudocode({
