@@ -10,13 +10,13 @@
 
     <div class="vamonos">
         <table><tr><td>
-            <div class="container" id="main" title="Execute Fib(10):">
-                n = Fib(10) 
+            <div class="container" id="main" title="Execute Fact(10):">
+                n = Fact(10) 
             </div><br>
-            <div class="container" id="fib" title="Fib(n):">
+            <div class="container" id="fact" title="Fact(n):">
                 if n &le; 2
                     return n
-                n = n * Fib(n-1)
+                n = n * Fact(n-1)
                 return n
             </div><br>
             <div id="controls"></div><br>
@@ -36,13 +36,14 @@ var myviz = new Vamonos.Visualizer({
         }),
 
         new Vamonos.Widget.Pseudocode({
-            container: "fib",
-            procedureName: "fib",
+            container: "fact",
+            procedureName: "fact",
             setAllBreakpoints: true,
         }),
 
         new Vamonos.Widget.Controls({
             container: "controls",
+            showWhileSliding: true,
         }),
 
         new Vamonos.Widget.VarDisplay({
@@ -53,8 +54,8 @@ var myviz = new Vamonos.Visualizer({
         new Vamonos.Widget.CallStack({
             container: "stack",
             procedureNames: { 
-                main: "Execute Fib(10)",
-                fib: "Fib",
+                main: "Execute Fact(10)",
+                fact: "Fact",
             },
         }),
     ],
@@ -64,12 +65,12 @@ var myviz = new Vamonos.Visualizer({
             procedure: function(viz) {
                 var _ = function(n){ viz.line(n) };
                 with (viz.stash) {
-_(1);               n = fib(10);
+_(1);               n = fact(10);
                 }
             }
         },
         
-        fib: {
+        fact: {
             args: ["n"],
             procedure: function(viz) {
                 var _ = function(n){ viz.line(n) };
@@ -77,7 +78,7 @@ _(1);               n = fib(10);
 _(1);               if (n <= 2) { 
 _(2);                   return n; 
                     }
-_(3);               n = n * (fib(n-1));
+_(3);               n = n * (fact(n-1));
 _(4);               return n;
                 }
             }
