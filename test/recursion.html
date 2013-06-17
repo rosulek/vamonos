@@ -6,6 +6,13 @@
     <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
     <script type="text/javascript" src="../lib/vamonos.js"></script>
 
+    <style type="text/css">
+        td { 
+            vertical-align: top;
+            text-align: left;
+        }
+    </style>
+
 </head><body>
 
     <div class="vamonos">
@@ -54,7 +61,6 @@ var myviz = new Vamonos.Visualizer({
         new Vamonos.Widget.CallStack({
             container: "stack",
             procedureNames: { 
-                main: "Execute Fact(10)",
                 fact: "Fact",
             },
         }),

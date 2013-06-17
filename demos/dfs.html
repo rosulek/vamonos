@@ -61,7 +61,7 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.VarDisplay({
             container: "display",
-            watch: ["u[name,color,d,f]", "v[name,color,d,f]", "time"]
+            watch: ["u[name,d,f]", "v[name,d,f]", "time"]
         }),
 
         new Vamonos.Widget.CallStack({
@@ -69,7 +69,11 @@ var myviz = new Vamonos.Visualizer({
             procedureNames: {
                 main: "DFS",
                 visit: "DFS-Visit",
-            }
+            },
+            defaultArgs: {
+                main: ["G"],
+                visit: ["G"],
+            },
         }),
 
         new Vamonos.Widget.Pseudocode({
@@ -175,7 +179,7 @@ _(3);               viz.stash.time = 0;
                     G.eachVertex(function(vtx){
 _(4);                   u = vtx;
 _(5);                   if (u.color === "white") {
-_(6);                       visit(G, u);
+_(6);                       visit(u);
                         }
                     });
                     u = undefined;
@@ -184,7 +188,7 @@ _(6);                       visit(G, u);
         },
 
         visit: {
-            args: ["G", "u"],
+            args: ["u"],
             locals: ["v"],
             procedure: function(viz) {
                 var _ = function(n){ viz.line(n) };
@@ -195,7 +199,7 @@ _(3);               u.color = "gray";
                     G.eachNeighbor(u, function(vtx){
 _(4);                   v = vtx;
 _(5);                   if (v.color === "white") {
-_(6);                       visit(G, v);
+_(6);                       visit(v);
                         }
                     });
 _(7);               u.color = "black";

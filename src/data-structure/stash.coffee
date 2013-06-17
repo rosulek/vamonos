@@ -7,7 +7,7 @@ class Stash
         @_callStack   = []
 
     _initialize: () ->
-        @_context = "os"
+        @_context = proc: "os", args: ""
         for v of this
             @[v] = undefined unless v.match(/^_/) or v in @_inputVars
 
@@ -32,12 +32,14 @@ class Stash
 
             # push old context and bindings
             @_callStack.push(
-                context: @_context ? "os"
+                context: @_context
                 bindings: (k for k in @ when k[0] isnt "_")
             )
 
             # set new context
-            @_context = name
+            @_context = 
+                proc: name
+                args: (Vamonos.rawToTxt(a) for a in args)
 
             # call routine
             ret = procedure(visualizer)

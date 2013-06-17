@@ -109,7 +109,7 @@ class Visualizer
             calls = (s for s in @stash._callStack when s.context is @prevLine.context)
             s.line = @prevLine.n for s in calls when not s.line?
 
-        if @takeSnapshot(n, @stash._context)
+        if @takeSnapshot(n, @stash._context.proc)
             throw "too many frames" if @currentFrameNumber >= @maxFrames
 
             newFrame              = @stash._clone()
@@ -121,9 +121,9 @@ class Visualizer
         @prevLine = { n, context: @stash._context }
         throw "too many lines" if ++@numCallsToLine > 10000
 
-    takeSnapshot: (n, context) ->
+    takeSnapshot: (n, proc) ->
         return true if n is 0
-        return n in @stash._breakpoints[context] if @stash._breakpoints[context].length > 0
+        return n in @stash._breakpoints[proc] if @stash._breakpoints[proc].length > 0
         return @diff(@frames[@frames.length-1], @stash, @stash._watchVars) if @stash._watchVars?
         return false
         

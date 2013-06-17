@@ -67,19 +67,19 @@ class Pseudocode
 
         @clear()
 
-        stackContexts = (call.context for call in frame._callStack)
-        return unless @procedureName is frame._nextLine.context or 
-                      frame._context isnt "os" and @procedureName is frame._prevLine.context or
+        stackContexts = (call.context.proc for call in frame._callStack)
+        return unless @procedureName is frame._nextLine.context.proc or 
+                      frame._context.proc isnt "os" and @procedureName is frame._prevLine.context.proc or
                       @procedureName in stackContexts
 
-        if frame._prevLine.context is @procedureName
+        if frame._prevLine.context.proc is @procedureName
             @addClassToLine(frame._prevLine.n, "pseudocode-previous")
 
-        if frame._nextLine.context is @procedureName
+        if frame._nextLine.context.proc is @procedureName
             @addClassToLine(frame._nextLine.n, "pseudocode-next")
 
-        if frame._context isnt @procedureName
-            calls = (c for c in frame._callStack when c.context is @procedureName)
+        if frame._context.proc isnt @procedureName
+            calls = (c for c in frame._callStack when c.context.proc is @procedureName)
             mostRecentCall = calls[calls.length - 1]
             @addClassToLine(mostRecentCall?.line ? 0, "pseudocode-active")
 

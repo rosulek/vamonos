@@ -1,6 +1,7 @@
 class CallStack
 
-    constructor: ({container, @procedureNames}) ->
+    constructor: ({container, @procedureNames, @defaultArgs}) ->
+        @defaultArgs    ?= {}
         @procedureNames ?= {}
         @setup(Vamonos.jqueryify(container))
 
@@ -20,16 +21,28 @@ class CallStack
 
         @clear()
 
-        return if frame._context is "os"
+        return if frame._context.proc is "os"
 
-        for c in frame._callStack when c.context isnt "os"
+        for c in frame._callStack when c.context.proc isnt "os"
+            args = if @defaultArgs[c.context.proc]?
+                @defaultArgs[c.context.proc]
+            else
+                []
+            argstr = "(#{args.concat(c.context.args).join(",")})"
+
             @$tbl.append($("<tr>", {
-                text: @procedureNames[c.context] ? c.context
+                text: 
+                    ( @procedureNames[c.context.proc] ? c.context.proc ) + argstr
             }))
 
+        args = if @defaultArgs[frame._context.proc]?
+            @defaultArgs[frame._context.proc]
+        else
+            []
+        argstr = "(#{args.concat(frame._context.args).join(",")})"
         @$tbl.append($("<tr>", {
             class: "current",
-            text: @procedureNames[frame._context] ? frame._context
+            text: ( @procedureNames[frame._context.proc] ? frame._context.proc ) + argstr
         }))
 
 

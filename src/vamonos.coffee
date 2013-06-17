@@ -18,10 +18,12 @@ root.Vamonos =
 
     rawToTxt: (raw) ->
         return "" unless raw?
-        return "\u221E"         if raw is Infinity
-        return "-\u221E"        if raw is -Infinity
-        return raw.id           if typeof raw is 'object' and raw._type?.match /vertex|edge/
-        return raw.toString()   if typeof raw is 'object' and raw._type is 'queue'
+        return "\u221E"       if raw is Infinity
+        return "-\u221E"      if raw is -Infinity
+        return raw.name       if typeof raw is 'object' and raw._type is 'vertex'
+        return raw.id         if typeof raw is 'object' and raw._type is 'edge'
+        return "G"            if typeof raw is 'object' and raw._type is 'graph'
+        return raw.toString() if typeof raw is 'object' and raw._type is 'queue'
         return "" + raw        
 
     txtValid: (txt) -> @txtToRaw(txt)?
