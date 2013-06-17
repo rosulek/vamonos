@@ -95,11 +95,27 @@ var myviz = new Vamonos.Visualizer({
             showVertices: {
                 u: {
                     show: function($vtx){ $vtx.append("<div class='vertex-sw-label'>u</div>") },
-                    hide: function($vtx){ $vtx.children(".vertex-sw-label").remove() }
+                    hide: function($vtx){ $vtx.children(".vertex-sw-label").remove() },
                 },
                 v: {
                     show: function($vtx){ $vtx.append("<div class='vertex-se-label'>v</div>") },
-                    hide: function($vtx){ $vtx.children(".vertex-se-label").remove() }
+                    hide: function($vtx){ $vtx.children(".vertex-se-label").remove() },
+                },
+            },
+            showEdges: {
+                "u->v": {
+                    show: function($edge){ 
+                        $edge.setPaintStyle({
+                            strokeStyle: "red",
+                            lineWidth: 3,
+                        });
+                    },
+                    hide: function($edge){
+                        $edge.setPaintStyle({
+                            strokeStyle: "gray",
+                            lineWidth: 2,
+                        });
+                    },
                 },
             },
             vertexSetupFunc: function(v, $vtx) {
@@ -114,7 +130,7 @@ var myviz = new Vamonos.Visualizer({
                 };
                 if (v.color == "white") {
                     clearColor();
-                    $vtx.addClass('white');
+                    
                 } else if (v.color == "gray") {
                     clearColor();
                     $vtx.addClass('gray');
@@ -182,7 +198,6 @@ _(5);                   if (v.color === "white") {
 _(6);                       visit(G, v);
                         }
                     });
-                    v = undefined;
 _(7);               u.color = "black";
 _(8);               time++;
 _(9);               u.f = time;
