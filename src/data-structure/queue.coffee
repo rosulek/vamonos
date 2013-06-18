@@ -12,7 +12,7 @@ class Queue
         @guts.push(elem)
 
     dequeue: () ->
-        @guts.pop()
+        @guts.shift()
 
     isEmpty: () ->
         @guts.length == 0

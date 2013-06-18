@@ -5,6 +5,10 @@ class Queue
         @arrayWidget = new Vamonos.Widget.Array(options)
 
     event: (event, options...) -> switch event
+        when "setup"
+            [stash, viz] = options
+            stash[@varName] ?= undefined
+
         when "render"
             [frame, viz] = options
             newFrame = Vamonos.clone(frame)
