@@ -17,7 +17,9 @@ class Stash
             @[v] = undefined unless v.match(/^_/) or v in @_inputVars
 
     _clone: () ->
-        Vamonos.mixin(new Stash(), @, Vamonos.clone)
+        r = new Stash()
+        r[k] = Vamonos.clone(v) for k, v of @ when typeof v isnt 'function'
+        return r
 
     _subroutine: ({procedureName, argNames, localVarNames, procedure, visualizer}) ->
         procedureName ?= "main"
@@ -33,7 +35,7 @@ class Stash
             save[k] = @[k] for k in localVarNames.concat(argNames)
 
             # push a clone of the stash onto the call stack
-            @_callStack.push(@_clone())
+            @_callStack.push(Vamonos.clone(@))
 
             # bind arguments (come in as object {a: 1, b: 2})
             for k, v of args

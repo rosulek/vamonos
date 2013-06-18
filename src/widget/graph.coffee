@@ -14,6 +14,11 @@ class Graph
 
         when "setup"
             [@stash, visualizer] = options
+            @stash[k] ?= undefined for k of @showVertices
+
+            #make sure all vars
+            for e of @showEdges
+                @stash[v] ?= undefined for v in e.split(/<?->?/)
 
         when "render"
             [frame, type] = options

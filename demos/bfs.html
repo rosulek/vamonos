@@ -38,8 +38,8 @@
         <br>
         <div id="controls"></div>
         </td><td valign='top' align='left'>
-            <div class="container" id="display"></div><br>
             <div class="container" id="graph" style="width:200; height:100;"></div>
+            <div id="queue"></div><br>
         </td></tr></table>
     </div>
 </body>
@@ -122,14 +122,16 @@ var myviz = new Vamonos.Visualizer({
             })
         }),
 
-        new Vamonos.Widget.VarDisplay({
-            container: "display",
-            watch: ["s[name,color]", "u[name,color]", "v[name,color]", "Q"]
-        }),
-
         new Vamonos.Widget.Controls({
             container: "controls",
             showWhileSliding: true
+        }),
+
+        new Vamonos.Widget.Queue({
+            container: "queue",
+            varName: "Q",
+            displayOnly: true,
+            showLabel: true,
         }),
 
         new Vamonos.Widget.Pseudocode({
@@ -140,19 +142,19 @@ var myviz = new Vamonos.Visualizer({
     algorithm: function (viz) {
         var _ = function(n){ viz.line(n); }; 
         with (viz.stash) {
-            viz.stash.s = G.vertices[0];
+            s = G.vertices[0];
             G.eachVertex(function(vtx){
                 if (vtx.id === s.id) { return }
 _(1);               u = vtx;
 _(2);               u.color = "white";
             });
 _(3);           u = undefined;
-            s.color = "gray";
-_(4);           viz.stash.Q = new Vamonos.DataStructure.Queue();
+                s.color = "gray";
+_(4);           Q = new Vamonos.DataStructure.Queue();
 _(5);           Q.enqueue(s);
             while (_(6), !Q.isEmpty()) {
 _(7);               u = Q.dequeue();
-                G.eachNeighbor(u, function(vtx) {
+                    G.eachNeighbor(u, function(vtx) {
 _(8);                   v = vtx;
 _(9);                   if (v.color === "white") {
 _(10);                      v.color = "gray";
@@ -162,7 +164,6 @@ _(11);                      Q.enqueue(v);
 _(12);              v = undefined;
                 u.color = "black";
             }
-            u = undefined;
         }
     }
 });

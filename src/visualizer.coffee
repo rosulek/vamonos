@@ -112,7 +112,7 @@ class Visualizer
         if @takeSnapshot(n, @stash._context.proc)
             throw "too many frames" if @currentFrameNumber >= @maxFrames
 
-            newFrame              = @stash._clone()
+            newFrame              = Vamonos.clone(@stash)
             newFrame._nextLine    = { n, context: @stash._context }
             newFrame._prevLine    = @prevLine
             newFrame._frameNumber = ++@currentFrameNumber
