@@ -69,22 +69,23 @@ var myviz = new Vamonos.Visualizer({
     algorithm: {
         main: {
             procedure: function(viz) {
+                console.log("got here");
                 var _ = function(n){ viz.line(n) };
                 with (viz.stash) {
-_(1);               n = fact(10);
+_(1);               n = fact({n : 10});
                 }
             }
         },
         
         fact: {
-            args: ["n"],
+            argNames: ["n"],
             procedure: function(viz) {
                 var _ = function(n){ viz.line(n) };
                 with (viz.stash) {
 _(1);               if (n <= 2) { 
 _(2);                   return n; 
                     }
-_(3);               n = n * (fact(n-1));
+_(3);               n = n * fact({n : n-1});
 _(4);               return n;
                 }
             }

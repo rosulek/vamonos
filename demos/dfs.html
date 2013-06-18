@@ -179,7 +179,7 @@ _(3);               viz.stash.time = 0;
                     G.eachVertex(function(vtx){
 _(4);                   u = vtx;
 _(5);                   if (u.color === "white") {
-_(6);                       visit(u);
+_(6);                       visit({u:u});
                         }
                     });
                     u = undefined;
@@ -188,8 +188,8 @@ _(6);                       visit(u);
         },
 
         visit: {
-            args: ["u"],
-            locals: ["v"],
+            argNames: ["u"],
+            localVarNames: ["v"],
             procedure: function(viz) {
                 var _ = function(n){ viz.line(n) };
                 with (viz.stash) {
@@ -199,7 +199,7 @@ _(3);               u.color = "gray";
                     G.eachNeighbor(u, function(vtx){
 _(4);                   v = vtx;
 _(5);                   if (v.color === "white") {
-_(6);                       visit(v);
+_(6);                       visit({u:v});
                         }
                     });
 _(7);               u.color = "black";

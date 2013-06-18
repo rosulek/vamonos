@@ -80,11 +80,11 @@ class Visualizer
             for procedureName, obj of algorithm
                 @stash._inputVars.push(procedureName)
                 @stash._subroutine
-                    name:       procedureName
-                    locals:     obj.locals
-                    argnames:   obj.args
-                    procedure:  obj.procedure
-                    visualizer: @
+                    procedureName : procedureName
+                    argNames      : obj.argNames
+                    procedure     : obj.procedure
+                    localVarNames : obj.localVarNames
+                    visualizer    : @
 
 
     ###
@@ -171,6 +171,7 @@ class Visualizer
             @line(0)
             throw "no main function" unless @stash.main?
             @stash.main()
+            console.log "got here"
             @line(0)
         catch err
             switch err
