@@ -48,7 +48,13 @@ class Stash
             # set new context
             @_context = 
                 proc: procedureName
-                args: ("#{k}=#{Vamonos.rawToTxt(v)}" for k,v of args)
+                args: 
+                    if procedureName is "main"
+                        for k in @_inputVars
+                            continue if typeof @[k] is 'function'
+                            "#{k}=#{Vamonos.rawToTxt(@[k])}"
+                    else 
+                        "#{k}=#{Vamonos.rawToTxt(v)}" for k,v of args
 
             # call routine, save return value
             ret = procedure(visualizer)

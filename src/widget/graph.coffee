@@ -20,6 +20,8 @@ class Graph
             for e of @showEdges
                 @stash[v] ?= undefined for v in e.split(/<?->?/)
 
+            Vamonos.insertSet(@varName, @stash._inputVars)
+
         when "render"
             [frame, type] = options
 
