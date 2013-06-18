@@ -171,7 +171,6 @@ class Visualizer
             @line(0)
             throw "no main function" unless @stash.main?
             @stash.main()
-            console.log "got here"
             @line(0)
         catch err
             switch err

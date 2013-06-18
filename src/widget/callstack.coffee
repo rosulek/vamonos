@@ -23,16 +23,16 @@ class CallStack
 
         return if frame._context.proc is "os"
 
-        for c in frame._callStack when c.context.proc isnt "os"
-            args = if @defaultArgs[c.context.proc]?
-                @defaultArgs[c.context.proc]
+        for c in frame._callStack when c._context.proc isnt "os"
+            args = if @defaultArgs[c._context.proc]?
+                @defaultArgs[c._context.proc]
             else
                 []
-            argstr = "(#{args.concat(c.context.args).join(",")})"
+            argstr = "(#{args.concat(c._context.args).join(",")})"
 
             @$tbl.append($("<tr>", {
                 text: 
-                    ( @procedureNames[c.context.proc] ? c.context.proc ) + argstr
+                    ( @procedureNames[c._context.proc] ? c._context.proc ) + argstr
             }))
 
         args = if @defaultArgs[frame._context.proc]?

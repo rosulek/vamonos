@@ -17,7 +17,7 @@ class Stash
             @[v] = undefined unless v.match(/^_/) or v in @_inputVars
 
     _clone: () ->
-        Vamonos.mixin(new Stash(), this, Vamonos.clone)
+        Vamonos.mixin(new Stash(), @, Vamonos.clone)
 
     _subroutine: ({procedureName, argNames, localVarNames, procedure, visualizer}) ->
         procedureName ?= "main"
@@ -28,9 +28,12 @@ class Stash
         throw "Stash: need visualizer for _subroutine method" unless visualizer?
 
         @[procedureName] = (args = {}) =>
-            # save local vars and args
+            # save arguments and local vars as simple references
             save    = {}
             save[k] = @[k] for k in localVarNames.concat(argNames)
+
+            # push a clone of the stash onto the call stack
+            @_callStack.push(@_clone())
 
             # bind arguments (come in as object {a: 1, b: 2})
             for k, v of args
@@ -40,12 +43,6 @@ class Stash
             ## bind arguments (positional)
             #@[k] = v for [n, v] in ([argNames[i], args[i]] for i in [0..args.length-1])
 
-            # push old context and bindings
-            @_callStack.push(
-                context: @_context
-                oldVars: (k for k in @ when k[0] isnt "_")
-            )
-
             # set new context
             @_context = 
                 proc: procedureName
@@ -54,17 +51,19 @@ class Stash
             # call routine, save return value
             ret = procedure(visualizer)
 
-            # restore overwritten local vars and arguments
+            # pop call stack
+            oldStack = @_callStack.pop()
+
+            # restore procedure arguments and local variables
             @[key] = val for key, val of save
 
-            # pop call stack
-            {oldVars, context} = @_callStack.pop()
 
             # delete bindings that weren't here before
-            delete @[key] for key of @ when not key in oldVars
+            oldVarNames = (k for k, v of oldStack when k[0] isnt "_")
+            delete @[key] for key of @ when not key in oldVarNames
 
             # restore old context
-            @_context = context
+            @_context = oldStack._context
 
             # return the return value of the procedure
             return ret
