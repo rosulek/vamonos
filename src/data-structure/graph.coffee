@@ -18,6 +18,7 @@ class Graph
         e._type = 'edge'   for e in @edges
 
     edge: (s, t) ->
+        [s,t] = (@_idify(v) for v in [s,t])
         @_adjHash[s][t]
 
     vertex: (id_str) ->
@@ -27,16 +28,23 @@ class Graph
         f(v) for v in @vertices
 
     neighbors: (v) ->
-        @vertex(target) for target, edge of @_adjHash[v.id]
+        v = @_idify(v)
+        @vertex(target) for target, edge of @_adjHash[v]
 
     eachNeighbor: (v, f) ->
         f(neighbor) for neighbor in @neighbors(v)
 
     outgoingEdges: (v) ->
-        @edges.filter(({source}) -> source is v)
+        v = @_idify(v)
+        @edges.filter(({source}) -> source.id is v)
 
     incomingEdges: (v) ->
-        @edges.filter(({target}) -> target is v)
+        v = @_idify(v)
+        @edges.filter(({target}) -> target.id is v)
+
+    _idify: (v) ->
+        return v if typeof v is 'string'
+        v.id
 
     clone: () ->
         r = new Vamonos.DataStructure.Graph
