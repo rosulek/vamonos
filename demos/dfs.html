@@ -9,9 +9,37 @@
     <script type="text/javascript" src="../lib/vamonos.js"></script>
 
     <style type="text/css">
-        .black { background: black; }
-        .white { background: white; }
-        .gray  { background: gray; }
+        .vertex-sw-label {
+            font-family: sans-serif;
+            font-size: .6em; 
+            color: blue;
+        }
+
+        .vertex-nw-label {
+            font-style: italic;
+            color: red;
+        }
+
+        .white { 
+            background: white; 
+        }
+
+        .gray {
+            background: gray; 
+        }
+
+        .gray .vertex-contents { 
+            color: white; 
+        }
+
+        .black {
+            background: black; 
+        }
+
+        .black .vertex-contents { 
+            color: white; 
+        }
+
         td { 
             vertical-align: top;
             text-align: left;
@@ -47,7 +75,7 @@
             </div><br>
             <div id="controls"></div><br>
         </td><td>
-            <div id="graph" class="container" style="width:200; height:100;"></div><br>
+            <div id="graph" class="container" style="width:220; height:180;"></div><br>
             <div id="display" class="container"></div><br>
             <div id="stack" class="container"></div><br>
         </td></tr>
@@ -57,11 +85,9 @@
 <script type="text/javascript">
 var myviz = new Vamonos.Visualizer({
     widgets: [
-        new Vamonos.Widget.Console(),
-
         new Vamonos.Widget.VarDisplay({
             container: "display",
-            watch: ["u[name,d,f]", "v[name,d,f]", "time"]
+            watch: ["time"]
         }),
 
         new Vamonos.Widget.CallStack({
@@ -94,12 +120,40 @@ var myviz = new Vamonos.Visualizer({
             container: "graph",
             showVertices: {
                 u: {
-                    show: function($vtx){ $vtx.append("<div class='vertex-sw-label'>u</div>") },
-                    hide: function($vtx){ $vtx.children(".vertex-sw-label").remove() },
+                    show: function($vtx){
+                        $label = $vtx.children(".vertex-nw-label");
+                        if ($label.html() == "v") {
+                            $label.html("u,&nbsp;v");
+                        } else {
+                            $label.html("u");
+                        }
+                    },
+                    hide: function($vtx){ 
+                        $label = $vtx.children(".vertex-nw-label");
+                        if ($label.html() == "u,&nbsp;v") {
+                            $label.html("v");
+                        } else {
+                            $label.html("");
+                        }
+                    },
                 },
                 v: {
-                    show: function($vtx){ $vtx.append("<div class='vertex-se-label'>v</div>") },
-                    hide: function($vtx){ $vtx.children(".vertex-se-label").remove() },
+                    show: function($vtx){
+                        $label = $vtx.children(".vertex-nw-label");
+                        if ($label.html() == "u") {
+                            $label.html("u,&nbsp;v");
+                        } else {
+                            $label.html("v");
+                        }
+                    },
+                    hide: function($vtx){ 
+                        $label = $vtx.children(".vertex-nw-label");
+                        if ($label.html() == "u,&nbsp;v") {
+                            $label.html("u");
+                        } else {
+                            $label.html("");
+                        }
+                    },
                 },
             },
             showEdges: {
@@ -119,10 +173,16 @@ var myviz = new Vamonos.Visualizer({
                 },
             },
             vertexSetupFunc: function(v, $vtx) {
-                $vtx.removeClass('white black gray');
                 $vtx.append(
-                    "<div class='vertex-nw-label'>" + v.name + "</div>"
+                    $("<div>", {
+                        class:'vertex-sw-label',
+                        text: ((v.d?v.d:"_")+"/"+(v.f?v.f:"_")),
+                    })
                 );
+                $vtx.append(
+                    $("<div>", { class:'vertex-nw-label', })
+                );
+                $vtx.children(".vertex-contents").text(v.name);
             },
             vertexUpdateFunc: function(v, $vtx) {
                 var clearColor = function () { 
@@ -140,25 +200,33 @@ var myviz = new Vamonos.Visualizer({
                 } else {
                     clearColor();
                 }
+                $vtx.children(".vertex-sw-label")
+                    .text((v.d?v.d:"_")+"/"+(v.f?v.f:"_"));
+                $vtx.children(".vertex-contents").text(v.name);
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: false,
                 vertices: [ 
-                    {id: "v0", name:"a", x: 10,  y: 10},
-                    {id: "v1", name:"b", x: 100,  y: 10},
-                    {id: "v2", name:"c", x: 170, y: 10},
-                    {id: "v3", name:"d", x: 10,  y: 70},
-                    {id: "v4", name:"e", x: 100,  y: 70},
-                    {id: "v5", name:"f", x: 170, y: 70},
+                    {id: "v0", name: "a", x: 15,  y: 10},
+                    {id: "v1", name: "b", x: 100, y: 10},
+                    {id: "v2", name: "c", x: 180, y: 10},
+                    {id: "v3", name: "d", x: 15,  y: 80},
+                    {id: "v4", name: "e", x: 100, y: 80},
+                    {id: "v5", name: "f", x: 180, y: 80},
+                    {id: "v6", name: "g", x: 15,  y: 140},
+                    {id: "v7", name: "h", x: 100, y: 140},
+                    {id: "v8", name: "i", x: 180, y: 140},
                 ],
                 edges: [
-                    {source: 'v0',target: 'v1'},
-                    {source: 'v0',target: 'v3'},
+                    {source: 'v0',target: 'v4'},
+                    {source: 'v1',target: 'v2'},
                     {source: 'v1',target: 'v4'},
-                    {source: 'v2',target: 'v4'},
-                    {source: 'v2',target: 'v5'},
-                    {source: 'v3',target: 'v1'},
-                    {source: 'v4',target: 'v3'},
+                    {source: 'v3',target: 'v4'},
+                    {source: 'v3',target: 'v6'},
+                    {source: 'v4',target: 'v8'},
+                    {source: 'v5',target: 'v8'},
+                    {source: 'v6',target: 'v7'},
+                    {source: 'v7',target: 'v8'},
                 ]
             })
         })
@@ -203,6 +271,7 @@ _(5);                   if (v.color === "white") {
 _(6);                       visit({G:G, u:v});
                         }
                     });
+                    v = undefined;
 _(7);               u.color = "black";
 _(8);               time++;
 _(9);               u.f = time;
