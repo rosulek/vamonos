@@ -131,7 +131,7 @@ class Graph
         $contents = $("<div>", class: "vertex-contents")
 
         if @vertexSetupFunc?
-            @vertexSetupFunc(vertex, $contents)
+            @vertexSetupFunc(vertex, $v)
         else
             $contents.html(Vamonos.rawToTxt(vertex))
 

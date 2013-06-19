@@ -8,8 +8,6 @@ class Graph
 
         edges = edges.concat(@reversedEdges(edges)) unless @directed
 
-        console.log edges
-        console.log edges.map((e)->"#{e.source}->#{e.target}")
         @edges = (@configEdge(e) for e in Vamonos.arrayify(edges))
 
         v._type = 'vertex' for v in @vertices
