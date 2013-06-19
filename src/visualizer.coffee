@@ -123,7 +123,7 @@ class Visualizer
 
     takeSnapshot: (n, proc) ->
         return true if n is 0
-        return n in @stash._breakpoints[proc] if @stash._breakpoints[proc].length > 0
+        return n in @stash._breakpoints[proc] if @stash._breakpoints[proc]?.length > 0
         return @diff(@frames[@frames.length-1], @stash, @stash._watchVars) if @stash._watchVars?
         return false
         
