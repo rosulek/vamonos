@@ -11,11 +11,11 @@ class Hardcoded
                     @setBreakpoints(value)
                 else
                     @stash[name] = value 
-                    @stash._inputVars.push name
+                    @stash._inputVars.push(name)
 
         when "editStop"
             # put things in stash again
-            for name, value of @vars
+            for name, value of @args
                 @stash[name] = value 
 
     setBreakpoints: (breakpoints) ->

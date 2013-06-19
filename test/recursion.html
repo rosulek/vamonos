@@ -17,9 +17,6 @@
 
     <div class="vamonos">
         <table><tr><td>
-            <div class="container" id="main" title="Execute Fact(10):">
-                n = Fact(10) 
-            </div><br>
             <div class="container" id="fact" title="Fact(n):">
                 if n &le; 2
                     return n
@@ -37,9 +34,8 @@
 
 var myviz = new Vamonos.Visualizer({
     widgets: [
-        new Vamonos.Widget.Pseudocode({
-            container: "main",
-            setAllBreakpoints: true,
+        new Vamonos.Widget.Hardcoded({
+            n: 10,
         }),
 
         new Vamonos.Widget.Pseudocode({
@@ -60,6 +56,7 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.CallStack({
             container: "stack",
+            ignoreMain: true,
             procedureNames: { 
                 fact: "Fact",
             },
@@ -69,10 +66,8 @@ var myviz = new Vamonos.Visualizer({
     algorithm: {
         main: {
             procedure: function(viz) {
-                console.log("got here");
-                var _ = function(n){ viz.line(n) };
                 with (viz.stash) {
-_(1);               n = fact({n : 10});
+                    n = fact({n : n});
                 }
             }
         },

@@ -157,13 +157,12 @@ class Visualizer
     runAlgorithm: ->
         return if @mode is "display"
 
-        @stash._initialize()
-
         @frames             = []
         @currentFrameNumber = 0
         @prevLine           = 0
         @numCallsToLine     = 0
 
+        @stash._initialize()
         @tellWidgets("editStop") if @mode is "edit"
 
         try

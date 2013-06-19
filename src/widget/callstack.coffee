@@ -1,8 +1,9 @@
 class CallStack
 
-    constructor: ({container, @procedureNames, @defaultArgs}) ->
+    constructor: ({container, @procedureNames, @defaultArgs, @ignoreMain}) ->
         @defaultArgs    ?= {}
         @procedureNames ?= {}
+        @ignoreMain     ?= false
         @setup(Vamonos.jqueryify(container))
 
     event: (event, options...) -> switch event
@@ -24,6 +25,7 @@ class CallStack
         return if frame._context.proc is "os"
 
         for c in frame._callStack when c._context.proc isnt "os"
+            continue if c._context.proc is "main" and @ignoreMain
             args = if @defaultArgs[c._context.proc]?
                 @defaultArgs[c._context.proc]
             else
