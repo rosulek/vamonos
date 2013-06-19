@@ -1,21 +1,30 @@
 class Graph
-    constructor: ({vertices, edges, directed}) ->
+    constructor: ({vertices, edges, @directed}) ->
         
         @vertices  = Vamonos.arrayify(vertices)
         @_type     = 'graph'
         @directed ?= yes
         @_adjHash  = {}
-        
-        @edges = for e in Vamonos.arrayify(edges)
-            {source, target} = e
-            e.source = @vertex(source)
-            e.target = @vertex(target)
-            @_adjHash[source] ?= {}
-            @_adjHash[source][target] = e 
-            e
+
+        edges = edges.concat(@reversedEdges(edges)) unless @directed
+
+        console.log edges
+        console.log edges.map((e)->"#{e.source}->#{e.target}")
+        @edges = (@configEdge(e) for e in Vamonos.arrayify(edges))
 
         v._type = 'vertex' for v in @vertices
         e._type = 'edge'   for e in @edges
+
+    reversedEdges: (edges) ->
+        {source: target, target: source} for {source, target} in edges
+
+    configEdge: (edge) ->
+        {source, target} = edge
+        edge.source = @vertex(source)
+        edge.target = @vertex(target)
+        @_adjHash[source] ?= {}
+        @_adjHash[source][target] = edge
+        return edge
 
     edge: (s, t) ->
         [s,t] = (@_idify(v) for v in [s,t])

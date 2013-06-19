@@ -62,17 +62,31 @@ class Graph
 
     runShowEdges: (frame) ->
         for edgeStr, {show, hide} of @showEdges
-            if edgeStr.match /->/ # directed
-                hide(e) for e in @shownEdges if @shownEdges?
+            if edgeStr.match /->/ 
+                hide(c) for c in @shownConnections if @shownConnections?
+                @shownConnections = []
+
                 [source, target] = edgeStr.split /->/ 
+
                 edges = frame[@varName].edges.filter (e) ->
                     e.source?.id == frame[source]?.id and e.target?.id == frame[target]?.id
+
+                unless frame[@varName].directed
+                    edges = edges.concat(@reversedEdges(edges))
+
                 return unless edges.length > 0
-                connections = @edges.filter (e) ->
-                    e.sourceId == frame[source].id and e.targetId == frame[target].id
-                @shownEdges = for e in connections
-                    show(e)
-                    e
+
+                for e in edges
+                    for connection in @getConnections(e)
+                        show(connection)
+                        @shownConnections.push(connection)
+
+    reversedEdges: (edges) ->
+        {source: target, target: source} for {source, target} in edges
+
+    getConnections: (edge) ->
+        @edges.filter (e) ->
+            e.sourceId == edge.source.id and e.targetId == edge.target.id
 
 
     vertexSelector: (vertex) ->

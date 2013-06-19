@@ -39,7 +39,7 @@
         <div id="controls"></div>
         </td><td valign='top' align='left'>
             <div class="container" id="graph" style="width:200; height:160;"></div>
-            <div id="queue"></div><br>
+            <div class="no-indices" id="queue"></div><br>
         </td></tr></table>
     </div>
 </body>
@@ -99,8 +99,12 @@ var myviz = new Vamonos.Visualizer({
                     clearColor();
                     $vtx.addClass('black');
                 }
+                else {
+                    clearColor();
+                }
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
+                directed: false,
                 vertices: [ 
                     {id: "v0", name: "a", x: 10,  y: 10},
                     {id: "v1", name: "b", x: 100, y: 10},
@@ -113,18 +117,15 @@ var myviz = new Vamonos.Visualizer({
                     {id: "v8", name: "i", x: 170, y: 130},
                 ],
                 edges: [
-                    {source: 'v0',target: 'v1'},
                     {source: 'v0',target: 'v4'},
-                    {source: 'v0',target: 'v3'},
+                    {source: 'v1',target: 'v2'},
                     {source: 'v1',target: 'v4'},
-                    {source: 'v2',target: 'v5'},
-                    {source: 'v3',target: 'v1'},
+                    {source: 'v2',target: 'v4'},
+                    {source: 'v3',target: 'v4'},
                     {source: 'v3',target: 'v6'},
-                    {source: 'v4',target: 'v3'},
-                    {source: 'v4',target: 'v2'},
-                    {source: 'v4',target: 'v5'},
-                    {source: 'v5',target: 'v7'},
-                    {source: 'v7',target: 'v6'},
+                    {source: 'v4',target: 'v6'},
+                    {source: 'v4',target: 'v8'},
+                    {source: 'v5',target: 'v8'},
                     {source: 'v7',target: 'v8'},
                 ]
             })
@@ -143,9 +144,13 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode",
-            setAllBreakpoints: true,
+            setAllBreakpoints: false,
+            breakpoints: [5,6,7,8,9,10,11,12],
         }),
     ],
+
+    autoStart: true,
+
     algorithm: function (viz) {
         var _ = function(n){ viz.line(n); }; 
         with (viz.stash) {
@@ -174,7 +179,6 @@ _(12);          u.color = "black";
             u = undefined;
         }
     },
-    autoStart: true,
 });
 
 </script>

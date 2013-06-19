@@ -137,9 +137,12 @@ var myviz = new Vamonos.Visualizer({
                 } else if (v.color == "black") {
                     clearColor();
                     $vtx.addClass('black');
+                } else {
+                    clearColor();
                 }
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
+                directed: false,
                 vertices: [ 
                     {id: "v0", name:"a", x: 10,  y: 10},
                     {id: "v1", name:"b", x: 100,  y: 10},
@@ -160,6 +163,8 @@ var myviz = new Vamonos.Visualizer({
             })
         })
     ],
+
+    autoStart: true,
 
     algorithm: {
         main: {
