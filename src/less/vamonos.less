@@ -564,24 +564,16 @@ table.var-watcher {
 // CALL STACK
 
 table.callstack {
-    border-collapse: collapse;
-    th {
-        border-top: 0px;
-        border-right: 0px;
-        border-left: 0px;
-        border-bottom: 1px solid black;
+    .call {
+        font-family: serif;
     }
-    tr {
-        text-align: center;
-        border-left: 1px solid black;
-        border-right: 1px solid black;
+    .procedure-name {
     }
-    tr.current {
-        background-color: @light-shaded-color;
-        border-bottom: 1px solid black;
+    .arguments {
+        font-style: italic;
     }
-    & tr.changed {
-        .background-highlight-pulse;
+    .current {
+        background-color: @light-shaded-color; 
     }
 }
 

@@ -42,19 +42,15 @@ class Stash
                 throw "#{k} not in args: #{argNames}" unless k in argNames
                 @[k] = v
 
-            ## bind arguments (positional)
-            #@[k] = v for [n, v] in ([argNames[i], args[i]] for i in [0..args.length-1])
+            if procedureName is "main"
+                for k in @_inputVars
+                    continue if typeof @[k] is 'function'
+                    args[k] = k
 
             # set new context
             @_context = 
                 proc: procedureName
-                args: 
-                    if procedureName is "main"
-                        for k in @_inputVars
-                            continue if typeof @[k] is 'function'
-                            "#{k}=#{Vamonos.rawToTxt(@[k])}"
-                    else 
-                        "#{k}=#{Vamonos.rawToTxt(v)}" for k,v of args
+                args: args
 
             # call routine, save return value
             ret = procedure(visualizer)

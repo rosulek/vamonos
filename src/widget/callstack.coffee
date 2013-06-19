@@ -1,55 +1,50 @@
 class CallStack
 
-    constructor: ({container, @procedureNames, @defaultArgs, @ignoreMain}) ->
-        @defaultArgs    ?= {}
+    constructor: ({container, @procedureNames, @ignoreMain}) ->
         @procedureNames ?= {}
         @ignoreMain     ?= false
-        @setup(Vamonos.jqueryify(container))
+        @$container      = Vamonos.jqueryify(container)
 
     event: (event, options...) -> switch event
         when "render"
             [frame, type] = options
             @render(frame)
 
-    setup: ($container) ->
-        @$tbl = $("<table>", {class: "callstack"})
-        $header = $("<th>", {text: "Call Stack"})
-        @$tbl.append($header)
-        $container.append(@$tbl)
-
+    newCell: (proc, args) ->
+        $row = $("<tr>", {class: "call"})
+        $proc = $("<span>",
+            class: "procedure-name"
+            text: proc
+        )
+        $args = $("<span>",
+            class: "arguments"
+            text: "(#{args.join(",")})"
+        )
+        $row.append([$proc, $args])
+        return $row
 
     render: (frame) ->
 
-        @clear()
+        @$container.html("")
 
         return if frame._context.proc is "os"
 
+        $tbl = $("<table>", {class: "callstack"})
+
         for c in frame._callStack when c._context.proc isnt "os"
             continue if c._context.proc is "main" and @ignoreMain
-            args = if @defaultArgs[c._context.proc]?
-                @defaultArgs[c._context.proc]
-            else
-                []
-            argstr = "(#{args.concat(c._context.args).join(",")})"
+            name = @procedureNames[c._context.proc] ? c._context.proc
+            args = ("#{k}=#{Vamonos.rawToTxt(v)}" for k, v of c._context.args)
+            $cell = @newCell(name, args)
+            $tbl.append($cell)
 
-            @$tbl.append($("<tr>", {
-                text: 
-                    ( @procedureNames[c._context.proc] ? c._context.proc ) + argstr
-            }))
+        name = @procedureNames[frame._context.proc] ? frame._context.proc
+        args = ("#{k}=#{Vamonos.rawToTxt(v)}" for k, v of frame._context.args)
+        $row = @newCell(name, args)
+        $row.addClass("current")
 
-        args = if @defaultArgs[frame._context.proc]?
-            @defaultArgs[frame._context.proc]
-        else
-            []
-        argstr = "(#{args.concat(frame._context.args).join(",")})"
-        @$tbl.append($("<tr>", {
-            class: "current",
-            text: ( @procedureNames[frame._context.proc] ? frame._context.proc ) + argstr
-        }))
-
-
-    clear: () ->
-        @$tbl.find("tr").remove()
+        $tbl.append($row)
+        @$container.append($tbl)
 
 
 Vamonos.export { Widget: { CallStack } }
