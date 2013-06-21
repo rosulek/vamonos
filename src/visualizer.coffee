@@ -61,7 +61,7 @@ class Visualizer
 
         @_prepareAlgorithm(algorithm)
 
-        @tellWidgets("setup", @stash, @)
+        @tellWidgets("setup", @)
 
         if autoStart
             @runAlgorithm() 

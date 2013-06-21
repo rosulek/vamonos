@@ -6,14 +6,14 @@ class Queue
 
     event: (event, options...) -> switch event
         when "setup"
-            [stash, viz] = options
+            [viz] = options
             viz.registerVariable(@varName)
 
         when "render"
-            [frame, viz] = options
+            [frame, type] = options
             newFrame = Vamonos.clone(frame)
             newFrame[@varName] = frame[@varName]?.guts
-            @arrayWidget.event("render", newFrame, viz)
+            @arrayWidget.event("render", newFrame, type)
         else
             @arrayWidget.event(event, options...)
 

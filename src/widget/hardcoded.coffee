@@ -5,7 +5,7 @@ class Hardcoded
 
     event: (event, options...) -> switch event
         when "setup"
-            [stash, @viz] = options
+            [@viz] = options
             for name, value of @args
                 if name is "breakpoints"
                     @setBreakpoints(value)

@@ -29,7 +29,7 @@ class ControlSlider
 
     event: (event, options...) -> switch event
         when "setup"
-            [stash, @visualizer] = options
+            [@visualizer] = options
 
         when "editStart"
             @$slider.slider("option", "min", 0)

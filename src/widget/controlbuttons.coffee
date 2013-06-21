@@ -52,7 +52,7 @@ class ControlButtons
                     
     event: (event, options...) -> switch event
         when "setup"
-            [stash, @visualizer] = options
+            [@visualizer] = options
         
         when "editStart"
             @$runStopButton.html(RUN)

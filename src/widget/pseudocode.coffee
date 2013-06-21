@@ -40,7 +40,7 @@ class Pseudocode
 
     event: (event, options...) -> switch event
         when "setup"
-            [stash, @viz] = options
+            [@viz] = options
             @viz.setBreakpoint(b, @procedureName) for b in @breakpoints
 
         when "editStart"

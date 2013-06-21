@@ -39,7 +39,7 @@ class ArrayGuts
 
     event: (event, options...) -> switch event
         when "setup"
-            [stash, @viz] = options
+            [@viz] = options
 
             # setup defaults in the stash (in case no edit mode happens), set isInput
             @theArray = @viz.setVariable(@varName, @defaultInput.slice(), not @displayOnly) # shallow copy

@@ -13,7 +13,7 @@ class Graph
     event: (event, options...) -> switch event
 
         when "setup"
-            [stash, @viz] = options
+            [@viz] = options
             @viz.registerVariable(key) for key of @showVertices
             for e of @showEdges
                 @viz.registerVariable(v) for v in e.split(/<?->?/)

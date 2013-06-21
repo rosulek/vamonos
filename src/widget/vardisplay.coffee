@@ -10,7 +10,7 @@ class VarDisplay
 
     event: (event, options...) -> switch event
         when "setup"
-            [stash, @viz] = options
+            [@viz] = options
 
             @viz.registerVariable(v.name) for v in @watch
 
