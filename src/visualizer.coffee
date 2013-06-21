@@ -20,7 +20,7 @@ class Visualizer
         else
             @editMode() 
 
-    # ---------------  Public Methods ------------------ #
+    # --------------- public methods ------------------ #
 
     trigger: (event, options...) -> switch event
         when "runAlgorithm" then @runAlgorithm()
@@ -28,25 +28,6 @@ class Visualizer
         when "nextFrame"    then @nextFrame()
         when "prevFrame"    then @prevFrame()
         when "jumpFrame"    then @jumpFrame(options...)
-
-    line: (n) ->
-        # if context changed since last call of line(), tell the stash's
-        # call stack what the last line was.
-        if @prevLine? and @stash._context isnt @prevLine.context and @stash._callStack.length > 0
-            calls = (s for s in @stash._callStack when s.context is @prevLine.context)
-            s.line = @prevLine.n for s in calls when not s.line?
-
-        if @takeSnapshot(n, @stash._context.proc)
-            throw "too many frames" if @currentFrameNumber >= @maxFrames
-
-            newFrame              = @getFrame()
-            newFrame._nextLine    = { n, context: @stash._context }
-            newFrame._prevLine    = @prevLine
-            newFrame._frameNumber = ++@currentFrameNumber
-            @frames.push(newFrame)
-        
-        @prevLine = { n, context: @stash._context }
-        throw "too many lines" if ++@numCallsToLine > 10000
 
     registerVariable: (name) ->
         @stash[name] ?= undefined
@@ -71,11 +52,7 @@ class Visualizer
         @breakpoints[proc] ?= []
         @breakpoints[proc].splice(@breakpoints[proc].indexOf(b), 1)
 
-    # ---------------- Internals ------------------- #
-    
-    parseVarName: (varname) ->
-        return varname unless varname.match(/::/)
-        return varname.split(/::/)
+    # ---------------- stash related methods ---------------- #
 
     prepareStash: () ->
         @stash = {}
@@ -94,6 +71,32 @@ class Visualizer
         r[k] = Vamonos.clone(v) for k, v of @stash
         return r
 
+    parseVarName: (varname) ->
+        return varname unless varname.match(/::/)
+        return varname.split(/::/)
+
+    # --------------- algorithm related methods -------------- #
+
+    line: (n) ->
+        # if context changed since last call of line(), tell the stash's
+        # call stack what the last line was.
+        if @prevLine? and @stash._context isnt @prevLine.context and @stash._callStack.length > 0
+            calls = (s for s in @stash._callStack when s.context is @prevLine.context)
+            s.line = @prevLine.n for s in calls when not s.line?
+
+        if @takeSnapshot(n, @stash._context.proc)
+            throw "too many frames" if @currentFrameNumber >= @maxFrames
+
+            newFrame              = @getFrame()
+            newFrame._nextLine    = { n, context: @stash._context }
+            newFrame._prevLine    = @prevLine
+            newFrame._frameNumber = ++@currentFrameNumber
+            @frames.push(newFrame)
+        
+        @prevLine = { n, context: @stash._context }
+        throw "too many lines" if ++@numCallsToLine > 10000
+
+
     takeSnapshot: (n, proc) ->
         return true if n is 0
         return n in @breakpoints[proc] if @breakpoints[proc]?.length > 0
@@ -108,10 +111,6 @@ class Visualizer
             tleft[v]  = left[v]
             tright[v] = right[v]
         return JSON.stringify(tleft) isnt JSON.stringify(tright)
-
-    tellWidgets: (event, options...) ->
-        for widget in @widgets
-            widget.event(event, options...)
 
     prepareAlgorithm: (algorithm) ->
         if typeof algorithm is 'function'
@@ -180,6 +179,11 @@ class Visualizer
         @tellWidgets("displayStart")
         @nextFrame()
 
+    # ------------------ widget control methods ---------------------- #
+
+    tellWidgets: (event, options...) ->
+        for widget in @widgets
+            widget.event(event, options...)
 
     editMode: ->
         return if @mode is "edit"
