@@ -53,9 +53,11 @@
 class Visualizer
 
     constructor: ({@widgets, @maxFrames, algorithm, autoStart}) ->
-        @currentFrameNumber = 0
         @maxFrames         ?= 250
         autoStart          ?= false
+
+        @currentFrameNumber = 0
+        @breakpoints        = {}
 
         @stash = new Vamonos.DataStructure.Stash()
 
@@ -81,16 +83,16 @@ class Visualizer
         @stash[name]
 
     getBreakpoints: (proc) ->
-        @stash._breakpoints[proc] ?= []
-        return @stash._breakpoints[proc]
+        @breakpoints[proc] ?= []
+        return @breakpoints[proc]
 
     setBreakpoint: (b, proc) ->
-        @stash._breakpoints[proc] ?= []
-        Vamonos.insertSet(b, @stash._breakpoints[proc])
+        @breakpoints[proc] ?= []
+        Vamonos.insertSet(b, @breakpoints[proc])
 
     removeBreakpoint: (b, proc) ->
-        @stash._breakpoints[proc] ?= []
-        @stash._breakpoints[proc].splice(@stash._breakpoints[proc].indexOf(b), 1)
+        @breakpoints[proc] ?= []
+        @breakpoints[proc].splice(@breakpoints[proc].indexOf(b), 1)
 
 
     _prepareAlgorithm: (algorithm) -> switch typeof algorithm
@@ -119,15 +121,10 @@ class Visualizer
     #   in to constructor as 'algorithm') as corresponding to a particular
     #   line in the pseudocode.
     #
-    #   takes in a pseudocode line number and pushes a frame only if it's set
-    #   as a breakpoint in @stash._breakpoints.
-    #
     #   n=0 is reserved for taking a snapshot of the variables before/after
     #   entire algorithm execution
-    #
     ###
     line: (n) ->
-
         # if context changed since last call of line(), tell the stash's
         # call stack what the last line was.
         if @prevLine? and @stash._context isnt @prevLine.context and @stash._callStack.length > 0
@@ -148,7 +145,7 @@ class Visualizer
 
     takeSnapshot: (n, proc) ->
         return true if n is 0
-        return n in @stash._breakpoints[proc] if @stash._breakpoints[proc]?.length > 0
+        return n in @breakpoints[proc] if @breakpoints[proc]?.length > 0
         return @diff(@frames[@frames.length-1], @stash, @stash._watchVars) if @stash._watchVars?
         return false
         

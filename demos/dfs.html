@@ -100,13 +100,13 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-dfs",
-            setAllBreakpoints: true,
+            setAllBreakpoints: false,
+            breakpoints: [4,5,6],
             procedureName: "main",
         }),
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-visit",
-            setAllBreakpoints: true,
             procedureName: "visit",
         }),
 
