@@ -20,7 +20,7 @@ class Visualizer
         else
             @editMode() 
 
-    # ---------------  Public Methods ------------------ #
+    # --------------- public methods ------------------ #
 
     trigger: (event, options...) -> switch event
         when "runAlgorithm" then @runAlgorithm()
@@ -28,25 +28,6 @@ class Visualizer
         when "nextFrame"    then @nextFrame()
         when "prevFrame"    then @prevFrame()
         when "jumpFrame"    then @jumpFrame(options...)
-
-    line: (n) ->
-        # if context changed since last call of line(), tell the stash's
-        # call stack what the last line was.
-        if @prevLine? and @stash._context isnt @prevLine.context and @stash._callStack.length > 0
-            calls = (s for s in @stash._callStack when s.context is @prevLine.context)
-            s.line = @prevLine.n for s in calls when not s.line?
-
-        if @takeSnapshot(n, @stash._context.proc)
-            throw "too many frames" if @currentFrameNumber >= @maxFrames
-
-            newFrame              = @getFrame()
-            newFrame._nextLine    = { n, context: @stash._context }
-            newFrame._prevLine    = @prevLine
-            newFrame._frameNumber = ++@currentFrameNumber
-            @frames.push(newFrame)
-        
-        @prevLine = { n, context: @stash._context }
-        throw "too many lines" if ++@numCallsToLine > 10000
 
     registerVariable: (name) ->
         @stash[name] ?= undefined
@@ -71,11 +52,7 @@ class Visualizer
         @breakpoints[proc] ?= []
         @breakpoints[proc].splice(@breakpoints[proc].indexOf(b), 1)
 
-    # ---------------- Internals ------------------- #
-    
-    parseVarName: (varname) ->
-        return varname unless varname.match(/::/)
-        return varname.split(/::/)
+    # ---------------- stash related methods ---------------- #
 
     prepareStash: () ->
         @stash = {}
@@ -94,6 +71,28 @@ class Visualizer
         r[k] = Vamonos.clone(v) for k, v of @stash
         return r
 
+    # --------------- algorithm related methods -------------- #
+
+    line: (n) ->
+        # if context changed since last call of line(), tell the stash's
+        # call stack what the last line was.
+        if @prevLine? and @stash._context isnt @prevLine.context and @stash._callStack.length > 0
+            calls = (s for s in @stash._callStack when s.context is @prevLine.context)
+            s.line = @prevLine.n for s in calls when not s.line?
+
+        if @takeSnapshot(n, @stash._context.proc)
+            throw "too many frames" if @currentFrameNumber >= @maxFrames
+
+            newFrame              = @getFrame()
+            newFrame._nextLine    = { n, context: @stash._context }
+            newFrame._prevLine    = @prevLine
+            newFrame._frameNumber = ++@currentFrameNumber
+            @frames.push(newFrame)
+        
+        @prevLine = { n, context: @stash._context }
+        throw "too many lines" if ++@numCallsToLine > 10000
+
+
     takeSnapshot: (n, proc) ->
         return true if n is 0
         return n in @breakpoints[proc] if @breakpoints[proc]?.length > 0
@@ -109,36 +108,38 @@ class Visualizer
             tright[v] = right[v]
         return JSON.stringify(tleft) isnt JSON.stringify(tright)
 
-    tellWidgets: (event, options...) ->
-        for widget in @widgets
-            widget.event(event, options...)
-
     prepareAlgorithm: (algorithm) ->
         if typeof algorithm is 'function'
             algorithm = { "main": algorithm }
-        for procedureName, procedure of algorithm
-            @inputVars.push(procedureName)
-            @stash[procedureName] = @wrapProcedure(procedureName, procedure)
+        for procName, procedure of algorithm
+            @setVariable(procName, @wrapProcedure(procName, procedure), true)
 
-    wrapProcedure: (procedureName, procedure) ->
+    wrapProcedure: (procName, procedure) ->
         return (args = {}) =>
             save    = {}
             save[k] = @stash[k] for k of args
             @stash._callStack.push
                 varNames: (k for k, v of @stack when k[0] isnt "_")
                 context : @stash._context
-            @stash[k] = v for k, v of args # bind arguments (come in as object {a: 1, b: 2})
-            if procedureName is "main"
+
+            @stash[k] = v for k, v of args
+
+            # Add inputVars to arg list of main for CallStack display
+            if procName is "main"
                 for k in @inputVars
                     continue if typeof @stash[k] is 'function'
-                    args[k] = k
-            @stash._context = { proc: procedureName, args: args } # set new context
+                    args[k] = k 
+
+            @stash._context = { proc: procName, args: args }
+
             ret = procedure(@) # call routine, save return value
-            restore = @stash._callStack.pop()
+
             @stash[key] = val for key, val of save
-            # delete bindings that weren't here before
+
+            restore = @stash._callStack.pop()
             delete @stash[key] for key of @stash when not key in restore.varNames
             @stash._context = restore.context
+
             return ret
 
     runAlgorithm: ->
@@ -180,6 +181,11 @@ class Visualizer
         @tellWidgets("displayStart")
         @nextFrame()
 
+    # ------------------ widget control methods ---------------------- #
+
+    tellWidgets: (event, options...) ->
+        for widget in @widgets
+            widget.event(event, options...)
 
     editMode: ->
         return if @mode is "edit"
