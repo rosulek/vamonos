@@ -7,10 +7,11 @@ class Visualizer
         @currentFrameNumber = 0
         @breakpoints        = {}
 
-        @inputVars = []
-        @watchVars = []
+        @inputVars = {}
+        @watchVars = {}
 
         @prepareStash()
+        @namespace = @stash._namespaces
         @prepareAlgorithm(algorithm)
 
         @tellWidgets("setup", @)
@@ -30,15 +31,21 @@ class Visualizer
         when "jumpFrame"    then @jumpFrame(options...)
 
     registerVariable: (name) ->
-        @stash[name] ?= undefined
+        [ns, varName] = @parseVarName(name)
+        @ensureNamespace(ns)
+        @namespace[ns][varName] ?= undefined
 
     setVariable: (name, value, isInput = false) ->
-        @stash[name] = value
-        Vamonos.insertSet(name, @inputVars) if isInput
+        [ns, varName] = @parseVarName(name)
+        @ensureNamespace(ns)
+        @namespace[ns][varName] = value
+        Vamonos.insertSet(name, @inputVars[ns]) if isInput
         return value # for chaining
 
     getVariable: (name) ->
-        @stash[name]
+        [ns, varName] = @parseVarName(name)
+        @ensureNamespace(ns)
+        return @namespace[ns][varName]
 
     getBreakpoints: (proc) ->
         @breakpoints[proc] ?= []
@@ -54,17 +61,26 @@ class Visualizer
 
     # ---------------- stash related methods ---------------- #
 
+    ensureNamespace: (ns) ->
+        @inputVars[ns]         ?= []
+        @watchVars[ns]         ?= []
+        @stash._namespaces[ns] ?= 
+            global: if ns is 'global' then {} else @stash._namespaces.global 
+
     prepareStash: () ->
-        @stash = {}
-        @stash._callStack = []
-        @stash._type      = 'stash'
-        @stash._context   = proc: "os", args: ""
+        @stash             = {}
+        @stash._callStack  = []
+        @stash._type       = 'stash'
+        @stash._context    = proc: "os", args: ""
+        @stash._namespaces = {}
+        @ensureNamespace("global")
 
     initializeStash: () ->
         @stash._context   = proc: "os", args: ""
         @stash._callStack = []
-        for v of @stash
-            @stash[v] = undefined unless v.match(/^_/) or v in @inputVars
+        for ns of @stash._namespaces
+            for v of ns when not v.match(/^_/) and not v in @inputVars[ns]
+                    @stash._namespaces[v] = undefined 
 
     getFrame: () ->
         r = {}
@@ -72,7 +88,7 @@ class Visualizer
         return r
 
     parseVarName: (varname) ->
-        return varname unless varname.match(/::/)
+        return ["global", varname] unless varname.match(/::/)
         return varname.split(/::/)
 
     # --------------- algorithm related methods -------------- #
@@ -116,28 +132,39 @@ class Visualizer
         if typeof algorithm is 'function'
             algorithm = { "main": algorithm }
         for procedureName, procedure of algorithm
-            @inputVars.push(procedureName)
-            @stash[procedureName] = @wrapProcedure(procedureName, procedure)
+            @ensureNamespace(procedureName)
+            @setVariable(
+                "global::#{procedureName}",
+                @wrapProcedure(procedureName, procedure),
+                true
+            )
 
-    wrapProcedure: (procedureName, procedure) ->
+    wrapProcedure: (procName, procedure) ->
         return (args = {}) =>
+
+            if procName is "main"
+                for k in @inputVars.global
+                    v = @getVariable("global::#{k}") 
+                    continue if typeof v is 'function'
+                    args[k] = v
+
             save    = {}
-            save[k] = @stash[k] for k of args
+            save[k] = @getVariable("#{procName}::#{k}") for k of args
+
             @stash._callStack.push
-                varNames: (k for k, v of @stack when k[0] isnt "_")
                 context : @stash._context
-            @stash[k] = v for k, v of args # bind arguments (come in as object {a: 1, b: 2})
-            if procedureName is "main"
-                for k in @inputVars
-                    continue if typeof @stash[k] is 'function'
-                    args[k] = k
-            @stash._context = { proc: procedureName, args: args } # set new context
+
+            @setVariable("#{procName}::#{k}", v) for k, v of args
+
+            @stash._context = { proc: procName, args: args }
+
             ret = procedure(@) # call routine, save return value
-            restore = @stash._callStack.pop()
+
             @stash[key] = val for key, val of save
-            # delete bindings that weren't here before
-            delete @stash[key] for key of @stash when not key in restore.varNames
+
+            restore = @stash._callStack.pop()
             @stash._context = restore.context
+
             return ret
 
     runAlgorithm: ->
@@ -154,8 +181,8 @@ class Visualizer
         try
             # there's always a "before" & "after" snapshot
             @line(0)
-            throw "no main function" unless @stash.main?
-            @stash.main()
+            throw "no main function" unless @namespace.global.main?
+            @namespace.global.main()
             @line(0)
         catch err
             switch err

@@ -87,7 +87,7 @@ var myviz = new Vamonos.Visualizer({
     widgets: [
         new Vamonos.Widget.VarDisplay({
             container: "display",
-            watch: ["time"]
+            watch: ["global::time"]
         }),
 
         new Vamonos.Widget.CallStack({
@@ -237,7 +237,7 @@ var myviz = new Vamonos.Visualizer({
     algorithm: {
         main: function(viz) {
             var _ = function(n){ viz.line(n) };
-            with (viz.stash) {
+            with (viz.namespace.main) {
                 G.eachVertex(function(vtx){
 _(1);               u = vtx;
 _(2);               u.color = "white";
@@ -247,7 +247,7 @@ _(3);           viz.stash.time = 0;
                 G.eachVertex(function(vtx){
 _(4);               u = vtx;
 _(5);               if (u.color === "white") {
-_(6);                   visit({G:G, u:u});
+_(6);                   global.visit({G:G, u:u});
                     }
                 });
                 u = undefined;
@@ -256,20 +256,20 @@ _(6);                   visit({G:G, u:u});
 
         visit: function(viz) {
             var _ = function(n){ viz.line(n) };
-            with (viz.stash) {
-_(1);           time++;
-_(2);           u.d = time;
+            with (viz.namespace.visit) {
+_(1);           global.time++;
+_(2);           u.d = global.time;
 _(3);           u.color = "gray";
                 G.eachNeighbor(u, function(vtx){
 _(4);               v = vtx;
 _(5);               if (v.color === "white") {
-_(6);                   visit({G:G, u:v});
+_(6);                   global.visit({G:G, u:v});
                     }
                 });
                 v = undefined;
 _(7);           u.color = "black";
 _(8);           time++;
-_(9);           u.f = time;
+_(9);           u.f = global.time;
             }
         },
     },
