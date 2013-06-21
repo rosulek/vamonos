@@ -5,22 +5,23 @@ class Hardcoded
 
     event: (event, options...) -> switch event
         when "setup"
-            [@stash, visualizer] = options
+            [stash, @viz] = options
             for name, value of @args
                 if name is "breakpoints"
                     @setBreakpoints(value)
                 else
-                    @stash[name] = value 
-                    @stash._inputVars.push(name)
+                    @viz.setVariable(name, value, true)
 
         when "editStop"
             # put things in stash again
             for name, value of @args
-                @stash[name] = value 
+                @viz.setVariable(name, value, true)
 
     setBreakpoints: (breakpoints) ->
-        for context, points of breakpoints
-            @stash._breakpoints[context.proc] ?= []
-            Vamonos.insertSet(b, @stash._breakpoints[context.proc]) for b in points
+        if breakpoints.constructor.name is 'Array'
+            @viz.setBreakpoint(n, "main") for n in breakpoints
+        else 
+            for context, points of breakpoints
+                @viz.setBreakpoint(n, context.proc) for n in points
 
 Vamonos.export { Widget: { Hardcoded } }

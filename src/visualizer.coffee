@@ -75,6 +75,7 @@ class Visualizer
     setVariable: (name, value, isInput = false) ->
         @stash[name] = value
         Vamonos.insertSet(name, @stash._inputVars) if isInput
+        return value # for chaining
 
     getVariable: (name) ->
         @stash[name]
@@ -83,7 +84,7 @@ class Visualizer
         @stash._breakpoints[proc] ?= []
         return @stash._breakpoints[proc]
 
-    addBreakpoint: (b, proc) ->
+    setBreakpoint: (b, proc) ->
         @stash._breakpoints[proc] ?= []
         Vamonos.insertSet(b, @stash._breakpoints[proc])
 

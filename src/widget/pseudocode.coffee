@@ -41,7 +41,7 @@ class Pseudocode
     event: (event, options...) -> switch event
         when "setup"
             [stash, @viz] = options
-            @viz.addBreakpoint(b, @procedureName) for b in @breakpoints
+            @viz.setBreakpoint(b, @procedureName) for b in @breakpoints
 
         when "editStart"
             @enableBreakpointSelection() if @editableBreakpoints
@@ -135,7 +135,7 @@ class Pseudocode
             @viz.removeBreakpoint(n, @procedureName)
         else
             gutter.append($("<div>", {class: "pseudocode-breakpoint"}))
-            @viz.addBreakpoint(n, @procedureName)
+            @viz.setBreakpoint(n, @procedureName)
 
     ###
     #   Widget.Pseudocode.showBreakpoints()

@@ -39,19 +39,16 @@ class ArrayGuts
 
     event: (event, options...) -> switch event
         when "setup"
-            [@stash, visualizer] = options
+            [stash, @viz] = options
 
-            # setup defaults in the stash (in case no edit mode happens)
-            @theArray = @stash[@varName] = @defaultInput.slice() # shallow copy
+            # setup defaults in the stash (in case no edit mode happens), set isInput
+            @theArray = @viz.setVariable(@varName, @defaultInput.slice(), not @displayOnly) # shallow copy
 
-            # register varName as an input if needed
-            @stash._inputVars.push(@varName) unless @displayOnly
-            
             # ensure array indices exist in the stash
             for [_,i,_] in @cssRules
-                @stash[v] ?= null for v in @virtualIndexDependents(i)
+                @viz.registerVariable(v) for v in @virtualIndexDependents(i)
             for i in @showIndices
-                @stash[v] ?= null for v in @virtualIndexDependents(i)
+                @viz.registerVariable(v) for v in @virtualIndexDependents(i)
            
 
         when "editStart"

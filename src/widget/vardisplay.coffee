@@ -10,9 +10,9 @@ class VarDisplay
 
     event: (event, options...) -> switch event
         when "setup"
-            [@stash, viz] = options
+            [stash, @viz] = options
 
-            @stash[v.name] ?= undefined for v in @watch
+            @viz.registerVariable(v.name) for v in @watch
 
             @tblRows = {}
             @tblRows[v.name] = $("<tr>").append(
