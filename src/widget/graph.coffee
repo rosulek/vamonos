@@ -13,16 +13,12 @@ class Graph
     event: (event, options...) -> switch event
 
         when "setup"
-            [@stash, visualizer] = options
-            @stash[k] ?= undefined for k of @showVertices
-
-            #make sure all vars
+            [stash, @viz] = options
+            @viz.registerVariable(key) for key of @showVertices
             for e of @showEdges
-                @stash[v] ?= undefined for v in e.split(/<?->?/)
+                @viz.registerVariable(v) for v in e.split(/<?->?/)
+            @viz.setVariable(@varName, Vamonos.clone(@defaultGraph), true)
 
-            @stash[@varName] ?= Vamonos.clone(@defaultGraph)
-
-            Vamonos.insertSet(@varName, @stash._inputVars)
 
         when "render"
             [frame, type] = options
@@ -41,7 +37,7 @@ class Graph
 
         when "editStop"
             if @defaultGraph?
-                @stash[@varName] = Vamonos.clone(@defaultGraph)
+                @viz.setVariable(@varName, Vamonos.clone(@defaultGraph), true)
 
     runShowFuncs: (frame) ->
         @runShowVertices(frame)

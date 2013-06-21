@@ -59,7 +59,7 @@ class Visualizer
 
         @stash = new Vamonos.DataStructure.Stash()
 
-        @prepareAlgorithm(algorithm)
+        @_prepareAlgorithm(algorithm)
 
         @tellWidgets("setup", @stash, @)
 
@@ -68,7 +68,31 @@ class Visualizer
         else
             @editMode() 
 
-    prepareAlgorithm: (algorithm) -> switch typeof algorithm
+    # stash manipulation encapsulation methods
+    registerVariable: (name) ->
+        @stash[name] ?= undefined
+
+    setVariable: (name, value, isInput = false) ->
+        @stash[name] = value
+        Vamonos.insertSet(name, @stash._inputVars) if isInput
+
+    getVariable: (name) ->
+        @stash[name]
+
+    getBreakpoints: (proc) ->
+        @stash._breakpoints[proc] ?= []
+        return @stash._breakpoints[proc]
+
+    addBreakpoint: (b, proc) ->
+        @stash._breakpoints[proc] ?= []
+        Vamonos.insertSet(b, @stash._breakpoints[proc])
+
+    removeBreakpoint: (b, proc) ->
+        @stash._breakpoints[proc] ?= []
+        @stash._breakpoints[proc].splice(@stash._breakpoints[proc].indexOf(b), 1)
+
+
+    _prepareAlgorithm: (algorithm) -> switch typeof algorithm
         when 'function'
             @stash._inputVars.push("main")
             @stash._subroutine

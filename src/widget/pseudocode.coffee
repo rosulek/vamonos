@@ -40,11 +40,12 @@ class Pseudocode
 
     event: (event, options...) -> switch event
         when "setup"
-            [@stash, visualizer] = options
-            @setup(visualizer)
+            [stash, @viz] = options
+            @viz.addBreakpoint(b, @procedureName) for b in @breakpoints
 
         when "editStart"
             @enableBreakpointSelection() if @editableBreakpoints
+            @showBreakpoints()
 
         when "displayStart"
             @disableBreakpointSelection() if @editableBreakpoints
@@ -56,11 +57,6 @@ class Pseudocode
         when "render"
             [frame, type] = options
             @render(frame) 
-
-    setup: (visualizer) ->
-        @stash._breakpoints[@procedureName] ?= []
-        Vamonos.insertSet(b, @stash._breakpoints[@procedureName]) for b in @breakpoints
-        @showBreakpoints()
 
 
     render: (frame) ->
@@ -131,17 +127,15 @@ class Pseudocode
     toggleBreakpoint: (n) ->
         return unless Vamonos.isNumber(n)
 
-        # otherwise can get 2 copies of a breakpoint in @stash._breakpoints,
-        # one for string and one for int
         n = parseInt(n) 
 
         gutter = @getLine(n).find("td.pseudocode-gutter")
-        if n in @stash._breakpoints[@procedureName]
+        if n in @viz.getBreakpoints(@procedureName)
             gutter.find("div.pseudocode-breakpoint").remove()
-            @stash._breakpoints[@procedureName].splice(@stash._breakpoints[@procedureName].indexOf(n), 1)
+            @viz.removeBreakpoint(n, @procedureName)
         else
             gutter.append($("<div>", {class: "pseudocode-breakpoint"}))
-            @stash._breakpoints[@procedureName].push(n)
+            @viz.addBreakpoint(n, @procedureName)
 
     ###
     #   Widget.Pseudocode.showBreakpoints()
@@ -151,7 +145,7 @@ class Pseudocode
     showBreakpoints: ->
         @$tbl.find("td.pseudocode-gutter div.pseudocode-breakpoint")
              .remove()                       # Clear all old breakpoints.
-        for n in @stash._breakpoints[@procedureName]
+        for n in @viz.getBreakpoints(@procedureName)
             @getLine(n)
                 .find("td.pseudocode-gutter")
                 .append($("<div>", {class: "pseudocode-breakpoint"}))

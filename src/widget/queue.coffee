@@ -7,7 +7,7 @@ class Queue
     event: (event, options...) -> switch event
         when "setup"
             [stash, viz] = options
-            stash[@varName] ?= undefined
+            viz.registerVariable(@varName)
 
         when "render"
             [frame, viz] = options
