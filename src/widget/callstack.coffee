@@ -31,10 +31,10 @@ class CallStack
 
         $tbl = $("<table>", {class: "callstack"})
 
-        for c in frame._callStack when c._context.proc isnt "os"
-            continue if c._context.proc is "main" and @ignoreMain
-            name = @procedureNames[c._context.proc] ? c._context.proc
-            args = ("#{k}=#{Vamonos.rawToTxt(v)}" for k, v of c._context.args)
+        for c in frame._callStack when c.context.proc isnt "os"
+            continue if c.context.proc is "main" and @ignoreMain
+            name = @procedureNames[c.context.proc] ? c.context.proc
+            args = ("#{k}=#{Vamonos.rawToTxt(v)}" for k, v of c.context.args)
             $cell = @newCell(name, args)
             $tbl.append($cell)
 
@@ -45,6 +45,7 @@ class CallStack
 
         $tbl.append($row)
         @$container.append($tbl)
+
 
 
 Vamonos.export { Widget: { CallStack } }

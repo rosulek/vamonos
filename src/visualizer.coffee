@@ -126,7 +126,7 @@ class Visualizer
             save[k] = @stash[k] for k of args
             @stash._callStack.push
                 varNames: (k for k, v of @stack when k[0] isnt "_")
-                _context: @stash._context
+                context : @stash._context
             @stash[k] = v for k, v of args # bind arguments (come in as object {a: 1, b: 2})
             if procedureName is "main"
                 for k in @inputVars
@@ -134,11 +134,11 @@ class Visualizer
                     args[k] = k
             @stash._context = { proc: procedureName, args: args } # set new context
             ret = procedure(@) # call routine, save return value
-            oldStack = @stash._callStack.pop()
+            restore = @stash._callStack.pop()
             @stash[key] = val for key, val of save
             # delete bindings that weren't here before
-            delete @stash[key] for key of @stash when not key in oldStack.varNames
-            @stash._context = oldStack._context
+            delete @stash[key] for key of @stash when not key in restore.varNames
+            @stash._context = restore.context
             return ret
 
     runAlgorithm: ->
