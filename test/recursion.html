@@ -64,25 +64,20 @@ var myviz = new Vamonos.Visualizer({
     ],
 
     algorithm: {
-        main: {
-            procedure: function(viz) {
-                with (viz.stash) {
-                    n = fact({n : n});
-                }
+        main: function(viz) {
+            with (viz.stash) {
+                n = fact({n : n});
             }
         },
         
-        fact: {
-            argNames: ["n"],
-            procedure: function(viz) {
-                var _ = function(n){ viz.line(n) };
-                with (viz.stash) {
-_(1);               if (n <= 2) { 
-_(2);                   return n; 
-                    }
-_(3);               n = n * fact({n : n-1});
-_(4);               return n;
+        fact: function(viz) {
+            var _ = function(n){ viz.line(n) };
+            with (viz.stash) {
+_(1);           if (n <= 2) { 
+_(2);               return n; 
                 }
+_(3);           n = n * fact({n : n-1});
+_(4);           return n;
             }
         }
     }

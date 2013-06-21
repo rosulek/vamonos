@@ -232,50 +232,44 @@ var myviz = new Vamonos.Visualizer({
         })
     ],
 
-    autoStart: true,
+    autoStart: false,
 
     algorithm: {
-        main: {
-            procedure: function(viz) {
-                var _ = function(n){ viz.line(n) };
-                with (viz.stash) {
-                    G.eachVertex(function(vtx){
-_(1);                   u = vtx;
-_(2);                   u.color = "white";
-                    });
-                    u = undefined;
-_(3);               viz.stash.time = 0;
-                    G.eachVertex(function(vtx){
-_(4);                   u = vtx;
-_(5);                   if (u.color === "white") {
-_(6);                       visit({G:G, u:u});
-                        }
-                    });
-                    u = undefined;
-                }
+        main: function(viz) {
+            var _ = function(n){ viz.line(n) };
+            with (viz.stash) {
+                G.eachVertex(function(vtx){
+_(1);               u = vtx;
+_(2);               u.color = "white";
+                });
+                u = undefined;
+_(3);           viz.stash.time = 0;
+                G.eachVertex(function(vtx){
+_(4);               u = vtx;
+_(5);               if (u.color === "white") {
+_(6);                   visit({G:G, u:u});
+                    }
+                });
+                u = undefined;
             }
         },
 
-        visit: {
-            argNames: ["G", "u"],
-            localVarNames: ["v"],
-            procedure: function(viz) {
-                var _ = function(n){ viz.line(n) };
-                with (viz.stash) {
-_(1);               time++;
-_(2);               u.d = time;
-_(3);               u.color = "gray";
-                    G.eachNeighbor(u, function(vtx){
-_(4);                   v = vtx;
-_(5);                   if (v.color === "white") {
-_(6);                       visit({G:G, u:v});
-                        }
-                    });
-                    v = undefined;
-_(7);               u.color = "black";
-_(8);               time++;
-_(9);               u.f = time;
-                }
+        visit: function(viz) {
+            var _ = function(n){ viz.line(n) };
+            with (viz.stash) {
+_(1);           time++;
+_(2);           u.d = time;
+_(3);           u.color = "gray";
+                G.eachNeighbor(u, function(vtx){
+_(4);               v = vtx;
+_(5);               if (v.color === "white") {
+_(6);                   visit({G:G, u:v});
+                    }
+                });
+                v = undefined;
+_(7);           u.color = "black";
+_(8);           time++;
+_(9);           u.f = time;
             }
         },
     },

@@ -88,7 +88,11 @@ root.Vamonos =
         return unless obj?
         return obj if (typeof obj).match /number|string/
         return obj.clone() if obj.type is 'queue'
-        return obj._clone() if obj._type?.match /stash/
+        if obj._type is 'stash'
+            r = {}
+            r[k] = Vamonos.clone(v) for k,v of obj
+            return r
+
         return $.extend(true, [], obj) if obj instanceof Array
         return $.extend(true, {}, obj)
 

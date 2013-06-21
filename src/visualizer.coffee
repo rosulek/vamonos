@@ -7,8 +7,10 @@ class Visualizer
         @currentFrameNumber = 0
         @breakpoints        = {}
 
-        @stash = new Vamonos.DataStructure.Stash()
+        @inputVars = []
+        @watchVars = []
 
+        @prepareStash()
         @prepareAlgorithm(algorithm)
 
         @tellWidgets("setup", @)
@@ -37,7 +39,7 @@ class Visualizer
         if @takeSnapshot(n, @stash._context.proc)
             throw "too many frames" if @currentFrameNumber >= @maxFrames
 
-            newFrame              = Vamonos.clone(@stash)
+            newFrame              = @getFrame()
             newFrame._nextLine    = { n, context: @stash._context }
             newFrame._prevLine    = @prevLine
             newFrame._frameNumber = ++@currentFrameNumber
@@ -51,7 +53,7 @@ class Visualizer
 
     setVariable: (name, value, isInput = false) ->
         @stash[name] = value
-        Vamonos.insertSet(name, @stash._inputVars) if isInput
+        Vamonos.insertSet(name, @inputVars) if isInput
         return value # for chaining
 
     getVariable: (name) ->
@@ -70,24 +72,27 @@ class Visualizer
         @breakpoints[proc].splice(@breakpoints[proc].indexOf(b), 1)
 
     # ---------------- Internals ------------------- #
+    
+    parseVarName: (varname) ->
+        return varname unless varname.match(/::/)
+        return varname.split(/::/)
 
-    prepareAlgorithm: (algorithm) -> switch typeof algorithm
-        when 'function'
-            @stash._inputVars.push("main")
-            @stash._subroutine
-                name: "main"
-                procedure: algorithm
-                visualizer: @
+    prepareStash: () ->
+        @stash = {}
+        @stash._callStack = []
+        @stash._type      = 'stash'
+        @stash._context   = proc: "os", args: ""
 
-        when 'object'
-            for procedureName, obj of algorithm
-                @stash._inputVars.push(procedureName)
-                @stash._subroutine
-                    procedureName : procedureName
-                    argNames      : obj.argNames
-                    procedure     : obj.procedure
-                    localVarNames : obj.localVarNames
-                    visualizer    : @
+    initializeStash: () ->
+        @stash._context   = proc: "os", args: ""
+        @stash._callStack = []
+        for v of @stash
+            @stash[v] = undefined unless v.match(/^_/) or v in @inputVars
+
+    getFrame: () ->
+        r = {}
+        r[k] = Vamonos.clone(v) for k, v of @stash
+        return r
 
     takeSnapshot: (n, proc) ->
         return true if n is 0
@@ -108,6 +113,34 @@ class Visualizer
         for widget in @widgets
             widget.event(event, options...)
 
+    prepareAlgorithm: (algorithm) ->
+        if typeof algorithm is 'function'
+            algorithm = { "main": algorithm }
+        for procedureName, procedure of algorithm
+            @inputVars.push(procedureName)
+            @stash[procedureName] = @wrapProcedure(procedureName, procedure)
+
+    wrapProcedure: (procedureName, procedure) ->
+        return (args = {}) =>
+            save    = {}
+            save[k] = @stash[k] for k of args
+            @stash._callStack.push
+                varNames: (k for k, v of @stack when k[0] isnt "_")
+                _context: @stash._context
+            @stash[k] = v for k, v of args # bind arguments (come in as object {a: 1, b: 2})
+            if procedureName is "main"
+                for k in @inputVars
+                    continue if typeof @stash[k] is 'function'
+                    args[k] = k
+            @stash._context = { proc: procedureName, args: args } # set new context
+            ret = procedure(@) # call routine, save return value
+            oldStack = @stash._callStack.pop()
+            @stash[key] = val for key, val of save
+            # delete bindings that weren't here before
+            delete @stash[key] for key of @stash when not key in oldStack.varNames
+            @stash._context = oldStack._context
+            return ret
+
     runAlgorithm: ->
         return if @mode is "display"
 
@@ -116,7 +149,7 @@ class Visualizer
         @prevLine           = 0
         @numCallsToLine     = 0
 
-        @stash._initialize()
+        @initializeStash()
         @tellWidgets("editStop") if @mode is "edit"
 
         try
