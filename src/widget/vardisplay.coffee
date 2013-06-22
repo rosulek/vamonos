@@ -33,10 +33,10 @@ class VarDisplay
             @clear()
 
     varName: (str) ->
-        str.match(/^\w+/)?[0]
+        str.match(/^[\w:]+/)?[0]
 
     attributes: (str) ->
-        str.match(/^\w+\[([\w,]+)\]/)?[1].split(/\s*,\s*/)
+        str.match(/^[\w:]+\[([\w,]+)\]/)?[1].split(/\s*,\s*/)
 
     showVars: (frame, type) ->
         for variable in @watch

@@ -156,7 +156,7 @@ var myviz = new Vamonos.Visualizer({
     ],
 
     algorithm: function (viz) {
-        with (viz.stash) {
+        with (viz.namespace.main) {
             for (viz.line(1), i = 0; i < A.length-1; viz.line(1), i++) {
                 viz.line(2);
                 m = i;

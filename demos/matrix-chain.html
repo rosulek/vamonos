@@ -108,7 +108,7 @@ var myviz = new Vamonos.Visualizer({
         var _ = function(l) { viz.line(l); };
         var l;
 
-        with (viz.stash) {
+        with (viz.namespace.main) {
             opt = {};
             sol = {};
             for (var _i = 1; _i < dim.length; _i++) {

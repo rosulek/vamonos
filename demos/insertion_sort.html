@@ -57,7 +57,7 @@ var myviz = new Vamonos.Visualizer({
 
     algorithm: function (viz) {
        var _ = function(n){ viz.line(n) };
-       with (viz.stash) {
+       with (viz.namespace.main) {
 _(1);      for (j = 2; j < A.length; viz.line(1), j++) {
 _(2);          key = A[j];
 _(3);          i = j - 1;

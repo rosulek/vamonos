@@ -27,19 +27,19 @@ class CallStack
 
         @$container.html("")
 
-        return if frame._context.proc is "os"
+        return if frame._nextLine.context.proc is "global"
 
         $tbl = $("<table>", {class: "callstack"})
 
-        for c in frame._callStack when c.context.proc isnt "os"
+        for c in frame._callStack when c.context.proc isnt "global"
             continue if c.context.proc is "main" and @ignoreMain
             name = @procedureNames[c.context.proc] ? c.context.proc
             args = ("#{k}=#{Vamonos.rawToTxt(v)}" for k, v of c.context.args)
             $cell = @newCell(name, args)
             $tbl.append($cell)
 
-        name = @procedureNames[frame._context.proc] ? frame._context.proc
-        args = ("#{k}=#{Vamonos.rawToTxt(v)}" for k, v of frame._context.args)
+        name = @procedureNames[frame._nextLine.context.proc] ? frame._nextLine.context.proc
+        args = ("#{k}=#{Vamonos.rawToTxt(v)}" for k, v of frame._nextLine.context.args)
         $row = @newCell(name, args)
         $row.addClass("current")
 

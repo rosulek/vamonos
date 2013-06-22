@@ -137,7 +137,7 @@ var myviz = new Vamonos.Visualizer({
                         }
                     },
                 },
-                v: {
+                "visit::v": {
                     show: function($vtx){
                         $label = $vtx.children(".vertex-nw-label");
                         if ($label.html() == "u") {
@@ -238,6 +238,7 @@ var myviz = new Vamonos.Visualizer({
         main: function(viz) {
             var _ = function(n){ viz.line(n) };
             with (viz.namespace.main) {
+                global.time = 0;
                 G.eachVertex(function(vtx){
 _(1);               u = vtx;
 _(2);               u.color = "white";
@@ -268,7 +269,7 @@ _(6);                   global.visit({G:G, u:v});
                 });
                 v = undefined;
 _(7);           u.color = "black";
-_(8);           time++;
+_(8);           global.time++;
 _(9);           u.f = global.time;
             }
         },

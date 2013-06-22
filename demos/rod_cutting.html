@@ -68,7 +68,7 @@ var myviz = new Vamonos.Visualizer({
         })
     ],
     algorithm: function (viz) {
-        with (viz.stash) {
+        with (viz.namespace.main) {
             opt = [0]
             viz.line(1);
 

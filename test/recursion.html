@@ -65,18 +65,18 @@ var myviz = new Vamonos.Visualizer({
 
     algorithm: {
         main: function(viz) {
-            with (viz.stash) {
-                n = fact({n : n});
+            with (viz.namespace.main) {
+                n = global.fact({n : n});
             }
         },
         
         fact: function(viz) {
             var _ = function(n){ viz.line(n) };
-            with (viz.stash) {
+            with (viz.namespace.fact) {
 _(1);           if (n <= 2) { 
 _(2);               return n; 
                 }
-_(3);           n = n * fact({n : n-1});
+_(3);           n = n * global.fact({n : n-1});
 _(4);           return n;
             }
         }

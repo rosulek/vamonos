@@ -153,7 +153,7 @@ var myviz = new Vamonos.Visualizer({
 
     algorithm: function (viz) {
         var _ = function(n){ viz.line(n); }; 
-        with (viz.stash) {
+        with (viz.namespace.main) {
             s = G.vertices[0];
             G.eachVertex(function(vtx){
                 if (vtx.id === s.id) { return }

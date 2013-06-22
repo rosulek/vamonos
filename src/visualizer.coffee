@@ -11,7 +11,7 @@ class Visualizer
         @watchVars = {}
 
         @prepareStash()
-        @namespace = @stash._namespaces
+        @namespace = @stash.namespaces
         @prepareAlgorithm(algorithm)
 
         @tellWidgets("setup", @)
@@ -36,10 +36,10 @@ class Visualizer
         @namespace[ns][varName] ?= undefined
 
     setVariable: (name, value, isInput = false) ->
-        [ns, varName] = @parseVarName(name)
+        [ns, varName] = @parseVarName(name, isInput)
         @ensureNamespace(ns)
         @namespace[ns][varName] = value
-        Vamonos.insertSet(name, @inputVars[ns]) if isInput
+        Vamonos.insertSet(varName, @inputVars[ns]) if isInput
         return value # for chaining
 
     getVariable: (name) ->
@@ -61,62 +61,72 @@ class Visualizer
 
     # ---------------- stash related methods ---------------- #
 
+    parseVarName: (varname, isInput = false) ->
+        defaultScope = if isInput then "global" else "main"
+        return [defaultScope, varname] unless varname.match(/::/)
+        return varname.split(/::/)
+
     ensureNamespace: (ns) ->
-        @inputVars[ns]         ?= []
-        @watchVars[ns]         ?= []
-        @stash._namespaces[ns] ?= 
-            global: if ns is 'global' then {} else @stash._namespaces.global 
+        @inputVars[ns]        ?= []
+        @watchVars[ns]        ?= []
+        @stash.namespaces[ns] ?= { global: @stash.namespaces.global }
 
     prepareStash: () ->
         @stash             = {}
-        @stash._callStack  = []
-        @stash._type       = 'stash'
-        @stash._context    = proc: "os", args: ""
-        @stash._namespaces = {}
-        @ensureNamespace("global")
+        @stash.callStack  = []
+        @stash.type       = 'stash'
+        @stash.context    = { proc: "global", args: "" }
+        @stash.namespaces = { global: {} }
+        @inputVars.global ?= []
+        @watchVars.global ?= []
 
     initializeStash: () ->
-        @stash._context   = proc: "os", args: ""
-        @stash._callStack = []
-        for ns of @stash._namespaces
-            for v of ns when not v.match(/^_/) and not v in @inputVars[ns]
-                    @stash._namespaces[v] = undefined 
+        @stash.context   = { proc: "global", args: "" }
+        @stash.callStack = []
+        for nsname, nsobj of @stash.namespaces
+            for name, val of nsobj when not name in @inputVars[nsname]
+                nsobj[name] = undefined unless name is 'global'
 
     getFrame: () ->
-        r = {}
-        r[k] = Vamonos.clone(v) for k, v of @stash
+        r = {
+            _callStack: Vamonos.clone(@stash.callStack)
+            _type     : 'frame'
+        }
+        for proc, ns of @stash.namespaces
+            for k, v of ns
+                continue if typeof v is 'function' or k is 'global'
+                r["#{proc}::#{k}"] = Vamonos.clone(v)
+            if proc is @stash.context.proc
+                continue if typeof v is 'function' or k is 'global'
+                r[k] = Vamonos.clone(v) for k, v of ns
         return r
-
-    parseVarName: (varname) ->
-        return ["global", varname] unless varname.match(/::/)
-        return varname.split(/::/)
 
     # --------------- algorithm related methods -------------- #
 
     line: (n) ->
         # if context changed since last call of line(), tell the stash's
         # call stack what the last line was.
-        if @prevLine? and @stash._context isnt @prevLine.context and @stash._callStack.length > 0
-            calls = (s for s in @stash._callStack when s.context is @prevLine.context)
+        if @prevLine? and @stash.context isnt @prevLine.context and @stash.callStack.length > 0
+            calls = (s for s in @stash.callStack when s.context is @prevLine.context)
             s.line = @prevLine.n for s in calls when not s.line?
 
-        if @takeSnapshot(n, @stash._context.proc)
+        if @takeSnapshot(n, @stash.context.proc)
             throw "too many frames" if @currentFrameNumber >= @maxFrames
 
             newFrame              = @getFrame()
-            newFrame._nextLine    = { n, context: @stash._context }
+            newFrame._nextLine    = { n, context: @stash.context }
             newFrame._prevLine    = @prevLine
             newFrame._frameNumber = ++@currentFrameNumber
             @frames.push(newFrame)
         
-        @prevLine = { n, context: @stash._context }
+        @prevLine = { n, context: @stash.context }
         throw "too many lines" if ++@numCallsToLine > 10000
 
 
     takeSnapshot: (n, proc) ->
         return true if n is 0
         return n in @breakpoints[proc] if @breakpoints[proc]?.length > 0
-        return @diff(@frames[@frames.length-1], @stash, @stash._watchVars) if @stash._watchVars?
+        return @diff(@frames[@frames.length-1], @stash, @watchVars) if @watchVars.length > 0
         return false
         
     # this is somewhat hacky, comparing stringifications
@@ -132,8 +142,12 @@ class Visualizer
         if typeof algorithm is 'function'
             algorithm = { "main": algorithm }
         for procName, procedure of algorithm
-            @ensureNamespace(procedureName)
-            @setVariable(procName, @wrapProcedure(procName, procedure), true)
+            @ensureNamespace(procName)
+            @setVariable(
+                "global::#{procName}",
+                @wrapProcedure(procName, procedure),
+                true
+            )
 
     wrapProcedure: (procName, procedure) ->
         return (args = {}) =>
@@ -147,19 +161,19 @@ class Visualizer
             save    = {}
             save[k] = @getVariable("#{procName}::#{k}") for k of args
 
-            @stash._callStack.push
-                context : @stash._context
+            @stash.callStack.push
+                context : @stash.context
 
             @setVariable("#{procName}::#{k}", v) for k, v of args
 
-            @stash._context = { proc: procName, args: args }
+            @stash.context = { proc: procName, args: args }
 
             ret = procedure(@) # call routine, save return value
 
-            @stash[key] = val for key, val of save
+            @setVariable("#{procName}::#{k}", v) for k, v of save
 
-            restore = @stash._callStack.pop()
-            @stash._context = restore.context
+            restore = @stash.callStack.pop()
+            @stash.context = restore.context
 
             return ret
 
