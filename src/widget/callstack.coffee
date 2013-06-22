@@ -31,10 +31,10 @@ class CallStack
 
         $tbl = $("<table>", {class: "callstack"})
 
-        for c in frame._callStack when c.context.proc isnt "global"
-            continue if c.context.proc is "main" and @ignoreMain
-            name = @procedureNames[c.context.proc] ? c.context.proc
-            args = ("#{k}=#{Vamonos.rawToTxt(v)}" for k, v of c.context.args)
+        for context in frame._callStack when context.proc isnt "global"
+            continue if context.proc is "main" and @ignoreMain
+            name = @procedureNames[context.proc] ? context.proc
+            args = ("#{k}=#{Vamonos.rawToTxt(v)}" for k, v of context.args)
             $cell = @newCell(name, args)
             $tbl.append($cell)
 

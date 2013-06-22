@@ -73,10 +73,10 @@ class Visualizer
 
     prepareStash: () ->
         @stash             = {}
-        @stash.callStack  = []
-        @stash.type       = 'stash'
-        @stash.context    = { proc: "global", args: "" }
-        @stash.namespaces = { global: {} }
+        @stash.callStack   = []
+        @stash.type        = 'stash'
+        @stash.context     = { proc: "global", args: "" }
+        @stash.namespaces  = { global: {} }
         @inputVars.global ?= []
         @watchVars.global ?= []
 
@@ -90,15 +90,13 @@ class Visualizer
     getFrame: () ->
         r = {
             _callStack: Vamonos.clone(@stash.callStack)
-            _type     : 'frame'
         }
         for proc, ns of @stash.namespaces
             for k, v of ns
                 continue if typeof v is 'function' or k is 'global'
-                r["#{proc}::#{k}"] = Vamonos.clone(v)
-            if proc is @stash.context.proc
-                continue if typeof v is 'function' or k is 'global'
-                r[k] = Vamonos.clone(v) for k, v of ns
+                cloned = Vamonos.clone(v)
+                r["#{proc}::#{k}"] = cloned
+                r[k] = cloned if proc is @stash.context.proc
         return r
 
     # --------------- algorithm related methods -------------- #
@@ -121,7 +119,6 @@ class Visualizer
         
         @prevLine = { n, context: @stash.context }
         throw "too many lines" if ++@numCallsToLine > 10000
-
 
     takeSnapshot: (n, proc) ->
         return true if n is 0
@@ -160,20 +157,15 @@ class Visualizer
 
             save    = {}
             save[k] = @getVariable("#{procName}::#{k}") for k of args
-
-            @stash.callStack.push
-                context : @stash.context
-
-            @setVariable("#{procName}::#{k}", v) for k, v of args
+            @stash.callStack.push(@stash.context)
 
             @stash.context = { proc: procName, args: args }
+            @setVariable("#{procName}::#{k}", v) for k, v of args
 
-            ret = procedure(@) # call routine, save return value
+            ret = procedure(@)
 
             @setVariable("#{procName}::#{k}", v) for k, v of save
-
-            restore = @stash.callStack.pop()
-            @stash.context = restore.context
+            @stash.context = @stash.callStack.pop()
 
             return ret
 

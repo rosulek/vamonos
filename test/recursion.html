@@ -51,7 +51,7 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.VarDisplay({
             container: "vars",
-            watch: ["n"],
+            watch: ["n", "main::result"],
         }),
 
         new Vamonos.Widget.CallStack({
@@ -66,7 +66,7 @@ var myviz = new Vamonos.Visualizer({
     algorithm: {
         main: function(viz) {
             with (viz.namespace.main) {
-                n = global.fact({n : n});
+                result = global.fact({n : n});
             }
         },
         
