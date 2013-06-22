@@ -131,13 +131,9 @@ class Visualizer
     prepareAlgorithm: (algorithm) ->
         if typeof algorithm is 'function'
             algorithm = { "main": algorithm }
-        for procedureName, procedure of algorithm
+        for procName, procedure of algorithm
             @ensureNamespace(procedureName)
-            @setVariable(
-                "global::#{procedureName}",
-                @wrapProcedure(procedureName, procedure),
-                true
-            )
+            @setVariable(procName, @wrapProcedure(procName, procedure), true)
 
     wrapProcedure: (procName, procedure) ->
         return (args = {}) =>
