@@ -30,8 +30,8 @@ class Visualizer
         when "prevFrame"    then @prevFrame()
         when "jumpFrame"    then @jumpFrame(options...)
 
-    registerVariable: (name) ->
-        [ns, varName] = @parseVarName(name)
+    registerVariable: (name, isInput = false) ->
+        [ns, varName] = @parseVarName(name, isInput)
         @ensureNamespace(ns)
         @namespace[ns][varName] ?= undefined
 
@@ -42,8 +42,8 @@ class Visualizer
         Vamonos.insertSet(varName, @inputVars[ns]) if isInput
         return value # for chaining
 
-    getVariable: (name) ->
-        [ns, varName] = @parseVarName(name)
+    getVariable: (name, isInput = false) ->
+        [ns, varName] = @parseVarName(name, isInput)
         @ensureNamespace(ns)
         return @namespace[ns][varName]
 

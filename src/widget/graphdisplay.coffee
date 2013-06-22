@@ -1,4 +1,4 @@
-class Graph
+class GraphDisplay
 
     constructor: ({container, @varName, @defaultGraph, @vertexSetupFunc,
         @vertexUpdateFunc, @showVertices, @showEdges}) ->
@@ -6,8 +6,6 @@ class Graph
         @$outer = Vamonos.jqueryify(container)
         @$inner = $("<div>", {class: "graph-inner-container"})
         @$outer.append(@$inner)
-        @edges    ?= []
-        @vertices ?= []
 
         @jsPlumbInit()
 
@@ -19,61 +17,20 @@ class Graph
             @viz.registerVariable(key) for key of @showVertices
             for e of @showEdges
                 @viz.registerVariable(v) for v in e.split(/<?->?/)
-            if @defaultGraph?
-                @viz.setVariable(@varName, Vamonos.clone(@defaultGraph), true)
-                @theGraph = Vamonos.clone(@defaultGraph)
+            @viz.registerVariable(@varName)
 
         when "render"
             [frame, type] = options
-
             if @graphDrawn
                 $elem.removeClass("changed") for $elem in @vertices.concat(@edges)
             else
                 @drawGraph(frame[@varName])
-
             @updateVertex(v) for v in frame[@varName].vertices
             @runShowFuncs(frame)
             @previousFrame = frame
 
-        when "displayStart"
-            @displayMode()
-
         when "displayStop"
-            true
-
-        when "editStart"
-            @editMode()
-            true
-
-        when "editStop"
-            true
-
-    displayMode: () ->
-        @mode = "display"
-        @$outer.off "click"
-
-    editMode: () ->
-        @mode = "edit"
-        @drawGraph(@theGraph)
-        @$outer.on "click", (e) =>
-            console.log e
-            $target = $(e.target)
-            if $target.is(".vertex-contents")
-                vid = $target.parent().attr("id")
-                vtx = @theGraph.vertex(vid)
-                @removeVertex(vtx)
-            else
-                vtx = 
-                    id: @nextVertexId()
-                    x: e.offsetX - 12
-                    y: e.offsetY - 12
-                @theGraph.vertices.push(vtx)
-                @makeVertex(vtx)
-
-
-    nextVertexId: () ->
-        @_customVertexNum ?= 0
-        return "custom-vertex-#{@_customVertexNum}"
+            @clear()
 
     runShowFuncs: (frame) ->
         @runShowVertices(frame)
@@ -120,6 +77,7 @@ class Graph
         @edges.filter (e) ->
             e.sourceId == edge.source.id and e.targetId == edge.target.id
 
+
     vertexSelector: (vertex) ->
         return unless @graphDrawn
         @vertices.filter((v) -> v.attr("id") is vertex.id)[0]
@@ -140,23 +98,6 @@ class Graph
         $v = @vertexSelector(vertex)
         @vertexUpdateFunc(vertex, $v) if @vertexUpdateFunc?
         $v.addClass("changed") if @vertexChanged(vertex)
-
-    removeVertex: (vtx) ->
-        @theGraph.removeVertex(vtx.id)
-        $vtx = @vertexSelector(vtx)
-        affectedEdges = @edges.filter (e) ->
-            e.sourceId is vtx.id or e.targetId is vtx.id
-        for edge in affectedEdges
-            @removeEdge(edge)
-        @vertices.splice(@vertices.indexOf($vtx), 1)
-        $vtx.remove()
-
-    removeEdge: (edge) ->
-        @theGraph.removeEdge
-            source: edge.sourceId
-            target: edge.targetId
-        @jsPlumbInstance.detach(edge) 
-        @edges.splice(@edges.indexOf(edge), 1)
 
     # JsPlumb stuff #
 
@@ -196,18 +137,17 @@ class Graph
         #@jsPlumbInstance.draggable($v, {containment: "parent"})
         #@jsPlumbInstance.setDraggable($v, false)
         
-        @vertices.push($v)
+        return $v
 
     makeEdge: (edge) ->
-        @edges.push(
-            @jsPlumbInstance.connect
-                source: edge.source.id
-                target: edge.target.id
-        )
+        @jsPlumbInstance.connect
+            source: edge.source.id
+            target: edge.target.id
 
     drawGraph: (G) ->
-        @makeVertex(v) for v in G.vertices
-        @makeEdge(e)   for e in G.edges
+        @vertices = (@makeVertex(v) for v in G.vertices)
+        @edges    = (@makeEdge(e)   for e in G.edges)
+
         @graphDrawn = yes
 
     clear: () ->
@@ -218,4 +158,4 @@ class Graph
         @vertices = []
         @previousFrame = undefined
 
-Vamonos.export { Widget: { Graph } }
+Vamonos.export { Widget: { GraphDisplay } }

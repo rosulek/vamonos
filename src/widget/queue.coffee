@@ -14,7 +14,8 @@ class Queue
             newFrame = Vamonos.clone(frame)
             newFrame[@varName] = frame[@varName]?.guts
             @arrayWidget.event("render", newFrame, type)
-        else
+
+        when "displayStart"
             @arrayWidget.event(event, options...)
 
 Vamonos.export { Widget: { Queue } }
