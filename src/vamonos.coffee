@@ -20,10 +20,10 @@ root.Vamonos =
         return "" unless raw?
         return "\u221E"       if raw is Infinity
         return "-\u221E"      if raw is -Infinity
-        return raw.name       if typeof raw is 'object' and raw._type is 'vertex'
-        return raw.id         if typeof raw is 'object' and raw._type is 'edge'
-        return "G"            if typeof raw is 'object' and raw._type is 'graph'
-        return raw.toString() if typeof raw is 'object' and raw._type is 'queue'
+        return raw.name       if typeof raw is 'object' and raw.type is 'vertex'
+        return raw.id         if typeof raw is 'object' and raw.type is 'edge'
+        return "G"            if typeof raw is 'object' and raw.type is 'graph'
+        return raw.toString() if typeof raw is 'object' and raw.type is 'queue'
         return "" + raw        
 
     txtValid: (txt) -> @txtToRaw(txt)?
@@ -88,7 +88,7 @@ root.Vamonos =
         return unless obj?
         return obj if (typeof obj).match /number|string/
         return obj.clone() if obj.type is 'queue'
-        if obj._type is 'stash'
+        if obj.type is 'stash'
             r = {}
             r[k] = Vamonos.clone(v) for k,v of obj
             return r

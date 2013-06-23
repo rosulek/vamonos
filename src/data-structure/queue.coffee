@@ -2,7 +2,7 @@ class Queue
 
     constructor: (elems = []) ->
         @initialize(elems)
-        @_type = 'queue'
+        @type = 'queue'
 
     initialize: (elems = []) ->
         @guts = elems

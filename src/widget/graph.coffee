@@ -6,28 +6,28 @@ class Graph
         @$outer = Vamonos.jqueryify(container)
         @$inner = $("<div>", {class: "graph-inner-container"})
         @$outer.append(@$inner)
-        @edges    ?= []
-        @vertices ?= []
+
+        @connections ?= []
+        @nodes ?= []
 
         @jsPlumbInit()
-
         
     event: (event, options...) -> switch event
-
         when "setup"
             [@viz] = options
             @viz.registerVariable(key) for key of @showVertices
             for e of @showEdges
                 @viz.registerVariable(v) for v in e.split(/<?->?/)
             if @defaultGraph?
-                @viz.setVariable(@varName, Vamonos.clone(@defaultGraph), true)
-                @theGraph = Vamonos.clone(@defaultGraph)
+                @theGraph = @viz.setVariable(@varName, Vamonos.clone(@defaultGraph), true)
+            else
+                @theGraph = new Vamonos.DataStructure.Graph()
 
         when "render"
             [frame, type] = options
 
             if @graphDrawn
-                $elem.removeClass("changed") for $elem in @vertices.concat(@edges)
+                $elem.removeClass("changed") for $elem in @nodes.concat(@connections)
             else
                 @drawGraph(frame[@varName])
 
@@ -39,37 +39,74 @@ class Graph
             @displayMode()
 
         when "displayStop"
-            true
+            @clear()
 
         when "editStart"
             @editMode()
-            true
 
         when "editStop"
-            true
+            @$outer.off "click"
+            @viz.setVariable(@varName, Vamonos.clone(@theGraph), true)
+            @clear()
+
 
     displayMode: () ->
         @mode = "display"
-        @$outer.off "click"
 
     editMode: () ->
         @mode = "edit"
         @drawGraph(@theGraph)
         @$outer.on "click", (e) =>
-            console.log e
+            console.log "click handler", @theGraph
             $target = $(e.target)
-            if $target.is(".vertex-contents")
-                vid = $target.parent().attr("id")
-                vtx = @theGraph.vertex(vid)
-                @removeVertex(vtx)
-            else
-                vtx = 
-                    id: @nextVertexId()
-                    x: e.offsetX - 12
-                    y: e.offsetY - 12
-                @theGraph.vertices.push(vtx)
-                @makeVertex(vtx)
+            # Create and destroy vertices with shfit
+            if e.shiftKey
+                if $target.is(".vertex-contents")
+                    vid = $target.parent().attr("id")
+                    @removeNode(vid)
+                else
+                    vtx = 
+                        id: @nextVertexId()
+                        x: e.offsetX - 12
+                        y: e.offsetY - 12
+                    @theGraph.addVertex(vtx)
+                    @makeVertex(vtx)
 
+            # Select vertices and create and destroy edges with regular click
+            else
+                if not @selectedVertex?
+                    if $target.is(".vertex-contents")
+                        @selectedVertex = $target.parent()
+                        @selectedVertex.addClass("selected")
+                else
+                    if $target.is(".vertex-contents")
+                        if $target.parent().attr("id") is @selectedVertex.attr("id")
+                            @deselect()
+                            return
+
+                        sourceId = @selectedVertex.attr("id")
+                        targetId = $target.parent().attr("id")
+
+                        if @theGraph.edge(sourceId, targetId)
+                            # delete an edge
+                            @theGraph.removeEdge(sourceId, targetId)
+                            @removeConnection(sourceId, targetId)
+                            @removeConnection(targetId, sourceId) unless @theGraph.directed
+                            @deselect()
+                
+                        else
+                            # make a new edge
+                            @theGraph.addEdge(sourceId, targetId)
+                            @makeConnection(sourceId, targetId)
+                            @makeConnection(targetId, sourceId) unless @theGraph.directed
+                            @deselect()
+                    else
+                        @deselect()
+
+    deselect: () ->
+        return unless @selectedVertex?
+        @selectedVertex.removeClass("selected")
+        @selectedVertex = undefined
 
     nextVertexId: () ->
         @_customVertexNum ?= 0
@@ -104,7 +141,7 @@ class Graph
                     e.source?.id == frame[source]?.id and e.target?.id == frame[target]?.id
 
                 unless frame[@varName].directed
-                    edges = edges.concat(@reversedEdges(edges))
+                    edges = edges.concat(@reverseEdge(e) for e in edges)
 
                 return unless edges.length > 0
 
@@ -113,16 +150,21 @@ class Graph
                         show(connection)
                         @shownConnections.push(connection)
 
-    reversedEdges: (edges) ->
-        {source: target, target: source} for {source, target} in edges
+    reverseEdge: (edge) ->
+        source: edge.target
+        target: edge.source
 
     getConnections: (edge) ->
-        @edges.filter (e) ->
+        @connections.filter (e) ->
             e.sourceId == edge.source.id and e.targetId == edge.target.id
 
-    vertexSelector: (vertex) ->
+    getConnection: (sourceId, targetId) ->
+        (e for e in @connections when e.sourceId is sourceId and e.targetId is targetId)[0]
+
+    vertexSelector: (v) ->
         return unless @graphDrawn
-        @vertices.filter((v) -> v.attr("id") is vertex.id)[0]
+        v = @theGraph.vertex(v) if typeof v is 'string'
+        @nodes.filter(($vtx) -> $vtx.attr("id") is v.id)[0]
 
     vertexChanged: (newv) ->
         return true unless @previousFrame?
@@ -141,24 +183,20 @@ class Graph
         @vertexUpdateFunc(vertex, $v) if @vertexUpdateFunc?
         $v.addClass("changed") if @vertexChanged(vertex)
 
-    removeVertex: (vtx) ->
-        @theGraph.removeVertex(vtx.id)
-        $vtx = @vertexSelector(vtx)
-        affectedEdges = @edges.filter (e) ->
-            e.sourceId is vtx.id or e.targetId is vtx.id
+    removeNode: (vid) ->
+        $vtx = @vertexSelector(vid)
+        affectedEdges = @connections.filter (e) ->
+            e.sourceId is vid or e.targetId is vid
         for edge in affectedEdges
-            @removeEdge(edge)
-        @vertices.splice(@vertices.indexOf($vtx), 1)
+            @removeConnection(edge)
+        @nodes.splice(@nodes.indexOf($vtx), 1)
         $vtx.remove()
+        @theGraph.removeVertex(vid)
 
-    removeEdge: (edge) ->
-        @theGraph.removeEdge
-            source: edge.sourceId
-            target: edge.targetId
-        @jsPlumbInstance.detach(edge) 
-        @edges.splice(@edges.indexOf(edge), 1)
-
-    # JsPlumb stuff #
+    removeConnection: (sourceId, targetId) ->
+        connection = @getConnection(sourceId, targetId)
+        @jsPlumbInstance.detach(connection) 
+        @connections.splice(@connections.indexOf(connection), 1)
 
     jsPlumbInit: () -> 
         @jsPlumbInstance = jsPlumb.getInstance 
@@ -173,7 +211,7 @@ class Graph
             ]
             Anchor: [ "Perimeter", { shape: "Circle" } ]
 
-    makeVertex: (vertex) ->
+    makeNode: (vertex) ->
         $v = $("<div>", {class: 'vertex', id: vertex.id})
         $v.attr('id', vertex.id)
         $contents = $("<div>", class: "vertex-contents")
@@ -191,31 +229,23 @@ class Graph
         $v.css("position", "absolute")
 
         @$inner.append($v)
+        @nodes.push($v)
 
-        #TODO: draggable stuff requires jquery ui functionality
-        #@jsPlumbInstance.draggable($v, {containment: "parent"})
-        #@jsPlumbInstance.setDraggable($v, false)
-        
-        @vertices.push($v)
-
-    makeEdge: (edge) ->
-        @edges.push(
-            @jsPlumbInstance.connect
-                source: edge.source.id
-                target: edge.target.id
-        )
+    makeConnection: (sourceId, targetId) ->
+        connection = @jsPlumbInstance.connect({ source: sourceId, target: targetId })
+        @connections.push(connection)
 
     drawGraph: (G) ->
-        @makeVertex(v) for v in G.vertices
-        @makeEdge(e)   for e in G.edges
+        @makeNode(v) for v in G.vertices
+        @makeConnection(e.source.id, e.target.id) for e in G.edges
         @graphDrawn = yes
 
     clear: () ->
         @jsPlumbInit()
         @$inner.html("")
         @graphDrawn = no
-        @edges = []
-        @vertices = []
+        @connections = []
+        @nodes = []
         @previousFrame = undefined
 
 Vamonos.export { Widget: { Graph } }
