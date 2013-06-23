@@ -108,7 +108,7 @@ class Graph
 
     nextVertexId: () ->
         @_customVertexNum ?= 0
-        return "custom-vertex-#{@_customVertexNum}"
+        return "custom-vertex-#{@_customVertexNum++}"
 
     runShowFuncs: (frame) ->
         @runShowVertices(frame)

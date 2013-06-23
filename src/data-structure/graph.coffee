@@ -1,17 +1,18 @@
 class Graph
-    constructor: ({vertices, edges, @directed}) ->
+    constructor: (args = {}) ->
         
-        @vertices  = []
-        @type      = 'graph'
-        @directed ?= yes
-        @adjHash   = {}
-        @edges     = []
+        @directed = args.directed ? yes
 
-        for v in Vamonos.arrayify(vertices)
-            @addVertex(v)
+        @type     = 'graph'
+        @adjHash  = {}
+        @edges    = []
+        @vertices = []
 
-        for e in Vamonos.arrayify(edges)
-            @addEdge(e.source, e.target)
+        for v in Vamonos.arrayify(args.vertices)
+            @addVertex(v) if v?
+
+        for e in Vamonos.arrayify(args.edges)
+            @addEdge(e.source, e.target) if e?
 
     # ---------- edge functions ----------- #
 
