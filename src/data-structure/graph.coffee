@@ -1,16 +1,17 @@
 class Graph
     constructor: ({vertices, edges, @directed}) ->
         
-        @vertices  = Vamonos.arrayify(vertices)
+        @vertices  = []
         @type      = 'graph'
         @directed ?= yes
         @adjHash   = {}
         @edges     = []
 
+        for v in Vamonos.arrayify(vertices)
+            @addVertex(v)
+
         for e in Vamonos.arrayify(edges)
             @addEdge(e.source, e.target)
-
-        v.type = 'vertex' for v in @vertices
 
     # ---------- edge functions ----------- #
 
@@ -35,9 +36,7 @@ class Graph
     removeEdge: (sourceId, targetId) ->
         edge = @edge(sourceId, targetId)
         return unless edge?
-        console.log "removeEdge: sourceId=#{sourceId} targetId=#{targetId}"
         index = @edges.indexOf(edge)
-        console.log "index: #{index}"
         @edges.splice(@edges.indexOf(edge), 1)
         @adjHash[sourceId][targetId] = undefined
         @removeEdge(targetId, sourceId) unless @directed 
@@ -49,19 +48,28 @@ class Graph
         @vertices.filter(({id}) -> id is id_str)[0]
 
     addVertex: (vtx) ->
-        vtx.type = 'vertex'
+        vtx.type  = 'vertex'
+        vtx.name ?= @nextVertexName()
         @vertices.push(vtx)
 
     removeVertex: (vid) ->
         vtx = @vertex(vid)
         return unless vtx?
+        @returnVertexName(vtx.name)
         affectedEdges = @edges.filter (e) ->
             e.source.id is vid or e.target.id is vid
-        @removeEdge(e) for e in affectedEdges
+        @removeEdge(e.source.id, e.target.id) for e in affectedEdges
         @vertices.splice(@vertices.indexOf(vtx), 1)
 
     eachVertex: (f) ->
-        f(v) for v in @vertices
+        f(v) for v in @vertices when v?
+
+    returnVertexName: (n) ->
+        @availableNames.unshift(n)
+
+    nextVertexName: () ->
+        @availableNames ?= "abcdefghijklmnopqrstuvwxyz".split("")
+        return @availableNames.shift()
 
     # ----------- edge and vertex functions ---------- #
 
@@ -70,7 +78,7 @@ class Graph
         @vertex(target) for target, edge of @adjHash[v]
 
     eachNeighbor: (v, f) ->
-        f(neighbor) for neighbor in @neighbors(v)
+        f(neighbor) for neighbor in @neighbors(v) when neighbor?
 
     outgoingEdges: (v) ->
         v = @_idify(v)

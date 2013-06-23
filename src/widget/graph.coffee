@@ -56,11 +56,10 @@ class Graph
     editMode: () ->
         @mode = "edit"
         @drawGraph(@theGraph)
-        @$outer.on "click", (e) =>
-            console.log "click handler", @theGraph
+        @$outer.on("click", (e) =>
             $target = $(e.target)
             # Create and destroy vertices with shfit
-            if e.shiftKey
+            if e.ctrlKey
                 if $target.is(".vertex-contents")
                     vid = $target.parent().attr("id")
                     @removeNode(vid)
@@ -70,7 +69,7 @@ class Graph
                         x: e.offsetX - 12
                         y: e.offsetY - 12
                     @theGraph.addVertex(vtx)
-                    @makeVertex(vtx)
+                    @addNode(vtx)
 
             # Select vertices and create and destroy edges with regular click
             else
@@ -78,11 +77,10 @@ class Graph
                     if $target.is(".vertex-contents")
                         @selectedVertex = $target.parent()
                         @selectedVertex.addClass("selected")
+                        return
                 else
                     if $target.is(".vertex-contents")
-                        if $target.parent().attr("id") is @selectedVertex.attr("id")
-                            @deselect()
-                            return
+                        return @deselect() if $target.parent().attr("id") is @selectedVertex.attr("id")
 
                         sourceId = @selectedVertex.attr("id")
                         targetId = $target.parent().attr("id")
@@ -92,16 +90,16 @@ class Graph
                             @theGraph.removeEdge(sourceId, targetId)
                             @removeConnection(sourceId, targetId)
                             @removeConnection(targetId, sourceId) unless @theGraph.directed
-                            @deselect()
                 
                         else
                             # make a new edge
                             @theGraph.addEdge(sourceId, targetId)
-                            @makeConnection(sourceId, targetId)
-                            @makeConnection(targetId, sourceId) unless @theGraph.directed
-                            @deselect()
-                    else
-                        @deselect()
+                            @addConnection(sourceId, targetId)
+                            @addConnection(targetId, sourceId) unless @theGraph.directed
+
+            # deselect automatically unless we returned earlier
+            @deselect()
+        ) # end callback
 
     deselect: () ->
         return unless @selectedVertex?
@@ -183,21 +181,6 @@ class Graph
         @vertexUpdateFunc(vertex, $v) if @vertexUpdateFunc?
         $v.addClass("changed") if @vertexChanged(vertex)
 
-    removeNode: (vid) ->
-        $vtx = @vertexSelector(vid)
-        affectedEdges = @connections.filter (e) ->
-            e.sourceId is vid or e.targetId is vid
-        for edge in affectedEdges
-            @removeConnection(edge)
-        @nodes.splice(@nodes.indexOf($vtx), 1)
-        $vtx.remove()
-        @theGraph.removeVertex(vid)
-
-    removeConnection: (sourceId, targetId) ->
-        connection = @getConnection(sourceId, targetId)
-        @jsPlumbInstance.detach(connection) 
-        @connections.splice(@connections.indexOf(connection), 1)
-
     jsPlumbInit: () -> 
         @jsPlumbInstance = jsPlumb.getInstance 
             Connector: ["Straight", {gap: 6}]
@@ -211,7 +194,7 @@ class Graph
             ]
             Anchor: [ "Perimeter", { shape: "Circle" } ]
 
-    makeNode: (vertex) ->
+    addNode: (vertex) ->
         $v = $("<div>", {class: 'vertex', id: vertex.id})
         $v.attr('id', vertex.id)
         $contents = $("<div>", class: "vertex-contents")
@@ -231,13 +214,29 @@ class Graph
         @$inner.append($v)
         @nodes.push($v)
 
-    makeConnection: (sourceId, targetId) ->
+    removeNode: (vid) ->
+        $vtx = @vertexSelector(vid)
+        out = @theGraph.outgoingEdges(vid)
+        ins = @theGraph.incomingEdges(vid)
+        for edge in ins.concat(out)
+            @removeConnection(edge.source.id, edge.target.id)
+        @nodes.splice(@nodes.indexOf($vtx), 1)
+        $vtx.remove()
+        @theGraph.removeVertex(vid)
+
+    addConnection: (sourceId, targetId) ->
         connection = @jsPlumbInstance.connect({ source: sourceId, target: targetId })
         @connections.push(connection)
 
+    removeConnection: (sourceId, targetId) ->
+        connection = @getConnection(sourceId, targetId)
+        return unless connection?
+        @jsPlumbInstance.detach(connection) 
+        @connections.splice(@connections.indexOf(connection), 1)
+
     drawGraph: (G) ->
-        @makeNode(v) for v in G.vertices
-        @makeConnection(e.source.id, e.target.id) for e in G.edges
+        @addNode(v) for v in G.vertices
+        @addConnection(e.source.id, e.target.id) for e in G.edges
         @graphDrawn = yes
 
     clear: () ->
