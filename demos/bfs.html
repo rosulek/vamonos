@@ -68,7 +68,7 @@
         <br>
         <div id="controls"></div>
         </td><td valign='top' align='left'>
-            <div class="container" id="graph" style="width:200; height:160;"></div>
+            <div class="container" id="graph" style="width:220; height:180;"></div>
             <div class="no-indices" id="queue"></div><br>
         </td></tr></table>
     </div>
@@ -81,7 +81,9 @@ var myviz = new Vamonos.Visualizer({
         new Vamonos.Widget.Graph({
             varName: "G",
             container: "graph",
-            inputVars: ["s"],
+            inputVars: {
+                s: "v0"
+            },
             showVertices: {
                 u: {
                     show: function($vtx){
@@ -165,6 +167,31 @@ var myviz = new Vamonos.Visualizer({
                 }
                 $vtx.find(".vertex-contents").text(v.name)
             },
+            defaultGraph: new Vamonos.DataStructure.Graph({
+                directed: false,
+                vertices: [ 
+                    {id: "v0", x: 15,  y: 10},
+                    {id: "v1", x: 100, y: 10},
+                    {id: "v2", x: 180, y: 10},
+                    {id: "v3", x: 15,  y: 80},
+                    {id: "v4", x: 100, y: 80},
+                    {id: "v5", x: 180, y: 80},
+                    {id: "v6", x: 15,  y: 140},
+                    {id: "v7", x: 100, y: 140},
+                    {id: "v8", x: 180, y: 140},
+                ],
+                edges: [
+                    {source: 'v0',target: 'v4'},
+                    {source: 'v1',target: 'v2'},
+                    {source: 'v1',target: 'v4'},
+                    {source: 'v3',target: 'v4'},
+                    {source: 'v3',target: 'v6'},
+                    {source: 'v4',target: 'v8'},
+                    {source: 'v5',target: 'v8'},
+                    {source: 'v6',target: 'v7'},
+                    {source: 'v7',target: 'v8'},
+                ]
+            })
         }),
 
         new Vamonos.Widget.Controls({
@@ -180,8 +207,7 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode",
-            setAllBreakpoints: false,
-            breakpoints: [5,6,7,8,9,10,11,12],
+            setAllBreakpoints: true,
         }),
     ],
 

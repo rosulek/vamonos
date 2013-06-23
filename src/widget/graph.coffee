@@ -3,9 +3,10 @@ class Graph
     constructor: ({container, @varName, @defaultGraph, @vertexSetupFunc,
         @vertexUpdateFunc, @showVertices, @showEdges, @inputVars}) ->
 
-        @inputVars ?= []
-        @setVars = {}
-        @setVars[k] = undefined for k in @inputVars
+        if @inputVars?
+            @inputVars[k] = @defaultGraph.vertex(v) for k,v of @inputVars
+        else
+            @inputVars = {}
 
         @$outer = Vamonos.jqueryify(container)
         @$inner = $("<div>", {class: "graph-inner-container"})
@@ -20,7 +21,7 @@ class Graph
         when "setup"
             [@viz] = options
             @viz.registerVariable(key) for key of @showVertices
-            @viz.registerVariable(key, true) for key of @setVars
+            @viz.registerVariable(key, true) for key of @inputVars
             for e of @showEdges
                 @viz.registerVariable(v) for v in e.split(/<?->?/)
             if @defaultGraph?
@@ -54,7 +55,7 @@ class Graph
                 alert "GRAPH WIDGET: need vertices please!" 
                 throw "GRAPH WIDGET: leaving edit mode without vertices"
 
-            for k, v of @setVars
+            for k, v of @inputVars
                 console.log k, v
                 unless v?
                     alert "GRAPH WIDGET: please set #{k}!"
@@ -126,14 +127,13 @@ class Graph
         vtx = @theGraph.vertex(@$selectedVertex.attr("id"))
         $("<div>", {text: "selected: vertex #{vtx.name}"}).appendTo(@$drawer)
         console.log @inputVars
-        if @inputVars.length > 0
-            for v of @setVars
-                $button = $("<button>", {text: "set #{v}=#{vtx.name}"})
-                $button.on "click", (e) =>
-                    @setVars[v] = vtx
-                    @updateGraph(@theGraph)
-                    @deselect()
-                @$drawer.append($button)
+        for v of @inputVars
+            $button = $("<button>", {text: "set #{v}=#{vtx.name}"})
+            $button.on "click", (e) =>
+                @inputVars[v] = vtx
+                @updateGraph(@theGraph)
+                @deselect()
+            @$drawer.append($button)
 
         @$outer.parent().append(@$drawer)
 
@@ -283,8 +283,8 @@ class Graph
             @drawGraph(G)
         @updateVertex(v) for v in G.vertices
         if @mode is 'edit'
-            @runShowVertices(@setVars) 
-            @previousFrame = Vamonos.clone(@setVars)
+            @runShowVertices(@inputVars) 
+            @previousFrame = Vamonos.clone(@inputVars)
 
     clear: () ->
         @jsPlumbInit()
