@@ -1,7 +1,11 @@
 class Graph
 
     constructor: ({container, @varName, @defaultGraph, @vertexSetupFunc,
-        @vertexUpdateFunc, @showVertices, @showEdges}) ->
+        @vertexUpdateFunc, @showVertices, @showEdges, @inputVars}) ->
+
+        @inputVars ?= []
+        @setVars = {}
+        @setVars[k] = undefined for k in @inputVars
 
         @$outer = Vamonos.jqueryify(container)
         @$inner = $("<div>", {class: "graph-inner-container"})
@@ -16,6 +20,7 @@ class Graph
         when "setup"
             [@viz] = options
             @viz.registerVariable(key) for key of @showVertices
+            @viz.registerVariable(key, true) for key of @setVars
             for e of @showEdges
                 @viz.registerVariable(v) for v in e.split(/<?->?/)
             if @defaultGraph?
@@ -26,12 +31,7 @@ class Graph
         when "render"
             [frame, type] = options
 
-            if @graphDrawn
-                $elem.removeClass("changed") for $elem in @nodes.concat(@connections)
-            else
-                @drawGraph(frame[@varName])
-
-            @updateVertex(v) for v in frame[@varName].vertices
+            @updateGraph(frame[@varName])
             @runShowFuncs(frame)
             @previousFrame = frame
 
@@ -46,12 +46,22 @@ class Graph
 
         when "editStop"
             @$outer.off "click"
+            @deselect()
             if @theGraph.vertices.length > 0
                 @viz.setVariable(@varName, Vamonos.clone(@theGraph), true)
                 @clear()
             else
                 alert "GRAPH WIDGET: need vertices please!" 
-                throw "Graph widget leaving edit mode without vertices"
+                throw "GRAPH WIDGET: leaving edit mode without vertices"
+
+            for k, v of @setVars
+                console.log k, v
+                unless v?
+                    alert "GRAPH WIDGET: please set #{k}!"
+                    throw "GRAPH WIDGET: need a value for #{k}!"
+                graph = @viz.getVariable(@varName, true)
+                @viz.setVariable(k, graph.vertex(v.id), true)
+
 
     displayMode: () ->
         @mode = "display"
@@ -59,6 +69,7 @@ class Graph
     editMode: () ->
         @mode = "edit"
         @drawGraph(@theGraph)
+        @updateGraph(@theGraph)
         @$outer.on("click", (e) =>
             $target = $(e.target)
             # Create and destroy vertices with shfit
@@ -76,16 +87,16 @@ class Graph
 
             # Select vertices and create and destroy edges with regular click
             else
-                if not @selectedVertex?
+                if not @$selectedVertex?
                     if $target.is(".vertex-contents")
-                        @selectedVertex = $target.parent()
-                        @selectedVertex.addClass("selected")
-                        return
+                        return @select($target)
                 else
                     if $target.is(".vertex-contents")
-                        return @deselect() if $target.parent().attr("id") is @selectedVertex.attr("id")
+                        if $target.parent().attr("id") is @$selectedVertex.attr("id")
+                            @deselect() 
+                            return
 
-                        sourceId = @selectedVertex.attr("id")
+                        sourceId = @$selectedVertex.attr("id")
                         targetId = $target.parent().attr("id")
 
                         if @theGraph.edge(sourceId, targetId)
@@ -102,12 +113,35 @@ class Graph
 
             # deselect automatically unless we returned earlier
             @deselect()
+            @updateGraph(@theGraph)
         ) # end callback
 
+    select: ($vtxContents) ->
+        @$selectedVertex = $vtxContents.parent()
+        @$selectedVertex.addClass("selected")
+        @openDrawer()
+        
+    openDrawer: () ->
+        @$drawer = $("<div>", {class:"container"})
+        vtx = @theGraph.vertex(@$selectedVertex.attr("id"))
+        $("<div>", {text: "selected: vertex #{vtx.name}"}).appendTo(@$drawer)
+        console.log @inputVars
+        if @inputVars.length > 0
+            for v of @setVars
+                $button = $("<button>", {text: "set #{v}=#{vtx.name}"})
+                $button.on "click", (e) =>
+                    @setVars[v] = vtx
+                    @updateGraph(@theGraph)
+                    @deselect()
+                @$drawer.append($button)
+
+        @$outer.parent().append(@$drawer)
+
     deselect: () ->
-        return unless @selectedVertex?
-        @selectedVertex.removeClass("selected")
-        @selectedVertex = undefined
+        return unless @$selectedVertex?
+        @$selectedVertex.removeClass("selected")
+        @$selectedVertex = undefined
+        @$drawer.remove()
 
     nextVertexId: () ->
         @_customVertexNum ?= 0
@@ -168,8 +202,8 @@ class Graph
         @nodes.filter(($vtx) -> $vtx.attr("id") is v.id)[0]
 
     vertexChanged: (newv) ->
-        return true unless @previousFrame?
-        oldv = @previousFrame[@varName]
+        return false unless @previousFrame?
+        oldv = if @mode is 'edit' then @previousFrame[@varName] else @theGraph
             .vertices.filter((v) -> v.id is newv.id)[0]
         @varChanged(newv, oldv)
 
@@ -241,6 +275,16 @@ class Graph
         @addNode(v) for v in G.vertices
         @addConnection(e.source.id, e.target.id) for e in G.edges
         @graphDrawn = yes
+
+    updateGraph: (G) ->
+        if @graphDrawn
+            $elem.removeClass("changed") for $elem in @nodes.concat(@connections)
+        else
+            @drawGraph(G)
+        @updateVertex(v) for v in G.vertices
+        if @mode is 'edit'
+            @runShowVertices(@setVars) 
+            @previousFrame = Vamonos.clone(@setVars)
 
     clear: () ->
         @jsPlumbInit()

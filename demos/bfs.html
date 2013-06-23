@@ -81,6 +81,7 @@ var myviz = new Vamonos.Visualizer({
         new Vamonos.Widget.Graph({
             varName: "G",
             container: "graph",
+            inputVars: ["s"],
             showVertices: {
                 u: {
                     show: function($vtx){
@@ -189,7 +190,6 @@ var myviz = new Vamonos.Visualizer({
     algorithm: function (viz) {
         var _ = function(n){ viz.line(n); }; 
         with (viz.namespace.main) {
-            s = G.vertices[0];
             G.eachVertex(function(vtx){
                 if (vtx.id === s.id) { return }
 _(1);               u = vtx;
