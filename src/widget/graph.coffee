@@ -46,9 +46,12 @@ class Graph
 
         when "editStop"
             @$outer.off "click"
-            @viz.setVariable(@varName, Vamonos.clone(@theGraph), true)
-            @clear()
-
+            if @theGraph.vertices.length > 0
+                @viz.setVariable(@varName, Vamonos.clone(@theGraph), true)
+                @clear()
+            else
+                alert "GRAPH WIDGET: need vertices please!" 
+                throw "Graph widget leaving edit mode without vertices"
 
     displayMode: () ->
         @mode = "display"
