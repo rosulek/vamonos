@@ -16,8 +16,8 @@
 
 class PriorityQueue
 
-	constructor: ({@unique, @sort_property}) ->
-		@q = [];
+    constructor: ({@unique, @sort_property}) ->
+        @q = []
 
     ###
     #   PriorityQueue.sort()
@@ -26,9 +26,9 @@ class PriorityQueue
     #   TODO: the function name sort may conflict with an existing function
     #
     ###
-	sort: ({}) ->
-		#TODO: sort or heapify the list as part of the enqueue process
-		       #we're probably going to want this when we visualize priority queues
+    sort: ({}) ->
+        #TODO: sort or heapify the list as part of the enqueue process
+               #we're probably going to want this when we visualize priority queues
 
     ###
     #   PriorityQueue.enqueue()
@@ -36,10 +36,10 @@ class PriorityQueue
     #   add the new element, e, to the list.
     #
     ###
-	enqueue: ({@e}) ->
-		return false if (@unique and @contains(e))
-		@q.push(e)
-		return true
+    enqueue: ({@e}) ->
+        return false if (@unique and @contains(e))
+        @q.push(e)
+        return true
 
     ###
     #   PriorityQueue.dequeue()
@@ -47,15 +47,14 @@ class PriorityQueue
     #   dequeue the next item from the list and return it.
     #
     ###
-	dequeue: ({}) ->
-		#TODO: if we switch to sorting (or heapify) on enqueue we'll 
-		       #just want to pop the head when we dequeue
-		return null if (@q.length <= 0)
-		min = @q[0]
-		for e in @q
-			if (parseInt(e[@sort_property], 10) < parseInt(min[@sort_property], 10)) {
-                min = e;
-            }
+    dequeue: ({}) ->
+        #TODO: if we switch to sorting (or heapify) on enqueue we'll 
+               #just want to pop the head when we dequeue
+        return null if (@q.length <= 0)
+        min = @q[0]
+        for e in @q
+            if parseInt(e[@sort_property], 10) < parseInt(min[@sort_property], 10)
+                min = e
         @remove(min)
         return min
 
@@ -65,13 +64,13 @@ class PriorityQueue
     #   find the first (or only) occurrence of a specific element and remove it from the queue.
     #
     ###
-	remove: ({@e}) ->
-		i = 0
-		for o in @q
-			if o is e
-				@q.splice(i,1)
-			break
-			i++
+    remove: ({@e}) ->
+        i = 0
+        for o in @q
+            if o is e
+                @q.splice(i,1)
+            break
+            i++
 
     ###
     #   PriorityQueue.remove()
@@ -79,8 +78,8 @@ class PriorityQueue
     #   Remove the item at a specific index from the queue.
     #
     ###
-	removeat: ({index}) ->
-		@q.splice(index,1)
+    removeat: ({index}) ->
+        @q.splice(index,1)
 
     ###
     #   PriorityQueue.contains()
@@ -88,10 +87,10 @@ class PriorityQueue
     #   Check to see if the queue contains the item, e, already.
     #
     ###
-	contains: ({e}) ->
-		for o in @q
-			return true if o is e
-		return false
+    contains: ({e}) ->
+        for o in @q
+            return true if o is e
+        return false
 
     ###
     #   PriorityQueue.size()
@@ -99,7 +98,7 @@ class PriorityQueue
     #   Returns the length of the queue.
     #
     ###
-	size: ({}) ->
-		return @q.size
+    size: ({}) ->
+        return @q.size
 
-Vamonos.export { PriorityQueue }
+Vamonos.export { DataStructure: { PriorityQueue } }
