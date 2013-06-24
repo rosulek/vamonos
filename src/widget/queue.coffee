@@ -1,13 +1,15 @@
 class Queue
 
     constructor: (options) ->
-        @varName = options.varName
+        @varName     = options.varName
+        @$container  = Vamonos.jqueryify(options.container)
         @arrayWidget = new Vamonos.Widget.Array(options)
 
     event: (event, options...) -> switch event
         when "setup"
             [viz] = options
             viz.registerVariable(@varName)
+            @arrayWidget.event(event, options...)
 
         when "render"
             [frame, type] = options
@@ -15,7 +17,8 @@ class Queue
             newFrame[@varName] = frame[@varName]?.guts
             @arrayWidget.event("render", newFrame, type)
 
-        when "displayStart"
+        else
             @arrayWidget.event(event, options...)
+
 
 Vamonos.export { Widget: { Queue } }
