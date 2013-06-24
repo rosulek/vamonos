@@ -176,16 +176,15 @@ class Graph
 
     runShowVertices: (frame) ->
         for name, {show, hide} of @showVertices
-            newv = frame[name]
-            oldv = @previousFrame?[name] 
-            if newv? and not oldv?
-                show(@vertexSelector(newv))
-                continue
-            else if oldv? and not newv?
-                hide(@vertexSelector(oldv))
-            else if @varChanged(newv, oldv)
-                hide(@vertexSelector(oldv))
-                show(@vertexSelector(newv))
+            $newv = @vertexSelector(frame[name])
+            $oldv = @vertexSelector(@previousFrame?[name])
+            if $newv? and not $oldv?
+                show($newv)
+            else if $oldv? and not $newv?
+                hide($oldv)
+            else if @varChanged(frame[name], @previousFrame?[name])
+                hide($oldv)
+                show($newv)
 
     runShowEdges: (frame) ->
         for edgeStr, {show, hide} of @showEdges
@@ -193,36 +192,32 @@ class Graph
                 hide(c) for c in @shownConnections if @shownConnections?
                 @shownConnections = []
 
-                [source, target] = edgeStr.split /->/ 
+                [sourceId, targetId] = edgeStr.split(/->/).map((v)->frame[v]?.id)
+                return unless sourceId? and targetId?
 
-                edges = frame[@varName].edges.filter (e) ->
-                    e.source?.id == frame[source]?.id and e.target?.id == frame[target]?.id
+                showConnection = (sourceId, targetId) =>
+                    con = @getConnection(sourceId, targetId)
+                    return unless con?
+                    show(con)
+                    @shownConnections.push(con)
 
-                unless frame[@varName].directed
-                    edges = edges.concat(@reverseEdge(e) for e in edges)
+                showConnection(sourceId, targetId)
+                showConnection(targetId, sourceId) unless @theGraph.directed
 
-                return unless edges.length > 0
-
-                for e in edges
-                    for connection in @getConnections(e)
-                        show(connection)
-                        @shownConnections.push(connection)
 
     reverseEdge: (edge) ->
         source: edge.target
         target: edge.source
 
-    getConnections: (edge) ->
-        @connections.filter (e) ->
-            e.sourceId == edge.source.id and e.targetId == edge.target.id
-
     getConnection: (sourceId, targetId) ->
-        (e for e in @connections when e.sourceId is sourceId and e.targetId is targetId)[0]
+        res = (e for e in @connections when e.sourceId == sourceId and e.targetId == targetId)
+        res[0]
 
-    vertexSelector: (v) ->
-        return unless @graphDrawn and v?
-        v = @theGraph.vertex(v) if typeof v is 'string'
-        @nodes.filter(($vtx) -> $vtx.attr("id") is v.id)[0]
+    vertexSelector: (vid) ->
+        return unless @graphDrawn and vid?
+        vid = vid.id unless typeof vid is 'string'
+        return unless vid?
+        @nodes.filter(($vtx) -> $vtx.attr("id") is vid)[0]
 
     vertexChanged: (newv) ->
         return false unless @previousFrame?
