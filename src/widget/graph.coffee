@@ -20,7 +20,10 @@ class Graph
     constructor: ({container, @varName, @defaultGraph, @vertexSetupFunc,
         @vertexUpdateFunc, @showVertices, @showEdges, @inputVars}) ->
 
-        @inputVars ?= {}
+        @inputVars  ?= {}
+        @connections = []
+        @nodes       = []
+
         # resolve vertex ids to actual vertices
         @inputVars[k] = @defaultGraph.vertex(v) for k,v of @inputVars
 
@@ -28,22 +31,20 @@ class Graph
         @$inner = $("<div>", {class: "graph-inner-container"})
         @$outer.append(@$inner)
 
-        @connections ?= []
-        @nodes ?= []
+        @theGraph = @defaultGraph ? new Vamonos.DataStructure.Graph()
 
         @jsPlumbInit()
         
     event: (event, options...) -> switch event
         when "setup"
             [@viz] = options
-            @viz.registerVariable(key) for key of @showVertices
+            @viz.registerVariable(key)       for key of @showVertices
             @viz.registerVariable(key, true) for key of @inputVars
             for e of @showEdges
                 @viz.registerVariable(v) for v in e.split(/<?->?/)
-            if @defaultGraph?
-                @theGraph = @viz.setVariable(@varName, Vamonos.clone(@defaultGraph), true)
-            else
-                @theGraph = new Vamonos.DataStructure.Graph()
+
+            # set default graph in stash incase no edit mode
+            @viz.setVariable(@varName, Vamonos.clone(@defaultGraph), true)
 
         when "render"
             [frame, type] = options
@@ -53,10 +54,10 @@ class Graph
             @previousFrame = frame
 
         when "displayStart"
-            @displayMode()
+            @mode = "display"
 
         when "displayStop"
-            @clear()
+            @clearDisplay()
 
         when "editStart"
             @editMode()
@@ -64,10 +65,11 @@ class Graph
         when "editStop"
             @$outer.off("click")
             @$outer.off("dblclick")
-            @deselect()
+            @clearDisplay()
+
             if @theGraph.vertices.length > 0
                 @viz.setVariable(@varName, Vamonos.clone(@theGraph), true)
-                @clear()
+                @clearDisplay()
             else
                 alert "GRAPH WIDGET: need vertices please!" 
                 throw "GRAPH WIDGET: leaving edit mode without vertices"
@@ -85,7 +87,6 @@ class Graph
 
     editMode: () ->
         @mode = "edit"
-        @drawGraph(@theGraph)
         @updateGraph(@theGraph)
 
         @$outer.disableSelection()
@@ -240,19 +241,6 @@ class Graph
         @vertexUpdateFunc(vertex, $v) if @vertexUpdateFunc?
         $v.addClass("changed") if @vertexChanged(vertex)
 
-    jsPlumbInit: () -> 
-        @jsPlumbInstance = jsPlumb.getInstance 
-            Connector: ["Straight", {gap: 6}]
-            PaintStyle: 
-                lineWidth: 2
-                strokeStyle:"gray"
-            Endpoint: "Blank"
-            EndpointStyle:{ fillStyle:"black" }
-            ConnectionOverlays: [ 
-                ["PlainArrow", {location:-4, width:8, length:8}]
-            ]
-            Anchor: [ "Perimeter", { shape: "Circle" } ]
-
     addNode: (vertex) ->
         $v = $("<div>", {class: 'vertex', id: vertex.id})
         $v.attr('id', vertex.id)
@@ -271,17 +259,14 @@ class Graph
         $v.css("position", "absolute")
         @jsPlumbInstance.draggable($v, {
             containment:"parent"
-            stop: @createUpdatePositionFunc(vertex) 
+            stop: (event, ui) =>
+                vtx = @theGraph.vertex(vertex.id)
+                vtx.x = ui.position.left
+                vtx.y = ui.position.top
         })
 
         @$inner.append($v)
         @nodes.push($v)
-
-    createUpdatePositionFunc: (vertex) ->
-        return (event, ui) =>
-            vtx = @theGraph.vertex(vertex.id)
-            vtx.x = ui.position.left
-            vtx.y = ui.position.top
 
     removeNode: (vid) ->
         $vtx = @vertexSelector(vid)
@@ -295,6 +280,9 @@ class Graph
 
     addConnection: (sourceId, targetId) ->
         connection = @jsPlumbInstance.connect({ source: sourceId, target: targetId })
+        if @theGraph.directed
+            connection.addOverlay(["PlainArrow", {location:-4, width:8, length:8}])
+            connection.setConnector(["Straight", {gap: 6}])
         @connections.push(connection)
 
     removeConnection: (sourceId, targetId) ->
@@ -303,22 +291,32 @@ class Graph
         @jsPlumbInstance.detach(connection) 
         @connections.splice(@connections.indexOf(connection), 1)
 
-    drawGraph: (G) ->
-        @addNode(v) for v in G.vertices
-        @addConnection(e.source.id, e.target.id) for e in G.edges
-        @graphDrawn = yes
-
-    updateGraph: (G) ->
+    updateGraph: (graph) ->
         if @graphDrawn
-            $elem.removeClass("changed") for $elem in @nodes.concat(@connections)
+            $e.removeClass("changed") for $e in @nodes.concat(@connections)
         else
-            @drawGraph(G)
-        @updateVertex(v) for v in G.vertices
+            @addNode(v) for v in graph.vertices
+            @addConnection(e.source.id, e.target.id) for e in graph.edges
+            @graphDrawn = yes
+
+        @updateVertex(v) for v in graph.vertices
+
         if @mode is 'edit'
             @runShowVertices(@inputVars) 
             @previousFrame = Vamonos.clone(@inputVars)
 
-    clear: () ->
+    jsPlumbInit: () -> 
+        @jsPlumbInstance = jsPlumb.getInstance 
+            Connector: ["Straight"]
+            PaintStyle: 
+                lineWidth: 2
+                strokeStyle:"gray"
+            Endpoint: "Blank"
+            EndpointStyle:{ fillStyle:"black" }
+            Anchor: [ "Perimeter", { shape: "Circle" } ]
+
+    clearDisplay: () ->
+        @deselect()
         @jsPlumbInit()
         @$inner.html("")
         @graphDrawn = no
