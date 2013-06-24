@@ -56,7 +56,6 @@ class Graph
                 throw "GRAPH WIDGET: leaving edit mode without vertices"
 
             for k, v of @inputVars
-                console.log k, v
                 unless v?
                     alert "GRAPH WIDGET: please set #{k}!"
                     throw "GRAPH WIDGET: need a value for #{k}!"
@@ -71,46 +70,53 @@ class Graph
         @mode = "edit"
         @drawGraph(@theGraph)
         @updateGraph(@theGraph)
+
+        @$outer.disableSelection()
+
+        @$outer.on("dblclick", (e) =>
+            # Create and destroy vertices with double click
+            $target = $(e.target)
+            if $target.is(".vertex-contents")
+                vid = $target.parent().attr("id")
+                @removeNode(vid)
+            else
+                vtx = {
+                    id: @nextVertexId()
+                    x: e.offsetX - 12
+                    y: e.offsetY - 12
+                }
+                @theGraph.addVertex(vtx)
+                @addNode(vtx)
+            @deselect()
+            @updateGraph(@theGraph)
+        )
+
         @$outer.on("click", (e) =>
             $target = $(e.target)
-            # Create and destroy vertices with shfit
-            if e.ctrlKey
-                if $target.is(".vertex-contents")
-                    vid = $target.parent().attr("id")
-                    @removeNode(vid)
-                else
-                    vtx = 
-                        id: @nextVertexId()
-                        x: e.offsetX - 12
-                        y: e.offsetY - 12
-                    @theGraph.addVertex(vtx)
-                    @addNode(vtx)
-
             # Select vertices and create and destroy edges with regular click
+            if not @$selectedVertex?
+                if $target.is(".vertex-contents")
+                    return @select($target)
             else
-                if not @$selectedVertex?
-                    if $target.is(".vertex-contents")
-                        return @select($target)
-                else
-                    if $target.is(".vertex-contents")
-                        if $target.parent().attr("id") is @$selectedVertex.attr("id")
-                            @deselect() 
-                            return
+                if $target.is(".vertex-contents")
+                    if $target.parent().attr("id") is @$selectedVertex.attr("id")
+                        @deselect() 
+                        return
 
-                        sourceId = @$selectedVertex.attr("id")
-                        targetId = $target.parent().attr("id")
+                    sourceId = @$selectedVertex.attr("id")
+                    targetId = $target.parent().attr("id")
 
-                        if @theGraph.edge(sourceId, targetId)
-                            # delete an edge
-                            @theGraph.removeEdge(sourceId, targetId)
-                            @removeConnection(sourceId, targetId)
-                            @removeConnection(targetId, sourceId) unless @theGraph.directed
-                
-                        else
-                            # make a new edge
-                            @theGraph.addEdge(sourceId, targetId)
-                            @addConnection(sourceId, targetId)
-                            @addConnection(targetId, sourceId) unless @theGraph.directed
+                    if @theGraph.edge(sourceId, targetId)
+                        # delete an edge
+                        @theGraph.removeEdge(sourceId, targetId)
+                        @removeConnection(sourceId, targetId)
+                        @removeConnection(targetId, sourceId) unless @theGraph.directed
+            
+                    else
+                        # make a new edge
+                        @theGraph.addEdge(sourceId, targetId)
+                        @addConnection(sourceId, targetId)
+                        @addConnection(targetId, sourceId) unless @theGraph.directed
 
             # deselect automatically unless we returned earlier
             @deselect()
@@ -126,7 +132,6 @@ class Graph
         @$drawer = $("<div>", {class:"container"})
         vtx = @theGraph.vertex(@$selectedVertex.attr("id"))
         $("<div>", {text: "selected: vertex #{vtx.name}"}).appendTo(@$drawer)
-        console.log @inputVars
         for v of @inputVars
             $button = $("<button>", {text: "set #{v}=#{vtx.name}"})
             $button.on "click", (e) =>
