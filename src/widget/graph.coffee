@@ -46,7 +46,8 @@ class Graph
             @editMode()
 
         when "editStop"
-            @$outer.off "click"
+            @$outer.off("click")
+            @$outer.off("dblclick")
             @deselect()
             if @theGraph.vertices.length > 0
                 @viz.setVariable(@varName, Vamonos.clone(@theGraph), true)
@@ -72,24 +73,6 @@ class Graph
         @updateGraph(@theGraph)
 
         @$outer.disableSelection()
-
-        @$outer.on("dblclick", (e) =>
-            # Create and destroy vertices with double click
-            $target = $(e.target)
-            if $target.is(".vertex-contents")
-                vid = $target.parent().attr("id")
-                @removeNode(vid)
-            else
-                vtx = {
-                    id: @nextVertexId()
-                    x: e.offsetX - 12
-                    y: e.offsetY - 12
-                }
-                @theGraph.addVertex(vtx)
-                @addNode(vtx)
-            @deselect()
-            @updateGraph(@theGraph)
-        )
 
         @$outer.on("click", (e) =>
             $target = $(e.target)
@@ -118,10 +101,28 @@ class Graph
                         @addConnection(sourceId, targetId)
                         @addConnection(targetId, sourceId) unless @theGraph.directed
 
-            # deselect automatically unless we returned earlier
-            @deselect()
-            @updateGraph(@theGraph)
+                @deselect()
+
         ) # end callback
+
+        @$outer.on("dblclick", (e) =>
+            @deselect()
+            # Create and destroy vertices with double click
+            $target = $(e.target)
+            if $target.is(".vertex-contents")
+                vid = $target.parent().attr("id")
+                @removeNode(vid)
+            else
+                vtx = {
+                    id: @nextVertexId()
+                    x: e.offsetX - 12
+                    y: e.offsetY - 12
+                }
+                @theGraph.addVertex(vtx)
+                @addNode(vtx)
+                @updateGraph(@theGraph)
+        )
+
 
     select: ($vtxContents) ->
         @$selectedVertex = $vtxContents.parent()
@@ -202,7 +203,7 @@ class Graph
         (e for e in @connections when e.sourceId is sourceId and e.targetId is targetId)[0]
 
     vertexSelector: (v) ->
-        return unless @graphDrawn
+        return unless @graphDrawn and v?
         v = @theGraph.vertex(v) if typeof v is 'string'
         @nodes.filter(($vtx) -> $vtx.attr("id") is v.id)[0]
 
