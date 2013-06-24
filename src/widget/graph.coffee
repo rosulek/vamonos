@@ -1,12 +1,28 @@
+# vertexSetupFunc(vertex, $node)
+#    called when a vertex is created
+#
+# vertexUpdateFunc(vertex, $node) 
+#   called on every render on every vertex
+#
+# showVertices{ var: { show($node), hide($node)} } 
+#   show called on vertices that equal var.
+#   hide called on vertices that don't equal var.
+#
+# showEdges{ "s->v": { show($connection), hide($connection } }
+#   show called on edges from s to v
+#   hide called on all other edges
+#
+# inputVars{ var: defaultVertexId } 
+#   input vertex variables and their default value
+
 class Graph
 
     constructor: ({container, @varName, @defaultGraph, @vertexSetupFunc,
         @vertexUpdateFunc, @showVertices, @showEdges, @inputVars}) ->
 
-        if @inputVars?
-            @inputVars[k] = @defaultGraph.vertex(v) for k,v of @inputVars
-        else
-            @inputVars = {}
+        @inputVars ?= {}
+        # resolve vertex ids to actual vertices
+        @inputVars[k] = @defaultGraph.vertex(v) for k,v of @inputVars
 
         @$outer = Vamonos.jqueryify(container)
         @$inner = $("<div>", {class: "graph-inner-container"})
@@ -253,9 +269,19 @@ class Graph
         $v.css("left", vertex.x)
         $v.css("top",  vertex.y)
         $v.css("position", "absolute")
+        @jsPlumbInstance.draggable($v, {
+            containment:"parent"
+            stop: @createUpdatePositionFunc(vertex) 
+        })
 
         @$inner.append($v)
         @nodes.push($v)
+
+    createUpdatePositionFunc: (vertex) ->
+        return (event, ui) =>
+            vtx = @theGraph.vertex(vertex.id)
+            vtx.x = ui.position.left
+            vtx.y = ui.position.top
 
     removeNode: (vid) ->
         $vtx = @vertexSelector(vid)
