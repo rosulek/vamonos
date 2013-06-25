@@ -63,8 +63,8 @@ class Graph
             @editMode()
 
         when "editStop"
-            @$outer.off("click")
-            @$outer.off("dblclick")
+            @$outer.off("click.vamonos-graph")
+            @$outer.off("dblclick.vamonos-graph")
             @clearDisplay()
 
             if @theGraph.vertices.length > 0
@@ -91,7 +91,7 @@ class Graph
 
         @$outer.disableSelection()
 
-        @$outer.on("click", (e) =>
+        @$outer.on("click.vamonos-graph", (e) =>
             $target = $(e.target)
             # Select vertices and create and destroy edges with regular click
             if not @$selectedVertex?
@@ -122,7 +122,7 @@ class Graph
 
         ) # end callback
 
-        @$outer.on("dblclick", (e) =>
+        @$outer.on("dblclick.vamonos-graph", (e) =>
             @deselect()
             # Create and destroy vertices with double click
             $target = $(e.target)
@@ -146,7 +146,7 @@ class Graph
         @$selectedVertex.addClass("selected")
         @openDrawer()
         @_$others = @$selectedVertex.siblings("div.vertex").children("div.vertex-contents")
-        @_$others.on "mouseenter", (e) =>
+        @_$others.on "mouseenter.vamonos-graph", (e) =>
             con = @getConnection($(e.target).parent().attr("id"), @$selectedVertex.attr("id"))
             if con?
                 @_alteredEdge = con
@@ -162,7 +162,7 @@ class Graph
                         strokeStyle: "blue"
                         lineWidth: 2
 
-        @_$others.on "mouseleave", (e) =>
+        @_$others.on "mouseleave.vamonos-graph", (e) =>
             if @_possibleEdge?
                 @jsPlumbInstance.detach(@_possibleEdge)
                 @_possibleEdge = undefined
@@ -179,7 +179,7 @@ class Graph
         $("<div>", {text: "selected: vertex #{vtx.name}"}).appendTo(@$drawer)
         for v of @inputVars
             $button = $("<button>", {text: "set #{v}=#{vtx.name}"})
-            $button.on "click", (e) =>
+            $button.on "click.vamonos-graph", (e) =>
                 @inputVars[v] = vtx
                 @updateGraph(@theGraph)
                 @deselect()
@@ -190,7 +190,7 @@ class Graph
     deselect: () ->
         return unless @$selectedVertex?
         @jsPlumbInstance.detach(@_possibleEdge) if @_possibleEdge?
-        @_$others.off("mouseenter mouseleave")
+        @_$others.off("mouseenter.vamonos-graph mouseleave.vamonos-graph")
         @$selectedVertex.removeClass("selected")
         @$selectedVertex = undefined
         @$drawer.remove()
