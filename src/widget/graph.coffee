@@ -109,13 +109,11 @@ class Graph
                         # delete an edge
                         @theGraph.removeEdge(sourceId, targetId)
                         @removeConnection(sourceId, targetId)
-                        @removeConnection(targetId, sourceId) unless @theGraph.directed
             
                     else
                         # make a new edge
                         @theGraph.addEdge(sourceId, targetId)
                         @addConnection(sourceId, targetId)
-                        @addConnection(targetId, sourceId) unless @theGraph.directed
 
                 @deselect()
 
@@ -146,7 +144,7 @@ class Graph
         @openDrawer()
         @_$others = @$selectedVertex.siblings("div.vertex").children("div.vertex-contents")
         @_$others.on "mouseenter.vamonos-graph", (e) =>
-            con = @getConnection($(e.target).parent().attr("id"), @$selectedVertex.attr("id"))
+            con = @getConnection(@$selectedVertex.attr("id"), $(e.target).parent().attr("id"))
             if con?
                 @_alteredEdge = con
                 con.setPaintStyle
@@ -235,12 +233,12 @@ class Graph
                 showConnection(targetId, sourceId) unless @theGraph.directed
 
 
-    reverseEdge: (edge) ->
-        source: edge.target
-        target: edge.source
-
     getConnection: (sourceId, targetId) ->
-        res = (e for e in @connections when e.sourceId == sourceId and e.targetId == targetId)
+        res = (e for e in @connections when e.sourceId == sourceId and e.targetId == targetId or
+            if @theGraph.directed
+                false
+            else
+                e.sourceId == targetId and e.targetId == sourceId)
         res[0]
 
     vertexSelector: (vid) ->
@@ -306,10 +304,10 @@ class Graph
         @theGraph.removeVertex(vid)
 
     addConnection: (sourceId, targetId) ->
+        return if @getConnection(sourceId, targetId)
         connection = @jsPlumbInstance.connect({ source: sourceId, target: targetId })
         if @theGraph.directed
             connection.addOverlay(["PlainArrow", {location:-4, width:8, length:8}])
-            connection.setConnector(["Straight", {gap: 6}])
         @connections.push(connection)
 
     removeConnection: (sourceId, targetId) ->
