@@ -160,6 +160,8 @@ class Graph
                         dashstyle: "2 2"
                         strokeStyle: "blue"
                         lineWidth: 2
+                if @theGraph.directed
+                    @_possibleEdge.addOverlay(["PlainArrow", {location:-4, width:8, length:8}])
 
         @_$others.on "mouseleave.vamonos-graph", (e) =>
             if @_possibleEdge?
@@ -266,6 +268,7 @@ class Graph
 
     addNode: (vertex) ->
         $v = $("<div>", {class: 'vertex', id: vertex.id})
+        $v.hide()
         $v.attr('id', vertex.id)
         $contents = $("<div>", class: "vertex-contents")
 
@@ -289,6 +292,7 @@ class Graph
         })
 
         @$inner.append($v)
+        $v.fadeIn(100)
         @nodes.push($v)
 
     removeNode: (vid) ->
@@ -298,7 +302,7 @@ class Graph
         for edge in ins.concat(out)
             @removeConnection(edge.source.id, edge.target.id)
         @nodes.splice(@nodes.indexOf($vtx), 1)
-        $vtx.remove()
+        $vtx.fadeOut(100, () -> $vtx.remove())
         @theGraph.removeVertex(vid)
 
     addConnection: (sourceId, targetId) ->
