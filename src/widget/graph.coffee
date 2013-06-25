@@ -63,8 +63,7 @@ class Graph
             @editMode()
 
         when "editStop"
-            @$outer.off("click.vamonos-graph")
-            @$outer.off("dblclick.vamonos-graph")
+            @$outer.off("click.vamonos-graph dblclick.vamonos-graph")
             @clearDisplay()
 
             if @theGraph.vertices.length > 0
