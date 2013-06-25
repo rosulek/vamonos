@@ -87,7 +87,7 @@ var myviz = new Vamonos.Visualizer({
             showVertices: {
                 u: {
                     show: function($vtx){
-                        $label = $vtx.find(".vertex-nw-label");
+                        $label = $vtx.children(".vertex-nw-label");
                         if ($label.html() == "v") {
                             $label.html("u,&nbsp;v");
                         } else {
@@ -95,7 +95,7 @@ var myviz = new Vamonos.Visualizer({
                         }
                     },
                     hide: function($vtx){ 
-                        $label = $vtx.find(".vertex-nw-label");
+                        $label = $vtx.children(".vertex-nw-label");
                         if ($label.html() == "u,&nbsp;v") {
                             $label.html("v");
                         } else {
@@ -105,7 +105,7 @@ var myviz = new Vamonos.Visualizer({
                 },
                 v: {
                     show: function($vtx){
-                        $label = $vtx.find(".vertex-nw-label");
+                        $label = $vtx.children(".vertex-nw-label");
                         if ($label.html() == "u") {
                             $label.html("u,&nbsp;v");
                         } else {
@@ -113,7 +113,7 @@ var myviz = new Vamonos.Visualizer({
                         }
                     },
                     hide: function($vtx){ 
-                        $label = $vtx.find(".vertex-nw-label");
+                        $label = $vtx.children(".vertex-nw-label");
                         if ($label.html() == "u,&nbsp;v") {
                             $label.html("u");
                         } else {
@@ -123,7 +123,7 @@ var myviz = new Vamonos.Visualizer({
                 },
                 s: {
                     show: function($vtx){ $vtx.append("<div class='vertex-sw-label'>s</div>") },
-                    hide: function($vtx){ $vtx.find(".vertex-sw-label").remove() }
+                    hide: function($vtx){ $vtx.children(".vertex-sw-label").remove() }
                 },
             },
             showEdges: {
@@ -146,7 +146,7 @@ var myviz = new Vamonos.Visualizer({
                 $vtx.append(
                     $("<div>", { class:'vertex-nw-label', })
                 );
-                $vtx.find(".vertex-contents").text(v.name);
+                $vtx.children(".vertex-contents").text(v.name);
             },
             vertexUpdateFunc: function(v, $vtx) {
                 var clearColor = function () { 
@@ -165,7 +165,7 @@ var myviz = new Vamonos.Visualizer({
                 else {
                     clearColor();
                 }
-                $vtx.find(".vertex-contents").text(v.name)
+                $vtx.children(".vertex-contents").text(v.name)
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: false,

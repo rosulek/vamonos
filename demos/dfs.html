@@ -121,7 +121,7 @@ var myviz = new Vamonos.Visualizer({
             showVertices: {
                 u: {
                     show: function($vtx){
-                        $label = $vtx.find(".vertex-nw-label");
+                        $label = $vtx.children(".vertex-nw-label");
                         if ($label.html() == "v") {
                             $label.html("u,&nbsp;v");
                         } else {
@@ -129,7 +129,7 @@ var myviz = new Vamonos.Visualizer({
                         }
                     },
                     hide: function($vtx){ 
-                        $label = $vtx.find(".vertex-nw-label");
+                        $label = $vtx.children(".vertex-nw-label");
                         if ($label.html() == "u,&nbsp;v") {
                             $label.html("v");
                         } else {
@@ -139,7 +139,7 @@ var myviz = new Vamonos.Visualizer({
                 },
                 "visit::v": {
                     show: function($vtx){
-                        $label = $vtx.find(".vertex-nw-label");
+                        $label = $vtx.children(".vertex-nw-label");
                         if ($label.html() == "u") {
                             $label.html("u,&nbsp;v");
                         } else {
@@ -147,7 +147,7 @@ var myviz = new Vamonos.Visualizer({
                         }
                     },
                     hide: function($vtx){ 
-                        $label = $vtx.find(".vertex-nw-label");
+                        $label = $vtx.children(".vertex-nw-label");
                         if ($label.html() == "u,&nbsp;v") {
                             $label.html("u");
                         } else {
@@ -182,7 +182,7 @@ var myviz = new Vamonos.Visualizer({
                 $vtx.append(
                     $("<div>", { class:'vertex-nw-label', })
                 );
-                $vtx.find(".vertex-contents").text(v.name);
+                $vtx.children(".vertex-contents").text(v.name);
             },
             vertexUpdateFunc: function(v, $vtx) {
                 var clearColor = function () { 
@@ -200,9 +200,9 @@ var myviz = new Vamonos.Visualizer({
                 } else {
                     clearColor();
                 }
-                $vtx.find(".vertex-sw-label")
+                $vtx.children(".vertex-sw-label")
                     .text((v.d?v.d:"_")+"/"+(v.f?v.f:"_"));
-                $vtx.find(".vertex-contents").text(v.name);
+                $vtx.children(".vertex-contents").text(v.name);
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: false,
