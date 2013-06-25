@@ -145,6 +145,33 @@ class Graph
         @$selectedVertex = $vtxContents.parent()
         @$selectedVertex.addClass("selected")
         @openDrawer()
+        @_$others = @$selectedVertex.siblings("div.vertex").children("div.vertex-contents")
+        @_$others.on "mouseenter", (e) =>
+            con = @getConnection($(e.target).parent().attr("id"), @$selectedVertex.attr("id"))
+            if con?
+                @_alteredEdge = con
+                con.setPaintStyle
+                    strokeStyle: "red"
+                    lineWidth: 4
+            else
+                @_possibleEdge = @jsPlumbInstance.connect
+                    source: @$selectedVertex
+                    target: $(e.target).parent()
+                    paintStyle: 
+                        dashstyle: "2 2"
+                        strokeStyle: "blue"
+                        lineWidth: 2
+
+        @_$others.on "mouseleave", (e) =>
+            if @_possibleEdge?
+                @jsPlumbInstance.detach(@_possibleEdge)
+                @_possibleEdge = undefined
+            if @_alteredEdge?
+                @_alteredEdge.setPaintStyle
+                    strokeStyle: "gray"
+                    lineWidth: 2
+                @_alteredEdge = undefined
+
         
     openDrawer: () ->
         @$drawer = $("<div>", {class:"container"})
@@ -162,6 +189,8 @@ class Graph
 
     deselect: () ->
         return unless @$selectedVertex?
+        @jsPlumbInstance.detach(@_possibleEdge) if @_possibleEdge?
+        @_$others.off("mouseenter mouseleave")
         @$selectedVertex.removeClass("selected")
         @$selectedVertex = undefined
         @$drawer.remove()
