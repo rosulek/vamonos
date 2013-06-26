@@ -37,15 +37,6 @@ class Graph
         @jsPlumbInit()
 
    
-    resize: () ->
-        max_x = Math.max(@theGraph.vertices.map((v)->v.x)...)
-        max_y = Math.max(@theGraph.vertices.map((v)->v.y)...)
-        if @$drawer? and @$drawer.is(":visible")
-            max_y += @$drawer.height()
-        @$outer.width(max_x + 40)
-        @$outer.height(max_y + 40)
-
-        
     event: (event, options...) -> switch event
         when "setup"
             [@viz] = options
@@ -108,6 +99,17 @@ class Graph
             if not @$selectedVertex?
                 if $target.is("div.vertex-contents")
                     return @select($target)
+                else if $target.is(@$inner)
+                    vtx = {
+                        id: @nextVertexId()
+                        x: e.offsetX - 12
+                        y: e.offsetY - 12
+                    }
+                    @theGraph.addVertex(vtx)
+                    $new = @addNode(vtx)
+                    @updateGraph(@theGraph)
+                    @resize()
+                    @select($new)
             else
                 if $target.is("div.vertex-contents")
                     if $target.parent().attr("id") is @$selectedVertex.attr("id")
@@ -131,26 +133,6 @@ class Graph
                     @deselect()
 
         ) # end callback
-
-        @$outer.on("dblclick.vamonos-graph", (e) =>
-            @deselect()
-            # Create and destroy vertices with double click
-            $target = $(e.target)
-            if $target.is(".vertex-contents")
-                vid = $target.parent().attr("id")
-                @removeNode(vid)
-            else
-                vtx = {
-                    id: @nextVertexId()
-                    x: e.offsetX - 12
-                    y: e.offsetY - 12
-                }
-                @theGraph.addVertex(vtx)
-                @addNode(vtx)
-                @updateGraph(@theGraph)
-            @resize()
-        )
-
 
     select: ($vtxContents) ->
         @$selectedVertex = $vtxContents.parent()
@@ -196,18 +178,25 @@ class Graph
             @$inner.append(@$drawer)
 
         vtx = @theGraph.vertex(@$selectedVertex.attr("id"))
-        $("<span>", {text: "vertex #{vtx.name}", class: "left"}).appendTo(@$drawer)
+        @$drawer.html("<span class='left'>vertex&nbsp;&nbsp;#{vtx.name}</span>")
 
-        $buttonHolder = undefined
+        $buttonHolder = $("<span>", {class: "right"})
 
-        for v of @inputVars
-            $buttonHolder ?= $("<span>", {class: "right", text: "set as: "})
-            $button = $("<button>", {text: "#{v}"})
+        buttons = for v of @inputVars
+            $button = $("<button>", {text: "set as #{v}"})
             $button.on "click.vamonos-graph", (e) =>
                 @inputVars[v] = vtx
                 @updateGraph(@theGraph)
-            $buttonHolder.append($button)
 
+        $removeButton = $("<button>", {text: "del"})
+        $removeButton.on "click.vamonos-graph", (e) =>
+            @deselect()
+            @removeNode(vtx.id)
+            @resize()
+
+        buttons.push($removeButton)
+
+        $buttonHolder.append(buttons)
         @$drawer.append($buttonHolder)
 
         @$drawer.fadeIn("fast")
@@ -216,7 +205,9 @@ class Graph
     closeDrawer: () ->
         return unless @$drawer?
         @$drawer.fadeOut("fast")
-        @$outer.animate(height: (@$outer.height() - @$drawer.height()), 200)
+        @$outer.animate(height: (@$outer.height() - @$drawer.height()), 200, =>
+            @resize()
+        )
 
     deselect: () ->
         return unless @$selectedVertex?
@@ -325,6 +316,7 @@ class Graph
         @$inner.append($v)
         $v.fadeIn(100)
         @nodes.push($v)
+        return $contents
 
     removeNode: (vid) ->
         $vtx = @vertexSelector(vid)
@@ -335,6 +327,8 @@ class Graph
         @nodes.splice(@nodes.indexOf($vtx), 1)
         $vtx.fadeOut(100, () -> $vtx.remove())
         @theGraph.removeVertex(vid)
+        # if the deleted vertex was set as an inputVar, reset the input var
+        @inputVars[k] = undefined for k, v of @inputVars when v.id is vid
 
     addConnection: (sourceId, targetId) ->
         return if @getConnection(sourceId, targetId)
@@ -373,6 +367,14 @@ class Graph
             EndpointStyle:{ fillStyle:"black" }
             Anchor: [ "Perimeter", { shape: "Circle" } ]
 
+    resize: () ->
+        max_x = Math.max(@theGraph.vertices.map((v)->v.x)...)
+        max_y = Math.max(@theGraph.vertices.map((v)->v.y)...)
+        if @$drawer? and @$drawer.is(":visible")
+            max_y += @$drawer.height()
+        @$outer.width(max_x + 40)
+        @$outer.height(max_y + 40)
+        
     clearDisplay: () ->
         @closeDrawer()
         @$drawer = undefined
