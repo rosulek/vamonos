@@ -40,8 +40,10 @@ class Graph
     resize: () ->
         max_x = Math.max(@theGraph.vertices.map((v)->v.x)...)
         max_y = Math.max(@theGraph.vertices.map((v)->v.y)...)
-        @$outer.width(max_x + 35)
-        @$outer.height(max_y + 35)
+        if @$drawer? and @$drawer.is(":visible")
+            max_y += @$drawer.height()
+        @$outer.width(max_x + 40)
+        @$outer.height(max_y + 40)
 
         
     event: (event, options...) -> switch event
@@ -74,6 +76,7 @@ class Graph
         when "editStop"
             @$outer.off("click.vamonos-graph dblclick.vamonos-graph")
             @clearDisplay()
+            @closeDrawer()
 
             if @theGraph.vertices.length > 0
                 @viz.setVariable(@varName, Vamonos.clone(@theGraph), true)
@@ -103,10 +106,10 @@ class Graph
             $target = $(e.target)
             # Select vertices and create and destroy edges with regular click
             if not @$selectedVertex?
-                if $target.is(".vertex-contents")
+                if $target.is("div.vertex-contents")
                     return @select($target)
             else
-                if $target.is(".vertex-contents")
+                if $target.is("div.vertex-contents")
                     if $target.parent().attr("id") is @$selectedVertex.attr("id")
                         @deselect() 
                         return
@@ -124,7 +127,8 @@ class Graph
                         @theGraph.addEdge(sourceId, targetId)
                         @addConnection(sourceId, targetId)
 
-                @deselect()
+                else if $target.is(@$inner)
+                    @deselect()
 
         ) # end callback
 
@@ -187,26 +191,32 @@ class Graph
         if @$drawer?
             @$drawer.html("")
         else
-            @$drawer = $("<div>", {class:"container"})
+            @$drawer = $("<div>", { class: "graph-drawer" })
             @$drawer.hide()
-            @$outer.parent().append(@$drawer)
+            @$inner.append(@$drawer)
 
         vtx = @theGraph.vertex(@$selectedVertex.attr("id"))
-        $("<div>", {text: "vertex #{vtx.name}"}).appendTo(@$drawer)
+        $("<span>", {text: "vertex #{vtx.name}", class: "left"}).appendTo(@$drawer)
+
+        $buttonHolder = undefined
+
         for v of @inputVars
-            $button = $("<button>", {text: "#{v}=#{vtx.name}"})
+            $buttonHolder ?= $("<span>", {class: "right", text: "set as: "})
+            $button = $("<button>", {text: "#{v}"})
             $button.on "click.vamonos-graph", (e) =>
                 @inputVars[v] = vtx
                 @updateGraph(@theGraph)
-                @deselect()
-            @$drawer.append($button)
-            $button
+            $buttonHolder.append($button)
 
-        @$drawer.fadeIn()
+        @$drawer.append($buttonHolder)
+
+        @$drawer.fadeIn("fast")
+        @$outer.animate(height: (@$outer.height() + @$drawer.height()), 200)
 
     closeDrawer: () ->
         return unless @$drawer?
-        @$drawer.fadeOut()
+        @$drawer.fadeOut("fast")
+        @$outer.animate(height: (@$outer.height() - @$drawer.height()), 200)
 
     deselect: () ->
         return unless @$selectedVertex?
@@ -364,6 +374,8 @@ class Graph
             Anchor: [ "Perimeter", { shape: "Circle" } ]
 
     clearDisplay: () ->
+        @closeDrawer()
+        @$drawer = undefined
         @deselect()
         @jsPlumbInit()
         @$inner.html("")

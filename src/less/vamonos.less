@@ -316,6 +316,20 @@ table.pseudocode {
     height: inherit;
 }
 
+div.graph-drawer {
+    position: absolute;
+    bottom: 0px;
+    background: @editing-bg-color;
+    width: 100%;
+    span.left {
+        height: 100%
+    }
+
+    span.right {
+        float: right;
+    }
+}
+
 
 .vertex {
     width: @vertex-size;
@@ -338,7 +352,7 @@ table.pseudocode {
     }
 
     &.selected {
-        .default-box-shadow(@shadow-color);
+        .box-shadow(0px, 20px, @editing-bg-color);
     }
 
     &.ui-draggable {
