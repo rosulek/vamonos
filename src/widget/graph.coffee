@@ -27,13 +27,22 @@ class Graph
         # resolve vertex ids to actual vertices
         @inputVars[k] = @defaultGraph.vertex(v) for k,v of @inputVars
 
-        @$outer = Vamonos.jqueryify(container)
-        @$inner = $("<div>", {class: "graph-inner-container"})
+        @$outer  = Vamonos.jqueryify(container)
+        @$inner  = $("<div>", {class: "graph-inner-container"})
         @$outer.append(@$inner)
 
         @theGraph = @defaultGraph ? new Vamonos.DataStructure.Graph()
 
+        @resize()
         @jsPlumbInit()
+
+   
+    resize: () ->
+        max_x = Math.max(@theGraph.vertices.map((v)->v.x)...)
+        max_y = Math.max(@theGraph.vertices.map((v)->v.y)...)
+        @$outer.width(max_x + 35)
+        @$outer.height(max_y + 35)
+
         
     event: (event, options...) -> switch event
         when "setup"
@@ -135,6 +144,7 @@ class Graph
                 @theGraph.addVertex(vtx)
                 @addNode(vtx)
                 @updateGraph(@theGraph)
+            @resize()
         )
 
 
@@ -142,6 +152,8 @@ class Graph
         @$selectedVertex = $vtxContents.parent()
         @$selectedVertex.addClass("selected")
         @openDrawer()
+
+        # Show dotted and red lines for potential edge additions/deletions
         @_$others = @$selectedVertex.siblings("div.vertex").children("div.vertex-contents")
         @_$others.on "mouseenter.vamonos-graph", (e) =>
             con = @getConnection(@$selectedVertex.attr("id"), $(e.target).parent().attr("id"))
@@ -160,7 +172,6 @@ class Graph
                         lineWidth: 2
                 if @theGraph.directed
                     @_possibleEdge.addOverlay(["PlainArrow", {location:-4, width:8, length:8}])
-
         @_$others.on "mouseleave.vamonos-graph", (e) =>
             if @_possibleEdge?
                 @jsPlumbInstance.detach(@_possibleEdge)
@@ -173,18 +184,29 @@ class Graph
 
         
     openDrawer: () ->
-        @$drawer = $("<div>", {class:"container"})
+        if @$drawer?
+            @$drawer.html("")
+        else
+            @$drawer = $("<div>", {class:"container"})
+            @$drawer.hide()
+            @$outer.parent().append(@$drawer)
+
         vtx = @theGraph.vertex(@$selectedVertex.attr("id"))
-        $("<div>", {text: "selected: vertex #{vtx.name}"}).appendTo(@$drawer)
+        $("<div>", {text: "vertex #{vtx.name}"}).appendTo(@$drawer)
         for v of @inputVars
-            $button = $("<button>", {text: "set #{v}=#{vtx.name}"})
+            $button = $("<button>", {text: "#{v}=#{vtx.name}"})
             $button.on "click.vamonos-graph", (e) =>
                 @inputVars[v] = vtx
                 @updateGraph(@theGraph)
                 @deselect()
             @$drawer.append($button)
+            $button
 
-        @$outer.parent().append(@$drawer)
+        @$drawer.fadeIn()
+
+    closeDrawer: () ->
+        return unless @$drawer?
+        @$drawer.fadeOut()
 
     deselect: () ->
         return unless @$selectedVertex?
@@ -192,7 +214,7 @@ class Graph
         @_$others.off("mouseenter.vamonos-graph mouseleave.vamonos-graph")
         @$selectedVertex.removeClass("selected")
         @$selectedVertex = undefined
-        @$drawer.remove()
+        @closeDrawer()
 
     nextVertexId: () ->
         @_customVertexNum ?= 0
@@ -282,11 +304,12 @@ class Graph
         $v.css("top",  vertex.y)
         $v.css("position", "absolute")
         @jsPlumbInstance.draggable($v, {
-            containment:"parent"
-            stop: (event, ui) =>
+            containment: [pos.left, pos.top, window.innerWidth, window.innerHeight]
+            drag: (event, ui) =>
                 vtx = @theGraph.vertex(vertex.id)
                 vtx.x = ui.position.left
                 vtx.y = ui.position.top
+                @resize()
         })
 
         @$inner.append($v)
