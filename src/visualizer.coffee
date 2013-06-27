@@ -88,17 +88,20 @@ class Visualizer
                 nsobj[name] = undefined unless name is 'global'
 
     getFrame: () ->
-        r = {
-            _callStack: Vamonos.clone(@stash.callStack)
-        }
+        r = { _callStack: Vamonos.clone(@stash.callStack) }
         for proc, ns of @stash.namespaces
-            for k, v of ns
-                continue if typeof v is 'function' or k is 'global'
-                cloned = Vamonos.clone(v)
-                r["#{proc}::#{k}"] = cloned
-                r[k] = cloned if proc is @stash.context.proc
+            continue if proc is 'global' # deal with global last
+            @cloneNamespaceToObj(r, proc, ns, proc is @stash.context.proc)
+        @cloneNamespaceToObj(r, "global", @stash.namespaces.global, true)
         return r
 
+    cloneNamespaceToObj: (obj, proc, ns, generic = false) ->
+        for k, v of ns
+            continue if typeof v is 'function' or k is 'global'
+            cloned = Vamonos.clone(v)
+            obj["#{proc}::#{k}"] = cloned
+            obj[k] = cloned if generic and not obj[k]?
+        
     # --------------- algorithm related methods -------------- #
 
     line: (n) ->

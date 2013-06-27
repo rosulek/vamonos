@@ -36,6 +36,10 @@
             vertical-align: top;
             text-align: left;
         }
+
+        label {
+            color: green;
+        }
     </style>
 
 </head><body>
@@ -117,14 +121,10 @@ var myviz = new Vamonos.Visualizer({
                     v.d === undefined ? "" : 
                     v.d === Infinity ? "\u221E" : v.d
                 );
-                $vtx.children("div.vertex-se-label").text(
-                    v.pred === undefined? "" : v.pred.name
-                );
             },
 
-            edgeLabel: function (edge) {
-                return edge.w ? edge.w : "";
-            },
+            // the edge attribute to be displayed as label and default value for new edges
+            edgeAttribute: {name: "w", defaultValue: 1},
 
             edgeStyle: function (edge) {
                 // WARNING!!! ONLY WORKS ON UNDIRECTED GRAPHS
@@ -145,10 +145,6 @@ var myviz = new Vamonos.Visualizer({
                 v: {
                     show: function($vtx){ $vtx.children("div.vertex-ne-label").html("v") },
                     hide: function($vtx){ $vtx.children("div.vertex-ne-label").html("") },
-                },
-                "global::s": {
-                    show: function($vtx){ $vtx.children("div.vertex-nw-label").text("s") },
-                    hide: function($vtx){ $vtx.children("div.vertex-nw-label").text("") },
                 },
                 s: {
                     show: function($vtx){ $vtx.children("div.vertex-nw-label").text("s") },

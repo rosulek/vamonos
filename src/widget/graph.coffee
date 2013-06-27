@@ -37,7 +37,7 @@ class Graph
     constructor: ({container, @varName, @defaultGraph, @inputVars, 
         @showVertices, @showEdges, 
         @vertexSetupFunc, @vertexUpdateFunc, 
-        @edgeLabel, @edgeStyle}) ->
+        @edgeAttribute, @edgeStyle}) ->
 
         @inputVars  ?= {}
         @connections = []
@@ -65,14 +65,18 @@ class Graph
 
         when "render"
             [frame, type] = options
-            @updateGraph(frame[@varName])
+            @updateGraphDisplay(frame[@varName])
             @runShowFuncs(frame)
             @previousFrame = frame
 
         when "displayStart" then @mode = "display"
         when "displayStop"  then @clearDisplay()
-        when "editStart"    then @editModeOn()
-        when "editStop"     then @editModeOff()
+        when "editStart"    
+            @editModeOn()
+        when "editStop"     
+            @editModeOff()
+            @updateViz()
+            @clearDisplay()
 
     # ----------------- node, edge modification api ------------------ #
 
@@ -80,7 +84,7 @@ class Graph
         vtx = {id: @nextVertexId(), x, y}
         @theGraph.addVertex(vtx)
         $new = @addNode(vtx)
-        @updateGraph(@theGraph)
+        @updateGraphDisplay(@theGraph)
         @resize()
         @select($new)
 
@@ -93,7 +97,10 @@ class Graph
         @resize()
 
     addEdge: (sourceId, targetId) ->
-        @theGraph.addEdge(sourceId, targetId)
+        opts = {}
+        if @edgeAttribute?.name? and @edgeAttribute?.defaultValue?
+            opts[@edgeAttribute.name] = @edgeAttribute.defaultValue 
+        @theGraph.addEdge(sourceId, targetId, opts)
         @addConnection(sourceId, targetId)
         @resetEdge()
 
@@ -203,10 +210,46 @@ class Graph
         connection = @jsPlumbInstance.connect({ source: sourceId, target: targetId })
         if @theGraph.directed
             connection.addOverlay(["PlainArrow", {location:-4, width:8, length:8}])
-        if @edgeLabel?
+        if @edgeAttribute?.name?
             edge = @theGraph.edge(connection.sourceId, connection.targetId)
-            connection.addOverlay(["Label", {label: @edgeLabel(edge) + ""} ])
+            connection.addOverlay([
+                "Custom",
+                create: () => @createLabel(edge).fadeIn("fast")
+            ])
         @connections.push(connection)
+
+    createLabel: (edge) =>
+        val = Vamonos.rawToTxt(edge[@edgeAttribute.name] ? "")
+        $label = $("<div>#{val}</div>")
+        $label.on "click.vamonos-graph", (e) =>
+            return unless @mode is 'edit'
+            @editLabel($label, edge)
+        return $label
+
+    editLabel: ($label, edge) =>
+        @deselect()
+        @editModeOff()
+        $editor = $("<input class='editing'>")
+        $editor.hide()
+        $editor.width($label.width())
+        $editor.val(edge[@edgeAttribute.name] ? "")
+        $editor.on "keydown.vamonos-graph", (event) =>
+            if event.keyCode in [13, 32, 9, 27]
+                @doneEditingLabel($label, $editor, edge)
+        $editor. on "blur.vamonos-graph", (event) =>
+            @doneEditingLabel($label, $editor, edge)
+        $label.html($editor)
+        $editor.fadeIn "fast"
+        $editor.focus()
+        $editor.select()
+
+    doneEditingLabel: ($label, $editor, edge) ->
+        val = Vamonos.txtToRaw($editor.val())
+        if val?
+            edge[@edgeAttribute.name] = val
+        $editor.fadeOut "fast", =>
+            $label.html(@createLabel(edge))
+        @editModeOn()
 
     removeConnection: (sourceId, targetId) ->
         connection = @getConnection(sourceId, targetId)
@@ -225,8 +268,9 @@ class Graph
     # ------------------ interaction methods ---------------------- #
 
     editModeOn: () ->
+        return if @mode is "edit"
         @mode = "edit"
-        @updateGraph(@theGraph)
+        @updateGraphDisplay(@theGraph)
         @$outer.disableSelection()
         # Clicks: 
         #   when no selection: vertex -> select,   non-vertex -> make new vertex
@@ -303,7 +347,7 @@ class Graph
             $button = $("<button>", {text: "#{v}"})
             $button.on "click.vamonos-graph", (e) =>
                 @inputVars[v] = vtx
-                @updateGraph(@theGraph)
+                @updateGraphDisplay(@theGraph)
         $removeButton = $("<button>", {text: "del"})
         $removeButton.on "click.vamonos-graph", (e) =>
             @removeVertex(vtx.id)
@@ -323,19 +367,8 @@ class Graph
         )
 
     editModeOff: () ->
+        @mode = undefined
         @$outer.off("click.vamonos-graph")
-        if @theGraph.vertices.length > 0
-            @viz.setVariable(@varName, Vamonos.clone(@theGraph), true)
-        else
-            alert "GRAPH WIDGET: need vertices please!" 
-            throw "GRAPH WIDGET: leaving edit mode without vertices"
-        graph = @viz.getVariable(@varName, true)
-        for k, v of @inputVars
-            unless v?
-                alert "GRAPH WIDGET: please set #{k}!"
-                throw "GRAPH WIDGET: need a value for #{k}!"
-            @viz.setVariable(k, graph.vertex(v.id), true)
-        @clearDisplay()
 
     # -------------------- utility functions --------------------- #
 
@@ -355,7 +388,20 @@ class Graph
         r2 = (newv[k] == v for k, v of oldv)
         not r1.concat(r2).every((b) -> b)
 
-    updateGraph: (graph) ->
+    updateViz: () ->
+        if @theGraph.vertices.length > 0
+            @viz.setVariable(@varName, Vamonos.clone(@theGraph), true)
+        else
+            alert "GRAPH WIDGET: need vertices please!" 
+            throw "GRAPH WIDGET: leaving edit mode without vertices"
+        graph = @viz.getVariable(@varName, true)
+        for k, v of @inputVars
+            unless v?
+                alert "GRAPH WIDGET: please set #{k}!"
+                throw "GRAPH WIDGET: need a value for #{k}!"
+            @viz.setVariable(k, graph.vertex(v.id), true)
+
+    updateGraphDisplay: (graph) ->
         if @graphDrawn
             $e.removeClass("changed") for $e in @nodes.concat(@connections)
         else
