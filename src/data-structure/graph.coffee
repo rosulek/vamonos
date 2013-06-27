@@ -98,10 +98,7 @@ class Graph
         v.id
 
     clone: () ->
-        r = new Vamonos.DataStructure.Graph
-            vertices: Vamonos.clone(@vertices)
-            directed: @directed
-            edges: []
+        r = new Vamonos.DataStructure.Graph()
         Vamonos.mixin(r, this, Vamonos.clone)
 
 

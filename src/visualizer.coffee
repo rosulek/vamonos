@@ -155,8 +155,10 @@ class Visualizer
                     continue if typeof v is 'function'
                     args[k] = v
 
-            save    = {}
-            save[k] = @getVariable("#{procName}::#{k}") for k of args
+            save = {}
+            for k of args
+                val = @getVariable("#{procName}::#{k}") 
+                save[k] = val if val?
             @stash.callStack.push(@stash.context)
 
             @stash.context = { proc: procName, args: args }

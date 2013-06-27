@@ -10,7 +10,7 @@
     <style type="text/css">
         .vertex-sw-label {
             font-family: sans-serif;
-            font-size: .7em; 
+            font-size: .8em;
             color: blue;
         }
 
@@ -101,14 +101,14 @@ var myviz = new Vamonos.Visualizer({
             },
             vertexSetupFunc: function(v, $vtx) {
                 $vtx.append([
-                    $("<div>", { class:'vertex-ne-label' }),
                     $("<div>", { class:'vertex-sw-label' }),
                     $("<div>", { class:'vertex-nw-label' }),
+                    $("<div>", { class:'vertex-ne-label' }),
+                    $("<div>", { class:'vertex-se-label' }),
                 ]);
                 $vtx.children("div.vertex-contents").text(v.name);
             },
             vertexUpdateFunc: function(v, $vtx) {
-                console.log(v);
                 var clearColor = function () { $vtx.removeClass('black') };
                 if (v.done) { $vtx.addClass('black') }
                 else { clearColor() }
@@ -117,16 +117,24 @@ var myviz = new Vamonos.Visualizer({
                     v.d === undefined ? "" : 
                     v.d === Infinity ? "\u221E" : v.d
                 );
+                $vtx.children("div.vertex-se-label").text(
+                    v.pred === undefined? "" : v.pred.name
+                );
             },
 
-            renderEdgeLabel: function (edge) {
-                return edge.w;
+            edgeLabel: function (edge) {
+                return edge.w ? edge.w : "";
             },
 
-            renderEdgeStyle: function (edge) {
-                if (edge.target.pred && edge.target.pred.id == edge.source.id)
-                    {return {strokeStyle: '#c88', lineWidth: 4};} //forward edge
-                return {lineWidth: 2};
+            edgeStyle: function (edge) {
+                // WARNING!!! ONLY WORKS ON UNDIRECTED GRAPHS
+                if (
+                    (edge.target.pred && edge.target.pred.id === edge.source.id) ||
+                    (edge.source.pred && edge.source.pred.id === edge.target.id)
+                   ) {
+                    return { strokeStyle: 'blue', lineWidth: 4 }
+                } //forward edge
+                return { lineWidth: 2, strokeStyle: "gray" };
             },
 
             showVertices: {
@@ -138,7 +146,11 @@ var myviz = new Vamonos.Visualizer({
                     show: function($vtx){ $vtx.children("div.vertex-ne-label").html("v") },
                     hide: function($vtx){ $vtx.children("div.vertex-ne-label").html("") },
                 },
-                "main::s": {
+                "global::s": {
+                    show: function($vtx){ $vtx.children("div.vertex-nw-label").text("s") },
+                    hide: function($vtx){ $vtx.children("div.vertex-nw-label").text("") },
+                },
+                s: {
                     show: function($vtx){ $vtx.children("div.vertex-nw-label").text("s") },
                     hide: function($vtx){ $vtx.children("div.vertex-nw-label").text("") },
                 },
@@ -150,6 +162,7 @@ var myviz = new Vamonos.Visualizer({
                 },
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
+                //directed: true,
                 vertices: [ 
                     {id: "v0", x: 17,  y: 10},
                     {id: "v1", x: 98, y: 10},
@@ -166,8 +179,8 @@ var myviz = new Vamonos.Visualizer({
                     {source: 'v1',target: 'v2', w:2},
                     {source: 'v1',target: 'v4', w:5},
                     {source: 'v3',target: 'v4', w:3},
-                    {source: 'v3',target: 'v6', w:10},
-                    {source: 'v4',target: 'v8', w:1},
+                    {source: 'v3',target: 'v6', w:1},
+                    {source: 'v4',target: 'v8', w:14},
                     {source: 'v5',target: 'v8', w:2},
                     {source: 'v6',target: 'v7', w:3},
                     {source: 'v7',target: 'v8', w:2},
@@ -185,7 +198,7 @@ var myviz = new Vamonos.Visualizer({
                 G.eachVertex(function(vtx){
 _(1);               u = vtx;
 _(2);               u.d = Infinity;
-_(3);               u.pred = null;
+_(3);               u.pred = undefined;
 _(4);               u.done = false;
                 });
 
@@ -209,7 +222,6 @@ _(11);                  global.relax({u:u,v:v,G:G});
         relax: function(viz){
             var _ = function(n){ viz.line(n) };
             with (viz.namespace.relax) {
-                console.log(u.d, G.edge(u,v).w, v.d);
                 if (_(1), u.d + G.edge(u,v).w < v.d) {
 _(2);               v.d = u.d + G.edge(u,v).w;
 _(3);               v.pred = u;

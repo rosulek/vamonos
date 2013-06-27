@@ -17,8 +17,27 @@
 
 class Graph
 
-    constructor: ({container, @varName, @defaultGraph, @vertexSetupFunc,
-        @vertexUpdateFunc, @showVertices, @showEdges, @inputVars}) ->
+    # ----------- styles -------------- #
+
+    normalPaintStyle:
+            lineWidth: 2
+            strokeStyle:"gray"
+
+    deletionPaintStyle:
+            strokeStyle: "red"
+            lineWidth: 4
+
+    additionPaintStyle:
+            dashstyle: "2 2"
+            strokeStyle: "blue"
+            lineWidth: 2
+
+    # ------------ normal widget methods -------------- #
+
+    constructor: ({container, @varName, @defaultGraph, @inputVars, 
+        @showVertices, @showEdges, 
+        @vertexSetupFunc, @vertexUpdateFunc, 
+        @edgeLabel, @edgeStyle}) ->
 
         @inputVars  ?= {}
         @connections = []
@@ -101,10 +120,21 @@ class Graph
                 hide($oldv)
                 show($newv)
 
+    runEdgeStyle: (con, graph) ->
+        return unless @edgeStyle? and con? and graph?
+        edge = graph.edge(con.sourceId, con.targetId)
+        s = graph.vertex(edge.source.id)
+        t = graph.vertex(edge.target.id)
+        con.setPaintStyle(@edgeStyle({source: s, target: t}))
+
     runShowEdges: (frame) ->
+        @shownConnections ?= []
+        @runEdgeStyle(c, frame[@varName]) for c in @connections if @edgeStyle?
         for edgeStr, {show, hide} of @showEdges
             if edgeStr.match /->/ 
-                hide(c) for c in @shownConnections if @shownConnections?
+                for c in @shownConnections
+                    hide(c) 
+                    @runEdgeStyle(c, frame[@varName])
                 @shownConnections = []
                 [sourceId, targetId] = edgeStr.split(/->/).map((v)->frame[v]?.id)
                 return unless sourceId? and targetId?
@@ -173,6 +203,9 @@ class Graph
         connection = @jsPlumbInstance.connect({ source: sourceId, target: targetId })
         if @theGraph.directed
             connection.addOverlay(["PlainArrow", {location:-4, width:8, length:8}])
+        if @edgeLabel?
+            edge = @theGraph.edge(connection.sourceId, connection.targetId)
+            connection.addOverlay(["Label", {label: @edgeLabel(edge) + ""} ])
         @connections.push(connection)
 
     removeConnection: (sourceId, targetId) ->
@@ -231,17 +264,12 @@ class Graph
         connection = @getConnection(@_$selectedVertex.attr("id"), $(e.target).parent().attr("id"))
         if connection?
             @_alteredEdge = connection
-            connection.setPaintStyle
-                strokeStyle: "red"
-                lineWidth: 4
+            connection.setPaintStyle(@deletionPaintStyle)
         else
             @_possibleEdge = @jsPlumbInstance.connect
                 source: @_$selectedVertex
                 target: $(e.target).parent()
-                paintStyle: 
-                    dashstyle: "2 2"
-                    strokeStyle: "blue"
-                    lineWidth: 2
+                paintStyle: @additionPaintStyle
             if @theGraph.directed
                 @_possibleEdge.addOverlay(["PlainArrow", {location:-4, width:8, length:8}])
             
@@ -250,9 +278,7 @@ class Graph
             @jsPlumbInstance.detach(@_possibleEdge)
             @_possibleEdge = undefined
         if @_alteredEdge?
-            @_alteredEdge.setPaintStyle
-                strokeStyle: "gray"
-                lineWidth: 2
+            @_alteredEdge.setPaintStyle(@normalPaintStyle)
             @_alteredEdge = undefined
         
     deselect: () ->
@@ -344,9 +370,7 @@ class Graph
     jsPlumbInit: () -> 
         @jsPlumbInstance = jsPlumb.getInstance 
             Connector: ["Straight"]
-            PaintStyle: 
-                lineWidth: 2
-                strokeStyle:"gray"
+            PaintStyle: @normalPaintStyle
             Endpoint: "Blank"
             EndpointStyle:{ fillStyle:"black" }
             Anchor: [ "Perimeter", { shape: "Circle" } ]
