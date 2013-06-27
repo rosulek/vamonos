@@ -7,87 +7,45 @@
     <script type="text/javascript" src="../deps/jquery-jsplumb.js"></script>
     <script type="text/javascript" src="../lib/vamonos.js"></script>
 
-    <style type="text/css">
-        .vertex-sw-label {
-            font-family: sans-serif;
-            font-size: .6em; 
-            color: blue;
-        }
-
-        .vertex-ne-label {
-            font-style: italic;
-            color: red;
-        }
-
-        .vertex-nw-label {
-            font-style: italic;
-            color: green;
-        }
-
-        .white { 
-            background: white; 
-        }
-
-        .gray {
-            background: gray; 
-        }
-
-        .gray .vertex-contents { 
-            color: white; 
-        }
-
-        .black {
-            background: black; 
-        }
-
-        .black .vertex-contents { 
-            color: white; 
-        }
-
-        td { 
-            vertical-align: top;
-            text-align: left;
-        }
-    </style>
+<style>
+    td {
+        vertical-align: top;
+    }
+</style>
 
 </head><body>
 
-    <h1>Breadth-First Search</h1>
+    <h1>Dijkstra's Algorithm</h1>
 
-
-    <div class="vamonos left">
-        <table><tr><td>
-        <div class="container" id="pseudocode" title="BFS(G,s):">
+    <table><tr><td>
+        <div id="pseudocode" title="Dijkstra(G,s):" class="container">
             for each vertex u &in; G.V - {s}
-                u.color = white
-            s.color = gray
+                u.d = &#x221E;
+                u.pred = null
+                u.done = false
             s.d = 0
-            Q = &empty;
-            Q.enqueue(s)
+            Q = G.V
             while Q &ne; &empty;
-                u = Q.dequeue()
+                u = Q.extractMin()
+                u.done = true
                 for each v &in; G.Adj[u]
-                    if v.color == white
-                        v.color = gray
-                        v.d = u.d + 1
-                        Q.enqueue(v)
-                u.color = black
-        </div>
-        <br>
-        <div id="controls"></div>
-        </td><td valign='top' align='left'>
-            <div class="container" id="graph" style="width:220; height:180;"></div>
-            <div class="no-indices" id="queue"></div><br>
-        </td></tr></table>
-    </div>
+                    Relax(u,v)
+        </div><br>
+        <div id="controls"></div><br>
+    </td><td>
+        <div id="graph" class="container"></div><br>
+        <div id="queue"></div><br>
+    </td></tr></table>
+
 </body>
 <script type="text/javascript">
-
 var myviz = new Vamonos.Visualizer({
     widgets: [
+        new Vamonos.Widget.Console(),
+
         new Vamonos.Widget.Controls({
             container: "controls",
-            showWhileSliding: true
+            showWhileSliding: true,
         }),
 
         new Vamonos.Widget.Queue({
@@ -105,7 +63,7 @@ var myviz = new Vamonos.Visualizer({
             varName: "G",
             container: "graph",
             inputVars: {
-                s: "v0"
+                s: "v0",
             },
             vertexSetupFunc: function(v, $vtx) {
                 $vtx.append([
@@ -124,6 +82,17 @@ var myviz = new Vamonos.Visualizer({
                 $vtx.children("div.vertex-contents").text(v.name);
                 $vtx.children("div.vertex-sw-label").text(v.d === undefined ? "" : v.d);
             },
+
+            renderEdgeLabel: function (edge) {
+                return edge.w;
+            },
+
+            renderEdgeStyle: function (edge) {
+                if (edge.target.pred && edge.target.pred.id == edge.source.id)
+                    {return {strokeStyle: '#c88', lineWidth: 4};} //forward edge
+                return {lineWidth: 2};
+            },
+
             showVertices: {
                 u: {
                     show: function($vtx){ $vtx.children("div.vertex-ne-label").html("u") },
@@ -167,43 +136,49 @@ var myviz = new Vamonos.Visualizer({
                     {source: 'v6',target: 'v7'},
                     {source: 'v7',target: 'v8'},
                 ]
-            })
+            }),
         }),
-
     ],
 
-    autoStart: false,
+    algorithm: {
 
-    algorithm: function (viz) {
-        var _ = function(n){ viz.line(n); }; 
-        with (viz.namespace.main) {
-            G.eachVertex(function(vtx){
-                if (vtx.id === s.id) { return }
-_(1);               u = vtx;
-_(2);               u.color = "white";
-            });
-            u = undefined;
-_(3);       s.color = "gray";
-_(4);       s.d = 0;
-_(5);       Q = new Vamonos.DataStructure.Queue();
-_(6);       Q.enqueue(s);
-            while (_(6), !Q.isEmpty()) {
-_(8);           u = Q.dequeue();
-                G.eachNeighbor(u, function(vtx) {
-_(9);               v = vtx;
-_(10);               if (v.color === "white") {
-_(11);                  v.color = "gray";
-_(12);                  v.d = u.d + 1;
-_(13);                  Q.enqueue(v);
-                    }
+        main: function (viz) {
+            var _ = function(n){ viz.line(n) };
+            with (viz.namespace.main) {
+
+                for (var i = vs.length - 1; _(1), i >= 0; i--) {
+_(2);               vs[i].d = Infinity;
+_(3);               vs[i].pred = null;
+_(4);               vs[i].done = false;
+                }
+_(5);           s.d = 0;
+_(6);           Q = new Vamonos.DataStructure.PriorityQueue({
+                    initialArray: G.vertices,
+                    comparator: function(a,b){ return a.d - b.d },
                 });
-                v = undefined;
-_(14);          u.color = "black";
+
+                while (_(7), Q.length > 0) {
+                    u = Q.extractMin();
+                    u.is_u = 1;
+                    u.done = true;
+                    vs = graph.getNeighbors(u);
+                    vs.sort( function(a,b){ return b.name.localeCompare(a.name) });
+                    for (var i = vs.length - 1; i >= 0; i--) {
+                        v = vs[i];
+                        v.is_v = 1;
+                        if (u.d + graph.edge(u,v).w < v.d) {
+                            v.d = u.d + graph.edge(u,v).w;
+                            v.pred = u;
+                        }
+                        v.is_v = 0;
+                    }
+                    u.is_u = 0;
             }
-            u = undefined;
+
         }
-    },
+
+    }
+    }
 });
 
-</script>
-</html>
+</script></html> 
