@@ -12,7 +12,7 @@ class Graph
             @addVertex(v) if v?
 
         for e in Vamonos.arrayify(args.edges)
-            @addEdge(e.source, e.target) if e?
+            @addEdge(e.source, e.target, e) if e?
 
     # ---------- edge functions ----------- #
 
@@ -23,16 +23,18 @@ class Graph
             e.source.id is sourceId and e.target.id is targetId
         )[0]
 
-    addEdge: (sourceId, targetId) ->
+    addEdge: (sourceId, targetId, args) ->
         return if @edge(sourceId, targetId)
         s = @vertex(sourceId) 
         t = @vertex(targetId)
         return unless s? and t?
         edge = { source: s, target: t, type: 'edge' }
+        if args?
+            edge[k] = v for k, v of args when k isnt 'source' and k isnt 'target'
         @adjHash[sourceId] ?= {}
         @adjHash[sourceId][targetId] = edge
         @edges.push(edge)
-        @addEdge(targetId, sourceId) unless @directed
+        @addEdge(targetId, sourceId, args) unless @directed
 
     removeEdge: (sourceId, targetId) ->
         edge = @edge(sourceId, targetId)

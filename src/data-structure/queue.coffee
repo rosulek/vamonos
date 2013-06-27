@@ -1,8 +1,9 @@
 class Queue
 
-    constructor: (elems = []) ->
-        @initialize(elems)
+    constructor: (@args = {}) ->
+        @initialize(@args.initialArray?.slice())
         @type = 'queue'
+        @comparator = @args.comparator
 
     initialize: (elems = []) ->
         @guts = elems
@@ -14,11 +15,18 @@ class Queue
     dequeue: () ->
         @guts.shift()
 
+    extractMin: () ->
+        @guts.sort(@comparator)
+        @dequeue()
+
     isEmpty: () ->
         @guts.length == 0
 
     clone: () ->
-        new Vamonos.DataStructure.Queue(Vamonos.clone(@guts))
+        new Vamonos.DataStructure.Queue({
+            initialArray: Vamonos.clone(@guts)
+            comparator: @comparator
+        })
 
     toString: () ->
         if @isEmpty() 
