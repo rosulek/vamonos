@@ -1,7 +1,7 @@
 class Graph
     constructor: (args = {}) ->
         
-        @directed = args.directed ? yes
+        @directed = args.directed ? no
 
         @type     = 'graph'
         @adjHash  = {}

@@ -19,6 +19,11 @@
             color: red;
         }
 
+        .vertex-nw-label {
+            font-style: italic;
+            color: green;
+        }
+
         .white { 
             background: white; 
         }
@@ -90,12 +95,7 @@ var myviz = new Vamonos.Visualizer({
             showVertices: {
                 u: {
                     show: function($vtx){
-                        $label = $vtx.children("div.vertex-ne-label");
-                        if ($label.html() == "v") {
-                            $label.html("u,&nbsp;v");
-                        } else {
-                            $label.html("u");
-                        }
+                        $vtx.children("div.vertex-ne-label").html("u");
                     },
                     hide: function($vtx){ 
                         $label = $vtx.children("div.vertex-ne-label");
@@ -174,17 +174,16 @@ var myviz = new Vamonos.Visualizer({
                 $vtx.children("div.vertex-sw-label").text(v.d === undefined ? "" : v.d);
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
-                directed: false,
                 vertices: [ 
-                    {id: "v0", x: 15,  y: 10},
-                    {id: "v1", x: 100, y: 10},
-                    {id: "v2", x: 180, y: 10},
-                    {id: "v3", x: 15,  y: 80},
+                    {id: "v0", x: 17,  y: 10},
+                    {id: "v1", x: 98, y: 10},
+                    {id: "v2", x: 176, y: 13},
+                    {id: "v3", x: 15,  y: 78},
                     {id: "v4", x: 100, y: 80},
-                    {id: "v5", x: 180, y: 80},
-                    {id: "v6", x: 15,  y: 140},
+                    {id: "v5", x: 182, y: 80},
+                    {id: "v6", x: 15,  y: 138},
                     {id: "v7", x: 100, y: 140},
-                    {id: "v8", x: 180, y: 140},
+                    {id: "v8", x: 182, y: 140},
                 ],
                 edges: [
                     {source: 'v0',target: 'v4'},
