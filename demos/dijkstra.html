@@ -24,11 +24,7 @@
         }
 
         .done {
-            background: #572400; 
-        }
-
-        .done .vertex-contents { 
-            color: white; 
+            background: #FFE59E; 
         }
 
         td { 
@@ -134,7 +130,7 @@ var myviz = new Vamonos.Visualizer({
                    ) {
                     return { strokeStyle: '#92E894', lineWidth: 4 }
                 } //forward edge
-                return { lineWidth: 2, strokeStyle: "gray" };
+                return { lineWidth: 4, strokeStyle: "#C7C7C7" };
             },
 
             showVertices: {
@@ -152,10 +148,7 @@ var myviz = new Vamonos.Visualizer({
                 },
             },
             showEdges: {
-                "u->v": {
-                    show: function($edge){$edge.setPaintStyle({strokeStyle:"red",lineWidth:3})},
-                    hide: function($edge){$edge.setPaintStyle({strokeStyle:"gray",lineWidth:2})},
-                },
+                "u->v": function($edge){$edge.setPaintStyle({strokeStyle:"red",lineWidth:3})},
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 //directed: true,

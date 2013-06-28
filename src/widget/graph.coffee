@@ -20,17 +20,26 @@ class Graph
     # ----------- styles -------------- #
 
     normalPaintStyle:
-            lineWidth: 2
-            strokeStyle:"gray"
+        lineWidth: 4
+        strokeStyle:"#E0E0E0"
 
     deletionPaintStyle:
-            strokeStyle: "red"
-            lineWidth: 4
+        strokeStyle: "red"
+        lineWidth: 4
 
     additionPaintStyle:
-            dashstyle: "2 2"
-            strokeStyle: "blue"
-            lineWidth: 2
+        dashstyle: "2 2"
+        strokeStyle: "blue"
+        lineWidth: 2
+
+    selectedPaintStyle:
+        lineWidth: 4
+        strokeStyle: "#92E894"
+
+    hoverPaintStyle:
+        lineWidth: 4
+        strokeStyle: "#CFCFCF"
+
 
     # ------------ normal widget methods -------------- #
 
@@ -86,7 +95,7 @@ class Graph
         $new = @addNode(vtx)
         @updateGraphDisplay(@theGraph)
         @resize()
-        @select($new)
+        @selectNode($new)
 
     removeVertex: (vid) ->
         @deselect()
@@ -102,12 +111,13 @@ class Graph
             opts[@edgeAttribute.name] = @edgeAttribute.defaultValue 
         @theGraph.addEdge(sourceId, targetId, opts)
         @addConnection(sourceId, targetId)
-        @resetEdge()
+        @resetEdges()
 
     removeEdge: (sourceId, targetId) ->
+        if 'edge' is @selected() then @deselect()
         @theGraph.removeEdge(sourceId, targetId)
         @removeConnection(sourceId, targetId)
-        @resetEdge()
+        @resetEdges()
 
     # -------------- user function runners ---------------- #
 
@@ -137,10 +147,10 @@ class Graph
     runShowEdges: (frame) ->
         @shownConnections ?= []
         @runEdgeStyle(c, frame[@varName]) for c in @connections if @edgeStyle?
-        for edgeStr, {show, hide} of @showEdges
+        for edgeStr, show of @showEdges
             if edgeStr.match /->/ 
                 for c in @shownConnections
-                    hide(c) 
+                    @resetEdgeStyle(c) 
                     @runEdgeStyle(c, frame[@varName])
                 @shownConnections = []
                 [sourceId, targetId] = edgeStr.split(/->/).map((v)->frame[v]?.id)
@@ -207,15 +217,20 @@ class Graph
 
     addConnection: (sourceId, targetId) ->
         return if @getConnection(sourceId, targetId)
+        edge       = @theGraph.edge(sourceId, targetId)
         connection = @jsPlumbInstance.connect({ source: sourceId, target: targetId })
-        if @theGraph.directed
-            connection.addOverlay(["PlainArrow", {location:-4, width:8, length:8}])
-        if @edgeAttribute?.name?
-            edge = @theGraph.edge(connection.sourceId, connection.targetId)
-            connection.addOverlay([
-                "Custom",
-                create: () => @createLabel(edge).fadeIn("fast")
-            ])
+        @setOverlays(connection, edge)
+        connection.bind "click", (con) => 
+            return unless @mode is 'edit'
+            @selectConnection(con, edge)
+        connection.bind "mouseenter", (con) =>
+            return unless @mode is 'edit'
+            return if con.id is @_$selectedCon?.id
+            con.setPaintStyle(@hoverPaintStyle)
+        connection.bind "mouseexit", (con) =>
+            return unless @mode is 'edit'
+            return if con.id is @_$selectedCon?.id
+            con.setPaintStyle(@normalPaintStyle)
         @connections.push(connection)
 
     removeConnection: (sourceId, targetId) ->
@@ -232,6 +247,21 @@ class Graph
                 e.sourceId == targetId and e.targetId == sourceId)
         res[0]
 
+    setOverlays: (connection, edge) ->
+        connection.removeAllOverlays()
+        if @theGraph.directed
+            connection.addOverlay(["PlainArrow", {location:-4, width:8, length:8}])
+        if @edgeAttribute?.name?
+            connection.addOverlay([
+                "Custom",
+                create: () => @createLabel(edge)
+            ])
+
+    createLabel: (edge) =>
+        val = Vamonos.rawToTxt(edge[@edgeAttribute.name] ? "")
+        $label = $("<div class='graph-label'>#{val}</div>")
+        return $("<div>").append($label)
+
     # ------------------ interaction methods ---------------------- #
 
     editModeOn: () ->
@@ -244,14 +274,12 @@ class Graph
         #   when selection:    vertex -> new edge, non-vertex -> deselect
         @$outer.on "click.vamonos-graph", (e) =>
             $target = $(e.target)
-            if not @_$selectedVertex?
+            if not @selected()?
                 if $target.is("div.vertex-contents")
-                    @select($target.parent())
-                if $target.is(@$inner)
-                    @addVertex(e.offsetX - 12, e.offsetY - 12)
+                    @selectNode($target.parent())
             else
-                if $target.is("div.vertex-contents")
-                    sourceId = @_$selectedVertex.attr("id")
+                if $target.is("div.vertex-contents") and 'vertex' is @selected()
+                    sourceId = @_$selectedNode.attr("id")
                     targetId = $target.parent().attr("id")
                     if sourceId is targetId
                         @deselect() 
@@ -259,112 +287,161 @@ class Graph
                         @removeEdge(sourceId, targetId)
                     else
                         @addEdge(sourceId, targetId)
+                else if $target.is("div.vertex-contents") and 'edge' is @selected() 
+                    @selectNode($target.parent())
                 else if $target.is(@$inner)
                     @deselect()
 
-    select: (v) ->
-        @_$selectedVertex = v
-        @_$selectedVertex.addClass("selected")
-        @openDrawer()
+        @$outer.on "dblclick.vamonos-graph", (e) =>
+            $target = $(e.target)
+            if $target.is(@$inner)
+                @addVertex(e.offsetX - 12, e.offsetY - 12)
+
+    selected: () ->
+        return 'vertex' if @_$selectedNode?
+        return 'edge'   if @_$selectedCon?
+
+    selectNode: (v) ->
+        @deselectEdge() if 'edge' is @selected()
+        @_$selectedNode = v
+        @_$selectedNode.addClass("selected")
+        @openDrawer('vertex')
         # Show dotted and red lines for potential edge additions/deletions
-        @_$others = @_$selectedVertex.siblings("div.vertex").children("div.vertex-contents")
+        @_$others = @_$selectedNode.siblings("div.vertex").children("div.vertex-contents")
         @_$others.on "mouseenter.vamonos-graph", @highlightEdge
-        @_$others.on "mouseleave.vamonos-graph", @resetEdge
+        @_$others.on "mouseleave.vamonos-graph", @resetEdges
+
+    selectConnection: (con, edge) ->
+        @deselectVertex() if 'vertex' is @selected()
+        @deselectEdge() if 'edge' is @selected()
+        @_$selectedCon = con
+        @_$selectedCon.setPaintStyle(@selectedPaintStyle)
+        @openDrawer('edge', edge)
             
-    highlightEdge: (e) =>
-        connection = @getConnection(@_$selectedVertex.attr("id"), $(e.target).parent().attr("id"))
-        if connection?
-            @_alteredEdge = connection
-            connection.setPaintStyle(@deletionPaintStyle)
-        else
-            @_possibleEdge = @jsPlumbInstance.connect
-                source: @_$selectedVertex
-                target: $(e.target).parent()
-                paintStyle: @additionPaintStyle
-            if @theGraph.directed
-                @_possibleEdge.addOverlay(["PlainArrow", {location:-4, width:8, length:8}])
-            
-    resetEdge: () =>
-        if @_possibleEdge?
-            @jsPlumbInstance.detach(@_possibleEdge)
-            @_possibleEdge = undefined
-        if @_alteredEdge?
-            @_alteredEdge.setPaintStyle(@normalPaintStyle)
-            @_alteredEdge = undefined
-        
     deselect: () ->
-        return unless @_$selectedVertex?
+        @deselectVertex()
+        @deselectEdge()
+        @closeDrawer()
+        
+    deselectVertex: () ->
+        return unless @_$selectedNode?
         @jsPlumbInstance.detach(@_possibleEdge) if @_possibleEdge?
         @_$others.off("mouseenter.vamonos-graph mouseleave.vamonos-graph")
-        @_$selectedVertex.removeClass("selected")
-        @_$selectedVertex = undefined
-        @closeDrawer()
+        @_$selectedNode.removeClass("selected")
+        @_$selectedNode = undefined
 
-    openDrawer: () ->
+    deselectEdge: () ->
+        return unless @_$selectedCon?
+        @_$selectedCon = undefined
+        @resetEdges()
+
+    openDrawer: (type, elem) ->
         if @$drawer?
             @$drawer.html("")
         else
             @$drawer = $("<div>", { class: "graph-drawer" })
             @$drawer.hide()
             @$inner.append(@$drawer)
-        vtx = @theGraph.vertex(@_$selectedVertex.attr("id"))
-        @$drawer.html("<span class='left'>vertex&nbsp;&nbsp;#{vtx.name}</span>")
-        $buttonHolder = $("<span>", {class: "right"})
-        buttons = for v of @inputVars
-            $button = $("<button>", {text: "#{v}"})
-            $button.on "click.vamonos-graph", (e) =>
-                @inputVars[v] = vtx
-                @updateGraphDisplay(@theGraph)
+        $inputs = []
+        switch type 
+            when 'vertex'
+                elem ?= @theGraph.vertex(@_$selectedNode.attr("id"))
+                @$drawer.html("<span class='left'>vertex&nbsp;&nbsp;#{elem.name}</span>")
+                $inputs = for v of @inputVars
+                    $button = $("<button>", {text: "#{v}"})
+                    $button.on "click.vamonos-graph", (e) =>
+                        @inputVars[v] = elem
+                        @updateGraphDisplay(@theGraph)
+            when 'edge'
+                elem ?= @theGraph.edge(@_$selectedCon.sourceId, @_$selectedCon.sourceId)
+                name = 
+                    elem.source.name + "&nbsp;" +
+                    (if @theGraph.directed then "->" else "-") + "&nbsp;" +
+                    elem.target.name
+                @$drawer.html("<span class='left'>edge&nbsp;&nbsp;#{name}</span>")
+
+                $inputs = [
+                    $("<span>#{@edgeAttribute.name}&nbsp;=&nbsp;</span>")
+                    @createEditableAttribute(elem)
+                ] if @edgeAttribute?
+
         $removeButton = $("<button>", {text: "del"})
         $removeButton.on "click.vamonos-graph", (e) =>
-            @removeVertex(vtx.id)
-        buttons.push($removeButton)
-        $buttonHolder.append(buttons)
-        @$drawer.append($buttonHolder)
-        @$drawer.fadeIn("fast")
-        @$outer.animate(height: (@$outer.height() + @$drawer.height()), 200)
+            switch type
+                when 'vertex' then @removeVertex(elem.id)
+                when 'edge'   then @removeEdge(elem.source.id, elem.target.id)
+
+        $inputs.push($removeButton)
+        $inputHolder = $("<span>", {class: "right"})
+        $inputHolder.append($inputs)
+        @$drawer.append($inputHolder)
+        unless @$drawer.is(":visible")
+            @$drawer.fadeIn("fast")
+            @$outer.animate(height: (@$outer.height() + @$drawer.height()), 200)
 
     closeDrawer: () ->
         return unless @$drawer?
         @$drawer.fadeOut("fast")
         @$outer.animate(height:@$outer.height()-@$drawer.height(), 200, =>@resize())
 
-    createLabel: (edge) =>
-        val = Vamonos.rawToTxt(edge[@edgeAttribute.name] ? "")
-        $label = $("<div class='graph-label'>#{val}</div>")
-        $label.on "click.vamonos-graph", (e) =>
-            return unless @mode is 'edit'
-            @editLabel($label, edge)
-        return $("<div>").append($label)
+    createEditableAttribute: (edge) =>
+        $attr = $("<span>#{edge[@edgeAttribute.name]}</span>")
+        $attr.on "click", =>
+            @editAttribute($attr, edge)
 
-    editLabel: ($label, edge) =>
-        @deselect()
+    editAttribute: ($label, edge) =>
         @editModeOff()
         $editor = $("<input class='editing'>")
         $editor.hide()
-        $editor.width($label.width())
+        $editor.width(40)
         $editor.val(edge[@edgeAttribute.name] ? "")
         $editor.on "keydown.vamonos-graph", (event) =>
             if event.keyCode in [13, 32, 9, 27]
-                @doneEditingLabel($label, $editor, edge)
+                @doneEditingAttribute($label, $editor, edge)
         $editor. on "blur.vamonos-graph", (event) =>
-            @doneEditingLabel($label, $editor, edge)
+            @doneEditingAttribute($label, $editor, edge)
         $label.html($editor)
         $editor.fadeIn "fast"
         $editor.focus()
         $editor.select()
 
-    doneEditingLabel: ($label, $editor, edge) ->
+    doneEditingAttribute: ($label, $editor, edge) ->
         val = Vamonos.txtToRaw($editor.val())
         if val?
             edge[@edgeAttribute.name] = val
         $editor.fadeOut "fast", =>
-            $label.html(@createLabel(edge))
+            $label.html(@createEditableAttribute(edge))
+        @setOverlays(@_$selectedCon, edge)
         @editModeOn()
+
+    highlightEdge: (e) =>
+        connection = @getConnection(@_$selectedNode.attr("id"), $(e.target).parent().attr("id"))
+        if connection?
+            @_alteredEdge = connection
+            connection.setPaintStyle(@deletionPaintStyle)
+        else
+            @_possibleEdge = @jsPlumbInstance.connect
+                source: @_$selectedNode
+                target: $(e.target).parent()
+                paintStyle: @additionPaintStyle
+            if @theGraph.directed
+                @_possibleEdge.addOverlay(["PlainArrow", {location:-4, width:8, length:8}])
+            
+    resetEdges: () =>
+        if @_possibleEdge?
+            @jsPlumbInstance.detach(@_possibleEdge)
+            @_possibleEdge = undefined
+        if @_alteredEdge?
+            @_alteredEdge.setPaintStyle(@normalPaintStyle)
+            @_alteredEdge = undefined
+        @resetEdgeStyle(c) for c in @connections
+
+    resetEdgeStyle: (c) =>
+        c.setPaintStyle(@normalPaintStyle)
 
     editModeOff: () ->
         @mode = undefined
-        @$outer.off("click.vamonos-graph")
+        @$outer.off("click.vamonos-graph dblclick.vamonos-graph")
 
     # -------------------- utility functions --------------------- #
 
@@ -375,12 +452,7 @@ class Graph
     vertexChanged: (newv) ->
         return false unless @previousFrame?
         oldv = @previousFrame[@varName].vertices.filter((v) -> v.id is newv.id)[0]
-        console.log "VERTEX CHANGED?"
-        console.log newv
-        console.log oldv
-        r = @varChanged(newv, oldv)
-        console.log r
-        return r
+        return @varChanged(newv, oldv)
 
     varChanged: (newv, oldv) ->
         return false unless oldv? and newv?

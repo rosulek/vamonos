@@ -139,10 +139,7 @@ var myviz = new Vamonos.Visualizer({
                 },
             },
             showEdges: {
-                "u->v": {
-                    show: function($edge){$edge.setPaintStyle({strokeStyle:"red",lineWidth:3})},
-                    hide: function($edge){$edge.setPaintStyle({strokeStyle:"gray",lineWidth:2})},
-                },
+                "u->v": function($edge){$edge.setPaintStyle({strokeStyle:"red",lineWidth:4})}
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 vertices: [ 
