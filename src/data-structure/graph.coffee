@@ -19,9 +19,11 @@ class Graph
     edge: (source, target) ->
         sourceId = @_idify(source) 
         targetId = @_idify(target) 
-        @edges.filter((e) ->
-            e.source.id is sourceId and e.target.id is targetId
-        )[0]
+        matches = @edges.filter (e) =>
+            (e.source.id is sourceId and e.target.id is targetId) or
+                if @directed then false
+                else (e.source.id is targetId and e.target.id is sourceId)
+        return matches[0]
 
     addEdge: (sourceId, targetId, args) ->
         return if @edge(sourceId, targetId)
@@ -31,10 +33,13 @@ class Graph
         edge = { source: s, target: t, type: 'edge' }
         if args?
             edge[k] = v for k, v of args when k isnt 'source' and k isnt 'target'
+
         @adjHash[sourceId] ?= {}
         @adjHash[sourceId][targetId] = edge
+        unless @directed
+            @adjHash[targetId] ?= {}
+            @adjHash[targetId][sourceId] = edge 
         @edges.push(edge)
-        @addEdge(targetId, sourceId, args) unless @directed
 
     removeEdge: (sourceId, targetId) ->
         edge = @edge(sourceId, targetId)
@@ -42,7 +47,7 @@ class Graph
         index = @edges.indexOf(edge)
         @edges.splice(@edges.indexOf(edge), 1)
         @adjHash[sourceId][targetId] = undefined
-        @removeEdge(targetId, sourceId) unless @directed 
+        @adjHash[targetId][sourceId] = undefined unless @directed
 
     # ----------- vertex functions ---------- #
 
@@ -59,8 +64,7 @@ class Graph
         vtx = @vertex(vid)
         return unless vtx?
         @returnVertexName(vtx.name)
-        affectedEdges = @edges.filter (e) ->
-            e.source.id is vid or e.target.id is vid
+        affectedEdges = @incomingEdges(vid).concat @outgoingEdges(vid)
         @removeEdge(e.source.id, e.target.id) for e in affectedEdges
         @vertices.splice(@vertices.indexOf(vtx), 1)
 
@@ -85,11 +89,13 @@ class Graph
 
     outgoingEdges: (v) ->
         v = @_idify(v)
-        @edges.filter(({source}) -> source.id is v)
+        @edges.filter ({source, target}) =>
+            source.id is v or if @directed then false else target.id is v
 
     incomingEdges: (v) ->
         v = @_idify(v)
-        @edges.filter(({target}) -> target.id is v)
+        @edges.filter ({source, target}) =>
+            target.id is v or if @directed then false else source.id is v
 
     # ------------ utility ----------- #
 
