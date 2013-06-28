@@ -8,10 +8,9 @@
     <script type="text/javascript" src="../lib/vamonos.js"></script>
 
     <style type="text/css">
-        .vertex-sw-label {
+        .vertex-contents {
             font-family: sans-serif;
             font-size: .8em;
-            color: blue;
         }
 
         .vertex-ne-label {
@@ -24,11 +23,11 @@
             color: green;
         }
 
-        .black {
-            background: black; 
+        .done {
+            background: #572400; 
         }
 
-        .black .vertex-contents { 
+        .done .vertex-contents { 
             color: white; 
         }
 
@@ -37,8 +36,10 @@
             text-align: left;
         }
 
-        label {
-            color: green;
+        div.graph-label {
+            font-family: sans-serif;
+            font-size: .8em;
+            color: #572400;
         }
     </style>
 
@@ -113,11 +114,10 @@ var myviz = new Vamonos.Visualizer({
                 $vtx.children("div.vertex-contents").text(v.name);
             },
             vertexUpdateFunc: function(v, $vtx) {
-                var clearColor = function () { $vtx.removeClass('black') };
-                if (v.done) { $vtx.addClass('black') }
+                var clearColor = function () { $vtx.removeClass('done') };
+                if (v.done) { $vtx.addClass('done') }
                 else { clearColor() }
-                $vtx.children("div.vertex-contents").text(v.name);
-                $vtx.children("div.vertex-sw-label").text(
+                $vtx.children("div.vertex-contents").text(
                     v.d === undefined ? "" : 
                     v.d === Infinity ? "\u221E" : v.d
                 );
@@ -127,12 +127,12 @@ var myviz = new Vamonos.Visualizer({
             edgeAttribute: {name: "w", defaultValue: 1},
 
             edgeStyle: function (edge) {
-                // WARNING!!! ONLY WORKS ON UNDIRECTED GRAPHS
                 if (
                     (edge.target.pred && edge.target.pred.id === edge.source.id) ||
+                    // WARNING!!! ONLY WORKS ON UNDIRECTED GRAPHS 
                     (edge.source.pred && edge.source.pred.id === edge.target.id)
                    ) {
-                    return { strokeStyle: 'blue', lineWidth: 4 }
+                    return { strokeStyle: '#92E894', lineWidth: 4 }
                 } //forward edge
                 return { lineWidth: 2, strokeStyle: "gray" };
             },
@@ -211,7 +211,9 @@ _(9);               u.done = true;
 _(10);                  v = vtx;
 _(11);                  global.relax({u:u,v:v,G:G});
                     });
+                    v = undefined;
                 }
+                u = undefined;
             }
         },
 

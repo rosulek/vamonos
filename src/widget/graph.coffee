@@ -191,7 +191,7 @@ class Graph
     updateNode: (vertex) ->
         $v = @nodeSelector(vertex)
         @vertexUpdateFunc(vertex, $v) if @vertexUpdateFunc?
-        $v.addClass("changed") if @vertexChanged(vertex)
+        $v.addClass("changed") if @mode isnt 'edit' and @vertexChanged(vertex)
 
     removeNode: (vid) ->
         $vtx = @nodeSelector(vid)
@@ -217,39 +217,6 @@ class Graph
                 create: () => @createLabel(edge).fadeIn("fast")
             ])
         @connections.push(connection)
-
-    createLabel: (edge) =>
-        val = Vamonos.rawToTxt(edge[@edgeAttribute.name] ? "")
-        $label = $("<div>#{val}</div>")
-        $label.on "click.vamonos-graph", (e) =>
-            return unless @mode is 'edit'
-            @editLabel($label, edge)
-        return $label
-
-    editLabel: ($label, edge) =>
-        @deselect()
-        @editModeOff()
-        $editor = $("<input class='editing'>")
-        $editor.hide()
-        $editor.width($label.width())
-        $editor.val(edge[@edgeAttribute.name] ? "")
-        $editor.on "keydown.vamonos-graph", (event) =>
-            if event.keyCode in [13, 32, 9, 27]
-                @doneEditingLabel($label, $editor, edge)
-        $editor. on "blur.vamonos-graph", (event) =>
-            @doneEditingLabel($label, $editor, edge)
-        $label.html($editor)
-        $editor.fadeIn "fast"
-        $editor.focus()
-        $editor.select()
-
-    doneEditingLabel: ($label, $editor, edge) ->
-        val = Vamonos.txtToRaw($editor.val())
-        if val?
-            edge[@edgeAttribute.name] = val
-        $editor.fadeOut "fast", =>
-            $label.html(@createLabel(edge))
-        @editModeOn()
 
     removeConnection: (sourceId, targetId) ->
         connection = @getConnection(sourceId, targetId)
@@ -360,11 +327,40 @@ class Graph
     closeDrawer: () ->
         return unless @$drawer?
         @$drawer.fadeOut("fast")
-        @$outer.animate(
-            {height: (@$outer.height() - @$drawer.height())}
-            200, 
-            () => @resize()
-        )
+        @$outer.animate(height:@$outer.height()-@$drawer.height(), 200, =>@resize())
+
+    createLabel: (edge) =>
+        val = Vamonos.rawToTxt(edge[@edgeAttribute.name] ? "")
+        $label = $("<div class='graph-label'>#{val}</div>")
+        $label.on "click.vamonos-graph", (e) =>
+            return unless @mode is 'edit'
+            @editLabel($label, edge)
+        return $("<div>").append($label)
+
+    editLabel: ($label, edge) =>
+        @deselect()
+        @editModeOff()
+        $editor = $("<input class='editing'>")
+        $editor.hide()
+        $editor.width($label.width())
+        $editor.val(edge[@edgeAttribute.name] ? "")
+        $editor.on "keydown.vamonos-graph", (event) =>
+            if event.keyCode in [13, 32, 9, 27]
+                @doneEditingLabel($label, $editor, edge)
+        $editor. on "blur.vamonos-graph", (event) =>
+            @doneEditingLabel($label, $editor, edge)
+        $label.html($editor)
+        $editor.fadeIn "fast"
+        $editor.focus()
+        $editor.select()
+
+    doneEditingLabel: ($label, $editor, edge) ->
+        val = Vamonos.txtToRaw($editor.val())
+        if val?
+            edge[@edgeAttribute.name] = val
+        $editor.fadeOut "fast", =>
+            $label.html(@createLabel(edge))
+        @editModeOn()
 
     editModeOff: () ->
         @mode = undefined
@@ -378,9 +374,13 @@ class Graph
 
     vertexChanged: (newv) ->
         return false unless @previousFrame?
-        oldv = if @mode is 'edit' then @previousFrame[@varName] else @theGraph
-            .vertices.filter((v) -> v.id is newv.id)[0]
-        return @varChanged(newv, oldv)
+        oldv = @previousFrame[@varName].vertices.filter((v) -> v.id is newv.id)[0]
+        console.log "VERTEX CHANGED?"
+        console.log newv
+        console.log oldv
+        r = @varChanged(newv, oldv)
+        console.log r
+        return r
 
     varChanged: (newv, oldv) ->
         return false unless oldv? and newv?
