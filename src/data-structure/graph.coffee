@@ -73,6 +73,7 @@ class Graph
 
     returnVertexName: (n) ->
         @availableNames.unshift(n)
+        @availableNames.sort()
 
     nextVertexName: () ->
         @availableNames ?= "abcdefghijklmnopqrstuvwxyz".split("")

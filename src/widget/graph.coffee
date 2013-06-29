@@ -101,6 +101,7 @@ class Graph
         @updateGraphDisplay(@theGraph)
         @resize()
         @selectNode($new)
+        return $new
 
     removeVertex: (vid) ->
         @deselect()
@@ -109,20 +110,25 @@ class Graph
         for k, v of @inputVars when v? and v.id is vid
             @inputVars[k] = undefined 
         @resize()
+        return
 
     addEdge: (sourceId, targetId) ->
         opts = {}
         if @edgeAttribute?.name? and @edgeAttribute?.defaultValue?
             opts[@edgeAttribute.name] = @edgeAttribute.defaultValue 
         @theGraph.addEdge(sourceId, targetId, opts)
-        @addConnection(sourceId, targetId)
+        newConnection = @addConnection(sourceId, targetId)
         @resetEdges()
+        @highlightEdge(@getNode(targetId)) if 'vertex' is @selected()
+        return newConnection
 
     removeEdge: (sourceId, targetId) ->
-        if 'edge' is @selected() then @deselect()
+        @deselect() if 'edge' is @selected()
         @theGraph.removeEdge(sourceId, targetId)
         @removeConnection(sourceId, targetId)
         @resetEdges()
+        @highlightEdge(@getNode(targetId)) if 'vertex' is @selected()
+        return
 
     # -------------- user function runners ---------------- #
 
@@ -132,8 +138,8 @@ class Graph
 
     runShowVertices: (frame) ->
         for name, {show, hide} of @showVertices
-            $newv = @nodeSelector(frame[name])
-            $oldv = @nodeSelector(@previousFrame?[name])
+            $newv = @getNode(frame[name])
+            $oldv = @getNode(@previousFrame?[name])
             if $newv? and not $oldv?
                 show($newv)
             else if $oldv? and not $newv?
@@ -218,19 +224,19 @@ class Graph
         @nodes.push($v)
         return $v
 
-    nodeSelector: (vid) ->
+    getNode: (vid) ->
         return unless @graphDrawn and vid?
         vid = vid.id unless typeof vid is 'string'
         return unless vid?
         @nodes.filter(($vtx) -> $vtx.attr("id") is vid)[0]
 
     updateNode: (vertex) ->
-        $v = @nodeSelector(vertex)
+        $v = @getNode(vertex)
         @vertexUpdateFunc(vertex, $v) if @vertexUpdateFunc?
         $v.addClass("changed") if @mode isnt 'edit' and @vertexChanged(vertex)
 
     removeNode: (vid) ->
-        $vtx = @nodeSelector(vid)
+        $vtx = @getNode(vid)
         out = @theGraph.outgoingEdges(vid)
         ins = @theGraph.incomingEdges(vid)
         for edge in ins.concat(out)
@@ -258,6 +264,7 @@ class Graph
             return if con.id is @_$selectedCon?.id
             con.setPaintStyle(@normalPaintStyle)
         @connections.push(connection)
+        return connection
 
     removeConnection: (sourceId, targetId) ->
         connection = @getConnection(sourceId, targetId)
@@ -300,9 +307,11 @@ class Graph
         #   when selection:    vertex -> new edge, non-vertex -> deselect
         @$outer.on "click.vamonos-graph", (e) =>
             $target = $(e.target)
-            if not @selected()?
+            if not @selected()
                 if $target.is("div.vertex-contents")
                     @selectNode($target.parent())
+                if $target.is(@$inner)
+                    @addVertex(e.offsetX - 12, e.offsetY - 12)
             else
                 if $target.is("div.vertex-contents") and 'vertex' is @selected()
                     sourceId = @_$selectedNode.attr("id")
@@ -318,65 +327,62 @@ class Graph
                 else if $target.is(@$inner)
                     @deselect()
 
-        @$outer.on "dblclick.vamonos-graph", (e) =>
-            $target = $(e.target)
-            if $target.is(@$inner)
-                @addVertex(e.offsetX - 12, e.offsetY - 12)
-
     editModeOff: () ->
         @mode = undefined
-        @$outer.off("click.vamonos-graph dblclick.vamonos-graph")
+        @$outer.off("click.vamonos-graph")
 
     # ----------------------- selection --------------------- #
 
     selected: () ->
         return 'vertex' if @_$selectedNode?
         return 'edge'   if @_$selectedCon?
+        return false
 
-    selectNode: (v) ->
-        @deselectEdge() if 'edge' is @selected()
-        @_$selectedNode = v
+    selectNode: ($v) ->
+        @deselectConnection() if 'edge' is @selected()
+        @deselectNode() if 'vertex' is @selected()
+        @_$selectedNode = $v
         @_$selectedNode.addClass("selected")
         @_$selectedNode.removeClass('hovering')
         @openDrawer('vertex')
         # Show dotted and red lines for potential edge additions/deletions
         @_$others = @_$selectedNode.siblings("div.vertex").children("div.vertex-contents")
-        @_$others.on "mouseenter.vamonos-graph", @highlightEdge
+        @_$others.on "mouseenter.vamonos-graph", (e) => @highlightEdge($(e.target).parent())
         @_$others.on "mouseleave.vamonos-graph", @resetEdges
 
     selectConnection: (con, edge) ->
-        @deselectVertex() if 'vertex' is @selected()
-        @deselectEdge() if 'edge' is @selected()
+        @deselectNode() if 'vertex' is @selected()
+        @deselectConnection() if 'edge' is @selected()
         @_$selectedCon = con
         @_$selectedCon.setPaintStyle(@selectedPaintStyle)
         @openDrawer('edge', edge)
             
     deselect: () ->
-        @deselectVertex()
-        @deselectEdge()
+        @deselectNode()
+        @deselectConnection()
         @closeDrawer()
         
-    deselectVertex: () ->
+    deselectNode: () ->
         return unless @_$selectedNode?
         @jsPlumbInstance.detach(@_possibleEdge) if @_possibleEdge?
         @_$others.off("mouseenter.vamonos-graph mouseleave.vamonos-graph")
         @_$selectedNode.removeClass("selected")
         @_$selectedNode = undefined
 
-    deselectEdge: () ->
+    deselectConnection: () ->
         return unless @_$selectedCon?
         @_$selectedCon = undefined
         @resetEdges()
 
-    highlightEdge: (e) =>
-        connection = @getConnection(@_$selectedNode.attr("id"), $(e.target).parent().attr("id"))
+    highlightEdge: ($vtx) =>
+        connection = @getConnection(@_$selectedNode.attr("id"), $vtx.attr("id"))
         if connection?
             @_alteredEdge = connection
             connection.setPaintStyle(@deletionPaintStyle)
         else
             @_possibleEdge = @jsPlumbInstance.connect
                 source: @_$selectedNode
-                target: $(e.target).parent()
+                target: $vtx
                 paintStyle: @additionPaintStyle
             if @theGraph.directed
                 @_possibleEdge.addOverlay(["PlainArrow", {location:-4, width:8, length:8}])
