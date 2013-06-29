@@ -134,7 +134,7 @@ var myviz = new Vamonos.Visualizer({
                    ) {
                     return { strokeStyle: '#92E894', lineWidth: 4 }
                 } //forward edge
-                return { lineWidth: 4, strokeStyle: "#C7C7C7" };
+                return { lineWidth: 4, strokeStyle: "#E0E0E0" };
             },
 
             showVertices: {
@@ -146,13 +146,15 @@ var myviz = new Vamonos.Visualizer({
                     show: function($vtx){ $vtx.children("div.vertex-ne-label").html("v") },
                     hide: function($vtx){ $vtx.children("div.vertex-ne-label").html("") },
                 },
-                s: {
-                    show: function($vtx){ $vtx.children("div.vertex-nw-label").html("s") },
+                s: { 
+                    show: function($vtx){ 
+                        Vamonos.moveToTop($vtx.children("div.vertex-nw-label").html("<b>s</b>"))
+                    },
                     hide: function($vtx){ $vtx.children("div.vertex-nw-label").text("") },
                 },
             },
             showEdges: {
-                "u->v": function($edge){$edge.setPaintStyle({strokeStyle:"#FF7D7D",lineWidth:3})},
+                "u->v": function($edge){$edge.setPaintStyle({strokeStyle:"#FF7D7D",lineWidth:4})},
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 //directed: true,

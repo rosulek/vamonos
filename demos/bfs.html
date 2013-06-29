@@ -129,7 +129,9 @@ var myviz = new Vamonos.Visualizer({
                     hide: function($vtx){ $vtx.children("div.vertex-ne-label").html("") },
                 },
                 s: {
-                    show: function($vtx){ $vtx.children("div.vertex-nw-label").html("s") },
+                    show: function($vtx){ 
+                        Vamonos.moveToTop($vtx.children("div.vertex-nw-label").html("<b>s</b>"))
+                    },
                     hide: function($vtx){ $vtx.children("div.vertex-nw-label").html("") },
                 },
             },

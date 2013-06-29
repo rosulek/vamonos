@@ -203,6 +203,7 @@ class Graph
                 vtx.y = ui.position.top
                 @resize()
         })
+        $v.on "dragstart", => Vamonos.moveToTop($v)
         $v.hover(
             ((e) =>
                 return unless @mode is 'edit'

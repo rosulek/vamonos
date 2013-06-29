@@ -8,6 +8,18 @@
 ### 
 root = exports ? window
 root.Vamonos = 
+
+    moveToTop: ($elem, $container = $("*")) ->
+        $elem.css("z-index", @highestZIndex($container) + 1)
+
+    highestZIndex: ($sel) -> 
+        index_highest = 0
+        $sel.each ->
+            index_current = parseInt($(this).css("zIndex"), 10)
+            if index_current > index_highest
+                index_highest = index_current
+        return index_highest
+
     insertSet: (item, arraySet) ->
         arraySet.push item unless item in arraySet
 
