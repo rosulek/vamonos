@@ -69,6 +69,7 @@ class Graph
         @vertices.splice(@vertices.indexOf(vtx), 1)
 
     eachVertex: (f) ->
+        @vertices.sort (a,b) -> a.name - b.name
         f(v) for v in @vertices when v?
 
     returnVertexName: (n) ->
@@ -83,7 +84,8 @@ class Graph
 
     neighbors: (v) ->
         v = @_idify(v)
-        @vertex(target) for target, edge of @adjHash[v]
+        (@vertex(target) for target, edge of @adjHash[v])
+            .sort (a,b) -> a.name - b.name
 
     eachNeighbor: (v, f) ->
         f(neighbor) for neighbor in @neighbors(v) when neighbor?
