@@ -15,16 +15,20 @@
 
         .vertex-ne-label {
             font-style: italic;
-            color: red;
+            color: #FF7D7D;
         }
 
         .vertex-nw-label {
             font-style: italic;
-            color: green;
+            color: #274D1A;
         }
 
         .done {
-            background: #FFE59E; 
+            background: #1F3A66; 
+        }
+
+        .done .vertex-contents { 
+            color: white; 
         }
 
         td { 
@@ -143,12 +147,12 @@ var myviz = new Vamonos.Visualizer({
                     hide: function($vtx){ $vtx.children("div.vertex-ne-label").html("") },
                 },
                 s: {
-                    show: function($vtx){ $vtx.children("div.vertex-nw-label").text("s") },
+                    show: function($vtx){ $vtx.children("div.vertex-nw-label").html("s") },
                     hide: function($vtx){ $vtx.children("div.vertex-nw-label").text("") },
                 },
             },
             showEdges: {
-                "u->v": function($edge){$edge.setPaintStyle({strokeStyle:"red",lineWidth:3})},
+                "u->v": function($edge){$edge.setPaintStyle({strokeStyle:"#FF7D7D",lineWidth:3})},
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 //directed: true,

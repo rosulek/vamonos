@@ -11,17 +11,16 @@
         .vertex-sw-label {
             font-family: sans-serif;
             font-size: .6em; 
-            color: blue;
         }
 
         .vertex-ne-label {
             font-style: italic;
-            color: red;
+            color: #FF7D7D;
         }
 
         .vertex-nw-label {
             font-style: italic;
-            color: green;
+            color: #274D1A;
         }
 
         .white { 
@@ -29,15 +28,11 @@
         }
 
         .gray {
-            background: gray; 
-        }
-
-        .gray .vertex-contents { 
-            color: white; 
+            background: #B8E8AE; 
         }
 
         .black {
-            background: black; 
+            background: #1F3A66; 
         }
 
         .black .vertex-contents { 
@@ -134,12 +129,12 @@ var myviz = new Vamonos.Visualizer({
                     hide: function($vtx){ $vtx.children("div.vertex-ne-label").html("") },
                 },
                 s: {
-                    show: function($vtx){ $vtx.children("div.vertex-nw-label").text("s") },
-                    hide: function($vtx){ $vtx.children("div.vertex-nw-label").text("") },
+                    show: function($vtx){ $vtx.children("div.vertex-nw-label").html("s") },
+                    hide: function($vtx){ $vtx.children("div.vertex-nw-label").html("") },
                 },
             },
             showEdges: {
-                "u->v": function($edge){$edge.setPaintStyle({strokeStyle:"red",lineWidth:4})}
+                "u->v": function($edge){$edge.setPaintStyle({strokeStyle:"#FF7D7D",lineWidth:4})},
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 vertices: [ 

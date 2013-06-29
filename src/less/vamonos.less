@@ -194,7 +194,9 @@ table.array {
 @pseudocode-gutter-color: #ddd;
 @pseudocode-gutter-size: 14px;
 @pseudocode-comment-color: #888;
-@pseudocode-breakpoint-color: red;
+/*@pseudocode-breakpoint-color: red;*/
+/*@pseudocode-breakpoint-color: #FF7161;*/
+@pseudocode-breakpoint-color: #FF7D7D;
 @pseudocode-indent: 32px;
 @pseudocode-line-number-bg-color: mix(@pseudocode-gutter-color, #fff, 50%);
 
@@ -337,6 +339,7 @@ input.editing {
     background: @editing-bg-color;
     border: 1px solid @border-color;
     text-align: right;
+    outline: 0;
 }
 
 .vertex {
@@ -360,7 +363,11 @@ input.editing {
     }
 
     &.selected {
-        .box-shadow(0px, 20px, @editing-bg-color);
+        box-shadow:0px 0px 5px 5px @editing-bg-color;
+    }
+
+    &.hovering {
+        .box-shadow(0px, 5px, @shadow-color);
     }
 
     &.ui-draggable {

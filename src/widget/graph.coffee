@@ -17,28 +17,33 @@
 
 class Graph
 
-    # ----------- styles -------------- #
+    # ----------- styles and colors -------------- #
+    
+    @editColor      = "#92E894"
+    @lightEdgeColor = "#E0E0E0"
+    @darkEdgeColor  = "#CFCFCF"
+    @deletionColor  = "#FF7D7D"
 
     normalPaintStyle:
         lineWidth: 4
-        strokeStyle:"#E0E0E0"
+        strokeStyle: @lightEdgeColor
 
     deletionPaintStyle:
-        strokeStyle: "red"
+        strokeStyle: @deletionColor
         lineWidth: 4
 
     additionPaintStyle:
-        dashstyle: "2 2"
-        strokeStyle: "blue"
-        lineWidth: 2
+        dashstyle: "1 1"
+        strokeStyle: @editColor
+        lineWidth: 4
 
     selectedPaintStyle:
         lineWidth: 4
-        strokeStyle: "#92E894"
+        strokeStyle: @editColor
 
     hoverPaintStyle:
         lineWidth: 4
-        strokeStyle: "#CFCFCF"
+        strokeStyle: @darkEdgeColor
 
 
     # ------------ normal widget methods -------------- #
@@ -198,6 +203,15 @@ class Graph
                 vtx.y = ui.position.top
                 @resize()
         })
+        $v.hover(
+            ((e) =>
+                return unless @mode is 'edit'
+                if 'vertex' is @selected() and vertex.id == @_$selectedNode.attr("id")
+                    return
+                $v.addClass('hovering')),
+            ((e) =>
+                $v.removeClass('hovering'))
+        )
         @$inner.append($v)
         $v.fadeIn(100)
         @nodes.push($v)
@@ -322,6 +336,7 @@ class Graph
         @deselectEdge() if 'edge' is @selected()
         @_$selectedNode = v
         @_$selectedNode.addClass("selected")
+        @_$selectedNode.removeClass('hovering')
         @openDrawer('vertex')
         # Show dotted and red lines for potential edge additions/deletions
         @_$others = @_$selectedNode.siblings("div.vertex").children("div.vertex-contents")
@@ -429,7 +444,7 @@ class Graph
 
     createEditableAttribute: (edge) =>
         $attr = $("<span>#{@edgeAttribute.name}&nbsp;=&nbsp;" +
-                  "#{Vamonos.rawToTxt(edge[@edgeAttribute.name])}</span>")
+                  "#{Vamonos.rawToTxt(edge[@edgeAttribute.name])}&nbsp;</span>")
         $attr.on "click", => @editAttribute($attr, edge)
         return $attr
 
