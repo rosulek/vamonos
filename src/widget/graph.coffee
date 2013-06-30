@@ -17,7 +17,7 @@
 
 class Graph
 
-    # ----------- styles and colors -------------- #
+    # ----------- styles and colors and jsplumb stuff -------------- #
     
     @editColor      = "#92E894"
     @lightEdgeColor = "#E0E0E0"
@@ -45,13 +45,32 @@ class Graph
         lineWidth: 4
         strokeStyle: @darkEdgeColor
 
+    jsPlumbInit: () ->
+        @jsPlumbInstance = jsPlumb.getInstance 
+            Connector: ["Straight"]
+            PaintStyle: @normalPaintStyle
+            Endpoint: "Blank"
+            Anchor: [ "Perimeter", { shape: "Circle" } ]
+
+    jsPlumbConnect: (sourceId, targetId) ->
+            @jsPlumbInstance.connect
+                source: sourceId
+                target: targetId 
 
     # ------------ normal widget methods -------------- #
 
-    constructor: ({container, @varName, @defaultGraph, @inputVars, 
-        @showVertices, @showEdges, 
-        @vertexSetupFunc, @vertexUpdateFunc, 
-        @edgeAttribute, @edgeStyle}) ->
+    constructor: ({
+        container
+        @varName
+        @defaultGraph
+        @inputVars
+        @showVertices
+        @showEdges
+        @vertexSetupFunc
+        @vertexUpdateFunc
+        @edgeAttribute
+        @edgeStyle
+    }) ->
 
         @inputVars  ?= {}
         @connections = []
@@ -64,8 +83,8 @@ class Graph
         @theGraph = @defaultGraph ? new Vamonos.DataStructure.Graph()
         @inputVars[k] = @theGraph.vertex(v) for k,v of @inputVars
 
-        @resize()
         @jsPlumbInit()
+        @resizeContainer()
 
    
     event: (event, options...) -> switch event
@@ -99,7 +118,7 @@ class Graph
         @theGraph.addVertex(vtx)
         $new = @addNode(vtx)
         @updateGraphDisplay(@theGraph)
-        @resize()
+        @resizeContainer()
         @selectNode($new)
         return $new
 
@@ -109,7 +128,7 @@ class Graph
         @theGraph.removeVertex(vid)
         for k, v of @inputVars when v? and v.id is vid
             @inputVars[k] = undefined 
-        @resize()
+        @resizeContainer()
         return
 
     addEdge: (sourceId, targetId) ->
@@ -197,18 +216,17 @@ class Graph
         else
             $contents.html(Vamonos.rawToTxt(vertex))
         $v.append($contents)
-        pos = @$inner.position()
         $v.css("left", vertex.x)
         $v.css("top",  vertex.y)
         $v.css("position", "absolute")
-        @jsPlumbInstance.draggable($v, {
+        pos = @$inner.position()
+        @jsPlumbInstance.draggable $v,
             containment: [pos.left, pos.top, window.innerWidth, window.innerHeight]
             drag: (event, ui) =>
                 vtx = @theGraph.vertex(vertex.id)
                 vtx.x = ui.position.left
                 vtx.y = ui.position.top
-                @resize()
-        })
+                @resizeContainer()
         $v.on "dragstart", => Vamonos.moveToTop($v)
         $v.hover(
             ((e) =>
@@ -224,16 +242,20 @@ class Graph
         @nodes.push($v)
         return $v
 
+    nextVertexId: () ->
+        @_customVertexNum ?= 0
+        return "custom-vertex-#{@_customVertexNum++}"
+
     getNode: (vid) ->
         return unless @graphDrawn and vid?
         vid = vid.id unless typeof vid is 'string'
         return unless vid?
         @nodes.filter(($vtx) -> $vtx.attr("id") is vid)[0]
 
-    updateNode: (vertex) ->
-        $v = @getNode(vertex)
-        @vertexUpdateFunc(vertex, $v) if @vertexUpdateFunc?
-        $v.addClass("changed") if @mode isnt 'edit' and @vertexChanged(vertex)
+    updateNode: ($n, graph) ->
+        vertex = graph.vertex($n.attr("id"))
+        @vertexUpdateFunc(vertex, $n) if @vertexUpdateFunc?
+        $n.addClass("changed") if @mode isnt 'edit' and @vertexChanged(vertex)
 
     removeNode: (vid) ->
         $vtx = @getNode(vid)
@@ -250,7 +272,7 @@ class Graph
     addConnection: (sourceId, targetId) ->
         return if @getConnection(sourceId, targetId)
         edge       = @theGraph.edge(sourceId, targetId)
-        connection = @jsPlumbInstance.connect({ source: sourceId, target: targetId })
+        connection = @jsPlumbConnect(sourceId, targetId)
         @setOverlays(connection, edge)
         connection.bind "click", (con) => 
             return unless @mode is 'edit'
@@ -447,7 +469,7 @@ class Graph
     closeDrawer: () ->
         return unless @$drawer?
         @$drawer.fadeOut("fast")
-        @$outer.animate(height:@$outer.height()-@$drawer.height(), 200, =>@resize())
+        @$outer.animate(height:@$outer.height()-@$drawer.height(), 200, =>@resizeContainer())
 
     createEditableAttribute: (edge) =>
         $attr = $("<span>#{@edgeAttribute.name}&nbsp;=&nbsp;" +
@@ -482,10 +504,6 @@ class Graph
 
     # -------------------- utility functions --------------------- #
 
-    nextVertexId: () ->
-        @_customVertexNum ?= 0
-        return "custom-vertex-#{@_customVertexNum++}"
-
     updateVizVariables: () ->
         if @theGraph.vertices.length > 0
             @viz.setVariable(@varName, Vamonos.clone(@theGraph), true)
@@ -506,20 +524,12 @@ class Graph
             @addNode(v) for v in graph.vertices
             @addConnection(e.source.id, e.target.id) for e in graph.edges
             @graphDrawn = yes
-        @updateNode(v) for v in graph.vertices
+        @updateNode($n, graph) for $n in @nodes
         if @mode is 'edit'
             @runShowVertices(@inputVars) 
             @previousFrame = Vamonos.clone(@inputVars)
 
-    jsPlumbInit: () -> 
-        @jsPlumbInstance = jsPlumb.getInstance 
-            Connector: ["Straight"]
-            PaintStyle: @normalPaintStyle
-            Endpoint: "Blank"
-            EndpointStyle:{ fillStyle:"black" }
-            Anchor: [ "Perimeter", { shape: "Circle" } ]
-
-    resize: () ->
+    resizeContainer: () ->
         max_x = Math.max(@theGraph.vertices.map((v)->v.x)..., 100)
         max_y = Math.max(@theGraph.vertices.map((v)->v.y)..., 100)
         if @$drawer? and @$drawer.is(":visible")

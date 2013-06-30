@@ -122,9 +122,9 @@ var myviz = new Vamonos.Visualizer({
 
             edgeStyle: function (edge) {
                 if (
-                    (edge.target.pred && edge.target.pred.id === edge.source.id) ||
-                    // WARNING!!! ONLY WORKS ON UNDIRECTED GRAPHS 
-                    (edge.source.pred && edge.source.pred.id === edge.target.id)
+                    (edge.target.pred && edge.target.pred.id === edge.source.id) 
+                        // WARNING!!! ONLY WORKS ON UNDIRECTED GRAPHS 
+                        || (edge.source.pred && edge.source.pred.id === edge.target.id)
                    ) {
                     return { strokeStyle: '#92E894', lineWidth: 4 }
                 } //forward edge
