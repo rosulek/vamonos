@@ -45,13 +45,6 @@ class Graph
         lineWidth: 4
         strokeStyle: @darkEdgeColor
 
-    jsPlumbInit: () ->
-        @jsPlumbInstance = jsPlumb.getInstance 
-            Connector: ["Straight"]
-            PaintStyle: @normalPaintStyle
-            Endpoint: "Blank"
-            Anchor: [ "Perimeter", { shape: "Circle" } ]
-
     jsPlumbConnect: (sourceId, targetId) ->
             @jsPlumbInstance.connect
                 source: sourceId
@@ -83,7 +76,12 @@ class Graph
         @theGraph = @defaultGraph ? new Vamonos.DataStructure.Graph()
         @inputVars[k] = @theGraph.vertex(v) for k,v of @inputVars
 
-        @jsPlumbInit()
+        @jsPlumbInstance = jsPlumb.getInstance 
+            Connector: ["Straight"]
+            PaintStyle: @normalPaintStyle
+            Endpoint: "Blank"
+            Anchor: [ "Perimeter", { shape: "Circle" } ]
+
         @resizeContainer()
 
    
@@ -540,7 +538,7 @@ class Graph
     clearDisplay: () ->
         @deselect()
         @$drawer = undefined
-        @jsPlumbInit()
+        @jsPlumbInstance.reset()
         @$inner.html("")
         @graphDrawn = no
         @connections = []
