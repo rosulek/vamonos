@@ -30,7 +30,7 @@
 
                 new Vamonos.Widget.Matrix({
                     container: "matrix",
-                    varName: "M",
+                    varName: "global::M",
                     cssRules: [
                         ["row", "<", "col", "shaded"],
                         ["row", "=", "x", "row-highlight"],
@@ -39,7 +39,7 @@
                     showIndices: [["row","x"], ["col","y"]],
                 }),
 
-                new Vamonos.Widget.Hardcoded({ _breakpoints: [1,2,3] }),
+                new Vamonos.Widget.Hardcoded({ breakpoints: [1,2,3] }),
 
                 new Vamonos.Widget.Controls({
                     container: "controls"
@@ -49,18 +49,17 @@
 //            autoStart: true,
 
             algorithm: function (viz) {
-                console.log(viz.stash.M);
-                with (viz.stash) {
-                    M = {};
+                with (viz.namespace.main) {
+                    global.M = {};
                     for (var i=0; i<A.length; i++) {
                         viz.line(1);
                         x = A[i];
-                        M[x] = {};
+                        global.M[x] = {};
                         for (var j=0; j<A.length; j++) {
                             viz.line(2);
                             y = A[j];
                             viz.line(3);
-                            M[x][y] = x+y;
+                            global.M[x][y] = x+y;
                         }
                     }
                 }

@@ -9,6 +9,10 @@
     <script type="text/javascript" src="../lib/vamonos.js"></script>
 
     <style type="text/css">
+        .vertex {
+            width: 42px;
+            height: 26px;
+        }
         .vertex-sw-label {
             font-family: sans-serif;
             font-size: .6em; 
@@ -156,15 +160,9 @@ var myviz = new Vamonos.Visualizer({
             },
             vertexSetupFunc: function(v, $vtx) {
                 $vtx.append(
-                    $("<div>", {
-                        class:'vertex-sw-label',
-                        text: ((v.d?v.d:"_")+"/"+(v.f?v.f:"_")),
-                    })
+                    $("<div>", { class:'vertex-ne-label', }),
+                    $("<div>", { class:'vertex-nw-label', })
                 );
-                $vtx.append(
-                    $("<div>", { class:'vertex-ne-label', })
-                );
-                $vtx.children(".vertex-contents").text(v.name);
             },
             vertexUpdateFunc: function(v, $vtx) {
                 var clearColor = function () { 
@@ -182,9 +180,9 @@ var myviz = new Vamonos.Visualizer({
                 } else {
                     clearColor();
                 }
-                $vtx.children(".vertex-sw-label")
-                    .text((v.d?v.d:"_")+"/"+(v.f?v.f:"_"));
-                $vtx.children(".vertex-contents").text(v.name);
+                $vtx.children(".vertex-contents")
+                    .text((v.d?v.d:"")+"/"+(v.f?v.f:""));
+                $vtx.children(".vertex-nw-label").text(v.name);
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: false,
