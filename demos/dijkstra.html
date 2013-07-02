@@ -90,11 +90,12 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-main",
-            setAllBreakpoints: true,
+            breakpoints: "all"
         }),
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-relax",
+            breakpoints: "all",
             procedureName: "relax",
             setAllBreakpoints: true,
         }),

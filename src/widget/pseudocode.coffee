@@ -18,14 +18,12 @@
 ###
 class Pseudocode
 
-    constructor: ({container, @editableBreakpoints, @breakpoints, 
-        setAllBreakpoints, @procedureName}) ->
+    constructor: ({container, @editableBreakpoints, @breakpoints, @procedureName}) ->
 
         @locals              ?= []
         @args                ?= []
         @procedureName       ?= "main"
         @editableBreakpoints ?= yes
-        setAllBreakpoints    ?= no
 
         # most recently displayed line
         @mostRecent = 0
@@ -33,7 +31,7 @@ class Pseudocode
         # sets @$tbl as the jquery selector for the pseudocode table
         nLines = @formatContainer(Vamonos.jqueryify(container))
 
-        if setAllBreakpoints
+        if @breakpoints is "all"
             @breakpoints = [1..nLines]
         else
             @breakpoints ?= []
