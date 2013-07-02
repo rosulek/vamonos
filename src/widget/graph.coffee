@@ -417,6 +417,7 @@ class Graph
         @resetEdgeStyle(c) for c in @connections
 
     resetEdgeStyle: (c) =>
+        return unless c?
         c.setPaintStyle(@normalPaintStyle)
 
     # ----------------------- drawer stuff ------------------------ #

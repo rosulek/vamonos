@@ -84,8 +84,9 @@ class Visualizer
         @stash.context   = { proc: "global", args: "" }
         @stash.callStack = []
         for nsname, nsobj of @stash.namespaces
-            for name, val of nsobj when not name in @inputVars[nsname]
-                nsobj[name] = undefined unless name is 'global'
+            for name, val of nsobj
+                continue if name is 'global' # ignore the global alias in all namespaces
+                nsobj[name] = undefined unless name in @inputVars[nsname]
 
     getFrame: () ->
         r = { _callStack: Vamonos.clone(@stash.callStack) }
