@@ -51,9 +51,10 @@ class Graph
 
     # ----------- vertex functions ---------- #
 
-    vertex: (id_str) ->
+    vertex: (v) ->
+        id_str = @_idify(v)
         return id_str unless typeof id_str is 'string'
-        @vertices.filter(({id}) -> id is id_str)[0]
+        @vertices.filter((v) -> v.id is id_str)[0]
 
     addVertex: (vtx) ->
         vtx.type  = 'vertex'

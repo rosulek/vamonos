@@ -8,6 +8,11 @@
     <script type="text/javascript" src="../lib/vamonos.js"></script>
 
     <style type="text/css">
+        .vertex-contents {
+            font-family: sans-serif;
+            font-size: .8em;
+        }
+
         .vertex-sw-label {
             font-family: sans-serif;
             font-size: .6em; 
@@ -23,19 +28,19 @@
             color: #274D1A;
         }
 
-        .white { 
+        .color-white { 
             background: white; 
         }
 
-        .gray {
+        .color-gray {
             background: #B8E8AE; 
         }
 
-        .black {
+        .color-black {
             background: #1F3A66; 
         }
 
-        .black .vertex-contents { 
+        .color-black .vertex-contents { 
             color: white; 
         }
 
@@ -102,42 +107,18 @@ var myviz = new Vamonos.Visualizer({
             inputVars: {
                 s: "v0"
             },
-            vertexSetupFunc: function(v, $vtx) {
-                $vtx.append([
-                    $("<div>", { class:'vertex-ne-label' }),
-                    $("<div>", { class:'vertex-sw-label' }),
-                    $("<div>", { class:'vertex-nw-label' }),
-                ]);
-                $vtx.children("div.vertex-contents").text(v.name);
+            vertexLabels: {
+                inner : [function(vtx){return vtx.name}, function(vtx){return vtx.d}],
+                sw    : [function(vtx){return ""}, function(vtx){return vtx.name}],
+                nw    : ["u", "v"],
+                nw    : ["s"],
             },
-            vertexUpdateFunc: function(v, $vtx) {
-                var clearColor = function () { $vtx.removeClass('white black gray') };
-                if (v.color == "white") { clearColor(); $vtx.addClass('white') } 
-                else if (v.color == "gray") { clearColor(); $vtx.addClass('gray') } 
-                else if (v.color == "black") { clearColor(); $vtx.addClass('black') }
-                else { clearColor() }
-                $vtx.children("div.vertex-contents").text(v.name);
-                $vtx.children("div.vertex-sw-label").text(v.d === undefined ? "" : v.d);
+            vertexCssAttributes: {
+                color: ["white", "gray", "black"],
             },
-            showVertices: {
-                u: {
-                    show: function($vtx){ $vtx.children("div.vertex-ne-label").html("u") },
-                    hide: function($vtx){ $vtx.children("div.vertex-ne-label").html("") },
-                },
-                v: {
-                    show: function($vtx){ $vtx.children("div.vertex-ne-label").html("v") },
-                    hide: function($vtx){ $vtx.children("div.vertex-ne-label").html("") },
-                },
-                s: {
-                    show: function($vtx){ 
-                        Vamonos.moveToTop($vtx.children("div.vertex-nw-label").html("<b>s</b>"))
-                    },
-                    hide: function($vtx){ $vtx.children("div.vertex-nw-label").html("") },
-                },
-            },
-            showEdges: {
-                "u->v": function($edge){$edge.setPaintStyle({strokeStyle:"#FF7D7D",lineWidth:4})},
-            },
+            colorEdges: [ 
+                ["u->v", "#FF7D7D"],
+            ],
             defaultGraph: new Vamonos.DataStructure.Graph({
                 vertices: [ 
                     {id: "v0", x: 17,  y: 10},

@@ -25,7 +25,7 @@ class Pseudocode
         @args                ?= []
         @procedureName       ?= "main"
         @editableBreakpoints ?= yes
-        setAllBreakpoints    ?= yes
+        setAllBreakpoints    ?= no
 
         # most recently displayed line
         @mostRecent = 0
