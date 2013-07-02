@@ -98,7 +98,7 @@ root.Vamonos =
     ###
     clone: (obj) ->
         return unless obj?
-        return obj if (typeof obj).match /number|string/
+        return obj if (typeof obj).match /number|string|boolean/
         return obj.clone() if obj.type is 'queue'
         if obj.type is 'stash'
             r = {}
