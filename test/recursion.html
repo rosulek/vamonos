@@ -40,7 +40,6 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Pseudocode({
             container: "fact",
-            procedureName: "fact",
             setAllBreakpoints: true,
         }),
 
@@ -49,36 +48,32 @@ var myviz = new Vamonos.Visualizer({
             showWhileSliding: true,
         }),
 
+        new Vamonos.Widget.Hardcoded({
+            n: 10,
+        }),
+
         new Vamonos.Widget.VarDisplay({
             container: "vars",
-            watch: ["n", "main::result"],
+            watch: ["main::n"],
         }),
 
         new Vamonos.Widget.CallStack({
             container: "stack",
             ignoreMain: true,
             procedureNames: { 
-                fact: "Fact",
+                main: "Fact",
             },
         }),
     ],
 
-    algorithm: {
-        main: function(viz) {
-            with (viz.namespace.main) {
-                result = global.fact({n : n});
+    algorithm: function(viz) {
+        var _ = function(n){ viz.line(n) };
+        with (viz.namespace.main) {
+_(1);       if (n <= 2) { 
+_(2);           return n; 
             }
-        },
-        
-        fact: function(viz) {
-            var _ = function(n){ viz.line(n) };
-            with (viz.namespace.fact) {
-_(1);           if (n <= 2) { 
-_(2);               return n; 
-                }
-_(3);           n = n * global.fact({n : n-1});
-_(4);           return n;
-            }
+_(3);       n = n * global.main({n : n-1});
+_(4);       return n;
         }
     }
 });

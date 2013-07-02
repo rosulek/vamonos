@@ -1,8 +1,7 @@
 class CallStack
 
-    constructor: ({container, @procedureNames, @ignoreMain}) ->
+    constructor: ({container, @procedureNames}) ->
         @procedureNames ?= {}
-        @ignoreMain     ?= false
         @$container      = Vamonos.jqueryify(container)
 
     event: (event, options...) -> switch event
@@ -32,7 +31,6 @@ class CallStack
         $tbl = $("<table>", {class: "callstack"})
 
         for context in frame._callStack when context.proc isnt "global"
-            continue if context.proc is "main" and @ignoreMain
             name = @procedureNames[context.proc] ? context.proc
             args = ("#{k}=#{Vamonos.rawToTxt(v)}" for k, v of context.args)
             $cell = @newCell(name, args)

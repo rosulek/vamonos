@@ -152,13 +152,6 @@ class Visualizer
 
     wrapProcedure: (procName, procedure) ->
         return (args = {}) =>
-
-            if procName is "main"
-                for k in @inputVars.global
-                    v = @getVariable("global::#{k}") 
-                    continue if typeof v is 'function'
-                    args[k] = v
-
             save = {}
             for k of args
                 val = @getVariable("#{procName}::#{k}") 
@@ -186,11 +179,17 @@ class Visualizer
         @initializeStash()
         @tellWidgets("editStop") if @mode is "edit"
 
+        mainArgs = {}
+        for k in @inputVars.global
+            v = @getVariable("global::#{k}") 
+            continue if typeof v is 'function'
+            mainArgs[k] = v
+
         try
             # there's always a "before" & "after" snapshot
             @line(0)
             throw "no main function" unless @namespace.global.main?
-            @namespace.global.main()
+            @namespace.global.main(mainArgs)
             @line(0)
         catch err
             switch err
