@@ -150,15 +150,15 @@ var myviz = new Vamonos.Visualizer({
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: false,
                 vertices: [ 
-                    {id: "v0", x: 15,  y: 10},
-                    {id: "v1", x: 100, y: 10},
-                    {id: "v2", x: 180, y: 10},
-                    {id: "v3", x: 15,  y: 80},
+                    {id: "v0", x: 17,  y: 10},
+                    {id: "v1", x: 98,  y: 10},
+                    {id: "v2", x: 176, y: 13},
+                    {id: "v3", x: 15,  y: 78},
                     {id: "v4", x: 100, y: 80},
-                    {id: "v5", x: 180, y: 80},
-                    {id: "v6", x: 15,  y: 140},
+                    {id: "v5", x: 182, y: 80},
+                    {id: "v6", x: 15,  y: 138},
                     {id: "v7", x: 100, y: 140},
-                    {id: "v8", x: 180, y: 140},
+                    {id: "v8", x: 182, y: 140},
                 ],
                 edges: [
                     {source: 'v0',target: 'v4'},
@@ -191,7 +191,7 @@ _(3);           viz.stash.time = 0;
                 G.eachVertex(function(vtx){
 _(4);               u = vtx;
 _(5);               if (u.color === "white") {
-_(6);                   visit({G:G, u:u});
+_(6);                   visit({G:G, u:u}, ["v"]);
                     }
                 });
                 u = undefined;
@@ -207,7 +207,7 @@ _(3);           u.color = "gray";
                 G.eachNeighbor(u, function(vtx){
 _(4);               v = vtx;
 _(5);               if (v.color === "white") {
-_(6);                   visit({G:G, u:v});
+_(6);                   visit({G:G, u:v}, ["v"]);
                     }
                 });
                 v = undefined;

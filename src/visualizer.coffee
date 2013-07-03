@@ -152,11 +152,12 @@ class Visualizer
             ) for ns of @stash.namespaces
 
     wrapProcedure: (procName, procedure) ->
-        return (args = {}) =>
+        return (args = {}, locals = []) =>
             save = {}
-            for k of args
+            for k in (k for k of args).concat(locals)
                 val = @getVariable("#{procName}::#{k}") 
                 save[k] = val if val?
+            @setVariable("#{procName}::#{k}", undefined) for k in locals
             @stash.callStack.push(@stash.context)
 
             @stash.context = { proc: procName, args: args }
@@ -191,7 +192,7 @@ class Visualizer
             @line(0)
             throw "no main function" unless @namespace.global.main?
             ret = @namespace.global.main(mainArgs)
-            @stash.namespaces.global.result = ret
+            @setVariable("global::result", ret)
             @line(0)
         catch err
             switch err
