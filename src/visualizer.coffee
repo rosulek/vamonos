@@ -144,11 +144,12 @@ class Visualizer
             algorithm = { "main": algorithm }
         for procName, procedure of algorithm
             @ensureNamespace(procName)
+            wrapped = @wrapProcedure(procName, procedure)
             @setVariable(
-                "global::#{procName}",
-                @wrapProcedure(procName, procedure),
+                "#{ns}::#{procName}",
+                wrapped
                 true
-            )
+            ) for ns of @stash.namespaces
 
     wrapProcedure: (procName, procedure) ->
         return (args = {}) =>

@@ -175,7 +175,7 @@ _(8);               u = Q.extractMin();
 _(9);               u.done = true;
                     G.eachNeighbor(u, function(vtx){
 _(10);                  v = vtx;
-_(11);                  global.relax({u:u,v:v,G:G});
+_(11);                  relax({u:u,v:v,G:G});
                     });
                     v = undefined;
                 }
