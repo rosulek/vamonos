@@ -609,16 +609,25 @@ table.var-watcher {
 // CALL STACK
 
 table.callstack {
-    .call {
-        font-family: serif;
+    tr.callstack-values {
+        td.callstack-args {
+            width: 50px;
+            text-align: right;
+        }
+        td.callstack-middle {
+            width: 50px;
+            text-align: center;
+        }
+        td.callstack-return {
+            width: 50px;
+            text-align: left;
+        }
     }
-    .procedure-name {
+    tr.callstack-procedure {
+        text-align: center;
     }
-    .arguments {
-        font-style: italic;
-    }
-    .current {
-        background-color: @light-shaded-color; 
+    tr.callstack-active {
+        background-color: @highlight-background-color
     }
 }
 
