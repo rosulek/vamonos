@@ -40,7 +40,7 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Pseudocode({
             container: "fact",
-            setAllBreakpoints: true,
+            breakpoints: "all",
         }),
 
         new Vamonos.Widget.Controls({
@@ -54,7 +54,7 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.VarDisplay({
             container: "vars",
-            watch: ["main::n"],
+            watch: ["n", "result"],
         }),
 
         new Vamonos.Widget.CallStack({

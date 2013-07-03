@@ -9,6 +9,11 @@
     <script type="text/javascript" src="../lib/vamonos.js"></script>
 
     <style type="text/css">
+        .vertex {
+            width: 40;
+            height: 30;
+        }
+
         .vertex-contents {
             font-family: sans-serif;
             font-size: .8em;
@@ -92,7 +97,7 @@ var myviz = new Vamonos.Visualizer({
     widgets: [
         new Vamonos.Widget.VarDisplay({
             container: "display",
-            watch: ["global::time"]
+            watch: ["time"]
         }),
 
         new Vamonos.Widget.CallStack({
@@ -105,12 +110,13 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-dfs",
-            breakpoints: [4,5,6],
+            breakpoints: "all",
             procedureName: "main",
         }),
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-visit",
+            breakpoints: "all",
             procedureName: "visit",
         }),
 
@@ -124,18 +130,22 @@ var myviz = new Vamonos.Visualizer({
             container: "graph",
             vertexLabels: {
                 inner : [
-                    function(vtx){return vtx.name}, 
-                    function(vtx){return Vamonos.rawToTxt(vtx.d) + " / " + Vamonos.rawToTxt(vtx.f)}
+                    function(vtx){ 
+                        return vtx.name 
+                    }, 
+                    function(vtx){ 
+                        return Vamonos.rawToTxt(vtx.d) + "/" + 
+                            Vamonos.rawToTxt(vtx.f)
+                    }
                 ],
                 sw    : [function(vtx){return ""}, function(vtx){return vtx.name}],
-                nw    : ["u", "v"],
-                nw    : ["s"],
+                ne    : ["u", "v"],
             },
             vertexCssAttributes: {
                 color: ["white", "gray", "black"],
             },
             colorEdges: [ 
-                ["u->v", "#FF7D7D"],
+                ["u->visit::v", "#FF7D7D"],
             ],
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: false,

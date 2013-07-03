@@ -85,7 +85,7 @@ class Graph
     event: (event, options...) -> switch event
         when "setup"
             [@viz] = options
-            @viz.registerVariable(key)       for key of @showVertices
+            
             @viz.registerVariable(key, true) for key of @inputVars
             for e in @colorEdges when typeof e[0] is 'string'
                 @viz.registerVariable(v) for v in e[0].split(/<?->?/)
@@ -215,19 +215,16 @@ class Graph
                     $node.children("div.vertex-contents")
                 else if type in ["ne","nw","se","sw"]
                     $node.children("div.vertex-#{type}-label")
-                else
-                    undefined
-
             return unless $target?
-                    
-            $target.text(
+            $target.html(
                 if typeof style is "function"
                     Vamonos.rawToTxt(style(vertex))
                 else if style.length
                     if style.every((o) -> typeof o is 'function')
                         Vamonos.rawToTxt(style[if @mode is 'edit' then 0 else 1](vertex))
-                    else (v for v in style when frame[v]?.id is vertex.id)
-                        .join(",")
+                    else 
+                        (v for v in style when frame[v]?.id is vertex.id)
+                            .join(",")
                 else
                     style
             )

@@ -1,11 +1,3 @@
-### 
-#
-#   src/common.coffee
-#
-#   Initializes namespace.
-#   Common functions for use in Vamonos
-#
-### 
 root = exports ? window
 root.Vamonos = 
 
@@ -43,46 +35,17 @@ root.Vamonos =
     isNumber: (val) ->
         return ! isNaN(parseInt(val))
     
-    ###
-    #   Vamonos.arrayify( obj )
-    #
-    #   wraps obj in an array if it is not an array already
-    ###
     arrayify: (obj) ->
         if obj instanceof Array then obj else [obj]
 
-
-    ###
-    #   Vamonos.jqueryify( obj )
-    #
-    #   if obj is a string, presumably a div-id, it gets converted to 
-    #   jquery form.
-    ###
     jqueryify: (obj) ->
         if typeof obj is 'string' then $("#" + obj) else obj
 
-
-    ###
-    #   Vamonos.vamonos_export({ obj1, obj2 })
-    #
-    #   exports names to the global Vamonos namespace
-    ###
     export: (obj) ->
-        # node uses exports as the module namespace. check to see if it's
-        # there. otherwise, use 'this' - the browser window.
         root = exports ? window
-
-        # is Vamonos already defined? if not create it
         root.Vamonos or= {}
-
-        # mix-in obj into the Vamanos namespace
         @mixin( root.Vamonos, obj )
 
-    ### 
-    #   Vamonos.mixin(dest, src)
-    #
-    #   Add all attributes of src object to dest object, recursively
-    ###
     mixin: (dest, src, f) ->
         for name, val of src
             if (typeof dest[name] is 'object') and (typeof src[name] is 'object')
@@ -91,11 +54,6 @@ root.Vamonos =
                 dest[name] = if f? then f(val) else val
         return dest
 
-    ###
-    #   Vamonos.clone(obj)
-    #
-    #   Clones an object deeply and returns it.
-    ###
     clone: (obj) ->
         return unless obj?
         return obj if (typeof obj).match /number|string|boolean/

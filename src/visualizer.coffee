@@ -189,7 +189,8 @@ class Visualizer
             # there's always a "before" & "after" snapshot
             @line(0)
             throw "no main function" unless @namespace.global.main?
-            @namespace.global.main(mainArgs)
+            ret = @namespace.global.main(mainArgs)
+            @stash.namespaces.global.result = ret
             @line(0)
         catch err
             switch err
