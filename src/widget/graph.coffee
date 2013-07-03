@@ -85,10 +85,11 @@ class Graph
     event: (event, options...) -> switch event
         when "setup"
             [@viz] = options
-            
             @viz.registerVariable(key, true) for key of @inputVars
             for e in @colorEdges when typeof e[0] is 'string'
                 @viz.registerVariable(v) for v in e[0].split(/<?->?/)
+            for label, values of @vertexLabels
+                @viz.registerVariable(v) for v in values when typeof v is 'string'
             @viz.setVariable(@varName, Vamonos.clone(@defaultGraph), true)
 
         when "render"

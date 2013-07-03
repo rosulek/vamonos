@@ -1,6 +1,7 @@
 class CallStack
 
-    constructor: ({container, @procedureNames}) ->
+    constructor: ({container, @procedureNames, @showReturn}) ->
+        @showReturn     ?= yes
         @procedureNames ?= {}
         @$container      = Vamonos.jqueryify(container)
 

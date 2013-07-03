@@ -165,6 +165,10 @@ class Visualizer
 
             ret = procedure(@)
 
+            @stash._lastReturnedValue =
+                proc  : procName
+                value : ret
+
             @setVariable("#{procName}::#{k}", v) for k, v of save
             @stash.context = @stash.callStack.pop()
 
@@ -191,8 +195,7 @@ class Visualizer
             # there's always a "before" & "after" snapshot
             @line(0)
             throw "no main function" unless @namespace.global.main?
-            ret = @namespace.global.main(mainArgs)
-            @setVariable("global::result", ret)
+            @namespace.global.main(mainArgs)
             @line(0)
         catch err
             switch err

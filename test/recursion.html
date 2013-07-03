@@ -54,12 +54,12 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.VarDisplay({
             container: "vars",
-            watch: ["n", "result"],
+            watch: ["n"],
         }),
 
         new Vamonos.Widget.CallStack({
             container: "stack",
-            ignoreMain: true,
+            showReturn: true,
             procedureNames: { 
                 main: "Fact",
             },
