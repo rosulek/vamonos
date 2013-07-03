@@ -38,6 +38,8 @@ var myviz = new Vamonos.Visualizer({
             n: 10,
         }),
 
+        new Vamonos.Widget.Console(),
+
         new Vamonos.Widget.Pseudocode({
             container: "fact",
             breakpoints: "all",
@@ -59,7 +61,6 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.CallStack({
             container: "stack",
-            showReturn: true,
             procedureNames: { 
                 main: "Fact",
             },

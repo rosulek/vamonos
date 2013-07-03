@@ -75,13 +75,13 @@ class Visualizer
         @stash             = {}
         @stash.callStack   = []
         @stash.type        = 'stash'
-        @stash.context     = { proc: "global", args: "" }
+        @stash.context     = { proc: "global", args: "", calledAtFrame: 0 }
         @stash.namespaces  = { global: {} }
         @inputVars.global ?= []
         @watchVars.global ?= []
 
     initializeStash: () ->
-        @stash.context   = { proc: "global", args: "" }
+        @stash.context   = { proc: "global", args: "", calledAtFrame: 0 }
         @stash.callStack = []
         for nsname, nsobj of @stash.namespaces
             for name, val of nsobj
@@ -89,7 +89,8 @@ class Visualizer
                 nsobj[name] = undefined unless name in @inputVars[nsname]
 
     getFrame: () ->
-        r = { _callStack: Vamonos.clone(@stash.callStack) }
+        r = { _callStack: Vamonos.clone(@stash.callStack) } 
+
         for proc, ns of @stash.namespaces
             continue if proc is 'global' # deal with global last
             @cloneNamespaceToObj(r, proc, ns, proc is @stash.context.proc)
@@ -116,7 +117,11 @@ class Visualizer
             throw "too many frames" if @currentFrameNumber >= @maxFrames
 
             newFrame              = @getFrame()
-            newFrame._nextLine    = { n, context: @stash.context }
+            newFrame._nextLine    = 
+                result: @stash._lastReturnedProc
+                context: @stash.context
+                n: n
+            @stash._lastReturnedProc = undefined
             newFrame._prevLine    = @prevLine
             newFrame._frameNumber = ++@currentFrameNumber
             @frames.push(newFrame)
@@ -160,14 +165,16 @@ class Visualizer
             @setVariable("#{procName}::#{k}", undefined) for k in locals
             @stash.callStack.push(@stash.context)
 
-            @stash.context = { proc: procName, args: args }
+            @stash.context = 
+                proc          : procName
+                args          : args
+                calledAtFrame : @currentFrameNumber
             @setVariable("#{procName}::#{k}", v) for k, v of args
 
             ret = procedure(@)
 
-            @stash._lastReturnedValue =
-                proc  : procName
-                value : ret
+            @stash._lastReturnedProc = @stash.context
+            @stash._lastReturnedProc.returnValue = ret
 
             @setVariable("#{procName}::#{k}", v) for k, v of save
             @stash.context = @stash.callStack.pop()
