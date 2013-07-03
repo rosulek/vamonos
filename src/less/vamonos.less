@@ -77,6 +77,19 @@
     filter: ~"progid:DXImageTransform.Microsoft.gradient(startColorstr='@{leftargb}', endColorstr='@{rightargb}',GradientType=1 )"; /* IE6-9 */
 }
 
+.bg-gradient-topdown(@topcolor, @bottomcolor) {
+    @topargb: argb(@topcolor);
+    @bottomargb: argb(@bottomcolor);
+
+    background: @topcolor;
+    background: -moz-linear-gradient(top, @topcolor 0%, @bottomcolor 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,@topcolor), color-stop(100%,@bottomcolor));
+    background: -webkit-linear-gradient(top, @topcolor 0%,@bottomcolor 100%);
+    background: -o-linear-gradient(top, @topcolor 0%,@bottomcolor 100%);
+    background: -ms-linear-gradient(top, @topcolor 0%,@bottomcolor 100%);
+    background: linear-gradient(to bottom, @topcolor 0%,@bottomcolor 100%);
+}
+
 ///////////////////
 // COMMON THINGS
 
@@ -609,25 +622,40 @@ table.var-watcher {
 // CALL STACK
 
 table.callstack {
+    border-collapse: collapse;
+    display: inline;
+
+    tr.callstack-header {
+        font-style: italic;
+        border-bottom: 1px solid black;
+    }
+
     tr.callstack-values {
-        td.callstack-args {
+        td {
             width: 50px;
+        }
+        td.callstack-args {
             text-align: right;
         }
         td.callstack-middle {
-            width: 50px;
             text-align: center;
         }
         td.callstack-return {
-            width: 50px;
             text-align: left;
         }
     }
     tr.callstack-procedure {
+        border: 1px solid black;
         text-align: center;
+        font-style: italic;
     }
+
     tr.callstack-active {
-        background-color: @highlight-background-color
+        background-color: @highlight-background-color;
+    }
+
+    tr.callstack-returned {
+        background-color: @light-shaded-color;
     }
 }
 
