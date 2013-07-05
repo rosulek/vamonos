@@ -17,6 +17,8 @@
 
 </head><body>
 
+    <h1>Typical recursion:</h1>
+
     <div class="vamonos-col">
         <div class="container" id="fact" title="Fact(n):">
             if n &le; 2
@@ -29,6 +31,24 @@
     <div class="vamonos-col">
         <div class="container" id="stack"></div><br>
     </div>
+
+
+    <div style="height: 20px; clear: left"></div>
+    <h1>Tail recursion:</h1>
+
+
+    <div class="vamonos-col">
+        <div class="container" id="fact2" title="Fact(n, acc):">
+            if n &le; 1
+                return acc
+            return Fact(n-1, acc*n)
+        </div><br>
+        <div id="controls2"></div><br>
+    </div>
+    <div class="vamonos-col">
+        <div class="container" id="stack2"></div><br>
+    </div>
+
 
 </body><script>
 
@@ -50,10 +70,6 @@ var myviz = new Vamonos.Visualizer({
             showWhileSliding: true,
         }),
 
-        new Vamonos.Widget.Hardcoded({
-            n: 10,
-        }),
-
         new Vamonos.Widget.CallStack({
             container: "stack",
             procedureNames: { 
@@ -73,5 +89,55 @@ _(4);       return n;
         }
     }
 });
+
+
+//////////////////////////
+
+var myviz2 = new Vamonos.Visualizer({
+    widgets: [
+        new Vamonos.Widget.Hardcoded({
+            n: 10,
+        }),
+
+        new Vamonos.Widget.Console(),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "fact2",
+            breakpoints: "all",
+            procedureName: "fact"
+        }),
+
+        new Vamonos.Widget.Controls({
+            container: "controls2",
+            showWhileSliding: true,
+        }),
+
+        new Vamonos.Widget.CallStack({
+            container: "stack2",
+            procedureNames: { 
+                fact: "Fact",
+            },
+        }),
+    ],
+
+    algorithm: {
+        main: function(viz) {
+            with (viz.namespace.main) {
+                return fact({ n: n, acc: 1});
+            }
+        },
+        fact: function(viz) {
+            var _ = function(n){ viz.line(n) };
+            with (viz.namespace.fact) {
+    _(1);       if (n <= 1) { 
+    _(2);           return acc; 
+                }
+    _(3);       return fact({n : n-1, acc: n*acc});
+            }
+        }
+    }
+});
+
+
 
 </script></html>
