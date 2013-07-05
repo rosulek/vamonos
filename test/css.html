@@ -12,41 +12,38 @@
 
     <div id="callstack" class="container">
         <table class="callstack">
-            <tr class="callstack-header"><td colspan=3>Call Stack</td></tr>
-            <tr class="callstack-values">
-                <td class="callstack-args">4&nbsp;&darr;</td>
-                <td class="callstack-middle"></td>
+            <tr class="callstack-header"><td colspan=2>Call Stack</td></tr>
+            <tr>
+                <td class="callstack-args">n=12<span class="callstack-arrow">&darr;</span></td>
                 <td class="callstack-return"></td>
             </tr>
-            <tr class="callstack-procedure">
-                <td colspan=3>fact</td>
+            <tr>
+                <td colspan=2 class="callstack-proc"><div>TheMainProcedure</div></td>
             </tr>
-            <tr class="callstack-values">
-                <td class="callstack-args">3&nbsp;&darr;</td>
-                <td class="callstack-middle"></td>
+            <tr>
+                <td class="callstack-args">n=12<span class="callstack-arrow">&darr;</span></td>
                 <td class="callstack-return"></td>
             </tr>
-            <tr class="callstack-procedure">
-                <td colspan=3>fact</td>
+            <tr>
+                <td colspan=2 class="callstack-proc"><div>fact</div></td>
             </tr>
-            <tr class="callstack-values">
-                <td class="callstack-args">2&nbsp;&darr;</td>
-                <td class="callstack-middle"></td>
+            <tr>
+                <td class="callstack-args">n=11<span class="callstack-arrow">&darr;</span></td>
                 <td class="callstack-return"></td>
             </tr>
-            <tr class="callstack-procedure callstack-active">
-                <td colspan=3>fact</td>
+            <tr>
+                <td colspan=2 class="callstack-proc callstack-active"><div>fact</div></td>
             </tr>
-            <tr class="callstack-values">
-                <td class="callstack-args">1&nbsp;&darr;</td>
-                <td class="callstack-middle"></td>
-                <td class="callstack-return">&uarr;&nbsp;1</td>
+            <tr>
+                <td class="callstack-args">n=10<span class="callstack-arrow">&darr;</span></td>
+                <td class="callstack-return"><span class="callstack-arrow">&uarr;</span>3628800</td>
             </tr>
-            <tr class="callstack-procedure callstack-returned">
-                <td colspan=3>fact</td>
+            <tr>
+                <td colspan=2 class="callstack-proc callstack-returned"><div>fact</div></td>
             </tr>
         </table>
     </div>
+
 
 
     <h1>Pseudocode Mockup</h1>

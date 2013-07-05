@@ -625,40 +625,59 @@ table.callstack {
     border-collapse: collapse;
     display: inline;
 
-    tr.callstack-header {
-        font-style: italic;
-        border-bottom: 1px solid black;
-    }
+    table-layout: fixed;
+    // allows the 50% columns to be equal width.. somehow
+    // this all goes to hell if this callstack table is
+    // nested inside of another table. strange!
+}
 
-    tr.callstack-values {
-        td {
-            width: 80px;
-        }
-        td.callstack-args {
-            text-align: right;
-        }
-        td.callstack-middle {
-            text-align: center;
-        }
-        td.callstack-return {
-            text-align: left;
-        }
-    }
-    tr.callstack-procedure {
-        border: 1px solid black;
-        font-style: italic;
-        td {
-            text-align: center;
-        }
-    }
+tr.callstack-header {
+    font-style: italic;
+    border-bottom: 1px solid black;
+}
 
-    tr.callstack-active {
-        background-color: @highlight-background-color;
-    }
+td.callstack-args, td.callstack-return {
+    width: 50%;
+    vertical-align: middle;
+}
 
-    tr.callstack-returned {
-        background-color: @light-shaded-color;
+td.callstack-args {
+    text-align: right;
+}
+td.callstack-return {
+    text-align: left;
+}
+
+span.callstack-arrow {
+    font-size: 28px;
+    vertical-align: middle;
+    font-weight: bold;
+    
+    td.callstack-args & {
+        padding-left: 6px;
     }
+    td.callstack-return & {
+        padding-right: 6px;
+    }
+}
+
+td.callstack-proc {
+    text-align: center;
+}
+
+td.callstack-proc div {
+    border: 1px solid black;
+    display: inline-block;
+    font-style: italic;
+    padding: 4px;
+}
+
+td.callstack-active div {
+    background-color: @highlight-background-color;
+}
+
+td.callstack-returned div {
+    background-color: @light-shaded-color;
 }
 
 

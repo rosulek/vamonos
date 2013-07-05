@@ -9,6 +9,13 @@
     <script type="text/javascript" src="../lib/vamonos.js"></script>
 
     <style type="text/css">
+        .vamonos-col { 
+            display: inline;
+            float: left;
+            text-align: center;
+            margin: 8px;
+        }
+
         .vertex {
             width: 40;
             height: 30;
@@ -61,35 +68,36 @@
 
     <h1>Depth-First Search</h1>
 
-    <table>
-        <tr><td>
-            <div id="pseudocode-dfs" class="container" title="DFS(G):">
-                for each vertex u &in; G.V
-                    u.color = white
-                time = 0
-                for each vertex u &in; G.V
-                    if u.color == white
-                        DFS-Visit(G,u)
-            </div><br>
+    <div class="vamonos-col">
+        <div id="pseudocode-dfs" class="container" title="DFS(G):">
+            for each vertex u &in; G.V
+                u.color = white
+            time = 0
+            for each vertex u &in; G.V
+                if u.color == white
+                    DFS-Visit(G,u)
+        </div><br>
 
-            <div id="pseudocode-visit" class="container" title="DFS-Visit(G,u):">
-                time ++
-                u.d = time
-                u.color = gray
-                <b>for</b> each v &in; G.Adj[u]
-                    <b>if</b> v.color == white
-                        DFS-Visit(G,v)
-                u.color = black
-                time ++
-                u.f = time
-            </div><br>
-            <div id="controls"></div><br>
-        </td><td>
-            <div id="graph" class="container" style="width:220; height:180;"></div><br>
-            <div id="display" class="container"></div><br>
-            <div id="stack" class="container"></div><br>
-        </td></tr>
-    </table>
+        <div id="pseudocode-visit" class="container" title="DFS-Visit(G,u):">
+            time ++
+            u.d = time
+            u.color = gray
+            <b>for</b> each v &in; G.Adj[u]
+                <b>if</b> v.color == white
+                    DFS-Visit(G,v)
+            u.color = black
+            time ++
+            u.f = time
+        </div><br>
+        <div id="controls"></div><br>
+    </div>
+
+    <div class="vamonos-col">
+        <div id="graph" class="container" style="width:220; height:180;"></div><br>
+        <div id="display" class="container"></div><br>
+        <div id="stack" class="container"></div><br>
+    </div>
+
 </body>
 
 <script type="text/javascript">
