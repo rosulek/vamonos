@@ -66,35 +66,23 @@ var myviz = new Vamonos.Visualizer({
             showWhileSliding: true
         })
     ],
-    algorithm: function (viz) {
-        with (viz.namespace.main) {
-            opt = [0]
-            viz.line(1);
-
-            sol = [[]]
-            viz.line(2);
-            for (var _k = 1; _k < price.length; _k++) {
-                viz.line(3);
-                k = _k;
-                viz.line(4);
-                opt[k] = 0;
-                viz.line(5);
-                sol[k] = null;
-                for(var _i=1; _i<=k; _i++) {
-                    viz.line(6);
-                    i = _i;
-                    viz.line(7);
-                    if (opt[k] < opt[k-i] + price[i]) {
-                        viz.line(8);
-                        opt[k] = opt[k-i] + price[i];
-                        viz.line(9);
-                        sol[k] = sol[k-i].concat([i]);
-                    }
+    algorithm: function () {
+_(1);   opt = [0]
+_(2);   sol = [[]]
+        for (var _k = 1; _k < price.length; _k++) {
+_(3);       k = _k;
+_(4);       opt[k] = 0;
+_(5);       sol[k] = null;
+            for(var _i=1; _i<=k; _i++) {
+_(6);           i = _i;
+                if (_(7), opt[k] < opt[k-i] + price[i]) {
+_(8);               opt[k] = opt[k-i] + price[i];
+_(9);               sol[k] = sol[k-i].concat([i]);
                 }
-                i = null;
             }
-            k = null;
+            i = null;
         }
+        k = null;
     }
 });
 </script>

@@ -155,29 +155,22 @@ var myviz = new Vamonos.Visualizer({
         })
     ],
 
-    algorithm: function (viz) {
-        with (viz.namespace.main) {
-            for (viz.line(1), i = 0; i < A.length-1; viz.line(1), i++) {
-                viz.line(2);
-                m = i;
-                for (viz.line(3), j = i+1; j < A.length; viz.line(3), j++) {
-                    viz.line(4);
-                    if (A[j] < A[m]) {
-                        viz.line(5);
-                        m = j
-                    }
+    algorithm: function () {
+        for (_(1), i = 0; i < A.length-1; _(1), i++) {
+_(2);       m = i;
+            for (_(3), j = i+1; j < A.length; _(3), j++) {
+_(4);           if (A[j] < A[m]) {
+_(5);               m = j
                 }
-                j = null;
-                viz.line(6);
-                var tmp = A[i];
-                A[i] = A[m];
-                A[m] = tmp;
-                m = null;
             }
-            i = null;
+            j = null;
+_(6);       var tmp = A[i];
+            A[i] = A[m];
+            A[m] = tmp;
+            m = null;
         }
+        i = null;
     },
-
 });
 
 </script>

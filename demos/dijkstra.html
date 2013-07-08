@@ -154,43 +154,36 @@ var myviz = new Vamonos.Visualizer({
 
     algorithm: {
 
-        main: function(viz){
-            var _ = function(n){ viz.line(n) };
-            with (viz.namespace.main) {
+        main: function(){
+            G.eachVertex(function(vtx){
+_(1);           u = vtx;
+_(2);           u.d = Infinity;
+_(3);           u.pred = undefined;
+_(4);           u.done = false;
+            });
 
-                G.eachVertex(function(vtx){
-_(1);               u = vtx;
-_(2);               u.d = Infinity;
-_(3);               u.pred = undefined;
-_(4);               u.done = false;
+_(5);       s.d = 0;
+_(6);       Q = new Vamonos.DataStructure.Queue({
+                initialArray: G.vertices,
+                comparator: function(a,b){ return a.d - b.d },
+            });
+
+            while (_(7), !Q.isEmpty()) {
+_(8);           u = Q.extractMin();
+_(9);           u.done = true;
+                G.eachNeighbor(u, function(vtx){
+_(10);              v = vtx;
+_(11);              relax({u:u,v:v,G:G});
                 });
-
-_(5);           s.d = 0;
-_(6);           Q = new Vamonos.DataStructure.Queue({
-                    initialArray: G.vertices,
-                    comparator: function(a,b){ return a.d - b.d },
-                });
-
-                while (_(7), !Q.isEmpty()) {
-_(8);               u = Q.extractMin();
-_(9);               u.done = true;
-                    G.eachNeighbor(u, function(vtx){
-_(10);                  v = vtx;
-_(11);                  relax({u:u,v:v,G:G});
-                    });
-                    v = undefined;
-                }
-                u = undefined;
+                v = undefined;
             }
+            u = undefined;
         },
 
-        relax: function(viz){
-            var _ = function(n){ viz.line(n) };
-            with (viz.namespace.relax) {
-                if (_(1), u.d + G.edge(u,v).w < v.d) {
-_(2);               v.d = u.d + G.edge(u,v).w;
-_(3);               v.pred = u;
-                }
+        relax: function(){
+            if (_(1), u.d + G.edge(u,v).w < v.d) {
+_(2);           v.d = u.d + G.edge(u,v).w;
+_(3);           v.pred = u;
             }
         }
     }

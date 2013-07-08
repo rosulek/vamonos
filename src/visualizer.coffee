@@ -171,7 +171,16 @@ class Visualizer
                 calledAtFrame : @currentFrameNumber
             @setVariable("#{procName}::#{k}", v) for k, v of args
 
-            ret = procedure(@)
+            ns   = @stash.namespaces[procName]
+            ns._ = (n) => @line(n)
+
+            proc = procedure.toString()
+            proc = proc.replace(/{/, "{\n\twith(ns) {")
+            proc = proc.replace(/\s*}.*?$/, "\n\t}\n}")
+            console.log proc
+            proc = proc.replace(/^/, "f = ")
+            eval(proc)
+            ret = f()
 
             @stash._lastReturnedProc = @stash.context
             @stash._lastReturnedProc.returnValue = ret

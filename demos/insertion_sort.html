@@ -55,21 +55,18 @@ var myviz = new Vamonos.Visualizer({
         })
     ],
 
-    algorithm: function (viz) {
-       var _ = function(n){ viz.line(n) };
-       with (viz.namespace.main) {
-_(1);      for (j = 2; j < A.length; viz.line(1), j++) {
-_(2);          key = A[j];
-_(3);          i = j - 1;
-               while (_(4), i > 0 && A[i] > key) {
-_(5);              A[i + 1] = A[i];
-_(6);              i = i - 1;
-               }
-_(7);          A[i + 1] = key;
-               i = null;
-           }
-           j = null;
-       }
+    algorithm: function () {
+        for (j = 2; j < A.length; _(1), j++) {
+_(2);       key = A[j];
+_(3);       i = j - 1;
+            while (_(4), i > 0 && A[i] > key) {
+_(5);           A[i + 1] = A[i];
+_(6);           i = i - 1;
+            }
+_(7);       A[i + 1] = key;
+            i = null;
+        }
+            j = null;
     },
 
 });
