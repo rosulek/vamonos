@@ -21,7 +21,7 @@
 
     <div class="vamonos-col">
         <div class="container" id="fact" title="Fact(n):">
-            if n &le; 2
+            if n &le; 1
                 return n
             ret = n * Fact(n-1)
             return ret
@@ -59,8 +59,6 @@ var myviz = new Vamonos.Visualizer({
             n: 10,
         }),
 
-        new Vamonos.Widget.Console(),
-
         new Vamonos.Widget.Pseudocode({
             container: "fact",
             breakpoints: "all",
@@ -80,7 +78,7 @@ var myviz = new Vamonos.Visualizer({
     ],
 
     algorithm: function() {
-_(1);   if (n <= 2) { 
+_(1);   if (n <= 1) { 
 _(2);       return n; 
         }
 _(3);   ret = n * main({n : n-1});
@@ -95,14 +93,12 @@ var myviz2 = new Vamonos.Visualizer({
     widgets: [
         new Vamonos.Widget.Hardcoded({
             n: 10,
+            acc: 1,
         }),
-
-        new Vamonos.Widget.Console(),
 
         new Vamonos.Widget.Pseudocode({
             container: "fact2",
             breakpoints: "all",
-            procedureName: "fact"
         }),
 
         new Vamonos.Widget.Controls({
@@ -113,22 +109,17 @@ var myviz2 = new Vamonos.Visualizer({
         new Vamonos.Widget.CallStack({
             container: "stack2",
             procedureNames: { 
-                fact: "Fact",
+                main: "Fact",
             },
         }),
     ],
 
-    algorithm: {
-        main: function() {
-            return fact({ n: n, acc: 1});
-        },
-        fact: function() {
-_(1);       if (n <= 1) { 
-_(2);           return acc; 
-            }
-_(3);       ret = fact({n : n-1, acc: n*acc});
-_(4);       return ret;
+    algorithm: function() {
+_(1);   if (n <= 1) { 
+_(2);       return acc; 
         }
+_(3);   ret = main({n : n-1, acc: n*acc});
+_(4);   return ret;
     }
 });
 

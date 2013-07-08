@@ -177,10 +177,9 @@ class Visualizer
             proc = procedure.toString()
             proc = proc.replace(/{/, "{\n\twith(ns) {")
             proc = proc.replace(/\s*}.*?$/, "\n\t}\n}")
-            console.log proc
-            proc = proc.replace(/^/, "f = ")
+            proc = proc.replace(/^/, "var evaledFunc = ")
             eval(proc)
-            ret = f()
+            ret = evaledFunc()
 
             @stash._lastReturnedProc = @stash.context
             @stash._lastReturnedProc.returnValue = ret
