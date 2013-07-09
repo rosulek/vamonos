@@ -15,11 +15,12 @@ class VarDisplay
             @viz.registerVariable(v.name) for v in @watch
 
             @tblRows = {}
-            @tblRows[v.name] = $("<tr>").append(
+            @tblRows[v.name] = $("<tr>").append([
+                $("<td>"),
                 $("<td>", {text: v.name}),
-                $("<td>", {text: ""}),
-                $("<td>", {text: ""})
-            ) for v in @watch
+                $("<td>"),
+                $("<td>"),
+            ]) for v in @watch
 
             $table = $("<table>", {class: "var-watcher"})
             $table.append(@tblRows[v.name]) for v in @watch
@@ -28,20 +29,22 @@ class VarDisplay
         
         when "editStart"
             for name, $r of @tblRows
-                $("<td><input type='checkbox'></td>").prependTo($r)
+                $r.children("td").text("")
+                $r.children("td:nth-child(1)").text(name)
+                $("<input type='checkbox'>").prependTo($r.children("td").eq(0))
 
         when "editStop"
             for name, $r of @tblRows
-                $box = $r.find("input:checkbox")
+                $box = $r.find("input")
                 if $box.is(":checked")
                     @viz.setWatchVar(name)
                 else
                     @viz.removeWatchVar(name)
                 $box.remove()
+                $r.find("td").eq(2).text("=")
 
         when "render"
             @showVars(options...)
-            console.log @viz.watchVars
 
         when "displayStop"
             @clear()
@@ -68,7 +71,7 @@ class VarDisplay
             else
                 Vamonos.rawToTxt(frame[name])
 
-            cell   = @tblRows[name].find("td:nth-child(3)")
+            cell   = @tblRows[name].find("td:nth-child(4)")
             oldval = cell.html()
 
             if newval isnt oldval and type in @showChanges

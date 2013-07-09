@@ -104,7 +104,7 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.VarDisplay({
             container: "vars",
-            watch: ["u", "v"],
+            watch: ["u[done,pred,d]", "v[done,pred,d]"],
         }),
 
         new Vamonos.Widget.Graph({
