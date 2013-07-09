@@ -8,7 +8,7 @@ class Visualizer
         @breakpoints        = {}
 
         @inputVars = {}
-        @watchVars = {}
+        @watchVars = []
 
         @prepareStash()
         @namespace = @stash.namespaces
@@ -47,6 +47,14 @@ class Visualizer
         @ensureNamespace(ns)
         return @namespace[ns][varName]
 
+    setWatchVar: (varName) ->
+        @watchVars ?= []
+        Vamonos.insertSet(varName, @watchVars)
+
+    removeWatchVar: (varName) ->
+        @watchVars ?= []
+        ((w) -> w.splice(w.indexOf(varName), 1))(@watchVars)
+
     getBreakpoints: (proc) ->
         @breakpoints[proc] ?= []
         return @breakpoints[proc]
@@ -57,7 +65,7 @@ class Visualizer
 
     removeBreakpoint: (b, proc) ->
         @breakpoints[proc] ?= []
-        @breakpoints[proc].splice(@breakpoints[proc].indexOf(b), 1)
+        ((bps) -> bps.splice(bps.indexOf(b), 1))(@breakpoints[proc])
 
     # ---------------- stash related methods ---------------- #
 
@@ -108,7 +116,7 @@ class Visualizer
 
     line: (n) ->
         # if context changed since last call of line(), tell the stash's
-        # call stack what the last line was.
+        # call stack what the previous line was.
         if @prevLine? and @stash.context isnt @prevLine.context and @stash.callStack.length > 0
             calls = (s for s in @stash.callStack when s.context is @prevLine.context)
             s.line = @prevLine.n for s in calls when not s.line?
@@ -132,7 +140,8 @@ class Visualizer
     takeSnapshot: (n, proc) ->
         return true if n is 0
         return n in @breakpoints[proc] if @breakpoints[proc]?.length > 0
-        return @diff(@frames[@frames.length-1], @stash, @watchVars) if @watchVars.length > 0
+        if @watchVars.length > 0
+            return @diff(@frames[@frames.length-1], @getFrame(), @watchVars)
         return false
         
     # this is somewhat hacky, comparing stringifications
@@ -174,11 +183,11 @@ class Visualizer
             ns   = @stash.namespaces[procName]
             ns._ = (n) => @line(n)
 
-            proc = procedure.toString()
-            proc = proc.replace(/{/, "{\n\twith(ns) {")
-            proc = proc.replace(/\s*}.*?$/, "\n\t}\n}")
-            proc = proc.replace(/^/, "var evaledFunc = ")
-            eval(proc)
+            procStr = procedure.toString()
+            procStr = procStr.replace(/{/, "{\n\twith(ns) {")
+            procStr = procStr.replace(/\s*}.*?$/, "\n\t}\n}")
+            procStr = procStr.replace(/^/, "var evaledFunc = ")
+            eval(procStr)
             ret = evaledFunc()
 
             @stash._lastReturnedProc = @stash.context
