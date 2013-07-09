@@ -138,11 +138,9 @@ class Visualizer
         throw "too many lines" if ++@numCallsToLine > 10000
 
     takeSnapshot: (n, proc) ->
-        return true if n is 0
-        return n in @breakpoints[proc] if @breakpoints[proc]?.length > 0
-        if @watchVars.length > 0
-            return @diff(@frames[@frames.length-1], @getFrame(), @watchVars)
-        return false
+        return n == 0 or
+            @breakpoints[proc]?.length > 0 and n in @breakpoints[proc] or
+            @watchVars.length > 0 and @diff(@frames[@frames.length-1], @getFrame(), @watchVars) 
         
     # this is somewhat hacky, comparing stringifications
     diff: (left, right, vars) ->

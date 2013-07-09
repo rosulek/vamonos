@@ -77,6 +77,7 @@
         <div id="controls"></div>
         </td><td valign='top' align='left'>
             <div class="container" id="graph" style="width:220; height:180;"></div>
+            <div class="container" id="vardisplay"></div><br>
             <div class="no-indices" id="queue"></div><br>
         </td></tr></table>
     </div>
@@ -99,7 +100,11 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode",
-            breakpoints: "all"
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "vardisplay",
+            watch: ["u[color,d]", "v[color,d]", "Q[none]", "*G[none]"]
         }),
 
         new Vamonos.Widget.Graph({

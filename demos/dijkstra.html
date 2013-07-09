@@ -76,8 +76,6 @@
 <script type="text/javascript">
 var myviz = new Vamonos.Visualizer({
     widgets: [
-        new Vamonos.Widget.Console(),
-
         new Vamonos.Widget.Controls({
             container: "controls",
             showWhileSliding: true,
@@ -104,7 +102,7 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.VarDisplay({
             container: "vars",
-            watch: ["u[done,pred,d]", "v[done,pred,d]"],
+            watch: ["u[done,pred,d]", "v[done,pred,d]", "*G[none]"],
         }),
 
         new Vamonos.Widget.Graph({

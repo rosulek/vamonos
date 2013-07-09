@@ -600,18 +600,31 @@ button.controls-button {
 
 
 //////////////////////
-// VAR WATCHER
+// VAR DISPLAY
 
-table.var-watcher {
+table.var-display {
     border-collapse: collapse;
+    text-align: left;
+
     td {
         margin: 0;
         padding: 2px;
     }
-    td:first-child {
+
+    tr.header {
+        font-style: italic;
+        border-bottom: 1px solid black;
+    }
+
+    td.var {
         text-align: right;
         .variable-name();
     }
+
+    tr.watched-var {
+        background: #EAFADE
+    }
+
     & tr.changed {
         .background-highlight-pulse;
     }
