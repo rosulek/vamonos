@@ -76,7 +76,7 @@ class VarDisplay
         for {name, attrs} in @watch
             if not frame[name]?
                 newval = "<i>undef</i>" 
-            else if attrs[0] is "none" and attrs.length is 1
+            else if attrs?[0] is "none" and attrs.length is 1
                 @tblRows[name].find("td.equals").text("")
                 newval = ""
             else if attrs?

@@ -105,7 +105,7 @@ var myviz = new Vamonos.Visualizer({
     widgets: [
         new Vamonos.Widget.VarDisplay({
             container: "display",
-            watch: ["time"]
+            watch: ["time", "u", "v", "*G[none]"]
         }),
 
         new Vamonos.Widget.CallStack({
@@ -118,13 +118,11 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-dfs",
-            breakpoints: "all",
             procedureName: "main",
         }),
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-visit",
-            breakpoints: "all",
             procedureName: "visit",
         }),
 
