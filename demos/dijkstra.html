@@ -68,6 +68,7 @@
         <div id="controls"></div><br>
     </td><td>
         <div id="graph" class="container"></div><br>
+        <div id="vars" class="container"></div><br>
         <div id="queue"></div><br>
     </td></tr></table>
 
@@ -75,7 +76,7 @@
 <script type="text/javascript">
 var myviz = new Vamonos.Visualizer({
     widgets: [
-        //new Vamonos.Widget.Console(),
+        new Vamonos.Widget.Console(),
 
         new Vamonos.Widget.Controls({
             container: "controls",
@@ -99,6 +100,11 @@ var myviz = new Vamonos.Visualizer({
             //breakpoints: "all",
             procedureName: "relax",
             setAllBreakpoints: true,
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "vars",
+            watch: ["u", "v"],
         }),
 
         new Vamonos.Widget.Graph({

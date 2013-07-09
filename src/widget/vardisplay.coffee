@@ -17,7 +17,7 @@ class VarDisplay
             @tblRows = {}
             @tblRows[v.name] = $("<tr>").append(
                 $("<td>", {text: v.name}),
-                $("<td>", {text: "="}),
+                $("<td>", {text: ""}),
                 $("<td>", {text: ""})
             ) for v in @watch
 
@@ -25,9 +25,23 @@ class VarDisplay
             $table.append(@tblRows[v.name]) for v in @watch
 
             @$container.html($table)
+        
+        when "editStart"
+            for name, $r of @tblRows
+                $("<td><input type='checkbox'></td>").prependTo($r)
+
+        when "editStop"
+            for name, $r of @tblRows
+                $box = $r.find("input:checkbox")
+                if $box.is(":checked")
+                    @viz.setWatchVar(name)
+                else
+                    @viz.removeWatchVar(name)
+                $box.remove()
 
         when "render"
             @showVars(options...)
+            console.log @viz.watchVars
 
         when "displayStop"
             @clear()

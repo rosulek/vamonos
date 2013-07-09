@@ -48,11 +48,13 @@ class Visualizer
         return @namespace[ns][varName]
 
     setWatchVar: (varName) ->
-        @watchVars ?= []
         Vamonos.insertSet(varName, @watchVars)
 
+    isWatchVar: (varName) ->
+        return varName in @watchVars
+
     removeWatchVar: (varName) ->
-        @watchVars ?= []
+        return unless varName in @watchVars
         ((w) -> w.splice(w.indexOf(varName), 1))(@watchVars)
 
     getBreakpoints: (proc) ->
@@ -76,7 +78,6 @@ class Visualizer
 
     ensureNamespace: (ns) ->
         @inputVars[ns]        ?= []
-        @watchVars[ns]        ?= []
         @stash.namespaces[ns] ?= { global: @stash.namespaces.global }
 
     prepareStash: () ->
@@ -86,7 +87,6 @@ class Visualizer
         @stash.context     = { proc: "global", args: "", calledAtFrame: 0 }
         @stash.namespaces  = { global: {} }
         @inputVars.global ?= []
-        @watchVars.global ?= []
 
     initializeStash: () ->
         @stash.context   = { proc: "global", args: "", calledAtFrame: 0 }
