@@ -1,8 +1,9 @@
 class Visualizer
 
-    constructor: ({@widgets, @maxFrames, algorithm, autoStart}) ->
-        @maxFrames         ?= 250
-        autoStart          ?= false
+    constructor: ({@widgets, @maxFrames, @breakOnReturn, algorithm, autoStart}) ->
+        @maxFrames     ?= 250
+        autoStart      ?= false
+        @breakOnReturn ?= false
 
         @currentFrameNumber = 0
         @breakpoints        = {}
@@ -118,10 +119,13 @@ class Visualizer
         # if context changed since last call of line(), tell the stash's
         # call stack what the previous line was.
         if @prevLine? and @stash.context isnt @prevLine.context and @stash.callStack.length > 0
-            calls = (s for s in @stash.callStack when s.context is @prevLine.context)
-            s.line = @prevLine.n for s in calls when not s.line?
+            calls          = (s for s in @stash.callStack when s.context is @prevLine.context)
+            s.line         = @prevLine.n for s in calls when not s.line?
+            contextChanged = yes
+        else
+            contextChanged = no
 
-        if @takeSnapshot(n, @stash.context.proc)
+        if contextChanged or @takeSnapshot(n, @stash.context.proc)
             throw "too many frames" if @currentFrameNumber >= @maxFrames
 
             newFrame              = @getFrame()

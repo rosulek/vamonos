@@ -7,6 +7,7 @@ class CallStack
     event: (event, options...) -> switch event
         when "setup"
             [@viz] = options
+            @viz.breakOnReturn = yes
         when "render"
             [frame, type] = options
             @render(frame)
