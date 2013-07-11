@@ -121,7 +121,7 @@ class Visualizer
         if @prevLine? and @stash.context isnt @prevLine.context and @stash.callStack.length > 0
             calls          = (s for s in @stash.callStack when s.context is @prevLine.context)
             s.line         = @prevLine.n for s in calls when not s.line?
-            contextChanged = yes
+            contextChanged = yes if @breakOnReturn
         else
             contextChanged = no
 
