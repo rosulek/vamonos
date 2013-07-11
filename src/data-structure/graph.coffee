@@ -59,7 +59,9 @@ class Graph
     addVertex: (vtx) ->
         vtx.type  = 'vertex'
         vtx.name ?= @nextVertexName()
+        vtx.id   ?= @nextVertexId()
         @vertices.push(vtx)
+        return vtx.id
 
     removeVertex: (vid) ->
         vtx = @vertex(vid)
@@ -72,6 +74,10 @@ class Graph
     eachVertex: (f) ->
         @vertices.sort (a,b) -> a.name - b.name
         f(v) for v in @vertices when v?
+
+    nextVertexId: () ->
+        @_customVertexNum ?= 0
+        return "custom-vertex-#{@_customVertexNum++}"
 
     returnVertexName: (n) ->
         @availableNames.unshift(n)
