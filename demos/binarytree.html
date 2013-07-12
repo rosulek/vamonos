@@ -82,6 +82,33 @@ var t2 = new Vamonos.DataStructure.BinaryTree({
     },
 });
 
+
+var t2 = new Vamonos.DataStructure.BinaryTree({
+    v: 3,
+    id: "n3",
+    l: { 
+        v: 2,
+        id: "n2",
+        l: { v: 1, id: "n1" },
+    },
+    r: {
+        v: 5,
+        id: "n5",
+        l: { v: 4, id: "n4" },
+        r: {
+            v: 8,
+            id: "n8",
+            l: {
+                v: 6,
+                id: "n6",
+                r: { v: 7, id: "n7" },
+            },
+            r: { v: 9, id: "n9" },
+        },
+    }
+});
+
+
 bin.event("render", {tree: t1});
 
 $("button#button-t1").on("click", function(){ bin.event("render", {tree: t1}) });
