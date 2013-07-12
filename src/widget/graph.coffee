@@ -223,6 +223,7 @@ class Graph
         @jsPlumbInstance.animate(
             vertex.id 
             {left: vertex.x, top: vertex.y}
+            {duration: 1500}
         )
 
     updateNodeLabels: ($node, vertex, frame = {}) ->

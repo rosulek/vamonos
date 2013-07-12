@@ -1,7 +1,7 @@
 class BinaryTree
 
     @xscalar = 60
-    @yscalar = 60
+    @yscalar = 40
 
     constructor: ({container, @varName, defaultTree}) ->
         #@theTree = defaultTree ? new Vamonos.DataStructure.BinaryTree()
@@ -23,7 +23,6 @@ class BinaryTree
             [frame, type] = options
             @generatePositions(frame[@varName])
             @drawTree(frame[@varName])
-            @graphWidget.resizeContainer()
 
     nextNodeId: () ->
         @_customNodeNum ?= 0
