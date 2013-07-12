@@ -5,8 +5,6 @@ class BinaryTree
 
     constructor: ({container, @varName, defaultTree}) ->
         #@theTree = defaultTree ? new Vamonos.DataStructure.BinaryTree()
-        @edges = []
-        @nodes = []
         @graphWidget = new Vamonos.Widget.Graph
             container: container
             draggable: false
@@ -24,10 +22,8 @@ class BinaryTree
         when "render"
             [frame, type] = options
             @generatePositions(frame[@varName])
-            if @treeCreated?
-                @updateTree(frame[@varName])
-            else
-                @createTree(frame[@varName])
+            @drawTree(frame[@varName])
+            @graphWidget.resizeContainer()
 
     nextNodeId: () ->
         @_customNodeNum ?= 0
@@ -38,39 +34,33 @@ class BinaryTree
             n.x = n.order * BinaryTree.xscalar
             n.y = n.depth * BinaryTree.yscalar
 
-    createTree: (tree) ->
-        tree.eachNodeInOrder (n) =>
-            @nodes.push(@graphWidget.addVertex(n, false))
-        tree.eachNodeInOrder (n) =>
-            if n.l?
-                @edges.push(@graphWidget.addEdge(n.id, n.l.id))
-            if n.r?
-                @edges.push(@graphWidget.addEdge(n.id, n.r.id))
+    drawTree: (tree) ->
+        @drawNodes(tree)
+        @drawEdges(tree)
         @treeCreated = yes
+        @oldTree = tree
 
-    updateTree: (tree) ->
-        console.log @edges
-        activeEdges = []
+    drawEdges: (tree) ->
+        if @oldTree?
+            @oldTree.eachNodeInOrder (n) =>
+                if n.l?
+                    @graphWidget.removeEdge(n.id, n.l.id)
+                if n.r?
+                    @graphWidget.removeEdge(n.id, n.r.id)
+
         tree.eachNodeInOrder (n) =>
-            $n = @getNode(n.id)
-            @graphWidget.updateNodePosition($n, n) if $n?
             if n.l?
-                e = @theGraph.edge(n.id, n.l.id)
-                if e?
-                    activeEdges.push("#{e.source.id}->#{e.target.id}")
+                @graphWidget.addEdge(n.id, n.l.id)
             if n.r?
-                e = @theGraph.edge(n.id, n.r.id)
-                if e?
-                    activeEdges.push("#{e.source.id}->#{e.target.id}")
-        console.log activeEdges
-        for $e in @edges
-            continue unless $e?
-            unless "#{$e.sourceId}->#{$e.targetId}" in activeEdges
-                @graphWidget.removeEdge($e.sourceId, $e.targetId)
-                @edges.splice(@edges.indexOf($e), 1)
+                @graphWidget.addEdge(n.id, n.r.id)
+        
+    drawNodes: (tree) ->
+        tree.eachNodeInOrder (n) =>
+            $n = @graphWidget.getNode(n.id)
+            if $n?
+                @graphWidget.updateNodePosition($n, n) 
+            else
+                @graphWidget.addVertex(n, false)
 
-    getNode: (nodeId) ->
-        return unless @nodes.length and nodeId?
-        @nodes.filter(($n) -> $n.attr("id") is nodeId)[0]
 
 Vamonos.export { Widget: { BinaryTree } }

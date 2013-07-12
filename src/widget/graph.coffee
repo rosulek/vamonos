@@ -223,7 +223,6 @@ class Graph
         @jsPlumbInstance.animate(
             vertex.id 
             {left: vertex.x, top: vertex.y}
-            () => @resizeContainer()
         )
 
     updateNodeLabels: ($node, vertex, frame = {}) ->

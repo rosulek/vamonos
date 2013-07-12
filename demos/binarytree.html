@@ -20,6 +20,8 @@
 
     <div class="vamonos left">
         <div class="container" id="tree"></div><br>
+        <button id="button-t1">Draw T1</button>
+        <button id="button-t2">Draw T2</button>
     </div>
 
 </body>
@@ -59,15 +61,13 @@ var t2 = new Vamonos.DataStructure.BinaryTree({
     v: 5,
     id: "n5",
     l: { 
-        l: { 
-            v: 2,
-            id: "n2",
-            l: { v: 1, id: "n1" },
-            r: {
-                v: 3,
-                id: "n3",
-                r: { v: 4, id: "n4" },
-            },
+        v: 2,
+        id: "n2",
+        l: { v: 1, id: "n1" },
+        r: {
+            v: 3,
+            id: "n3",
+            r: { v: 4, id: "n4" },
         },
     },
     r: {
@@ -82,7 +82,10 @@ var t2 = new Vamonos.DataStructure.BinaryTree({
     },
 });
 
-bin.event("render", {tree: t1})
+bin.event("render", {tree: t1});
+
+$("button#button-t1").on("click", function(){ bin.event("render", {tree: t1}) });
+$("button#button-t2").on("click", function(){ bin.event("render", {tree: t2}) });
 
 </script>
 </html>
