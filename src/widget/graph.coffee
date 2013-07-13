@@ -220,11 +220,12 @@ class Graph
     updateNodePosition: ($node, vertex) ->
         pos = $node.position()
         return if pos.left == vertex.x and pos.top == vertex.y
-        @jsPlumbInstance.animate(
-            vertex.id 
-            {left: vertex.x, top: vertex.y}
-            {duration: 1500}
-        )
+#        @jsPlumbInstance.animate(
+#            vertex.id 
+#            {left: vertex.x, top: vertex.y}
+#            {duration: 1500}
+#        )
+        $node.css({ left: vertex.x, top: vertex.y })
 
     updateNodeLabels: ($node, vertex, frame = {}) ->
         for type, style of @vertexLabels
