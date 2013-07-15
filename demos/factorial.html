@@ -77,12 +77,14 @@ var myviz = new Vamonos.Visualizer({
         }),
     ],
 
-    algorithm: function() {
-_(1);   if (n <= 1) { 
-_(2);       return n; 
+    algorithm: function(_) {
+        with (this) {
+_(1);       if (n <= 1) { 
+_(2);           return n; 
+            }
+_(3);       ret = n * main({n : n-1});
+_(4);       return ret;
         }
-_(3);   ret = n * main({n : n-1});
-_(4);   return ret;
     }
 });
 
@@ -114,12 +116,14 @@ var myviz2 = new Vamonos.Visualizer({
         }),
     ],
 
-    algorithm: function() {
-_(1);   if (n <= 1) { 
-_(2);       return acc; 
+    algorithm: function(_) {
+        with (this) {
+_(1);       if (n <= 1) { 
+_(2);           return acc; 
+            }
+_(3);       ret = main({n : n-1, acc: n*acc});
+_(4);       return ret;
         }
-_(3);   ret = main({n : n-1, acc: n*acc});
-_(4);   return ret;
     }
 });
 
