@@ -15,9 +15,9 @@ class QTipTutorial
         @currStateIndex = null
         @$currTarget    = null
 
-        @$tipXButton  = $("<div>", { style: "float:right; padding: 0 0 8px px; cursor: default;", html: "&#x2612;" })
-        @$tipPrevLink = $("<div>", { style: "float:left",  html: "<a href='#'>&lt; previous</a>" })
-        @$tipNextLink = $("<div>", { style: "float:right", html: "<a href='#'>next &gt;</a>" })
+        @$tipXButton  = $("<div>", { style: "float:right; padding: 0 0 8px 8px; cursor: pointer;", html: "&#x2612;" })
+        @$tipPrevLink = $("<div>", { style: "float:left; cursor: pointer;",  html: "&laquo; previous" })
+        @$tipNextLink = $("<div>", { style: "float:right; cursor: pointer;", html: "next &raquo;" })
         @$tipData     = $("<div>", { style: "padding-bottom: 12px;" })
         @$tipContents = $("<div>").append(@$tipXButton, @$tipData, @$tipPrevLink, @$tipNextLink)
 
@@ -36,26 +36,20 @@ class QTipTutorial
         currState       = @states[@currStateIndex]
         return unless currState?
 
-        console.log(currState)
-
         @$currTarget = currState.target
         currState.dir ?= "w"
 
-        console.log(@$currTarget)
-
         @$tipData.html(currState.tooltip);
+        if @currStateIndex > 0 then @$tipPrevLink.show() else @$tipPrevLink.hide()
+        if @currStateIndex < @states.length - 1 then @$tipNextLink.show() else @$tipNextLink.hide()
 
-        @tmp = {
+        @$currTarget.qtip({
             position: { corner: DIRS[currState.dir] },
             show:     { when: false, ready: true },
             hide:     false,
             style:    { name:"cream", tip: DIRS[currState.dir].tooltip },
             content:  @$tipContents
-        }
-
-        console.log(@tmp)
-
-        @$currTarget.qtip(@tmp)
+        })
 
     event: ->
     setup: ->
