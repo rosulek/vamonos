@@ -173,7 +173,7 @@ class Graph
                 #@containerResizeLimitY
             #]
             stop: (event, ui) =>
-                vtx = @theGraph.vertex(vertex.id)
+                vtx = @theGraph.vertex(vertex)
                 vtx.x = ui.position.left
                 vtx.y = ui.position.top
                 #@resizeContainer()
@@ -264,6 +264,7 @@ class Graph
     removeNode: (vid) ->
         $vtx = @getNode(vid)
         out = @theGraph.outgoingEdges(vid)
+        console.log out
         ins = @theGraph.incomingEdges(vid)
         for edge in ins.concat(out)
             @removeConnection(edge.source.id, edge.target.id)
@@ -316,7 +317,7 @@ class Graph
                 continue unless $con?
                 $con.setPaintStyle(@customStyle(style[1]))
             else if typeof style[0] is 'function'
-                for edge in graph.edges
+                for edge in graph.getEdges()
                     edgeHack = 
                         source: graph.vertex(edge.source)
                         target: graph.vertex(edge.target)
@@ -534,7 +535,7 @@ class Graph
     
     vertexChanged: (newv) ->
         return false unless @previousFrame?
-        oldv = @previousFrame[@varName].vertices.filter((v) -> v.id is newv.id)[0]
+        oldv = @previousFrame[@varName].vertex(newv.id)
         return @varChanged(newv, oldv)
 
     varChanged: (newv, oldv) ->
@@ -549,11 +550,7 @@ class Graph
         return ret
 
     updateVizVariables: () ->
-        if @theGraph.vertices.length > 0
-            @viz.setVariable(@varName, Vamonos.clone(@theGraph), true)
-        else
-            alert "GRAPH WIDGET: need vertices please!" 
-            throw "GRAPH WIDGET: leaving edit mode without vertices"
+        @viz.setVariable(@varName, Vamonos.clone(@theGraph), true)
         graph = @viz.getVariable(@varName, true)
         for k, v of @inputVars
             unless v?
@@ -567,8 +564,8 @@ class Graph
         if @graphDrawn
             $e.removeClass("changed") for $e in @nodes.concat(@connections)
         else
-            @addNode(v) for v in graph.vertices
-            @addConnection(e.source.id, e.target.id) for e in graph.edges
+            @addNode(v) for v in graph.getVertices()
+            @addConnection(e.source.id, e.target.id) for e in graph.getEdges()
             @graphDrawn = yes
             Vamonos.moveToTop($n) for $n in @nodes
         @updateNode($n, graph, frame) for $n in @nodes
