@@ -4,26 +4,16 @@ class Graph
         @directed = args.directed ? no
 
         @type     = 'graph'
-        @adjHash  = {}
-        @edges    = []
-        @vertices = []
+        @edges    = {}
+        @vertices = {}
 
-        for v in Vamonos.arrayify(args.vertices)
-            @addVertex(v) if v?
-
-        for e in Vamonos.arrayify(args.edges)
-            @addEdge(e.source, e.target, e) if e?
+        @addVertex(v) for v in Vamonos.arrayify(args.vertices) when v?
+        @addEdge(e.source, e.target, e) for e in Vamonos.arrayify(args.edges) when e?
 
     # ---------- edge functions ----------- #
 
     edge: (source, target) ->
-        sourceId = @_idify(source) 
-        targetId = @_idify(target) 
-        matches = @edges.filter (e) =>
-            (e.source.id is sourceId and e.target.id is targetId) or
-                if @directed then false
-                else (e.source.id is targetId and e.target.id is sourceId)
-        return matches[0]
+        return @edges[@_idify(source)]?[@_idify(target)]
 
     addEdge: (sourceId, targetId, args) ->
         return if @edge(sourceId, targetId)
@@ -34,50 +24,42 @@ class Graph
         if args?
             edge[k] = v for k, v of args when k isnt 'source' and k isnt 'target'
 
-        @adjHash[sourceId] ?= {}
-        @adjHash[sourceId][targetId] = edge
+        (@edges[sourceId] ?= {})[targetId] = edge
         unless @directed
-            @adjHash[targetId] ?= {}
-            @adjHash[targetId][sourceId] = edge 
-        @edges.push(edge)
+            (@edges[targetId] ?= {})[sourceId] = edge
 
     removeEdge: (sourceId, targetId) ->
-        edge = @edge(sourceId, targetId)
-        return unless edge?
-        index = @edges.indexOf(edge)
-        @edges.splice(@edges.indexOf(edge), 1)
-        @adjHash[sourceId][targetId] = undefined
-        @adjHash[targetId][sourceId] = undefined unless @directed
+        edge = @edges[sourceId]?[targetId]
+        @edge[sourceId][targetId] = undefined
+        @edge[targetId][sourceId] = undefined unless @directed
+        edge
 
     # ----------- vertex functions ---------- #
 
     vertex: (v) ->
-        id_str = @_idify(v)
-        return id_str unless typeof id_str is 'string'
-        @vertices.filter((v) -> v.id is id_str)[0]
+        return @vertices[@_idify(v)]
 
     addVertex: (vtx) ->
         vtx.type  = 'vertex'
         vtx.name ?= @nextVertexName()
         vtx.id   ?= @nextVertexId()
-        @vertices.push(vtx)
-        return vtx.id
+        @vertices[vtx.id] = vtx
+        vtx.id
 
-    removeVertex: (vid) ->
-        vtx = @vertex(vid)
+    removeVertex: (v) ->
+        vtx = @vertex(@_idify(v))
         return unless vtx?
         @returnVertexName(vtx.name)
         affectedEdges = @incomingEdges(vid).concat @outgoingEdges(vid)
         @removeEdge(e.source.id, e.target.id) for e in affectedEdges
-        @vertices.splice(@vertices.indexOf(vtx), 1)
 
     eachVertex: (f) ->
-        @vertices.sort (a,b) -> a.name - b.name
-        f(v) for v in @vertices when v?
+        vs = (v for id, v in @vertices).sort((a,b) -> a.name - b.name)
+        f(v) for v in vs when v?
 
     nextVertexId: () ->
         @_customVertexNum ?= 0
-        return "custom-vertex-#{@_customVertexNum++}"
+        "custom-vertex-#{@_customVertexNum++}"
 
     returnVertexName: (n) ->
         @availableNames.unshift(n)
@@ -85,27 +67,26 @@ class Graph
 
     nextVertexName: () ->
         @availableNames ?= "abcdefghijklmnopqrstuvwxyz".split("")
-        return @availableNames.shift()
+        @availableNames.shift()
 
     # ----------- edge and vertex functions ---------- #
 
     neighbors: (v) ->
-        v = @_idify(v)
-        (@vertex(target) for target, edge of @adjHash[v])
+        (@vertex(target) for target, edge of @edges[@_idify(v)])
             .sort (a,b) -> a.name - b.name
 
     eachNeighbor: (v, f) ->
         f(neighbor) for neighbor in @neighbors(v) when neighbor?
 
     outgoingEdges: (v) ->
-        v = @_idify(v)
-        @edges.filter ({source, target}) =>
-            source.id is v or if @directed then false else target.id is v
+        vid = @_idify(v)
+        @edges[vid].concat(if @directed then [] else @incomingEdges(vid))
 
     incomingEdges: (v) ->
-        v = @_idify(v)
-        @edges.filter ({source, target}) =>
-            target.id is v or if @directed then false else source.id is v
+        vid = @_idify(v)
+        uglyArray = (for source, outgoingEdges of @edges
+            edge for target, edge of outgoingEdges when target.id is vid)
+        [].concat(uglyArray...) # flatten array
 
     # ------------ utility ----------- #
 
