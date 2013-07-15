@@ -12,59 +12,64 @@ DIRS = {
 class QTipTutorial
 
     constructor: (@states) ->
-        @currState     = @states.start
-        @currStateName = "start"
-        @$currTarget   = null
+        @currStateIndex = null
+        @$currTarget    = null
+
+        @$tipXButton  = $("<div>", { style: "float:right; padding: 0 0 8px px; cursor: default;", html: "&#x2612;" })
+        @$tipPrevLink = $("<div>", { style: "float:left",  html: "<a href='#'>&lt; previous</a>" })
+        @$tipNextLink = $("<div>", { style: "float:right", html: "<a href='#'>next &gt;</a>" })
+        @$tipData     = $("<div>", { style: "padding-bottom: 12px;" })
+        @$tipContents = $("<div>").append(@$tipXButton, @$tipData, @$tipPrevLink, @$tipNextLink)
+
+        @$tipXButton.on("click.qtiptutorial", => @stop() )
+        @$tipPrevLink.on("click.qtiptutorial", => @prevState() )
+        @$tipNextLink.on("click.qtiptutorial", => @nextState() )
+
 
     setup: () ->
 
-    doState: (stateName) ->
-        return unless @currState?
-        @$currTarget.qtip("destroy")           if @$currTarget? and @currState.tooltip?
-        @$currTarget.off("click.qtiptutorial") if @currState.on.clickTarget?
+    doState: (newStateIndex) ->
+        @$currTarget.qtip("destroy") if @$currTarget?
+        return if newStateIndex < 0
 
-        @currStateName = stateName
-        @currState     = @states[@currStateName]
-        return unless @currState?
+        @currStateIndex = newStateIndex
+        currState       = @states[@currStateIndex]
+        return unless currState?
 
-        @$currTarget = @currState.target
+        console.log(currState)
 
-        if @$currTarget?
-            if @currState.on.clickTarget?
-                @$currTarget.on("click.qtiptutorial", => @click())
-            
-            if @currState.tooltip?
-                @currState.dir ?= "w"
-                @$currTarget.qtip({
-                    position: {corner: DIRS[@currState.dir]},
-                    show: { when: false, ready: true },
-                    hide: false,
-                    style: {name:"cream", tip: DIRS[@currState.dir].tooltip},
-                    content: @currState.tooltip
-                })
+        @$currTarget = currState.target
+        currState.dir ?= "w"
 
-        @delayedTransition(@currState.on.auto) if @currState.on?.auto?
+        console.log(@$currTarget)
+
+        @$tipData.html(currState.tooltip);
+
+        @tmp = {
+            position: { corner: DIRS[currState.dir] },
+            show:     { when: false, ready: true },
+            hide:     false,
+            style:    { name:"cream", tip: DIRS[currState.dir].tooltip },
+            content:  @$tipContents
+        }
+
+        console.log(@tmp)
+
+        @$currTarget.qtip(@tmp)
+
+    event: ->
+    setup: ->
+
+    nextState: ->
+        @doState(@currStateIndex + 1);
+
+    prevState: ->
+        @doState(@currStateIndex - 1);
     
+    stop: ->
+        @doState(-1)
 
-    click: () ->
-        @delayedTransition(@currState.on.clickTarget) if @currState?.on?.clickTarget?
-        
-    event: (type) -> switch type
-        when "editStart"
-            @delayedTransition(@currState.on.edit) if @currState?.on?.edit?
-        when "displayStart"
-            @delayedTransition(@currState.on.display) if @currState?.on?.display?
-        when "render"
-            @delayedTransition(@currState.on.frame) if @currState?.on?.frame?
-
-    delayedTransition: (nextState) ->
-        return unless nextState?
-
-        @currState.delay ?= 500
-        from   = @currStateName
-        helper = =>
-            @doState(nextState) if @currStateName is from
-
-        setTimeout( helper, @currState.delay )
+    restart: ->
+        @doState(0)
 
 Vamonos.export { Widget: { QTipTutorial } }
