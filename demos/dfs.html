@@ -182,35 +182,39 @@ var myviz = new Vamonos.Visualizer({
     autoStart: false,
 
     algorithm: {
-        main: function() {
-            global.time = undefined;
-            G.eachVertex(function(vtx){
-_(1);           u = vtx;
-_(2);           u.color = "white";
-            });
-            u = undefined;
-_(3);       global.time = 0;
-            G.eachVertex(function(vtx){
-_(4);           u = vtx;
-_(5);           if (u.color === "white") {
-_(6);               visit({G:G, u:u}, ["v"]);
-                }
-            });
-            u = undefined;
+        main: function(_) {
+            with (this) {
+                global.time = undefined;
+                G.eachVertex(function(vtx){
+_(1);               u = vtx;
+_(2);               u.color = "white";
+                });
+                u = undefined;
+_(3);           global.time = 0;
+                G.eachVertex(function(vtx){
+_(4);               u = vtx;
+_(5);               if (u.color === "white") {
+_(6);                   visit({G:G, u:u}, ["v"]);
+                    }
+                });
+                u = undefined;
+            }
         },
 
-        visit: function() {
-_(1);       u.d = ++global.time;
-_(2);       u.color = "gray";
-            G.eachNeighbor(u, function(vtx){
-_(3);           v = vtx;
-_(4);           if (v.color === "white") {
-_(5);               visit({G:G, u:v}, ["v"]);
-                }
-            });
-            v = undefined;
-_(6);       u.color = "black";
-_(7);       u.f = ++global.time;
+        visit: function(_) {
+            with (this) {
+_(1);           u.d = ++global.time;
+_(2);           u.color = "gray";
+                G.eachNeighbor(u, function(vtx){
+_(3);               v = vtx;
+_(4);               if (v.color === "white") {
+_(5);                   visit({G:G, u:v}, ["v"]);
+                    }
+                });
+                v = undefined;
+_(6);           u.color = "black";
+_(7);           u.f = ++global.time;
+            }
         },
     },
 })

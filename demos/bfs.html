@@ -155,31 +155,34 @@ var myviz = new Vamonos.Visualizer({
 
     autoStart: false,
 
-    algorithm: function () {
-        G.eachVertex(function(vtx){
-            if (vtx.id === s.id) { return }
-_(1);           u = vtx;
-_(2);           u.color = "white";
-        });
-        u = undefined;
-_(3);   s.color = "gray";
-_(4);   s.d = 0;
-_(5);   Q = new Vamonos.DataStructure.Queue();
-_(6);   Q.enqueue(s);
-        while (_(6), !Q.isEmpty()) {
-_(8);       u = Q.dequeue();
-            G.eachNeighbor(u, function(vtx) {
-_(9);           v = vtx;
-_(10);           if (v.color === "white") {
-_(11);              v.color = "gray";
-_(12);              v.d = u.d + 1;
-_(13);              Q.enqueue(v);
-                }
+    algorithm: function (_) {
+        console.log(_);
+        with (this) {
+            G.eachVertex(function(vtx){
+                if (vtx.id === s.id) { return }
+_(1);               u = vtx;
+_(2);               u.color = "white";
             });
-            v = undefined;
-_(14);      u.color = "black";
+            u = undefined;
+_(3);       s.color = "gray";
+_(4);       s.d = 0;
+_(5);       Q = new Vamonos.DataStructure.Queue();
+_(6);       Q.enqueue(s);
+            while (_(6), !Q.isEmpty()) {
+_(8);           u = Q.dequeue();
+                G.eachNeighbor(u, function(vtx) {
+_(9);               v = vtx;
+_(10);               if (v.color === "white") {
+_(11);                  v.color = "gray";
+_(12);                  v.d = u.d + 1;
+_(13);                  Q.enqueue(v);
+                    }
+                });
+                v = undefined;
+_(14);          u.color = "black";
+            }
+            u = undefined;
         }
-        u = undefined;
     },
 });
 
