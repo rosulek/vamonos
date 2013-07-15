@@ -48,14 +48,16 @@
 
 //            autoStart: true,
 
-            algorithm: function () {
-                global.M = {};
-                for (var i=0; i<A.length; i++) {
-_(1);               x = A[i];
-                    global.M[x] = {};
-                    for (var j=0; j<A.length; j++) {
-_(2);                   y = A[j];
-_(3);                   global.M[x][y] = x+y;
+            algorithm: function (_) {
+                with (this) {
+                    global.M = {};
+                    for (var i=0; i<A.length; i++) {
+_(1);                   x = A[i];
+                        global.M[x] = {};
+                        for (var j=0; j<A.length; j++) {
+_(2);                       y = A[j];
+_(3);                       global.M[x][y] = x+y;
+                        }
                     }
                 }
             }
