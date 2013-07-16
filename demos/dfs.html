@@ -207,7 +207,7 @@ _(2);           u.color = "gray";
                 G.eachNeighbor(u, function(vtx){
 _(3);               v = vtx;
 _(4);               if (v.color === "white") {
-_(5);                   visit({G:G, u:v}, ["v"]);
+_(5);                   visit({G:G, u:v});
                     }
                 });
                 v = undefined;

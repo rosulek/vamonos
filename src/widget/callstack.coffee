@@ -17,16 +17,14 @@ class CallStack
 
     render: (frame) ->
         @drawHeader()
-        stack = frame._callStack
-        n = frame._nextLine.context
+        stack = frame._callStack[..]
         r = frame._nextLine.result
-        @addProcedure(c.proc, c.args) for c in stack
-        @addProcedure(n.proc, n.args)
+        @addProcedure(c._procName, c._args) for c in stack.reverse()
         @$table.find("td.callstack-proc").last().addClass("callstack-active")
-        @addProcedure(r.proc, r.args, r.returnValue ? "&nbsp;") if r?
+        @addProcedure(r._procName, r._args, r._returnValue ? "&nbsp;") if r?
         
     addProcedure: (proc, args, ret) ->
-        return if proc is 'global'
+        return if proc is 'input'
         proc = @procedureNames[proc] ? proc
         $proc = $("<tr><td class='callstack-args'>" +
           "#{@argStr(args)}</td><td class='callstack-return'>"  +

@@ -59,19 +59,21 @@ class Pseudocode
 
     render: (frame) ->
         @clear()
-        stackContexts = (c.proc for c in frame._callStack)
-        return unless @procedureName is frame._nextLine.context.proc or 
-            frame._nextLine.context.proc isnt "global" and @procedureName is frame._prevLine.context.proc or
+        stackContexts = (c._procName for c in frame._callStack)
+
+        return unless @procedureName is frame._nextLine.scope._procName or 
+            frame._nextLine.scope._procName isnt "input" and 
+                @procedureName is frame._prevLine.scope?._procName or
             @procedureName in stackContexts
 
-        if frame._prevLine.context.proc is @procedureName
-            @addClassToLine(frame._prevLine.n, "pseudocode-previous")
+        if frame._prevLine.scope?._procName is @procedureName
+            @addClassToLine(frame._prevLine.number, "pseudocode-previous")
 
-        if frame._nextLine.context.proc is @procedureName
-            @addClassToLine(frame._nextLine.n, "pseudocode-next")
+        if frame._nextLine.scope?._procName is @procedureName
+            @addClassToLine(frame._nextLine.number, "pseudocode-next")
 
-        if frame._nextLine.context.proc isnt @procedureName
-            calls = (c for c in frame._callStack when c.proc is @procedureName)
+        if frame._nextLine.scope?._procName isnt @procedureName
+            calls = (c for c in frame._callStack when c._procName is @procedureName)
             mostRecentCall = calls[calls.length - 1]
             @addClassToLine(mostRecentCall?.line ? 0, "pseudocode-active")
 
