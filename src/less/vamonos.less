@@ -288,6 +288,9 @@ table.pseudocode {
         td.pseudocode-text, td.pseudocode-comment  {
             .bg-gradient-leftright(@highlight-background-color, rgba(255,255,255,0));
         }
+        td.pseudocode-title {
+            background-color: @highlight-background-color;
+        }
         td.pseudocode-line-number {
             background-color: multiply(@highlight-background-color, @pseudocode-line-number-bg-color);
         }
@@ -297,6 +300,9 @@ table.pseudocode {
     }
 
     tr.pseudocode-previous {
+        td.pseudocode-title {
+            background-color: @light-shaded-color;
+        }
         td.pseudocode-text, td.pseudocode-comment  {
             .bg-gradient-leftright(rgba(255,255,255,0), @light-shaded-color);
         }

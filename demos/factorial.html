@@ -23,8 +23,7 @@
         <div class="container" id="fact" title="Fact(n):">
             if n &le; 1
                 return n
-            ret = n * Fact(n-1)
-            return ret
+            return n * Fact(n-1)
         </div><br>
         <div id="controls"></div><br>
     </div>
@@ -41,8 +40,7 @@
         <div class="container" id="fact2" title="Fact(n, acc):">
             if n &le; 1
                 return acc
-            ret = Fact(n-1, acc*n)
-            return ret
+            return Fact(n-1, acc*n)
         </div><br>
         <div id="controls2"></div><br>
     </div>
@@ -82,8 +80,7 @@ var myviz = new Vamonos.Visualizer({
 _(1);       if (n <= 1) { 
 _(2);           return n; 
             }
-_(3);       ret = n * main({n : n-1});
-_(4);       return ret;
+_(3);       return n * main({n : n-1});
         }
     }
 });
@@ -121,8 +118,7 @@ var myviz2 = new Vamonos.Visualizer({
 _(1);       if (n <= 1) { 
 _(2);           return acc; 
             }
-_(3);       ret = main({n : n-1, acc: n*acc});
-_(4);       return ret;
+_(3);       return main({n : n-1, acc: n*acc});
         }
     }
 });
