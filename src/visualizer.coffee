@@ -108,7 +108,6 @@ class Visualizer
         # call stack what the previous line was.
         return false unless @prevLine?
         return false unless @stash.currentScope isnt @prevLine.scope
-        return false unless @stash.callStack.length
 
         calls  = (s for s in @stash.callStack when s.scope is @prevLine.scope)
         s._calledByLine = @prevLine.number for s in calls when not s._calledByLine?
@@ -175,7 +174,7 @@ class Visualizer
         returningScope._returnValue = returnValue
         @stash.lastReturnedProc     = returningScope
         @stash.currentScope         = @stash.callStack[0] ? @stash.inputScope
-        @line(0) if @breakOnReturn
+        @line(0)
 
     wrapProcedure: (procName, procedure) ->
         return (args = {}) =>
@@ -206,7 +205,7 @@ class Visualizer
             @line(0)
             throw "no main function" unless typeof @procedures.main is 'function'
             @procedures.main(mainArgs)
-            @line(0) unless @breakOnReturn
+            @line(0)
         catch err
             switch err
                 when "too many frames"

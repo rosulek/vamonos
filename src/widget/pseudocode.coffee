@@ -59,38 +59,55 @@ class Pseudocode
 
     render: (frame) ->
         @clear()
+
         stackContexts = (c._procName for c in frame._callStack)
+        prevScope     = frame._prevLine.scope?._procName
+        nextScope     = frame._nextLine.scope?._procName
 
-        return unless @procedureName is frame._nextLine.scope._procName or 
-            frame._nextLine.scope._procName isnt "input" and 
-                @procedureName is frame._prevLine.scope?._procName or
+        console.log "prev: #{prevScope} next: #{nextScope}"
+
+        if @procedureName is "main" 
+            if nextScope is "input" and not prevScope?
+                @addClassToHeader("pseudocode-next")
+                return
+            if prevScope is "input" 
+                @addClassToHeader("pseudocode-previous")
+                return
+
+        return unless (
+            @procedureName is prevScope or 
+            @procedureName is nextScope or
             @procedureName in stackContexts
+        )
 
-        if frame._prevLine.scope?._procName is @procedureName
+        if @procedureName is prevScope
             if frame._prevLine.number is 0
-                @$tbl.find("tr.pseudocode-header").addClass("pseudocode-previous")
+                @addClassToHeader("pseudocode-previous")
             else
                 @addClassToLine(frame._prevLine.number, "pseudocode-previous")
 
-        if frame._nextLine.scope?._procName is @procedureName
+        if @procedureName is nextScope
             if frame._nextLine.number is 0
-                @$tbl.find("tr.pseudocode-header").addClass("pseudocode-next")
+                @addClassToHeader("pseudocode-next")
             else
                 @addClassToLine(frame._nextLine.number, "pseudocode-next")
 
         if frame._nextLine.scope?._procName isnt @procedureName
             calls = (c for c in frame._callStack when c._procName is @procedureName)
-            mostRecentCall = calls[calls.length - 1]
-            @addClassToLine(mostRecentCall?.line ? 0, "pseudocode-active")
-
+            @addClassToLine(calls[0]?.line ? 0, "pseudocode-active")
 
     clear: () ->
         @$tbl.find("tr").removeClass("pseudocode-next")
         @$tbl.find("tr").removeClass("pseudocode-previous")
         @$tbl.find("tr").removeClass("pseudocode-active")
 
+    addClassToHeader: (klass) ->
+        @$tbl.find("tr.pseudocode-header")
+             .addClass(klass)
+
     addClassToLine: (n, klass) ->
-        @$tbl.find("tr[vamonos-linenumber=#{ n }]").addClass(klass) if Vamonos.isNumber(n)
+        @$tbl.find("tr[vamonos-linenumber=#{ n }]")
+             .addClass(klass) if Vamonos.isNumber(n)
 
     keywords: "for while if else elseif elsif elif begin end then repeat until
                to downto by return error throw and or swap"
