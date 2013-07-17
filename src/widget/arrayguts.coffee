@@ -57,6 +57,7 @@ class ArrayGuts
                 row.hide() for row in [@$rowIndices, @$rowCells, @$rowAnnotations]
             else
                 @$rowCells.on("click.arrayguts", "td", {}, (e) => @tdClick(e) )
+                @$rowCells.prop("title", "Click in any cell to edit this array")
         
         when "editStop"
             if ! @displayOnly
@@ -64,6 +65,8 @@ class ArrayGuts
                 # shallow copy of @theArray
                 @defaultInput = @theArray.slice(0)
                 @stopEditingCell(false)        
+                @$rowCells.prop("title", "")
+
 
         when "displayStart"
             # @defaultInput is the "input" that was passed into the algorithm.

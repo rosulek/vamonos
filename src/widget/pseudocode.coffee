@@ -118,10 +118,11 @@ class Pseudocode
         @$tbl.find("td.pseudocode-gutter").on("click", (event) =>
             @toggleBreakpoint(
                 $(event.target).closest("tr").attr("vamonos-linenumber")))
+        @$tbl.find("td.pseudocode-gutter").prop("title", "Click to toggle a breakpoint on this line")
 
     disableBreakpointSelection: ->
-        @$tbl.find("td.pseudocode-gutter")
-             .off("click")
+        @$tbl.find("td.pseudocode-gutter").off("click")
+        @$tbl.find("td.pseudocode-gutter").prop("title", "")
 
     toggleBreakpoint: (n) ->
         return unless Vamonos.isNumber(n)

@@ -42,6 +42,7 @@ class ControlButtons
     startPlaying: ->
         return if @playInterval? or @atLastFrame
         @$playPauseButton.html(PAUSE)
+        @$playPauseButton.prop("title", "Pause automatic playback of algorithm")
         @playInterval = setInterval( (=> @visualizer.trigger("nextFrame")), 1000)
 
     stopPlaying: ->
@@ -49,6 +50,7 @@ class ControlButtons
         clearTimeout(@playInterval)
         @playInterval = null
         @$playPauseButton.html(PLAY)
+        @$playPauseButton.prop("title", "Start automatic playback of algorithm")
                     
     event: (event, options...) -> switch event
         when "setup"
@@ -56,17 +58,23 @@ class ControlButtons
         
         when "editStart"
             @$runStopButton.html(RUN)
-            @$prevButton.attr("disabled", "true");
-            @$nextButton.attr("disabled", "true");
-            @$playPauseButton.attr("disabled", "true");
+            @$runStopButton.prop("title", "Execute the algorithm with current inputs/breakpoints/etc")
+
+            @prevButtonActive(false)
+            @nextButtonActive(false)
+            @playPauseButtonActive(false)
+
             @$container.addClass("controls-disabled")
             @mode = "edit"
 
         when "displayStart"
             @$runStopButton.html(STOP)
-            @$prevButton.removeAttr("disabled");
-            @$nextButton.removeAttr("disabled");
-            @$playPauseButton.removeAttr("disabled");
+            @$runStopButton.prop("title", "Stop the algorithm to edit inputs/breakpoints/etc")
+
+            @prevButtonActive(true)
+            @nextButtonActive(true)
+            @playPauseButtonActive(true)
+
             @$container.removeClass("controls-disabled")
             @mode = "display"
             @startPlaying() if @autoPlay
@@ -79,17 +87,34 @@ class ControlButtons
 
             @atLastFrame = (frame._frameNumber is frame._numFrames)
 
-            if @atLastFrame
-                @$nextButton.attr("disabled", "true")
-                @$playPauseButton.attr("disabled", "true")
-                @stopPlaying()
-            else
-                @$nextButton.removeAttr("disabled")
-                @$playPauseButton.removeAttr("disabled")
+            @nextButtonActive(!@atLastFrame)
+            @playPauseButtonActive(!@atLastFrame)
+            @prevButtonActive( frame._frameNumber isnt 1 )
 
-            if frame._frameNumber is 1
-                @$prevButton.attr("disabled", "true")
-            else
-                @$prevButton.removeAttr("disabled")
-        
+
+    playPauseButtonActive: (active) ->
+        if active
+            @$playPauseButton.removeAttr("disabled");
+            @$playPauseButton.prop("title", "Start automatic playback of algorithm")
+        else
+            @$playPauseButton.attr("disabled", "true");
+            @$playPauseButton.prop("title", "")         
+
+    nextButtonActive: (active) ->
+        if active
+            @$nextButton.removeAttr("disabled");
+            @$nextButton.prop("title", "Step forwards through the algorithm's execution")
+        else
+            @$nextButton.attr("disabled", "true");
+            @$nextButton.prop("title", "")
+
+    prevButtonActive: (active) ->
+        if active
+            @$prevButton.removeAttr("disabled");
+            @$prevButton.prop("title", "Step backwards through the algorithm's execution")
+        else
+            @$prevButton.attr("disabled", "true");
+            @$prevButton.prop("title", "")
+
+
 Vamonos.export { Widget: { ControlButtons } }
