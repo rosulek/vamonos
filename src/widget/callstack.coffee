@@ -21,7 +21,7 @@ class CallStack
         r = frame._nextLine.result
         @addProcedure(c._procName, c._args) for c in stack.reverse()
         @$table.find("td.callstack-proc").last().addClass("callstack-active")
-        @addProcedure(r._procName, r._args, r._returnValue ? "&nbsp;") if r?
+        @addProcedure(r.procName, r.args, r.returnValue ? "&nbsp;") if r?
         
     addProcedure: (proc, args, ret) ->
         return if proc is 'input'

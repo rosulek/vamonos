@@ -3,6 +3,7 @@ class Visualizer
     constructor: ({@widgets, @maxFrames, @breakOnReturn, algorithm, autoStart}) ->
         @maxFrames     ?= 250
         autoStart      ?= false
+        @breakOnCall   ?= false
         @breakOnReturn ?= false
 
         @breakpoints    = {}
@@ -72,16 +73,20 @@ class Visualizer
         return varname.split(/::/)
 
     initializeStash: () ->
-        @stash             ?= {}
-        @stash.inputScope  ?=
-            _procName: "input"
+        @stash                 ?= {}
+        @stash.inputScope      ?= _procName: "input"
+        @stash.callStack        = [ @stash.inputScope ]
+        @stash.globalScope      = {}
+        @stash.currentScope     = @stash.inputScope
+        @stash.lastReturnedProc = undefined
 
-        @stash.callStack    = []
-        @stash.globalScope  = {}
-        @stash.currentScope = @stash.inputScope
+    getFrame: (prevLine = {}, nextLine = {}, frameNumber = Infinity) ->
+        r = 
+            _callStack   : Vamonos.clone(@stash.callStack)
+            _frameNumber : frameNumber
+            _prevLine    : prevLine
+            _nextLine    : nextLine
 
-    getFrame: () ->
-        r = { _callStack: Vamonos.clone(@stash.callStack) } 
         procsAlreadySeen = []
 
         for scope in @stash.callStack
@@ -102,42 +107,59 @@ class Visualizer
             cloned = Vamonos.clone(v)
             obj["#{procName}::#{k}"] ?= cloned
             obj[k] ?= cloned if bare
-        
-    contextChanged: () ->
-        # if context changed since last call of line(), tell the stash's
-        # call stack what the previous line was.
-        return false unless @prevLine?
-        return false unless @stash.currentScope isnt @prevLine.scope
-        return false unless @stash.callStack.length
 
-        calls  = (s for s in @stash.callStack when s.scope is @prevLine.scope)
-        s._calledByLine = @prevLine.number for s in calls when not s._calledByLine?
-
-        return !!@breakOnReturn
-
-    line: (n) ->
-        nextLine = 
+    setNextLine: (n) ->
+        @nextLine = 
             result : @stash.lastReturnedProc
-            scope  : @stash.currentScope
+            scope  : Vamonos.clone(@stash.currentScope)
             number : n
 
-        if @contextChanged() or @takeSnapshot(n, @stash.currentScope._procName)
-            throw "too many frames" if @currentFrameNumber >= @maxFrames
+    resolveFrameBuffer: (clobberLast) =>
+        while @frameBuffer?.length > (if clobberLast then 1 else 0)
+            frame = @frameBuffer.shift()
+            frame._nextLine.number = @nextLine.number
+            frame._frameNumber = ++@frameNumber
+            @frames.push(frame)
+        @frameBuffer = []
 
-            newFrame              = @getFrame()
-            newFrame._frameNumber = ++@currentFrameNumber
-            newFrame._prevLine    = @prevLine
-            newFrame._nextLine    = nextLine
+    line: (n) ->
+        throw "too many frames" if @frameNumber >= @maxFrames
+        throw "too many lines"  if ++@numCallsToLine > 10000
+
+        if typeof n is 'number'
+            @setNextLine(n)
             @stash.lastReturnedProc = undefined
-            @frames.push(newFrame)
-        
-        @prevLine = nextLine
-        throw "too many lines" if ++@numCallsToLine > 10000
+
+            if @takeSnapshot(n, @stash.currentScope._procName)
+                @resolveFrameBuffer(true)
+                @frames.push(@getFrame(@prevLine, @nextLine, ++@frameNumber))
+            else
+                @resolveFrameBuffer(false)
+            
+            @prevLine = @nextLine
+            @stash.currentScope._lastLine = @prevLine
+        else
+            switch n
+                when "end"
+                    @setNextLine()
+                    @resolveFrameBuffer(false)
+                when "call"
+                    @setNextLine()
+                    @stash.lastReturnedProc = undefined
+                    @prevLine = {}
+                    (@frameBuffer ?= []).push(@getFrame(null, @nextLine))
+                when "ret"
+                    @setNextLine()
+                    (@frameBuffer ?= []).push(@getFrame(@prevLine, @nextLine))
 
     takeSnapshot: (n, proc) ->
-        return n == 0 or
-            @breakpoints[proc]?.length > 0 and n in @breakpoints[proc] or
-            @watchVars.length > 0 and @diff(@frames[@frames.length-1], @getFrame(), @watchVars) 
+        return (
+            @breakpoints[proc]?.length and 
+            n in @breakpoints[proc] or
+            @watchVars.length and 
+            @frames.length and
+            @diff(@frames[@frames.length-1], @getFrame(), @watchVars) 
+        )
         
     # this is somewhat hacky, comparing stringifications
     diff: (left, right, vars) ->
@@ -158,38 +180,43 @@ class Visualizer
         newScope =
             _procName      : procName
             _args          : args
-            _calledAtFrame : @currentFrameNumber
+            _calledAtFrame : @frameNumber
 
         newScope[name]  = proc for name, proc of @procedures
         newScope[name]  = value for name, value of args
         newScope[name] ?= undefined for name in @registeredVars[procName] ? []
         newScope.global = @stash.globalScope
 
+        @stash.currentScope._forkAtLine = @prevLine.number
         @stash.currentScope = newScope
         @stash.callStack.unshift(newScope)
+        @line("call")
 
         return newScope
 
-    returnScope: (returnValue) =>
+    restoreScope: (returnValue) =>
         returningScope              = @stash.callStack.shift()
-        returningScope._returnValue = returnValue
-        @stash.lastReturnedProc     = returningScope
-        @stash.currentScope         = @stash.callStack[0] ? @stash.inputScope
+        @stash.lastReturnedProc     = 
+            procName    : returningScope._procName
+            args        : returningScope._args
+            returnValue : returnValue
+        @stash.currentScope         = @stash.callStack[0]
+        @prevLine                   = returningScope._lastLine
+        @line("ret")
 
     wrapProcedure: (procName, procedure) ->
         return (args = {}) =>
-            scope = @newScope(procName, args)
-            ret = procedure.call(scope, (n)=>@line(n))
-            @returnScope(ret)
+            ret = procedure.call(@newScope(procName, args), (n)=>@line(n))
+            @restoreScope(ret)
             return ret
 
     runAlgorithm: ->
         return if @mode is "display"
 
-        @frames             = []
-        @currentFrameNumber = 0
-        @prevLine           = 0
-        @numCallsToLine     = 0
+        @frames         = []
+        @frameNumber    = 0
+        @prevLine       = 0
+        @numCallsToLine = 0
 
         @initializeStash()
         @tellWidgets("editStop") if @mode is "edit"
@@ -201,11 +228,9 @@ class Visualizer
             mainArgs[k] = v
 
         try
-            # there's always a "before" & "after" snapshot
-            @line(0)
             throw "no main function" unless typeof @procedures.main is 'function'
             @procedures.main(mainArgs)
-            @line(0)
+            @line("end")
         catch err
             switch err
                 when "too many frames"
@@ -221,7 +246,7 @@ class Visualizer
                     throw err
 
 
-        @currentFrameNumber = 0
+        @frameNumber = 0
         f._numFrames = @frames.length for f in @frames
 
         @mode = "display"
@@ -241,18 +266,18 @@ class Visualizer
         @tellWidgets("editStart")
 
     nextFrame: ->
-        @goToFrame(@currentFrameNumber + 1, "next")
+        @goToFrame(@frameNumber + 1, "next")
 
     prevFrame: ->
-        @goToFrame(@currentFrameNumber - 1, "prev")
+        @goToFrame(@frameNumber - 1, "prev")
 
     jumpFrame: (n) ->
         @goToFrame(n, "jump")
 
     goToFrame: (n, type) ->
         return unless @mode is "display" and 1 <= n <= @frames.length
-        @currentFrameNumber = n
-        @tellWidgets("render", @frames[@currentFrameNumber-1], type)
+        @frameNumber = n
+        @tellWidgets("render", @frames[@frameNumber-1], type)
 
 
 Vamonos.export { Visualizer }
