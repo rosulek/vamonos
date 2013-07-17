@@ -143,7 +143,6 @@ var myviz = new Vamonos.Visualizer({
                     {source: 'v1',target: 'v4'},
                     {source: 'v3',target: 'v4'},
                     {source: 'v3',target: 'v6'},
-                    {source: 'v4',target: 'v8'},
                     {source: 'v5',target: 'v8'},
                     {source: 'v6',target: 'v7'},
                     {source: 'v7',target: 'v8'},
@@ -156,7 +155,6 @@ var myviz = new Vamonos.Visualizer({
     autoStart: false,
 
     algorithm: function (_) {
-        console.log(_);
         with (this) {
             G.eachVertex(function(vtx){
                 if (vtx.id === s.id) { return }
@@ -168,7 +166,7 @@ _(3);       s.color = "gray";
 _(4);       s.d = 0;
 _(5);       Q = new Vamonos.DataStructure.Queue();
 _(6);       Q.enqueue(s);
-            while (_(6), !Q.isEmpty()) {
+            while (_(7), !Q.isEmpty()) {
 _(8);           u = Q.dequeue();
                 G.eachNeighbor(u, function(vtx) {
 _(9);               v = vtx;

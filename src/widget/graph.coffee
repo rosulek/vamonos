@@ -56,20 +56,28 @@ class Graph
         @containerResizeLimitY
         @minX
         @minY
+
+        @draggable
+        @updateNodePositions # positions will update from frame x and y attributes
     }) ->
 
-        @containerMargin ?= 20
+        @containerMargin       ?= 20
         @containerResizeLimitX ?= window.innerWidth
         @containerResizeLimitY ?= window.innerHeight
-        @minX ?= @minY ?= 100
+        @minX ?= @minY         ?= 100
+        @draggable             ?= true
+        @inputVars             ?= {}
+        @colorEdges            ?= []
 
-        @inputVars  ?= {}
+        @updateNodePositions   ?= false
+
         @connections = []
         @nodes       = []
 
         @$outer  = Vamonos.jqueryify(container)
         @$inner  = $("<div>", {class: "graph-inner-container"})
         @$outer.append(@$inner)
+        @$outer.disableSelection()
 
         @theGraph = @defaultGraph ? new Vamonos.DataStructure.Graph()
         @inputVars[k] = @theGraph.vertex(v) for k,v of @inputVars
@@ -108,13 +116,15 @@ class Graph
 
     # ----------------- node, edge modification api ------------------ #
 
-    addVertex: (x, y) ->
-        vtx = {id: @nextVertexId(), x, y}
-        @theGraph.addVertex(vtx)
-        $new = @addNode(vtx)
-        @updateGraphDisplay(@frameify(@theGraph))
+    addVertex: (vtx = {}, autoSelect = true) ->
+        vid = @theGraph.addVertex(vtx)
+        if @graphDrawn
+            $new = @addNode(vtx)
+        else
+            @updateGraphDisplay(@frameify(@theGraph))
+            $new = @getNode(vid)
         @resizeContainer()
-        @selectNode($new)
+        @selectNode($new) if autoSelect
         return $new
 
     removeVertex: (vid) ->
@@ -154,19 +164,20 @@ class Graph
         $v.css("left", vertex.x)
         $v.css("top",  vertex.y)
         $v.css("position", "absolute")
-        pos = @$inner.position()
-        @jsPlumbInstance.draggable $v,
-            containment: [
-                pos.left
-                pos.top
-                @containerResizeLimitX
-                @containerResizeLimitY
-            ]
-            drag: (event, ui) =>
-                vtx = @theGraph.vertex(vertex.id)
+        @jsPlumbInstance.draggable($v,
+            containment: "parent"
+            #[
+                #@$inner.position().left
+                #@$inner.position().top
+                #@containerResizeLimitX
+                #@containerResizeLimitY
+            #]
+            stop: (event, ui) =>
+                vtx = @theGraph.vertex(vertex)
                 vtx.x = ui.position.left
                 vtx.y = ui.position.top
-                @resizeContainer()
+                #@resizeContainer()
+        ) if @draggable
         $v.on "dragstart", => Vamonos.moveToTop($v)
         $v.hover(
             ((e) =>
@@ -177,14 +188,11 @@ class Graph
             ((e) =>
                 $v.removeClass('hovering'))
         )
+        @updateNodeLabels($v, vertex)
         @$inner.append($v)
         $v.fadeIn(100)
         @nodes.push($v)
         return $v
-
-    nextVertexId: () ->
-        @_customVertexNum ?= 0
-        return "custom-vertex-#{@_customVertexNum++}"
 
     getNode: (vid) ->
         return unless @graphDrawn and vid?
@@ -197,17 +205,23 @@ class Graph
         for type, style of @vertexLabels
             if type in ["ne","nw","se","sw"]
                 $("<div>", { class:"vertex-#{type}-label" }).appendTo($node)
-            else if type is "inner"
-                if typeof style is "function"
-                    $contents.text(Vamonos.rawToTxt(style(vertex)))
-                else
-                    $contents.text(style)
         $node.append($contents)
 
     updateNode: ($node, graph, frame) ->
         vertex = graph.vertex($node.attr("id"))
         @updateNodeLabels($node, vertex, frame)
         @updateNodeClasses($node, vertex)
+        @updateNodePosition($node, vertex) if @updateNodePositions
+
+    updateNodePosition: ($node, vertex) ->
+        pos = $node.position()
+        return if pos.left == vertex.x and pos.top == vertex.y
+#        @jsPlumbInstance.animate(
+#            vertex.id 
+#            {left: vertex.x, top: vertex.y}
+#            {duration: 1500}
+#        )
+        $node.css({ left: vertex.x, top: vertex.y })
 
     updateNodeLabels: ($node, vertex, frame = {}) ->
         for type, style of @vertexLabels
@@ -299,7 +313,7 @@ class Graph
                 continue unless $con?
                 $con.setPaintStyle(@customStyle(style[1]))
             else if typeof style[0] is 'function'
-                for edge in graph.edges
+                for edge in graph.getEdges()
                     edgeHack = 
                         source: graph.vertex(edge.source)
                         target: graph.vertex(edge.target)
@@ -331,7 +345,6 @@ class Graph
         return if @mode is "edit"
         @mode = "edit"
         @updateGraphDisplay(@frameify(@theGraph))
-        @$outer.disableSelection()
         # Clicks: 
         #   when no selection: vertex -> select,   non-vertex -> make new vertex
         #   when selection:    vertex -> new edge, non-vertex -> deselect
@@ -341,7 +354,7 @@ class Graph
                 if $target.is("div.vertex-contents")
                     @selectNode($target.parent())
                 if $target.is(@$inner)
-                    @addVertex(e.offsetX - 12, e.offsetY - 12)
+                    @addVertex({x: e.offsetX - 12, y: e.offsetY - 12})
             else
                 if $target.is("div.vertex-contents") and 'vertex' is @selected()
                     sourceId = @_$selectedNode.attr("id")
@@ -518,7 +531,7 @@ class Graph
     
     vertexChanged: (newv) ->
         return false unless @previousFrame?
-        oldv = @previousFrame[@varName].vertices.filter((v) -> v.id is newv.id)[0]
+        oldv = @previousFrame[@varName].vertex(newv.id)
         return @varChanged(newv, oldv)
 
     varChanged: (newv, oldv) ->
@@ -533,11 +546,7 @@ class Graph
         return ret
 
     updateVizVariables: () ->
-        if @theGraph.vertices.length > 0
-            @viz.setVariable(@varName, Vamonos.clone(@theGraph), true)
-        else
-            alert "GRAPH WIDGET: need vertices please!" 
-            throw "GRAPH WIDGET: leaving edit mode without vertices"
+        @viz.setVariable(@varName, Vamonos.clone(@theGraph), true)
         graph = @viz.getVariable(@varName, true)
         for k, v of @inputVars
             unless v?
@@ -551,8 +560,8 @@ class Graph
         if @graphDrawn
             $e.removeClass("changed") for $e in @nodes.concat(@connections)
         else
-            @addNode(v) for v in graph.vertices
-            @addConnection(e.source.id, e.target.id) for e in graph.edges
+            @addNode(v) for v in graph.getVertices()
+            @addConnection(e.source.id, e.target.id) for e in graph.getEdges()
             @graphDrawn = yes
             Vamonos.moveToTop($n) for $n in @nodes
         @updateNode($n, graph, frame) for $n in @nodes

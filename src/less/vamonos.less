@@ -285,7 +285,7 @@ table.pseudocode {
     }
 
     tr.pseudocode-next {
-        td.pseudocode-text, td.pseudocode-comment  {
+        td.pseudocode-text, td.pseudocode-comment, td.pseudocode-title {
             .bg-gradient-leftright(@highlight-background-color, rgba(255,255,255,0));
         }
         td.pseudocode-line-number {
@@ -297,8 +297,14 @@ table.pseudocode {
     }
 
     tr.pseudocode-previous {
-        td.pseudocode-text, td.pseudocode-comment  {
+        td.pseudocode-text, td.pseudocode-comment, td.pseudocode-title,  {
             .bg-gradient-leftright(rgba(255,255,255,0), @light-shaded-color);
+        }
+    }
+
+    tr.pseudocode-next.pseudocode-previous {
+        td.pseudocode-text, td.pseudocode-comment, td.pseudocode-title,  {
+            .bg-gradient-leftright(@highlight-background-color, @light-shaded-color);
         }
     }
 
@@ -582,7 +588,7 @@ button.controls-button {
 }
 
 .controls-frame-number {
-    width: 64px;
+    width: 9ex;
     text-align: center;
     display: inline-block;
 

@@ -5,14 +5,12 @@ class Visualizer
         autoStart      ?= false
         @breakOnReturn ?= false
 
-        @currentFrameNumber = 0
-        @breakpoints        = {}
+        @breakpoints    = {}
+        @watchVars      = []
+        @registeredVars = {}
+        @procedures     = {}
 
-        @inputVars = {}
-        @watchVars = []
-
-        @prepareStash()
-        @namespace = @stash.namespaces
+        @initializeStash()
         @prepareAlgorithm(algorithm)
 
         @tellWidgets("setup", @)
@@ -31,22 +29,19 @@ class Visualizer
         when "prevFrame"    then @prevFrame()
         when "jumpFrame"    then @jumpFrame(options...)
 
-    registerVariable: (name, isInput = false) ->
-        [ns, varName] = @parseVarName(name, isInput)
-        @ensureNamespace(ns)
-        @namespace[ns][varName] ?= undefined
+    registerVariable: (name) ->
+        [ns, varName] = @parseVarName(name)
+        (@registeredVars[ns] ?= []).push(varName)
 
-    setVariable: (name, value, isInput = false) ->
-        [ns, varName] = @parseVarName(name, isInput)
-        @ensureNamespace(ns)
-        @namespace[ns][varName] = value
-        Vamonos.insertSet(varName, @inputVars[ns]) if isInput
+    setVariable: (name, value) ->
+        [ns, varName] = @parseVarName(name)
+        # throw away ns information -- all input vars are args to main
+        @stash.inputScope[name] = value
         return value # for chaining
 
-    getVariable: (name, isInput = false) ->
-        [ns, varName] = @parseVarName(name, isInput)
-        @ensureNamespace(ns)
-        return @namespace[ns][varName]
+    getVariable: (name) ->
+        [ns, varName] = @parseVarName(name)
+        return @stash.inputScope[name]
 
     setWatchVar: (varName) ->
         Vamonos.insertSet(varName, @watchVars)
@@ -72,73 +67,70 @@ class Visualizer
 
     # ---------------- stash related methods ---------------- #
 
-    parseVarName: (varname, isInput = false) ->
-        defaultScope = if isInput then "global" else "main"
+    parseVarName: (varname, defaultScope = "main") ->
         return [defaultScope, varname] unless varname.match(/::/)
         return varname.split(/::/)
 
-    ensureNamespace: (ns) ->
-        @inputVars[ns]        ?= []
-        @stash.namespaces[ns] ?= { global: @stash.namespaces.global }
-
-    prepareStash: () ->
-        @stash             = {}
-        @stash.callStack   = []
-        @stash.type        = 'stash'
-        @stash.context     = { proc: "global", args: "", calledAtFrame: 0 }
-        @stash.namespaces  = { global: {} }
-        @inputVars.global ?= []
-
     initializeStash: () ->
-        @stash.context   = { proc: "global", args: "", calledAtFrame: 0 }
-        @stash.callStack = []
-        for nsname, nsobj of @stash.namespaces
-            for name, val of nsobj
-                continue if name is 'global' # ignore the global alias in all namespaces
-                nsobj[name] = undefined unless name in @inputVars[nsname]
+        @stash             ?= {}
+        @stash.inputScope  ?=
+            _procName: "input"
+
+        @stash.callStack    = []
+        @stash.globalScope  = {}
+        @stash.currentScope = @stash.inputScope
 
     getFrame: () ->
         r = { _callStack: Vamonos.clone(@stash.callStack) } 
+        procsAlreadySeen = []
 
-        for proc, ns of @stash.namespaces
-            continue if proc is 'global' # deal with global last
-            @cloneNamespaceToObj(r, proc, ns, proc is @stash.context.proc)
-        @cloneNamespaceToObj(r, "global", @stash.namespaces.global, true)
+        for scope in @stash.callStack
+            procName = scope._procName
+            continue if procName in procsAlreadySeen
+            @cloneScopeToObj(r, procName, scope, procName is @stash.currentScope._procName)
+            procsAlreadySeen.push(procName)
+
+        @cloneScopeToObj(r, "global", @stash.globalScope, true)
+        @cloneScopeToObj(r, "input",  @stash.inputScope,  true)
         return r
 
-    cloneNamespaceToObj: (obj, proc, ns, generic = false) ->
-        for k, v of ns
-            continue if typeof v is 'function' or k is 'global'
+    cloneScopeToObj: (obj, procName, scope, bare = false) ->
+        for k, v of scope
+            continue if typeof v is 'function' 
+            continue if k is 'global'
+            continue if /^_/.test k
             cloned = Vamonos.clone(v)
-            obj["#{proc}::#{k}"] = cloned
-            obj[k] = cloned if generic and not obj[k]?
+            obj["#{procName}::#{k}"] ?= cloned
+            obj[k] ?= cloned if bare
         
-    # --------------- algorithm related methods -------------- #
-
-    line: (n) ->
+    contextChanged: () ->
         # if context changed since last call of line(), tell the stash's
         # call stack what the previous line was.
-        if @prevLine? and @stash.context isnt @prevLine.context and @stash.callStack.length > 0
-            calls          = (s for s in @stash.callStack when s.context is @prevLine.context)
-            s.line         = @prevLine.n for s in calls when not s.line?
-            contextChanged = yes if @breakOnReturn
-        else
-            contextChanged = no
+        return false unless @prevLine?
+        return false unless @stash.currentScope isnt @prevLine.scope
 
-        if contextChanged or @takeSnapshot(n, @stash.context.proc)
+        calls  = (s for s in @stash.callStack when s.scope is @prevLine.scope)
+        s._calledByLine = @prevLine.number for s in calls when not s._calledByLine?
+
+        return !!@breakOnReturn
+
+    line: (n) ->
+        nextLine = 
+            result : @stash.lastReturnedProc
+            scope  : @stash.currentScope
+            number : n
+
+        if @contextChanged() or @takeSnapshot(n, @stash.currentScope._procName)
             throw "too many frames" if @currentFrameNumber >= @maxFrames
 
-            newFrame              = @getFrame()
-            newFrame._nextLine    = 
-                result: @stash._lastReturnedProc
-                context: @stash.context
-                n: n
-            @stash._lastReturnedProc = undefined
-            newFrame._prevLine    = @prevLine
-            newFrame._frameNumber = ++@currentFrameNumber
+            newFrame                = @getFrame()
+            newFrame._frameNumber   = ++@currentFrameNumber
+            newFrame._prevLine      = @prevLine
+            newFrame._nextLine      = nextLine
+            @stash.lastReturnedProc = undefined
             @frames.push(newFrame)
         
-        @prevLine = { n, context: @stash.context }
+        @prevLine = nextLine
         throw "too many lines" if ++@numCallsToLine > 10000
 
     takeSnapshot: (n, proc) ->
@@ -159,38 +151,36 @@ class Visualizer
         if typeof algorithm is 'function'
             algorithm = { "main": algorithm }
         for procName, procedure of algorithm
-            @ensureNamespace(procName)
-            wrapped = @wrapProcedure(procName, procedure)
-            @setVariable(
-                "#{ns}::#{procName}",
-                wrapped
-                true
-            ) for ns of @stash.namespaces
+            @procedures[procName] = @wrapProcedure(procName, procedure)
+
+    newScope: (procName, args) =>
+        newScope =
+            _procName      : procName
+            _args          : args
+            _calledAtFrame : @currentFrameNumber
+
+        newScope[name]  = proc for name, proc of @procedures
+        newScope[name]  = value for name, value of args
+        newScope[name] ?= undefined for name in @registeredVars[procName] ? []
+        newScope.global = @stash.globalScope
+
+        @stash.currentScope = newScope
+        @stash.callStack.unshift(newScope)
+
+        return newScope
+
+    returnScope: (returnValue) =>
+        returningScope              = @stash.callStack.shift()
+        returningScope._returnValue = returnValue
+        @stash.lastReturnedProc     = returningScope
+        @stash.currentScope         = @stash.callStack[0] ? @stash.inputScope
+        @line(0)
 
     wrapProcedure: (procName, procedure) ->
-        return (args = {}, locals = []) =>
-            save = {}
-            for k in (k for k of args).concat(locals)
-                val = @getVariable("#{procName}::#{k}") 
-                save[k] = val if val?
-            @setVariable("#{procName}::#{k}", undefined) for k in locals
-            @stash.callStack.push(@stash.context)
-
-            @stash.context = 
-                proc          : procName
-                args          : args
-                calledAtFrame : @currentFrameNumber
-            @setVariable("#{procName}::#{k}", v) for k, v of args
-
-            ns  = @stash.namespaces[procName]
-            ret = procedure.call(ns, (n)=>@line(n))
-
-            @stash._lastReturnedProc = @stash.context
-            @stash._lastReturnedProc.returnValue = ret
-
-            @setVariable("#{procName}::#{k}", v) for k, v of save
-            @stash.context = @stash.callStack.pop()
-
+        return (args = {}) =>
+            scope = @newScope(procName, args)
+            ret = procedure.call(scope, (n)=>@line(n))
+            @returnScope(ret)
             return ret
 
     runAlgorithm: ->
@@ -205,16 +195,16 @@ class Visualizer
         @tellWidgets("editStop") if @mode is "edit"
 
         mainArgs = {}
-        for k in @inputVars.global
-            v = @getVariable("global::#{k}") 
-            continue if typeof v is 'function'
+        for k, v of @stash.inputScope
+            continue unless v?
+            continue if /^_/.test k
             mainArgs[k] = v
 
         try
             # there's always a "before" & "after" snapshot
             @line(0)
-            throw "no main function" unless @namespace.global.main?
-            @namespace.global.main(mainArgs)
+            throw "no main function" unless typeof @procedures.main is 'function'
+            @procedures.main(mainArgs)
             @line(0)
         catch err
             switch err

@@ -170,7 +170,6 @@ var myviz = new Vamonos.Visualizer({
                     {source: 'v1',target: 'v4'},
                     {source: 'v3',target: 'v4'},
                     {source: 'v3',target: 'v6'},
-                    {source: 'v4',target: 'v8'},
                     {source: 'v5',target: 'v8'},
                     {source: 'v6',target: 'v7'},
                     {source: 'v7',target: 'v8'},
@@ -208,7 +207,7 @@ _(2);           u.color = "gray";
                 G.eachNeighbor(u, function(vtx){
 _(3);               v = vtx;
 _(4);               if (v.color === "white") {
-_(5);                   visit({G:G, u:v}, ["v"]);
+_(5);                   visit({G:G, u:v});
                     }
                 });
                 v = undefined;

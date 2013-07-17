@@ -2,6 +2,7 @@ class ControlSlider
 
     constructor: ({container, @showWhileSliding, frameLabelFirst}) ->
         @$container = Vamonos.jqueryify(container)
+        @showWhileSliding ?= true
 
         @$slider = $("<div>", {class: "controls-slider"})
         @$frameLabel = $("<div>", {class: "controls-frame-number", text: "- / -"})

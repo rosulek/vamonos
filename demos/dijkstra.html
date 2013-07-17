@@ -147,7 +147,7 @@ var myviz = new Vamonos.Visualizer({
                     {source: 'v1',target: 'v4', w:5},
                     {source: 'v3',target: 'v4', w:3},
                     {source: 'v3',target: 'v6', w:1},
-                    {source: 'v4',target: 'v8', w:4},
+                    {source: 'v4',target: 'v8', w:10},
                     {source: 'v5',target: 'v8', w:2},
                     {source: 'v6',target: 'v7', w:3},
                     {source: 'v7',target: 'v8', w:2},
@@ -169,7 +169,7 @@ _(4);               u.done = false;
 
 _(5);           s.d = 0;
 _(6);           Q = new Vamonos.DataStructure.Queue({
-                    initialArray: G.vertices,
+                    initialArray: G.getVertices(),
                     comparator: function(a,b){ return a.d - b.d },
                 });
 

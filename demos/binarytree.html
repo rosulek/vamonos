@@ -1,0 +1,125 @@
+<html><head>
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="demos.css">
+    <script type="text/javascript" src="../deps/jquery.min.js"></script>
+    <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../deps/jquery-jsplumb.js"></script>
+    <script type="text/javascript" src="../lib/vamonos.js"></script>
+
+    <style type="text/css">
+        .vertex-contents {
+            font-family: sans-serif;
+            font-size: .8em;
+        }
+
+        .vertex {
+            -webkit-transition-property: top, left;
+            -webkit-transition-duration: 1 s;
+            -webkit-transition-delay: 0s;
+            -webkit-transition-timing-function: ease;
+        }
+    </style>
+
+</head><body>
+
+    <h1>Binary Tree Demonstration</h1>
+
+    <div class="vamonos left">
+        <div class="container" id="tree"></div><br>
+        <button id="button-t1">Draw T1</button>
+        <button id="button-t2">Draw T2</button>
+    </div>
+
+</body>
+<script type="text/javascript">
+
+var bin = new Vamonos.Widget.BinaryTree({
+    container: "tree",
+    varName: "tree",
+});
+
+var t1 = new Vamonos.DataStructure.BinaryTree({
+    v: 5,
+    id: "n5",
+    l: { 
+        v: 3,
+        id: "n3",
+        l: { 
+            v: 2,
+            id: "n2",
+            l: { v: 1, id: "n1" },
+        },
+        r: { v: 4, id: "n4" },
+    },
+    r: {
+        v: 8,
+        id: "n8",
+        l: {
+            v: 6,
+            id: "n6",
+            r: { v: 7, id: "n7" },
+        },
+        r: { v: 9, id: "n9" },
+    },
+});
+
+var t2 = new Vamonos.DataStructure.BinaryTree({
+    v: 5,
+    id: "n5",
+    l: { 
+        v: 2,
+        id: "n2",
+        l: { v: 1, id: "n1" },
+        r: {
+            v: 3,
+            id: "n3",
+            r: { v: 4, id: "n4" },
+        },
+    },
+    r: {
+        v: 8,
+        id: "n8",
+        l: {
+            v: 6,
+            id: "n6",
+            r: { v: 7, id: "n7" },
+        },
+        r: { v: 9, id: "n9" },
+    },
+});
+
+
+var t2 = new Vamonos.DataStructure.BinaryTree({
+    v: 3,
+    id: "n3",
+    l: { 
+        v: 2,
+        id: "n2",
+        l: { v: 1, id: "n1" },
+    },
+    r: {
+        v: 5,
+        id: "n5",
+        l: { v: 4, id: "n4" },
+        r: {
+            v: 8,
+            id: "n8",
+            l: {
+                v: 6,
+                id: "n6",
+                r: { v: 7, id: "n7" },
+            },
+            r: { v: 9, id: "n9" },
+        },
+    }
+});
+
+
+bin.event("render", {tree: t1});
+
+$("button#button-t1").on("click", function(){ bin.event("render", {tree: t1}) });
+$("button#button-t2").on("click", function(){ bin.event("render", {tree: t2}) });
+
+</script>
+</html>
