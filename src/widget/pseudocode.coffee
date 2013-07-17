@@ -67,16 +67,10 @@ class Pseudocode
             @procedureName in stackContexts
 
         if frame._prevLine.scope?._procName is @procedureName
-            if frame._prevLine.number is 0
-                @$tbl.find("tr.pseudocode-header").addClass("pseudocode-previous")
-            else
-                @addClassToLine(frame._prevLine.number, "pseudocode-previous")
+            @addClassToLine(frame._prevLine.number, "pseudocode-previous")
 
         if frame._nextLine.scope?._procName is @procedureName
-            if frame._nextLine.number is 0
-                @$tbl.find("tr.pseudocode-header").addClass("pseudocode-next")
-            else
-                @addClassToLine(frame._nextLine.number, "pseudocode-next")
+            @addClassToLine(frame._nextLine.number, "pseudocode-next")
 
         if frame._nextLine.scope?._procName isnt @procedureName
             calls = (c for c in frame._callStack when c._procName is @procedureName)
@@ -92,21 +86,43 @@ class Pseudocode
     addClassToLine: (n, klass) ->
         @$tbl.find("tr[vamonos-linenumber=#{ n }]").addClass(klass) if Vamonos.isNumber(n)
 
+    ###
+    #   Widget.Pseudocode.keywords
+    #
+    #   List of special words to be bold in the formatted pseudocode.
+    ###
     keywords: "for while if else elseif elsif elif begin end then repeat until
                to downto by return error throw and or swap"
                    .split(/\s+/)
                    .sort((a,b) -> b.length - a.length)
 
+    ###
+    #   Widget.Pseudocode.enableBreakpointSelection()
+    #
+    #   Sets a callback from a click event in all pseudocode gutters to the
+    #   toggleBreakpoint method.
+    ###
     enableBreakpointSelection: ->
         @$tbl.find("td.pseudocode-gutter").on("click", (event) =>
             @toggleBreakpoint(
                 $(event.target).closest("tr").attr("vamonos-linenumber")))
         @$tbl.find("td.pseudocode-gutter").prop("title", "Click to toggle a breakpoint on this line")
 
+    ###
+    #   Widget.Pseudocode.disableBreakpointSelection()
+    #
+    #   Removes the click event callback from all pseudocode gutters.
+    ###
     disableBreakpointSelection: ->
         @$tbl.find("td.pseudocode-gutter").off("click")
         @$tbl.find("td.pseudocode-gutter").prop("title", "")
 
+    ###
+    #   Widget.Pseudocode.toggleBreakpoint( n )
+    #
+    #   Toggles the cute dot in the gutter and corresponding breakpoint
+    #   in the stash.
+    ###
     toggleBreakpoint: (n) ->
         return unless Vamonos.isNumber(n)
 
@@ -120,6 +136,11 @@ class Pseudocode
             gutter.append($("<div>", {class: "pseudocode-breakpoint"}))
             @viz.setBreakpoint(n, @procedureName)
 
+    ###
+    #   Widget.Pseudocode.showBreakpoints()
+    #
+    #   Marks the pseudocode gutter corresponding to current breakpoints.
+    ###
     showBreakpoints: ->
         @$tbl.find("td.pseudocode-gutter div.pseudocode-breakpoint")
              .remove()                       # Clear all old breakpoints.
@@ -128,9 +149,23 @@ class Pseudocode
                 .find("td.pseudocode-gutter")
                 .append($("<div>", {class: "pseudocode-breakpoint"}))
 
+    ###
+    #   Widget.Pseudocode.getLine( n )
+    #
+    #   Returns a jQuery selector of the nth pseudocode line.
+    ###
     getLine: (n) ->
         @$tbl.find("tr[vamonos-linenumber=#{ n }]")
 
+    ###
+    #   Widget.Pseudocode.formatContainer( $container )
+    #
+    #   Takes a jquery selector of a pseudocode div element. Cuts it up and
+    #   formats it nicely. Returns the number of pseudocode lines found (not
+    #   counting comments).
+    #
+    #   Creates @$tbl attribute.
+    ###
     formatContainer: ($container) ->
         title = $container.attr("title")
         $container.removeAttr("title")

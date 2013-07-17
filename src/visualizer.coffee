@@ -124,10 +124,10 @@ class Visualizer
         if @contextChanged() or @takeSnapshot(n, @stash.currentScope._procName)
             throw "too many frames" if @currentFrameNumber >= @maxFrames
 
-            newFrame                = @getFrame()
-            newFrame._frameNumber   = ++@currentFrameNumber
-            newFrame._prevLine      = @prevLine
-            newFrame._nextLine      = nextLine
+            newFrame              = @getFrame()
+            newFrame._frameNumber = ++@currentFrameNumber
+            newFrame._prevLine    = @prevLine
+            newFrame._nextLine    = nextLine
             @stash.lastReturnedProc = undefined
             @frames.push(newFrame)
         
@@ -175,7 +175,6 @@ class Visualizer
         returningScope._returnValue = returnValue
         @stash.lastReturnedProc     = returningScope
         @stash.currentScope         = @stash.callStack[0] ? @stash.inputScope
-        @line(0) if @breakOnReturn
 
     wrapProcedure: (procName, procedure) ->
         return (args = {}) =>
@@ -206,7 +205,7 @@ class Visualizer
             @line(0)
             throw "no main function" unless typeof @procedures.main is 'function'
             @procedures.main(mainArgs)
-            @line(0) unless @breakOnReturn
+            @line(0)
         catch err
             switch err
                 when "too many frames"
