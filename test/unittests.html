@@ -8,12 +8,53 @@
 		<script type="text/javascript" src="../lib/vamonos.js"></script>
 		<script>
 			test("Queue Datastructure", function() {
-				//kind of a pointless test just to put the idea out there
-				//because this test assumes no knowledge or special cooperation from the Queue class
-				//it is technically a blackbox test rather than a whitebox test.
-				var input = new Vamonos.DataStructure.Queue(); input.enqueue("bob");
-            	var output = new Vamonos.DataStructure.Queue(); output.enqueue("bob");
-            	equal(input.toString(), output.toString());
+				//test blank constructor
+				var input = new Vamonos.DataStructure.Queue(); 
+				equal(input.toString(), "[ ]");
+
+				//test enqueue of a single element
+				input.enqueue("bob");
+            	equal(input.toString(), "[bob]");
+
+            	//test dequeue
+            	input.dequeue();
+            	equal(input.toString(), "[ ]");
+
+            	//test enqueue of three elements
+            	input.enqueue(3); input.enqueue(1); input.enqueue(4)
+            	equal(input.toString(), "[3, 1, 4]");
+
+            	//test comparator of an object in queue
+            	var d = [{x:12, y:5}, {x:3, y:7}];
+            	var c = function(a,b){
+            		                    if(a.x < b.x) return -1;
+            		                    if(a.x > b.x) return 1;
+            		                    return 0;
+            	                     };
+            	input = new Vamonos.DataStructure.Queue( {initialArray:d, comparator:c} ); 
+            	var t = [{x:12, y:5}, {x:3, y:7}];
+            	deepEqual(input.guts, t);
+
+            	//test extractMin using comparator
+            	t = [{x:12, y:5}];
+            	input.extractMin();
+            	deepEqual(input.guts, t);
+
+            	//test comparator of an object in queue
+            	var d = [{x:12, y:5}, {x:3, y:7}];
+            	var c = function(a,b){
+            		                    if(a.y < b.y) return -1;
+            		                    if(a.y > b.y) return 1;
+            		                    return 0;
+            	                     };
+            	input = new Vamonos.DataStructure.Queue( {initialArray:d, comparator:c} ); 
+            	var t = [{x:12, y:5}, {x:3, y:7}];
+            	deepEqual(input.guts, t);
+
+            	//test extractMin using comparator
+            	t = [{x:3, y:7}];
+            	input.extractMin();
+            	deepEqual(input.guts, t);
 			});
 		</script>
 	</head>
