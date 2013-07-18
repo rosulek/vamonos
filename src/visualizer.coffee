@@ -57,6 +57,9 @@ class Visualizer
     getBreakpoints: (proc) ->
         @breakpoints[proc] ?= []
 
+    getCurrentBreakpoints: () ->
+        @getBreakpoints(@stash.currentScope._procName)
+
     setBreakpoint: (b, proc) ->
         @breakpoints[proc] ?= []
         Vamonos.insertSet(b, @breakpoints[proc])
@@ -109,57 +112,48 @@ class Visualizer
             obj["#{procName}::#{k}"] ?= cloned
             obj[k]                   ?= cloned if bare
 
-    line: (n, returningProcName, returnValue) ->
+    line: (n, returnFrame) ->
         throw "too many frames" if @frameNumber >= @maxFrames
         throw "too many lines"  if ++@numCallsToLine > 10000
 
-        if typeof n is 'number'
-            nextLine = 
-                procName : @stash.currentScope._procName
-                number   : n
+        switch n
+            when "call"
+                @aProcedureWasCalled = @stash.currentScope._procName
+            when "ret"
+                (@returnStack ?= []).unshift(returnFrame)
+                @aProcedureReturned = returnFrame.procName
 
-            reason = @takeSnapshot(n)
+        reason = @takeSnapshot(n)
+        return unless reason
 
-            if reason
-                frame = @getFrame(@stash.currentScope._prevLine, nextLine, ++@frameNumber)
-                frame._snapshotReason = reason
+        nextLine = 
+            procName : @stash.currentScope._procName
+            number   : n
 
-                if @returnStack?.length
-                    frame._returnStack = @returnStack[..]
-                    @returnStack.length  = 0
+        frame = @getFrame(@stash.currentScope._prevLine, nextLine, ++@frameNumber)
+        frame._snapshotReason = reason
 
-                @frames.push(frame)
-                console.log "#{@frameNumber} : #{reason}"
-            
-            @stash.currentScope._prevLine = nextLine
-            @aProcedureWasCalled = @aProcedureReturned = undefined
-        else
-            switch n
-                when "end"
-                    reason = "end of simulation"
-                    frame = @getFrame(null, null, ++@frameNumber)
-                    frame._snapshotReason = reason
+        if @returnStack?.length
+            frame._returnStack = @returnStack[..]
+            @returnStack.length  = 0
 
-                    if @returnStack?.length
-                        frame._returnStack = @returnStack[..]
-                        @returnStack.length  = 0
+        @frames.push(frame)
+        console.log "#{@frameNumber} : #{reason}"
+    
+        @stash.currentScope._prevLine = nextLine
+        @aProcedureWasCalled = @aProcedureReturned = undefined
 
-                    @frames.push(frame)
-                    console.log "#{@frameNumber} : #{reason}"
-                when "call"
-                    @aProcedureWasCalled = @stash.currentScope._procName
-                when "ret"
-                    (@returnStack ?= []).push
-                        procName    : returningProcName
-                        args        : @stash.currentScope._args
-                        returnValue : returnValue
-                    @aProcedureReturned = returningProcName
 
     takeSnapshot: (n) ->
-        proc = @stash.currentScope._procName
-        return "breakpoint #{n} set for #{proc}" if n in @getBreakpoints(proc)
-        return "procedure \"#{@aProcedureWasCalled}\" called"  if @aProcedureWasCalled
-        return "procedure \"#{@aProcedureReturned}\" returned" if @aProcedureReturned
+        if n in @getCurrentBreakpoints()
+            return "breakpoint #{n} set for #{@stash.currentScope._procName}" 
+
+        if @aProcedureWasCalled and typeof n is 'number'
+            return "procedure \"#{@aProcedureWasCalled}\" called"  
+
+        if @aProcedureReturned and typeof n is 'number' or n is "end"
+            return "procedure \"#{@aProcedureReturned}\" returned" 
+
         return @watchVarsChanged()
 
     watchVarsChanged: () ->
@@ -205,7 +199,13 @@ class Visualizer
 
             returningScope              = @stash.callStack.shift()
             @stash.currentScope         = @stash.callStack[0]
-            @line("ret", procName, ret)
+
+            returnFrame = 
+                procName    : procName
+                args        : args
+                returnValue : ret
+
+            @line("ret", returnFrame)
 
             return ret
 
