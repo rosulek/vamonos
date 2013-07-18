@@ -1,21 +1,3 @@
-###
-#
-#   src/widget/pseudocode.coffee :: exports Vamonos.Widget.Pseudocode
-#
-#   Widget object: 
-#       Formats pseudocode nicely with syntax highlighting.
-#       Shows current line in visualization.
-#       Allows custom setting of breakpoints.
-#   
-#   Constructor Arguments:
-#       container:              the id of the DOM element target
-#
-#       breakpoints:            initial array of line numbers to break at
-#
-#       editableBreakpoints:    allow users to modify breakpoints?
-#                               (true by default)
-#
-###
 class Pseudocode
 
     constructor: ({container, @editableBreakpoints, @breakpoints, @procedureName}) ->
@@ -59,19 +41,22 @@ class Pseudocode
 
     render: (frame) ->
         @clear()
+
         stackContexts = (c._procName for c in frame._callStack)
+        next = frame._nextLine
+        prev = frame._prevLine
 
         return unless (
-            @procedureName is frame._nextLine.scope?._procName or 
-            @procedureName is frame._prevLine.scope?._procName or
+            @procedureName is next.procName or 
+            @procedureName is prev.procName or
             @procedureName in stackContexts
         )
 
-        if frame._prevLine.scope?._procName is @procedureName
-            @addClassToLine(frame._prevLine.number, "pseudocode-previous")
+        if prev.procName is @procedureName
+            @addClassToLine(prev.number, "pseudocode-previous")
 
-        if frame._nextLine.scope?._procName is @procedureName
-            @addClassToLine(frame._nextLine.number, "pseudocode-next")
+        if next.procName is @procedureName
+            @addClassToLine(next.number, "pseudocode-next")
 
     clear: () ->
         @$tbl.find("tr").removeClass("pseudocode-next")

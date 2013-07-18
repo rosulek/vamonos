@@ -18,10 +18,11 @@ class CallStack
     render: (frame) ->
         @drawHeader()
         stack = frame._callStack[..]
-        r = frame._nextLine.result
         @addProcedure(c._procName, c._args) for c in stack.reverse()
         @$table.find("td.callstack-proc").last().addClass("callstack-active")
-        @addProcedure(r.procName, r.args, r.returnValue ? "&nbsp;") if r?
+        if frame._returnStack?
+            for r in frame._returnStack
+                @addProcedure(r.procName, r.args, r.returnValue ? "&nbsp;")
         
     addProcedure: (proc, args, ret) ->
         return if proc is 'input'

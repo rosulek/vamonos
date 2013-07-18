@@ -56,7 +56,6 @@ class Visualizer
 
     getBreakpoints: (proc) ->
         @breakpoints[proc] ?= []
-        return @breakpoints[proc]
 
     setBreakpoint: (b, proc) ->
         @breakpoints[proc] ?= []
@@ -78,12 +77,11 @@ class Visualizer
         @stash.callStack        = [ @stash.inputScope ]
         @stash.globalScope      = {}
         @stash.currentScope     = @stash.inputScope
-        @stash.lastReturnedProc = undefined
 
-    getFrame: (prevLine = {}, nextLine = {}, frameNumber = Infinity) ->
+    getFrame: (prevLine = {}, nextLine = {}, num = 0, theseVarsOnly) ->
         r = 
             _callStack   : Vamonos.clone(@stash.callStack)
-            _frameNumber : frameNumber
+            _frameNumber : num
             _prevLine    : prevLine
             _nextLine    : nextLine
 
@@ -92,83 +90,95 @@ class Visualizer
         for scope in @stash.callStack
             procName = scope._procName
             continue if procName in procsAlreadySeen
-            @cloneScopeToObj(r, procName, scope, procName is @stash.currentScope._procName)
+            bare = (procName == @stash.currentScope._procName)
+            @cloneScopeToObj(r, procName, scope, bare, theseVarsOnly)
             procsAlreadySeen.push(procName)
 
         @cloneScopeToObj(r, "global", @stash.globalScope, true)
         @cloneScopeToObj(r, "input",  @stash.inputScope,  true)
+
         return r
 
-    cloneScopeToObj: (obj, procName, scope, bare = false) ->
+    cloneScopeToObj: (obj, procName, scope, bare = false, theseVarsOnly) ->
         for k, v of scope
             continue if typeof v is 'function' 
             continue if k is 'global'
             continue if /^_/.test k
-            cloned = Vamonos.clone(v)
+            continue if theseVarsOnly? and k in theseVarsOnly
+            cloned                    = Vamonos.clone(v)
             obj["#{procName}::#{k}"] ?= cloned
-            obj[k] ?= cloned if bare
+            obj[k]                   ?= cloned if bare
 
-    setNextLine: (n) ->
-        @nextLine = 
-            result : @stash.lastReturnedProc
-            scope  : Vamonos.clone(@stash.currentScope)
-            number : n
-
-    resolveFrameBuffer: (clobberLast) =>
-        while @frameBuffer?.length > (if clobberLast then 1 else 0)
-            frame = @frameBuffer.shift()
-            frame._nextLine.number = @nextLine.number
-            frame._frameNumber = ++@frameNumber
-            @frames.push(frame)
-        @frameBuffer = []
-
-    line: (n) ->
+    line: (n, returningProcName, returnValue) ->
         throw "too many frames" if @frameNumber >= @maxFrames
         throw "too many lines"  if ++@numCallsToLine > 10000
 
         if typeof n is 'number'
-            @setNextLine(n)
-            @stash.lastReturnedProc = undefined
+            nextLine = 
+                procName : @stash.currentScope._procName
+                number   : n
 
-            if @takeSnapshot(n, @stash.currentScope._procName)
-                @resolveFrameBuffer(true)
-                @frames.push(@getFrame(@prevLine, @nextLine, ++@frameNumber))
-            else
-                @resolveFrameBuffer(false)
+            reason = @takeSnapshot(n)
+
+            if reason
+                frame = @getFrame(@stash.currentScope._prevLine, nextLine, ++@frameNumber)
+                frame._snapshotReason = reason
+
+                if @returnStack?.length
+                    frame._returnStack = @returnStack[..]
+                    @returnStack.length  = 0
+
+                @frames.push(frame)
+                console.log "#{@frameNumber} : #{reason}"
             
-            @prevLine = @nextLine
-            @stash.currentScope._lastLine = @prevLine
+            @stash.currentScope._prevLine = nextLine
+            @aProcedureWasCalled = @aProcedureReturned = undefined
         else
             switch n
                 when "end"
-                    @setNextLine()
-                    @resolveFrameBuffer(false)
-                when "call"
-                    @setNextLine()
-                    @stash.lastReturnedProc = undefined
-                    @prevLine = {}
-                    (@frameBuffer ?= []).push(@getFrame(null, @nextLine))
-                when "ret"
-                    @setNextLine()
-                    (@frameBuffer ?= []).push(@getFrame(@prevLine, @nextLine))
+                    reason = "end of simulation"
+                    frame = @getFrame(null, null, ++@frameNumber)
+                    frame._snapshotReason = reason
 
-    takeSnapshot: (n, proc) ->
+                    if @returnStack?.length
+                        frame._returnStack = @returnStack[..]
+                        @returnStack.length  = 0
+
+                    @frames.push(frame)
+                    console.log "#{@frameNumber} : #{reason}"
+                when "call"
+                    @aProcedureWasCalled = @stash.currentScope._procName
+                when "ret"
+                    (@returnStack ?= []).push
+                        procName    : returningProcName
+                        args        : @stash.currentScope._args
+                        returnValue : returnValue
+                    @aProcedureReturned = returningProcName
+
+    takeSnapshot: (n) ->
+        proc = @stash.currentScope._procName
+        return "breakpoint #{n} set for #{proc}" if n in @getBreakpoints(proc)
+        return "procedure \"#{@aProcedureWasCalled}\" called"  if @aProcedureWasCalled
+        return "procedure \"#{@aProcedureReturned}\" returned" if @aProcedureReturned
+        return @watchVarsChanged()
+
+    watchVarsChanged: () ->
+        return false unless @watchVars.length and @frames.length
+
+        fakeFrame = @getFrame(null, null, null, @watchVars)
+
+        changedVars = for v in @watchVars
+            left    = @frames[@frames.length-1][v]
+            right   = fakeFrame[v]
+            continue unless left? and right?
+            continue if JSON.stringify(left) is JSON.stringify(right)
+            "#{v}"
+
+        return false unless changedVars.length
         return (
-            @breakpoints[proc]?.length and 
-            n in @breakpoints[proc] or
-            @watchVars.length and 
-            @frames.length and
-            @diff(@frames[@frames.length-1], @getFrame(), @watchVars) 
+            "vatchVar#{if changedVars.length > 1 then "s" else ""} " +
+            "\"#{changedVars.join("\", ")}\" changed"
         )
-        
-    # this is somewhat hacky, comparing stringifications
-    diff: (left, right, vars) ->
-        tleft = {}
-        tright = {}
-        for v in vars
-            tleft[v]  = left[v]
-            tright[v] = right[v]
-        return JSON.stringify(tleft) isnt JSON.stringify(tright)
 
     prepareAlgorithm: (algorithm) ->
         if typeof algorithm is 'function'
@@ -176,38 +186,27 @@ class Visualizer
         for procName, procedure of algorithm
             @procedures[procName] = @wrapProcedure(procName, procedure)
 
-    newScope: (procName, args) =>
-        newScope =
-            _procName      : procName
-            _args          : args
-            _calledAtFrame : @frameNumber
-
-        newScope[name]  = proc for name, proc of @procedures
-        newScope[name]  = value for name, value of args
-        newScope[name] ?= undefined for name in @registeredVars[procName] ? []
-        newScope.global = @stash.globalScope
-
-        @stash.currentScope._forkAtLine = @prevLine.number
-        @stash.currentScope = newScope
-        @stash.callStack.unshift(newScope)
-        @line("call")
-
-        return newScope
-
-    restoreScope: (returnValue) =>
-        returningScope              = @stash.callStack.shift()
-        @stash.lastReturnedProc     = 
-            procName    : returningScope._procName
-            args        : returningScope._args
-            returnValue : returnValue
-        @stash.currentScope         = @stash.callStack[0]
-        @prevLine                   = returningScope._lastLine
-        @line("ret")
-
     wrapProcedure: (procName, procedure) ->
         return (args = {}) =>
-            ret = procedure.call(@newScope(procName, args), (n)=>@line(n))
-            @restoreScope(ret)
+            newScope =
+                _procName : procName
+                _args     : args
+
+            newScope[name]  = proc for name, proc of @procedures
+            newScope[name]  = value for name, value of args
+            newScope[name] ?= undefined for name in @registeredVars[procName] ? []
+            newScope.global = @stash.globalScope
+
+            @stash.currentScope = newScope
+            @stash.callStack.unshift(newScope)
+            @line("call")
+
+            ret = procedure.call(newScope, (n)=>@line(n))
+
+            returningScope              = @stash.callStack.shift()
+            @stash.currentScope         = @stash.callStack[0]
+            @line("ret", procName, ret)
+
             return ret
 
     runAlgorithm: ->
@@ -215,7 +214,6 @@ class Visualizer
 
         @frames         = []
         @frameNumber    = 0
-        @prevLine       = 0
         @numCallsToLine = 0
 
         @initializeStash()
