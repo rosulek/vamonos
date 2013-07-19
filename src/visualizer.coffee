@@ -36,7 +36,6 @@ class Visualizer
 
     setVariable: (name, value) ->
         [ns, varName] = @parseVarName(name)
-        # throw away ns information -- all input vars are args to main
         @stash.inputScope[name] = value
         return value # for chaining
 
@@ -83,8 +82,7 @@ class Visualizer
 
     getFrame: (num = 0, theseVarsOnly) ->
         r = 
-            #TODO copy only needed information in callStack
-            _callStack   : Vamonos.clone(@stash.callStack)
+            _callStack   : (procName: c._procName, args: c._args for c in @stash.callStack)
             _frameNumber : num
             _prevLine    : @stash.currentScope._prevLine
             _nextLine    : @stash.currentScope._nextLine
@@ -109,10 +107,15 @@ class Visualizer
             continue if typeof v is 'function' 
             continue if k is 'global'
             continue if /^_/.test k
-            continue if theseVarsOnly? and k in theseVarsOnly
-            cloned                    = Vamonos.clone(v)
-            obj["#{procName}::#{k}"] ?= cloned
-            obj[k]                   ?= cloned if bare
+            continue if theseVarsOnly? and not k in theseVarsOnly
+
+            result = if theseVarsOnly?
+                v
+            else
+                Vamonos.clone(v)
+
+            obj["#{procName}::#{k}"] ?= result
+            obj[k]                   ?= result if bare
 
     line: (n, relevantScope) ->
         throw "too many frames" if @frameNumber >= @maxFrames
@@ -140,7 +143,6 @@ class Visualizer
                 @returnStack.length = 0
 
             @frames.push(frame)
-            console.log "#{@frameNumber} : #{reason}"
 
             # we only have a reason to take a snapshot when n is numeric
             # EXCEPT when we have a ret-then-call situation.. in that case
@@ -168,18 +170,26 @@ class Visualizer
             return "procedure \"#{@aProcedureReturned}\" returned (between ret & call)" 
 
         if typeof n is 'number'
-            return @watchVarsChanged()
+            console.log "---------------"
+            r = @watchVarsChanged()
+            console.log "watchVarsChanged: #{r} framenumber: #{@frameNumber}"
+            return r
 
+    framifyWatchVars: () ->
+        r = {}
+        for varName in @watchVars
+            r[varName] = @stash.currentScope[varName] ? @stash.globalScope[varName]
+        return r
 
     watchVarsChanged: () ->
         return false unless @watchVars.length and @frames.length
 
-        fakeFrame = @getFrame(null, null, null, @watchVars)
+        fakeFrame = @framifyWatchVars()
 
-        #TODO do this without cloning anything
         changedVars = for v in @watchVars
             left    = @frames[@frames.length-1][v]
             right   = fakeFrame[v]
+            console.log "left: #{left}, right: #{right}"
             continue unless left? and right?
             continue if JSON.stringify(left) is JSON.stringify(right)
             "#{v}"

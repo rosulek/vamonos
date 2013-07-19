@@ -101,6 +101,8 @@
 <script type="text/javascript">
 var myviz = new Vamonos.Visualizer({
     widgets: [
+        new Vamonos.Widget.Console({}),
+
         new Vamonos.Widget.VarDisplay({
             container: "display",
             watch: ["time", "u", "v", "*G[none]"]

@@ -18,7 +18,7 @@ class CallStack
     render: (frame) ->
         @drawHeader()
         stack = frame._callStack[..]
-        @addProcedure(c._procName, c._args) for c in stack.reverse()
+        @addProcedure(c.procName, c.args) for c in stack.reverse()
         @$table.find("td.callstack-proc").last().addClass("callstack-active")
         if frame._returnStack?
             for r in frame._returnStack
