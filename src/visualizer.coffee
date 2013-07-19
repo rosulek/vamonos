@@ -253,9 +253,12 @@ class Visualizer
 
         try
             throw "no main function" unless typeof @procedures.main is 'function'
+            $("body").addClass("processing")
             @procedures.main(mainArgs)
             @line("end")
+            $("body").removeClass("processing")
         catch err
+            $("body").removeClass("processing")
             switch err
                 when "too many frames"
                     alert("Too many frames. You may have an infinite loop, or you may " +
