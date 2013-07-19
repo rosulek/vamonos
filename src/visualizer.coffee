@@ -81,7 +81,7 @@ class Visualizer
         @stash.globalScope      = {}
         @stash.currentScope     = @stash.inputScope
 
-    getFrame: (num = 0) ->
+    getFrame: (num = 0, shallow = false) ->
         r = 
             _callStack   : (procName: c._procName, args: c._args for c in @stash.callStack)
             _frameNumber : num
@@ -95,7 +95,7 @@ class Visualizer
             procName = scope._procName
             continue if procName in procsAlreadySeen
             bare = (procName == @stash.currentScope._procName)
-            @cloneScopeToObj(r, procName, scope, bare)
+            @cloneScopeToObj(r, procName, scope, bare, shallow)
             procsAlreadySeen.push(procName)
 
         @cloneScopeToObj(r, "global", @stash.globalScope, true)
@@ -103,13 +103,13 @@ class Visualizer
 
         return r
 
-    cloneScopeToObj: (obj, procName, scope, bare = false) ->
+    cloneScopeToObj: (obj, procName, scope, bare = false, shallow = false) ->
         for k, v of scope
             continue if typeof v is 'function' 
             continue if k is 'global'
             continue if /^_/.test k
 
-            cloned                    = Vamonos.clone(v)
+            cloned                    = if shallow then v else Vamonos.clone(v)
             obj["#{procName}::#{k}"] ?= cloned
             obj[k]                   ?= cloned if bare
 
@@ -193,17 +193,18 @@ class Visualizer
     watchVarsChanged: () ->
         return unless @watchVars.length
 
-        fakeFrame = @framifyWatchVars()
+#        fakeFrame = @framifyWatchVars()
+        fakeFrame = @getFrame(0, true)
 
         ret = (for v in @watchVars
                 left    = @frames[@frames.length-1]?[v]
                 right   = fakeFrame[v]
-                continue unless left? and right?
+#                continue if left? and right?
+#               this has correct behavior when one is undefined:
                 continue if JSON.stringify(left) is JSON.stringify(right)
                 v)
 
-        return unless ret.length
-        return ret
+        return if ret.length then ret else null
 
     prepareAlgorithm: (algorithm) ->
         if typeof algorithm is 'function'
