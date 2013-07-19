@@ -41,27 +41,15 @@ class Pseudocode
 
     render: (frame) ->
         @clear()
-
-        stackContexts = (c._procName for c in frame._callStack)
+        return unless @procedureName is frame._procName
         next = frame._nextLine
         prev = frame._prevLine
-
-        return unless (
-            @procedureName is next.procName or 
-            @procedureName is prev.procName or
-            @procedureName in stackContexts
-        )
-
-        if prev.procName is @procedureName
-            @addClassToLine(prev.number, "pseudocode-previous")
-
-        if next.procName is @procedureName
-            @addClassToLine(next.number, "pseudocode-next")
+        @addClassToLine(prev, "pseudocode-previous") if prev?
+        @addClassToLine(next, "pseudocode-next")     if next?
 
     clear: () ->
         @$tbl.find("tr").removeClass("pseudocode-next")
         @$tbl.find("tr").removeClass("pseudocode-previous")
-        @$tbl.find("tr").removeClass("pseudocode-active")
 
     addClassToLine: (n, klass) ->
         @$tbl.find("tr[vamonos-linenumber=#{ n }]").addClass(klass) if Vamonos.isNumber(n)

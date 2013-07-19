@@ -81,12 +81,14 @@ class Visualizer
         @stash.globalScope      = {}
         @stash.currentScope     = @stash.inputScope
 
-    getFrame: (prevLine = {}, nextLine = {}, num = 0, theseVarsOnly) ->
+    getFrame: (num = 0, theseVarsOnly) ->
         r = 
+            #TODO copy only needed information in callStack
             _callStack   : Vamonos.clone(@stash.callStack)
             _frameNumber : num
-            _prevLine    : prevLine
-            _nextLine    : nextLine
+            _prevLine    : @stash.currentScope._prevLine
+            _nextLine    : @stash.currentScope._nextLine
+            _procName    : @stash.currentScope._procName
 
         procsAlreadySeen = []
 
@@ -124,31 +126,25 @@ class Visualizer
                 @aProcedureReturned = returnFrame.procName
 
         if typeof n is 'number' 
-            number = n 
-        else 
-            number = @stash.currentScope._prevLine?.number ? 0
-
-        nextLine = 
-            procName : @stash.currentScope._procName
-            number   : number
+            @stash.currentScope._nextLine = n
 
         reason = @takeSnapshot(n)
         if reason
 
-            frame = @getFrame(@stash.currentScope._prevLine, nextLine, ++@frameNumber)
+            frame = @getFrame(++@frameNumber)
             frame._snapshotReason = reason
 
             if @returnStack?.length
-                frame._returnStack = @returnStack[..]
-                @returnStack.length  = 0
+                frame._returnStack  = @returnStack[..]
+                @returnStack.length = 0
 
             @frames.push(frame)
             console.log "#{@frameNumber} : #{reason}"
 
             @aProcedureWasCalled = @aProcedureReturned = undefined
     
-        @stash.currentScope._prevLine = nextLine
-
+        if typeof n is 'number'
+            @stash.currentScope._prevLine = n
 
     takeSnapshot: (n) ->
         if n in @getCurrentBreakpoints()
