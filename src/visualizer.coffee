@@ -81,7 +81,7 @@ class Visualizer
         @stash.globalScope      = {}
         @stash.currentScope     = @stash.inputScope
 
-    getFrame: (num = 0, shallow = false) ->
+    getFrame: (num = 0) ->
         r = 
             _callStack   : (procName: c._procName, args: c._args for c in @stash.callStack)
             _frameNumber : num
@@ -95,7 +95,7 @@ class Visualizer
             procName = scope._procName
             continue if procName in procsAlreadySeen
             bare = (procName == @stash.currentScope._procName)
-            @cloneScopeToObj(r, procName, scope, bare, shallow)
+            @cloneScopeToObj(r, procName, scope, bare)
             procsAlreadySeen.push(procName)
 
         @cloneScopeToObj(r, "global", @stash.globalScope, true)
@@ -103,13 +103,13 @@ class Visualizer
 
         return r
 
-    cloneScopeToObj: (obj, procName, scope, bare = false, shallow = false) ->
+    cloneScopeToObj: (obj, procName, scope, bare = false) ->
         for k, v of scope
             continue if typeof v is 'function' 
             continue if k is 'global'
             continue if /^_/.test k
 
-            cloned                    = if shallow then v else Vamonos.clone(v)
+            cloned                    = Vamonos.clone(v)
             obj["#{procName}::#{k}"] ?= cloned
             obj[k]                   ?= cloned if bare
 
@@ -193,8 +193,7 @@ class Visualizer
     watchVarsChanged: () ->
         return unless @watchVars.length
 
-#        fakeFrame = @framifyWatchVars()
-        fakeFrame = @getFrame(0, true)
+        fakeFrame = @framifyWatchVars()
 
         ret = (for v in @watchVars
                 left    = @frames[@frames.length-1]?[v]
