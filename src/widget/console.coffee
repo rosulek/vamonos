@@ -4,7 +4,8 @@ class Console
 
         if event is 'render'
             console.log (
-                options[0]._frameNumber + " : " + options[0]._snapshotReason
+                options[0]._frameNumber + " : " + 
+                JSON.stringify(options[0]._snapshotReasons)
             )
         else if options.length > 0 
             console.log "widget event '#{event}', options:", options 

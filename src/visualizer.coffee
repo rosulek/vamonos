@@ -1,15 +1,16 @@
 class Visualizer
 
-    constructor: ({@widgets, @maxFrames, @breakOnReturn, algorithm, autoStart}) ->
+    constructor: ({@widgets, @maxFrames, @breakOnCall, @breakOnReturn, algorithm, autoStart}) ->
         @maxFrames     ?= 250
         autoStart      ?= false
-        @breakOnCall   ?= false
-        @breakOnReturn ?= false
 
         @breakpoints    = {}
         @watchVars      = []
         @registeredVars = {}
         @procedures     = {}
+
+        @breakOnCall   ?= true
+        @breakOnReturn ?= true
 
         @initializeStash()
         @prepareAlgorithm(algorithm)
@@ -80,7 +81,7 @@ class Visualizer
         @stash.globalScope      = {}
         @stash.currentScope     = @stash.inputScope
 
-    getFrame: (num = 0, theseVarsOnly) ->
+    getFrame: (num = 0) ->
         r = 
             _callStack   : (procName: c._procName, args: c._args for c in @stash.callStack)
             _frameNumber : num
@@ -94,7 +95,7 @@ class Visualizer
             procName = scope._procName
             continue if procName in procsAlreadySeen
             bare = (procName == @stash.currentScope._procName)
-            @cloneScopeToObj(r, procName, scope, bare, theseVarsOnly)
+            @cloneScopeToObj(r, procName, scope, bare)
             procsAlreadySeen.push(procName)
 
         @cloneScopeToObj(r, "global", @stash.globalScope, true)
@@ -102,20 +103,15 @@ class Visualizer
 
         return r
 
-    cloneScopeToObj: (obj, procName, scope, bare = false, theseVarsOnly) ->
+    cloneScopeToObj: (obj, procName, scope, bare = false) ->
         for k, v of scope
             continue if typeof v is 'function' 
             continue if k is 'global'
             continue if /^_/.test k
-            continue if theseVarsOnly? and not k in theseVarsOnly
 
-            result = if theseVarsOnly?
-                v
-            else
-                Vamonos.clone(v)
-
-            obj["#{procName}::#{k}"] ?= result
-            obj[k]                   ?= result if bare
+            cloned                    = Vamonos.clone(v)
+            obj["#{procName}::#{k}"] ?= cloned
+            obj[k]                   ?= cloned if bare
 
     line: (n, relevantScope) ->
         throw "too many frames" if @frameNumber >= @maxFrames
@@ -123,20 +119,25 @@ class Visualizer
 
         switch n
             when "call"
-                @aProcedureWasCalled = relevantScope.procName
+                @calledProc = relevantScope.procName
             when "ret"
                 (@returnStack ?= []).unshift(relevantScope)
-                @aProcedureReturned  = relevantScope.procName
+                @returnedProc  = relevantScope.procName
 
 
         if typeof n is 'number' 
             @stash.currentScope._nextLine = n
 
-        reason = @takeSnapshot(n)
-        if reason
+        reasons = @takeSnapshotReasons(n)
+        if (
+            reasons.breakpoint? or
+            reasons.watchVarsChanged?.length or
+            reasons.procCalled? and @breakOnCall or
+            reasons.procReturned? and @breakOnReturn
+        )
 
             frame = @getFrame(++@frameNumber)
-            frame._snapshotReason = reason
+            frame._snapshotReasons = reasons
 
             if @returnStack?.length
                 frame._returnStack  = @returnStack[..]
@@ -147,59 +148,62 @@ class Visualizer
             # we only have a reason to take a snapshot when n is numeric
             # EXCEPT when we have a ret-then-call situation.. in that case
             # we take snapshot on the 'call' event, and don't want to clobber
-            # @aProcedureWasCalled so that the next line(1) also takes snapshot
+            # @calledProc so that the next line(1) also takes snapshot
             if n is "call"
-                @aProcedureReturned  = undefined
+                @calledProc = null
             else
-                @aProcedureWasCalled = @aProcedureReturned = undefined
+                @returnedProc = @calledProc = undefined
 
         if typeof n is 'number'
             @stash.currentScope._prevLine = n
 
-    takeSnapshot: (n) ->
+        # reset the return stack if just in case we didn't take a snapshot 
+        # and reset it already. this prevents the call stack from accumulating 
+        # endlessly.
+        @returnStack = [] if n is "call"
+
+    takeSnapshotReasons: (n) ->
+        reasons = {}
+
         if n in @getCurrentBreakpoints()
-            return "breakpoint #{n} set for #{@stash.currentScope._procName}" 
-
-        if @aProcedureWasCalled and typeof n is 'number'
-            return "procedure \"#{@aProcedureWasCalled}\" called"  
-
-        if @aProcedureReturned and typeof n is 'number' or n is "end"
-            return "procedure \"#{@aProcedureReturned}\" returned" 
-
-        if @aProcedureReturned and n is 'call'
-            return "procedure \"#{@aProcedureReturned}\" returned (between ret & call)" 
+            reasons.breakpoint = n
 
         if typeof n is 'number'
-            console.log "---------------"
-            r = @watchVarsChanged()
-            console.log "watchVarsChanged: #{r} framenumber: #{@frameNumber}"
-            return r
+            reasons.watchVarsChanged = @watchVarsChanged()
+            reasons.procCalled       = @calledProc
+            reasons.procReturned     = @returnedProc
+
+        if n is 'call' and @returnedProc
+            reasons.procReturned = @returnedProc
+
+        if n is "end"
+            reasons.procReturned = "main"
+
+        return reasons
+
 
     framifyWatchVars: () ->
         r = {}
         for varName in @watchVars
-            r[varName] = @stash.currentScope[varName] ? @stash.globalScope[varName]
+            r[varName] = @stash.currentScope[varName] ? 
+                         @stash.globalScope[varName] ? 
+                         @stash.inputScope[varName]
         return r
 
     watchVarsChanged: () ->
-        return "watchVar initialized" if @watchVars.length and @frames.length is 0
-        return false                  if @watchVars.length is 0
+        return unless @watchVars.length
 
         fakeFrame = @framifyWatchVars()
 
-        changedVars = for v in @watchVars
-            left    = @frames[@frames.length-1][v]
-            right   = fakeFrame[v]
-            console.log "left: #{left}, right: #{right}"
-            continue unless left? and right?
-            continue if JSON.stringify(left) is JSON.stringify(right)
-            "#{v}"
+        ret = (for v in @watchVars
+                left    = @frames[@frames.length-1]?[v]
+                right   = fakeFrame[v]
+                continue unless left? and right?
+                continue if JSON.stringify(left) is JSON.stringify(right)
+                v)
 
-        return false unless changedVars.length
-        return (
-            "watchVar#{if changedVars.length > 1 then "s" else ""} " +
-            "\"#{changedVars.join("\", ")}\" changed"
-        )
+        return unless ret.length
+        return ret
 
     prepareAlgorithm: (algorithm) ->
         if typeof algorithm is 'function'
@@ -252,6 +256,7 @@ class Visualizer
         @frames         = []
         @frameNumber    = 0
         @numCallsToLine = 0
+        @returnStack    = []
 
         @initializeStash()
         @tellWidgets("editStop") if @mode is "edit"
@@ -265,6 +270,7 @@ class Visualizer
         try
             throw "no main function" unless typeof @procedures.main is 'function'
             $("body").addClass("processing")
+            @line("init")
             @procedures.main(mainArgs)
             @line("end")
             $("body").removeClass("processing")
