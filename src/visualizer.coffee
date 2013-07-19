@@ -81,7 +81,7 @@ class Visualizer
         @stash.globalScope      = {}
         @stash.currentScope     = @stash.inputScope
 
-    getFrame: (num = 0) ->
+    getFrame: (num = 0, shallow = false) ->
         r = 
             _callStack   : (procName: c._procName, args: c._args for c in @stash.callStack)
             _frameNumber : num
@@ -95,21 +95,21 @@ class Visualizer
             procName = scope._procName
             continue if procName in procsAlreadySeen
             bare = (procName == @stash.currentScope._procName)
-            @cloneScopeToObj(r, procName, scope, bare)
+            @cloneScopeToObj(r, procName, scope, bare, shallow)
             procsAlreadySeen.push(procName)
 
-        @cloneScopeToObj(r, "global", @stash.globalScope, true)
-        @cloneScopeToObj(r, "input",  @stash.inputScope,  true)
+        @cloneScopeToObj(r, "global", @stash.globalScope, true, shallow)
+        @cloneScopeToObj(r, "input",  @stash.inputScope,  true, shallow)
 
         return r
 
-    cloneScopeToObj: (obj, procName, scope, bare = false) ->
+    cloneScopeToObj: (obj, procName, scope, bare = false, shallow) ->
         for k, v of scope
             continue if typeof v is 'function' 
             continue if k is 'global'
             continue if /^_/.test k
 
-            cloned                    = Vamonos.clone(v)
+            cloned                    = if shallow then v else Vamonos.clone(v)
             obj["#{procName}::#{k}"] ?= cloned
             obj[k]                   ?= cloned if bare
 
@@ -129,13 +129,7 @@ class Visualizer
             @stash.currentScope._nextLine = n
 
         reasons = @takeSnapshotReasons(n)
-        if (
-            reasons.breakpoint? or
-            reasons.watchVarsChanged?.length or
-            reasons.procCalled? and @breakOnCall or
-            reasons.procReturned? and @breakOnReturn
-        )
-
+        if reasons
             frame = @getFrame(++@frameNumber)
             frame._snapshotReasons = reasons
 
@@ -163,43 +157,32 @@ class Visualizer
         @returnStack = [] if n is "call"
 
     takeSnapshotReasons: (n) ->
-        reasons = {}
-
+        reasons = null
         if n in @getCurrentBreakpoints()
-            reasons.breakpoint = n
+            (reasons ?= {}).breakpoint = n
 
         if typeof n is 'number'
-            reasons.watchVarsChanged = @watchVarsChanged()
-            reasons.procCalled       = @calledProc
-            reasons.procReturned     = @returnedProc
+            changes = @watchVarsChanged()
+            (reasons ?= {}).watchVarsChanged = changes if changes?
+            (reasons ?= {}).procCalled       = @calledProc if @breakOnCall and @calledProc
+            (reasons ?= {}).procReturned     = @returnedProc if @breakOnReturn and @returnedProc
 
-        if n is 'call' and @returnedProc
-            reasons.procReturned = @returnedProc
+        if n is 'call' and @returnedProc and @breakOnCall and @breakOnReturn
+            (reasons ?= {}).procReturned = @returnedProc if @returnedProc
 
         if n is "end"
-            reasons.procReturned = "main"
+            (reasons ?= {}).procReturned = "main"
 
         return reasons
-
-
-    framifyWatchVars: () ->
-        r = {}
-        for varName in @watchVars
-            r[varName] = @stash.currentScope[varName] ? 
-                         @stash.globalScope[varName] ? 
-                         @stash.inputScope[varName]
-        return r
 
     watchVarsChanged: () ->
         return unless @watchVars.length
 
-        fakeFrame = @framifyWatchVars()
+        fakeFrame = @getFrame(Infinity, true)
 
         ret = (for v in @watchVars
-                left    = @frames[@frames.length-1]?[v]
-                right   = fakeFrame[v]
-#                continue if left? and right?
-#               this has correct behavior when one is undefined:
+                left  = @frames[@frames.length-1]?[v]
+                right = fakeFrame[v]
                 continue if JSON.stringify(left) is JSON.stringify(right)
                 v)
 
