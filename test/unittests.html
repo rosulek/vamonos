@@ -5,6 +5,7 @@
 		<title>Unit Tests</title>
 		<link rel="stylesheet" href="../node_modules/qunitjs/qunit/qunit.css">
 		<script src="../node_modules/qunitjs/qunit/qunit.js"></script>
+		<script type="text/javascript" src="../deps/jquery.min.js"></script>
 		<script type="text/javascript" src="../lib/vamonos.js"></script>
 		<script>
 			test("Queue Datastructure", function() {
@@ -55,9 +56,9 @@
             	input.extractMin();
             	deepEqual(input.guts, [one], "test extractMin while sorting by y");
 
-            	//test clone ***currently queue dies when clone is called***
-            	//var input2 = input.clone();
-            	//deepEqual(input2.guts, input.guts, "test clone function");
+            	//test clone
+            	var input2 = input.clone();
+            	deepEqual(input2.guts, input.guts, "test clone function");
 			});
 		</script>
 	</head>
