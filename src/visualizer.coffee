@@ -114,16 +114,17 @@ class Visualizer
             obj["#{procName}::#{k}"] ?= cloned
             obj[k]                   ?= cloned if bare
 
-    line: (n, returnFrame) ->
+    line: (n, relevantScope) ->
         throw "too many frames" if @frameNumber >= @maxFrames
         throw "too many lines"  if ++@numCallsToLine > 10000
 
         switch n
             when "call"
-                @aProcedureWasCalled = @stash.currentScope._procName
+                @aProcedureWasCalled = relevantScope.procName
             when "ret"
-                (@returnStack ?= []).unshift(returnFrame)
-                @aProcedureReturned = returnFrame.procName
+                (@returnStack ?= []).unshift(relevantScope)
+                @aProcedureReturned  = relevantScope.procName
+
 
         if typeof n is 'number' 
             @stash.currentScope._nextLine = n
@@ -141,8 +142,15 @@ class Visualizer
             @frames.push(frame)
             console.log "#{@frameNumber} : #{reason}"
 
-            @aProcedureWasCalled = @aProcedureReturned = undefined
-    
+            # we only have a reason to take a snapshot when n is numeric
+            # EXCEPT when we have a ret-then-call situation.. in that case
+            # we take snapshot on the 'call' event, and don't want to clobber
+            # @aProcedureWasCalled so that the next line(1) also takes snapshot
+            if n is "call"
+                @aProcedureReturned  = undefined
+            else
+                @aProcedureWasCalled = @aProcedureReturned = undefined
+
         if typeof n is 'number'
             @stash.currentScope._prevLine = n
 
@@ -156,8 +164,12 @@ class Visualizer
         if @aProcedureReturned and typeof n is 'number' or n is "end"
             return "procedure \"#{@aProcedureReturned}\" returned" 
 
+        if @aProcedureReturned and n is 'call'
+            return "procedure \"#{@aProcedureReturned}\" returned (between ret & call)" 
+
         if typeof n is 'number'
             return @watchVarsChanged()
+
 
     watchVarsChanged: () ->
         return false unless @watchVars.length and @frames.length
@@ -195,14 +207,24 @@ class Visualizer
             newScope[name] ?= undefined for name in @registeredVars[procName] ? []
             newScope.global = @stash.globalScope
 
+            # in the rare case that we take a snapshot in a "call" event,
+            # (which is when there is a consecutive ret+call), we want
+            # the callstack to still reflect the preceding "ret" event
+            # so we can display the returned frames. but we don't want
+            # nextLine/prevLine to be displayed (because the ret+call are
+            # from the same pseudocode line). setting currentScope = newScope
+            # is safe and nice because it's a scope that has no next/prevLine
+
             @stash.currentScope = newScope
+
+            @line("call", { procName: procName })
+
             @stash.callStack.unshift(newScope)
-            @line("call")
 
             ret = procedure.call(newScope, (n)=>@line(n))
 
-            returningScope              = @stash.callStack.shift()
-            @stash.currentScope         = @stash.callStack[0]
+            @stash.callStack.shift()
+            @stash.currentScope = @stash.callStack[0] 
 
             returnFrame = 
                 procName    : procName
