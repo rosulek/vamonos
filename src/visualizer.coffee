@@ -123,25 +123,31 @@ class Visualizer
                 (@returnStack ?= []).unshift(returnFrame)
                 @aProcedureReturned = returnFrame.procName
 
-        reason = @takeSnapshot(n)
-        return unless reason
+        if typeof n is 'number' 
+            number = n 
+        else 
+            number = @stash.currentScope._prevLine?.number ? 0
 
         nextLine = 
             procName : @stash.currentScope._procName
-            number   : n
+            number   : number
 
-        frame = @getFrame(@stash.currentScope._prevLine, nextLine, ++@frameNumber)
-        frame._snapshotReason = reason
+        reason = @takeSnapshot(n)
+        if reason
 
-        if @returnStack?.length
-            frame._returnStack = @returnStack[..]
-            @returnStack.length  = 0
+            frame = @getFrame(@stash.currentScope._prevLine, nextLine, ++@frameNumber)
+            frame._snapshotReason = reason
 
-        @frames.push(frame)
-        console.log "#{@frameNumber} : #{reason}"
+            if @returnStack?.length
+                frame._returnStack = @returnStack[..]
+                @returnStack.length  = 0
+
+            @frames.push(frame)
+            console.log "#{@frameNumber} : #{reason}"
+
+            @aProcedureWasCalled = @aProcedureReturned = undefined
     
         @stash.currentScope._prevLine = nextLine
-        @aProcedureWasCalled = @aProcedureReturned = undefined
 
 
     takeSnapshot: (n) ->
@@ -154,13 +160,15 @@ class Visualizer
         if @aProcedureReturned and typeof n is 'number' or n is "end"
             return "procedure \"#{@aProcedureReturned}\" returned" 
 
-        return @watchVarsChanged()
+        if typeof n is 'number'
+            return @watchVarsChanged()
 
     watchVarsChanged: () ->
         return false unless @watchVars.length and @frames.length
 
         fakeFrame = @getFrame(null, null, null, @watchVars)
 
+        #TODO do this without cloning anything
         changedVars = for v in @watchVars
             left    = @frames[@frames.length-1][v]
             right   = fakeFrame[v]
