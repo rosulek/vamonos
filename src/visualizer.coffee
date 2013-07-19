@@ -182,7 +182,8 @@ class Visualizer
         return r
 
     watchVarsChanged: () ->
-        return false unless @watchVars.length and @frames.length
+        return "watchVar initialized" if @watchVars.length and @frames.length is 0
+        return false                  if @watchVars.length is 0
 
         fakeFrame = @framifyWatchVars()
 
@@ -196,7 +197,7 @@ class Visualizer
 
         return false unless changedVars.length
         return (
-            "vatchVar#{if changedVars.length > 1 then "s" else ""} " +
+            "watchVar#{if changedVars.length > 1 then "s" else ""} " +
             "\"#{changedVars.join("\", ")}\" changed"
         )
 
