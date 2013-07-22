@@ -170,7 +170,7 @@ class Visualizer
         if n is 'call' and @returnedProc and @breakOnCall and @breakOnReturn
             (reasons ?= {}).procReturned = @returnedProc if @returnedProc
 
-        if n is "end"
+        if n is "end" and @breakOnReturn
             (reasons ?= {}).procReturned = "main"
 
         return reasons

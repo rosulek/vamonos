@@ -33,6 +33,7 @@
 <script type="text/javascript">
 var myviz = new Vamonos.Visualizer({
     widgets: [
+        new Vamonos.Widget.Console(),
         new Vamonos.Widget.ParallelArrays({
             container: "arrays",
             showLabel: true,
@@ -58,12 +59,13 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.VarDisplay({
             container: "display",
-            watch: ["*i", "*k", "*opt", "*sol"]
+            watch: ["*i", "k", "opt[none]", "*sol[none]"]
         }),
 
         new Vamonos.Widget.Pseudocode({ container: "pseudocode" }),
         new Vamonos.Widget.Controls({ container: "controls" })
     ],
+    breakOnReturn: false,
     algorithm: function (_) {
         with (this) {
 _(1);       opt = [0]
@@ -79,9 +81,9 @@ _(8);                   opt[k] = opt[i] + 1;
 _(9);                   sol[k] = sol[i].concat([A[k]]);
                     }
                 }
-                i = null;
+                i = undefined;
             }
-            k = null;
+            k = undefined;
         }
     }
 });
