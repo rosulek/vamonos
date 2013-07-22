@@ -35,4 +35,20 @@ class BinaryTree
             helper(node.r)
         )(@guts)
 
+    eachNodePostOrder: (f) ->
+        (helper = (node) ->
+            return unless node?
+            helper(node.l)
+            helper(node.r)
+            f(node)
+        )(@guts)
+
+    asGraph: () ->
+        g = new Vamonos.DataStructure.Graph()
+        @eachNodeInOrder (n) =>
+            leftId  = g.addVertex(n.left)  if n.left?
+            rightId = g.addVertex(n.right) if n.right?
+            g.addEdge(leftId, rightId)
+        return g
+
 Vamonos.export { DataStructure: { BinaryTree } }

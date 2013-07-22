@@ -40,77 +40,51 @@ var bin = new Vamonos.Widget.BinaryTree({
 });
 
 var t1 = new Vamonos.DataStructure.BinaryTree({
-    v: 5,
+    val: 5,
     id: "n5",
-    l: { 
-        v: 3,
+    left: { 
+        val: 3,
         id: "n3",
-        l: { 
-            v: 2,
+        left: { 
+            val: 2,
             id: "n2",
-            l: { v: 1, id: "n1" },
+            left: { val: 1, id: "n1" },
         },
-        r: { v: 4, id: "n4" },
+        right: { val: 4, id: "n4" },
     },
-    r: {
-        v: 8,
+    right: {
+        val: 8,
         id: "n8",
-        l: {
-            v: 6,
+        left: {
+            val: 6,
             id: "n6",
-            r: { v: 7, id: "n7" },
+            right: { val: 7, id: "n7" },
         },
-        r: { v: 9, id: "n9" },
+        right: { val: 9, id: "n9" },
     },
 });
 
 var t2 = new Vamonos.DataStructure.BinaryTree({
-    v: 5,
-    id: "n5",
-    l: { 
-        v: 2,
-        id: "n2",
-        l: { v: 1, id: "n1" },
-        r: {
-            v: 3,
-            id: "n3",
-            r: { v: 4, id: "n4" },
-        },
-    },
-    r: {
-        v: 8,
-        id: "n8",
-        l: {
-            v: 6,
-            id: "n6",
-            r: { v: 7, id: "n7" },
-        },
-        r: { v: 9, id: "n9" },
-    },
-});
-
-
-var t2 = new Vamonos.DataStructure.BinaryTree({
-    v: 3,
+    val: 3,
     id: "n3",
-    l: { 
-        v: 2,
+    left: { 
+        val: 2,
         id: "n2",
-        l: { v: 1, id: "n1" },
+        left: { val: 1, id: "n1" },
     },
-    r: {
-        v: 5,
+    right: {
+        val: 5,
         id: "n5",
-        l: { v: 4, id: "n4" },
-        r: {
-            v: 8,
+        left: { val: 4, id: "n4" },
+        right: {
+            val: 8,
             id: "n8",
-            l: {
-                v: 6,
+            left: {
+                val: 6,
                 id: "n6",
-                r: { v: 7, id: "n7" },
+                right: { val: 7, id: "n7" },
             },
-            r: { v: 9, id: "n9" },
+            right: { val: 9, id: "n9" },
         },
     }
 });
