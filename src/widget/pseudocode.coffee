@@ -60,27 +60,55 @@ class Pseudocode
                    .sort((a,b) -> b.length - a.length)
 
     enableBreakpointSelection: ->
-        @$tbl.find("td.pseudocode-gutter").on("click", (event) =>
-            @toggleBreakpoint(
-                $(event.target).closest("tr").attr("vamonos-linenumber")))
-        @$tbl.find("td.pseudocode-gutter").prop("title", "Click to toggle a breakpoint on this line")
+        gutter = @$tbl.find("td.pseudocode-gutter")
+        gutter.on("mousedown", (event) =>
+            n = $(event.target).closest("tr").attr("vamonos-linenumber")
+            @toggleBreakpoint(n)
+            @mouseDownMode = @getBreakpointStatus(n)
+            return false # don't propogate to browser's text-selection handler
+        )
+        # mouseup anywhere should cancel breakpoint click-drag
+        $(window).on("mouseup.vamonos", => @mouseDownMode = null )
+        gutter.on("mouseover", =>
+            return unless @mouseDownMode?
+            n = $(event.target).closest("tr").attr("vamonos-linenumber")
+            switch @mouseDownMode
+                when "on"  then   @setBreakpoint(n)
+                when "off" then @unsetBreakpoint(n)
+        )
+        gutter.prop("title", "Click to toggle a breakpoint on this line")
 
     disableBreakpointSelection: ->
-        @$tbl.find("td.pseudocode-gutter").off("click")
-        @$tbl.find("td.pseudocode-gutter").prop("title", "")
+        gutter = @$tbl.find("td.pseudocode-gutter")
+        gutter.off("mousedown").off("mouseover").prop("title", "")
+        $(window).off("mouseup.vamonos")
+        @mouseDownMode = null
 
-    toggleBreakpoint: (n) ->
+    getBreakpointStatus: (n) ->
         return unless Vamonos.isNumber(n)
-
         n = parseInt(n) 
 
-        gutter = @getLine(n).find("td.pseudocode-gutter")
         if n in @viz.getBreakpoints(@procedureName)
-            gutter.find("div.pseudocode-breakpoint").remove()
-            @viz.removeBreakpoint(n, @procedureName)
+            return "on"
         else
-            gutter.append($("<div>", {class: "pseudocode-breakpoint"}))
-            @viz.setBreakpoint(n, @procedureName)
+            return "off"
+
+    setBreakpoint: (n) ->
+        return unless @getBreakpointStatus(n) is "off"
+        n = parseInt(n)
+        @getLine(n).find("td.pseudocode-gutter").append($("<div>", {class: "pseudocode-breakpoint"}))
+        @viz.setBreakpoint(parseInt(n), @procedureName)
+
+    unsetBreakpoint: (n) ->
+        return unless @getBreakpointStatus(n) is "on"
+        n = parseInt(n)
+        @getLine(n).find("td.pseudocode-gutter").html("")
+        @viz.removeBreakpoint(n, @procedureName)
+
+    toggleBreakpoint: (n) ->
+        switch @getBreakpointStatus(n)
+            when "on"  then @unsetBreakpoint(n)
+            when "off" then   @setBreakpoint(n)
 
     showBreakpoints: ->
         @$tbl.find("td.pseudocode-gutter div.pseudocode-breakpoint")
