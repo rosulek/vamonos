@@ -16,7 +16,7 @@ class BinaryTree
         when "render"
             [frame, type] = options
             @generatePositions(frame[@varName])
-            @graphDisplay.draw(frame[@varName])
+            @graphDisplay.draw(frame[@varName].asGraph())
 
     generatePositions: (tree) ->
         tree.eachNodeInOrder (n) =>
