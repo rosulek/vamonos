@@ -15,8 +15,6 @@ class BinaryTree
         when "render"
             [frame, type] = options
             @generatePositions(frame[@varName])
-            console.log frame[@varName]
-            console.log frame[@varName].asGraph()
             @graphDisplay.draw(frame[@varName].asGraph())
 
     generatePositions: (tree) ->

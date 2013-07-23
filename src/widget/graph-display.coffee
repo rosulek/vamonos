@@ -51,7 +51,7 @@ class GraphDisplay
         @directed
     }) ->
 
-        @directed ?= yes
+        @directed ?= no
 
         @containerMargin       ?= 20
         @containerResizeLimitX ?= window.innerWidth
@@ -72,21 +72,45 @@ class GraphDisplay
             Endpoint: "Blank"
             Anchor: [ "Perimeter", { shape: "Circle" } ]
 
+    draw: (graph) ->
+        if @graphDrawn
+            @$outer.find(".changed").removeClass("changed")
+
+        @resizeContainerToFitGraph(graph)
+
+        for vertex in graph.getVertices()
+            continue if @nodes[vertex.id]?
+            @addNode(vertex) 
+
+        for edge in graph.getEdges()
+            continue if @connections[edge.source.id]?[edge.target.id]?
+            continue if @connections[edge.target.id]?[edge.source.id]? and not @directed
+            @addConnection(edge) 
+
+        for sourceId, targets of @connections
+            for targetId, connection of targets
+                unless graph.edge(sourceId, targetId)
+                    # TODO make it turn red and fade out or something
+                    @removeConnection(sourceId, targetId) 
+
+        for vid, node of @nodes
+            unless graph.vertex(vid)
+                @removeNode(vid)
+
+        @updateNode($n, graph.vertex(vid)) for vid, $n of @nodes
+        @previousGraph = graph # might need to clone this
 
     addNode: (vertex) ->
         $v = $("<div>", {class: 'vertex', id: vertex.id})
         $v.hide()
-
         $v.css("left", vertex.x)
         $v.css("top",  vertex.y)
         $v.css("position", "absolute")
-
         $contents = $("<div>", class: "vertex-contents")
         for type, style of @vertexLabels
             if type in ["ne","nw","se","sw"]
                 $("<div>", { class:"vertex-#{type}-label" }).appendTo($v)
         $v.append($contents)
-
         @$inner.append($v)
         $v.fadeIn(100)
         return @nodes[vertex.id] = $v
@@ -99,15 +123,42 @@ class GraphDisplay
 
     updateNodePosition: ($node, vertex) ->
         pos = $node.position()
-        console.log pos
         return if pos.left == vertex.x and pos.top == vertex.y
         @jsPlumbInstance.animate(
             vertex.id 
-            {left: vertex.x, top: vertex.y}
-            {duration: 1500}
+            {
+                left: vertex.x
+                top: vertex.y
+            }
+            {
+                duration: 500
+            }
         )
         #$node.css({ left: vertex.x, top: vertex.y })
 
+    resizeContainer: () ->
+        xVals = (@containerMargin + n.position().left + n.width() for vid, n of @nodes)
+        yVals = (@containerMargin + n.position().top + n.height() for vid, n of @nodes)
+        max_x = Math.max(xVals..., @minX)
+        max_y = Math.max(yVals..., @minY)
+        @$outer.width(max_x)
+        @$outer.height(max_y)
+        
+    resizeContainerToFitGraph: (graph) ->
+        nodes = $("div.vertex-contents")
+        width  = nodes.width()
+        height = nodes.height()
+        xVals = []
+        yVals = []
+        for vertex in graph.getVertices()
+            xVals.push @containerMargin + vertex.x + width  
+            yVals.push @containerMargin + vertex.y + height 
+        max_x = Math.max(xVals..., @minX)
+        max_y = Math.max(yVals..., @minY)
+        @$outer.width(max_x)
+        @$outer.height(max_y)
+        #@$outer.animate({width: max_x, height: max_y}, 500)
+        
     # TODO figure out how to deal with frames
     updateNodeLabels: ($node, vertex, frame = {}) ->
         for type, style of @vertexLabels
@@ -140,27 +191,15 @@ class GraphDisplay
                     $node.addClass("#{attr}-#{vertex[attr]}")
             else
                 if vertex[attr] == val
-                    $node.addClass("#{attr}")
+                    $node.addClass(attr)
                 else
-                    $node.removeClass("#{attr}")
+                    $node.removeClass(attr)
 
     removeNode: (vid) ->
-        $node = @nodes[vid]
-        @jsPlumbInstance.removeAllEndpoints($node)
+        node = @nodes[vid]
+        @jsPlumbInstance.removeAllEndpoints(node)
         delete @nodes[vid]
-        $vtx.fadeOut(100, () -> $vtx.remove())
-
-    # ---------------------- connection methods ------------------ #
-
-    draw: (graph) ->
-        if @graphDrawn
-            @$outer.find(".changed").removeClass("changed")
-        else
-            @addNode(vertex) for vertex in graph.getVertices()
-            @addConnection(edge) for edge in graph.getEdges()
-        @updateNode($n, graph.vertex(vid)) for vid, $n of @nodes
-        @previousGraph = graph # might need to clone this
-        @resizeContainer()
+        node.fadeOut(100, () -> node.remove())
 
     addConnection: (edge) ->
         return if @connections[edge.source.id]?[edge.target.id]
@@ -201,14 +240,6 @@ class GraphDisplay
             (newv[k] == v for k, v of oldv).some((b) -> not b)
         )
 
-    resizeContainer: () ->
-        xVals = (@containerMargin + n.position().left + n.width() for vid, n of @nodes)
-        yVals = (@containerMargin + n.position().top + n.height() for vid, n of @nodes)
-        max_x = Math.max(xVals..., @minX)
-        max_y = Math.max(yVals..., @minY)
-        @$outer.width(max_x)
-        @$outer.height(max_y)
-        
     clear: () ->
         @jsPlumbInstance.reset()
         @$inner.html("")
