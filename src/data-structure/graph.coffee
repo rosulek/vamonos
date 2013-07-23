@@ -16,6 +16,7 @@ class Graph
         return @vertices[@idify(v)]
 
     addVertex: (vtx) ->
+        return vtx.id if @vertices[vtx.id]?
         vtx.type  = 'vertex'
         vtx.name ?= @nextVertexName()
         vtx.id   ?= @nextVertexId()

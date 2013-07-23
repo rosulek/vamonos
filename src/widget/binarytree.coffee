@@ -7,8 +7,7 @@ class BinaryTree
         @graphDisplay = new Vamonos.Widget.GraphDisplay
             container: container
             draggable: false
-            vertexLabels: 
-                inner: (n)->n.v
+            vertexLabels: {inner: (n)->n.val}
 
     event: (event, options...) -> switch event
         when "setup"
@@ -16,6 +15,8 @@ class BinaryTree
         when "render"
             [frame, type] = options
             @generatePositions(frame[@varName])
+            console.log frame[@varName]
+            console.log frame[@varName].asGraph()
             @graphDisplay.draw(frame[@varName].asGraph())
 
     generatePositions: (tree) ->

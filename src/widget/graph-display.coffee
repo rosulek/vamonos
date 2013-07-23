@@ -71,7 +71,8 @@ class GraphDisplay
             PaintStyle: @normalPaintStyle
             Endpoint: "Blank"
             Anchor: [ "Perimeter", { shape: "Circle" } ]
-   
+
+
     addNode: (vertex) ->
         $v = $("<div>", {class: 'vertex', id: vertex.id})
         $v.hide()
@@ -83,22 +84,22 @@ class GraphDisplay
         $contents = $("<div>", class: "vertex-contents")
         for type, style of @vertexLabels
             if type in ["ne","nw","se","sw"]
-                $("<div>", { class:"vertex-#{type}-label" }).appendTo($node)
-        $node.append($contents)
-
-        @updateNodeLabels($v, vertex)
+                $("<div>", { class:"vertex-#{type}-label" }).appendTo($v)
+        $v.append($contents)
 
         @$inner.append($v)
         $v.fadeIn(100)
         return @nodes[vertex.id] = $v
 
     updateNode: ($node = @nodes[vid], vertex) ->
+        return unless $node? and vertex?
         @updateNodeLabels($node, vertex)
         @updateNodeClasses($node, vertex)
-        @updateNodePosition($node, vertex) if @updateNodePositions
+        @updateNodePosition($node, vertex)
 
     updateNodePosition: ($node, vertex) ->
         pos = $node.position()
+        console.log pos
         return if pos.left == vertex.x and pos.top == vertex.y
         @jsPlumbInstance.animate(
             vertex.id 
@@ -151,6 +152,16 @@ class GraphDisplay
 
     # ---------------------- connection methods ------------------ #
 
+    draw: (graph) ->
+        if @graphDrawn
+            @$outer.find(".changed").removeClass("changed")
+        else
+            @addNode(vertex) for vertex in graph.getVertices()
+            @addConnection(edge) for edge in graph.getEdges()
+        @updateNode($n, graph.vertex(vid)) for vid, $n of @nodes
+        @previousGraph = graph # might need to clone this
+        @resizeContainer()
+
     addConnection: (edge) ->
         return if @connections[edge.source.id]?[edge.target.id]
         con = @jsPlumbConnect(edge.source.id, edge.target.id)
@@ -190,17 +201,6 @@ class GraphDisplay
             (newv[k] == v for k, v of oldv).some((b) -> not b)
         )
 
-    draw: (graph) ->
-        if @graphDrawn
-            $e.removeClass("changed") for $e in @nodes.concat(@connections)
-        else
-            @addNode(vertex) for vertex in graph.getVertices()
-            @addConnection(edge) for edge in graph.getEdges()
-            @graphDrawn = yes
-        @updateNode($n, graph.vertex(vid)) for vid, $n of @nodes
-        @previousGraph = graph # might need to clone this
-        @resizeContainer()
-
     resizeContainer: () ->
         xVals = (@containerMargin + n.position().left + n.width() for vid, n of @nodes)
         yVals = (@containerMargin + n.position().top + n.height() for vid, n of @nodes)
@@ -217,4 +217,4 @@ class GraphDisplay
         @nodes         = {}
         @previousGraph = undefined
 
-Vamonos.export { Widget: { Graph } }
+Vamonos.export { Widget: { GraphDisplay } }
