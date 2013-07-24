@@ -4,7 +4,7 @@ class ControlSlider
         @$container = Vamonos.jqueryify(container)
         @showWhileSliding ?= true
 
-        @$slider = $("<div>", {class: "controls-slider", title: "Slide to jump forward/backward through algorithm's execution"})
+        @$slider = $("<div>", {class: "controls-slider controls-disabled", title: "Slide to jump forward/backward through algorithm's execution"})
         @$frameLabel = $("<div>", {class: "controls-frame-number", text: "- / -"})
 
         if frameLabelFirst

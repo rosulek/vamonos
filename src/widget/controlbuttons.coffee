@@ -42,7 +42,7 @@ class ControlButtons
     startPlaying: ->
         return if @playInterval? or @atLastFrame
         @$playPauseButton.html(PAUSE)
-        @$playPauseButton.prop("title", "Pause automatic playback of algorithm")
+        @$playPauseButton.prop("title", "Pause automatic playback of algorithm [shortcut: space bar]")
         @playInterval = setInterval( (=> @visualizer.trigger("nextFrame")), 1000)
 
     stopPlaying: ->
@@ -50,15 +50,16 @@ class ControlButtons
         clearTimeout(@playInterval)
         @playInterval = null
         @$playPauseButton.html(PLAY)
-        @$playPauseButton.prop("title", "Start automatic playback of algorithm")
+        @$playPauseButton.prop("title", "Start automatic playback of algorithm [shortcut: space bar]")
                     
     event: (event, options...) -> switch event
         when "setup"
             [@visualizer] = options
+            $(window).on("keydown.controlbuttons", (e) => @keyDownHandler(e) ) 
         
         when "editStart"
             @$runStopButton.html(RUN)
-            @$runStopButton.prop("title", "Execute the algorithm with current inputs/breakpoints/etc")
+            @$runStopButton.prop("title", "Execute the algorithm with current inputs/breakpoints/etc [shortcut: enter]")
 
             @prevButtonActive(false)
             @nextButtonActive(false)
@@ -69,7 +70,7 @@ class ControlButtons
 
         when "displayStart"
             @$runStopButton.html(STOP)
-            @$runStopButton.prop("title", "Stop the algorithm to edit inputs/breakpoints/etc")
+            @$runStopButton.prop("title", "Stop the algorithm to edit inputs/breakpoints/etc [shortcut: escape]")
 
             @prevButtonActive(true)
             @nextButtonActive(true)
@@ -92,10 +93,37 @@ class ControlButtons
             @prevButtonActive( frame._frameNumber isnt 1 )
 
 
+    keyDownHandler: (event) -> 
+        if @mode is "display"
+            switch event.keyCode
+                when 37 # left arrow
+                    @$prevButton.trigger("click") unless @$prevButton.attr("disabled")
+                    return false
+                    
+                when 39 # right arrow
+                    @$nextButton.trigger("click") unless @$nextButton.attr("disabled")
+                    return false
+
+                when 32 # space
+                    @$playPauseButton.trigger("click") unless @$playPauseButton.attr("disabled")
+                    return false
+
+                when 27 # esc
+                    @$runStopButton.trigger("click") 
+                    return false
+
+        else
+            switch event.keyCode
+                when 13 # enter
+                    @$runStopButton.trigger("click") 
+                    return false
+
+        return true
+
     playPauseButtonActive: (active) ->
         if active
             @$playPauseButton.removeAttr("disabled");
-            @$playPauseButton.prop("title", "Start automatic playback of algorithm")
+            @$playPauseButton.prop("title", "Start automatic playback of algorithm [shortcut: space bar]")
         else
             @$playPauseButton.attr("disabled", "true");
             @$playPauseButton.prop("title", "")         
@@ -103,7 +131,7 @@ class ControlButtons
     nextButtonActive: (active) ->
         if active
             @$nextButton.removeAttr("disabled");
-            @$nextButton.prop("title", "Step forwards through the algorithm's execution")
+            @$nextButton.prop("title", "Step forwards through the algorithm's execution [shortcut: right arrow]")
         else
             @$nextButton.attr("disabled", "true");
             @$nextButton.prop("title", "")
@@ -111,7 +139,7 @@ class ControlButtons
     prevButtonActive: (active) ->
         if active
             @$prevButton.removeAttr("disabled");
-            @$prevButton.prop("title", "Step backwards through the algorithm's execution")
+            @$prevButton.prop("title", "Step backwards through the algorithm's execution [shortcut: left arrow]")
         else
             @$prevButton.attr("disabled", "true");
             @$prevButton.prop("title", "")

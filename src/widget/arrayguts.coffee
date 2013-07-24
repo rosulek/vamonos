@@ -260,6 +260,9 @@ class ArrayGuts
             @stopEditingCell(no)
             return false
 
+        else
+            return true
+
     # these are the only "approved" ways to edit the array.
     # they affect what is displayed and also the underlying @theArray
 

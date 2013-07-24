@@ -66,24 +66,25 @@ var myviz = new Vamonos.Visualizer({
             showWhileSliding: true
         })
     ],
+
+    breakOnReturn: false,
+
     algorithm: function (_) {
         with (this) {
 _(1);       opt = [0]
 _(2);       sol = [[]]
-            for (var _k = 1; _k < price.length; _k++) {
-_(3);           k = _k;
+_(3);       for (k = 1; k < price.length; _(3), k++) {
 _(4);           opt[k] = 0;
 _(5);           sol[k] = null;
-                for(var _i=1; _i<=k; _i++) {
-_(6);               i = _i;
-                    if (_(7), opt[k] < opt[k-i] + price[i]) {
+_(6);           for (i=1; i<=k; _(6), i++) {
+_(7);               if (opt[k] < opt[k-i] + price[i]) {
 _(8);                   opt[k] = opt[k-i] + price[i];
 _(9);                   sol[k] = sol[k-i].concat([i]);
                     }
                 }
-                i = null;
+                i = undefined;
             }
-            k = null;
+            k = undefined;
         }
     }
 });

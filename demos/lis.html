@@ -21,6 +21,10 @@
                     if A[i] &lt; A[k] and opt[k] &lt; opt[i] + 1
                         opt[k] = opt[i] + 1
                         sol[k] = sol[i] + [A[i]]
+            best = 1
+            for j = 2 to A.length
+                if opt[best] &lt; opt[j]
+                    best = j
         </div>
         <br>
         <div id="controls"></div>
@@ -37,21 +41,24 @@ var myviz = new Vamonos.Visualizer({
         new Vamonos.Widget.ParallelArrays({
             container: "arrays",
             showLabel: true,
-            cssRules: [[">", "k", "shaded"]],
-            showIndices: ["i", "k"],
             arrays: [
                 {
                     varName: "A",
                     defaultInput: [0, 3,1,4,1,5,9,2,6,5],
                     ignoreIndexZero: true,
+                    cssRules: [[">", "k", "shaded"]],
+                    showIndices: ["i", "k"],
                 },
                 {
                     varName: "opt",
-                    displayOnly: true
+                    displayOnly: true,
+                    showIndices: ["i", "k"],
                 },
                 {
                     varName: "sol",
                     displayOnly: true,
+                    cssRules: [["=", "best", "dark-shaded"]],
+                    showIndices: ["i", "k", "best"],
                     cellFormat: function(x) { return x ? "["+x.join(",")+"]" : "" }
                 }
             ]
@@ -59,7 +66,7 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.VarDisplay({
             container: "display",
-            watch: ["*i", "k", "opt[none]", "*sol[none]"]
+            watch: ["*i", "k", "opt[none]", "*sol[none]", "*best"]
         }),
 
         new Vamonos.Widget.Pseudocode({ container: "pseudocode" }),
@@ -70,18 +77,23 @@ var myviz = new Vamonos.Visualizer({
         with (this) {
 _(1);       opt = [0]
 _(2);       sol = [[]]
-            for (var _k = 1; _k < A.length; _k++) {
-_(3);           k = _k;
+_(3);       for (k = 1; k < A.length; _(3), k++) {
 _(4);           opt[k] = 1;
 _(5);           sol[k] = [A[k]];
-                for(var _i=1; _i<k; _i++) {
-_(6);               i = _i;
-                    if (_(7), A[i] < A[k] && opt[k] < opt[i] + 1) {
+_(6);           for (i=1; i<k; _(6), i++) {
+_(7);               if (A[i] < A[k] && opt[k] < opt[i] + 1) {
 _(8);                   opt[k] = opt[i] + 1;
 _(9);                   sol[k] = sol[i].concat([A[k]]);
                     }
                 }
                 i = undefined;
+            }
+            k = undefined;
+_(10);      best = 1;
+_(11);      for (var j = 2; j < A.length; _(11), j++) {
+_(12);          if (opt[best] < opt[j]) {
+_(13);              best = j;
+                }
             }
             k = undefined;
         }
