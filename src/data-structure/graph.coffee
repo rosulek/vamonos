@@ -16,6 +16,7 @@ class Graph
         return @vertices[@idify(v)]
 
     addVertex: (vtx) ->
+        return vtx.id if @vertices[vtx.id]?
         vtx.type  = 'vertex'
         vtx.name ?= @nextVertexName()
         vtx.id   ?= @nextVertexId()
@@ -52,7 +53,10 @@ class Graph
     # ---------- edge functions ----------- #
 
     edge: (source, target) ->
-        return @edges[@idify(source)]?[@idify(target)]
+        sid = @idify(source)
+        tid = @idify(target)
+        return e = @edges[sid]?[tid] if e?
+        return @edges[tid]?[sid] unless @directed
 
     addEdge: (sourceId, targetId, args) ->
         return if @edge(sourceId, targetId)
@@ -64,13 +68,12 @@ class Graph
             edge[k] = v for k, v of args when k isnt 'source' and k isnt 'target'
 
         (@edges[sourceId] ?= {})[targetId] = edge
-        unless @directed
-            (@edges[targetId] ?= {})[sourceId] = edge
+        (@edges[targetId] ?= {})[sourceId] = edge unless @directed
 
     removeEdge: (sourceId, targetId) ->
         edge = @edges[sourceId]?[targetId]
-        @edges[sourceId][targetId] = undefined
-        @edges[targetId][sourceId] = undefined unless @directed
+        delete @edges[sourceId]?[targetId]
+        delete @edges[targetId]?[sourceId] unless @directed
         edge
 
     getEdges: () ->
