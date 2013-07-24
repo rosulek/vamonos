@@ -73,10 +73,9 @@ class GraphDisplay
             Anchor: [ "Perimeter", { shape: "Circle" } ]
 
     draw: (graph) ->
-        if @graphDrawn
-            @$outer.find(".changed").removeClass("changed")
-
-        @resizeContainerToFitGraph(graph)
+        @resizeContainerToFitGraph(graph, @graphDrawn)
+        @graphDrawn = true
+        @$outer.find(".changed").removeClass("changed")
 
         for vertex in graph.getVertices()
             continue if @nodes[vertex.id]?
@@ -90,7 +89,6 @@ class GraphDisplay
         for sourceId, targets of @connections
             for targetId, connection of targets
                 unless graph.edge(sourceId, targetId)
-                    # TODO make it turn red and fade out or something
                     @removeConnection(sourceId, targetId) 
 
         for vid, node of @nodes
@@ -100,7 +98,28 @@ class GraphDisplay
         @updateNode($n, graph.vertex(vid)) for vid, $n of @nodes
         @previousGraph = graph # might need to clone this
 
-    addNode: (vertex) ->
+    resizeContainerToFitGraph: (graph, graphDrawn) ->
+        # Add a test node, but don't show it, in order to get the width and height
+        # of vertices when a graph is not drawn.
+        @addNode({id:"TEST-VERTEX"}, false) unless graphDrawn
+        nodes = $("div.vertex-contents")
+        width  = nodes.width()
+        height = nodes.height()
+        @removeNode("TEST-VERTEX") unless graphDrawn
+        xVals = []
+        yVals = []
+        for vertex in graph.getVertices()
+            xVals.push(vertex.x + width)
+            yVals.push(vertex.y + height)
+        max_x = Math.max(xVals..., @minX)
+        max_y = Math.max(yVals..., @minY)
+        if graphDrawn
+            @$outer.animate({width: max_x, height: max_y}, 500)
+        else
+            @$outer.width(max_x)
+            @$outer.height(max_y)
+        
+    addNode: (vertex, show = true) ->
         $v = $("<div>", {class: 'vertex', id: vertex.id})
         $v.hide()
         $v.css("left", vertex.x)
@@ -112,7 +131,7 @@ class GraphDisplay
                 $("<div>", { class:"vertex-#{type}-label" }).appendTo($v)
         $v.append($contents)
         @$inner.append($v)
-        $v.fadeIn(100)
+        $v.fadeIn(100) if show
         return @nodes[vertex.id] = $v
 
     updateNode: ($node = @nodes[vid], vertex) ->
@@ -126,41 +145,11 @@ class GraphDisplay
         return if pos.left == vertex.x and pos.top == vertex.y
         @jsPlumbInstance.animate(
             vertex.id 
-            {
-                left: vertex.x
-                top: vertex.y
-            }
-            {
-                duration: 500
-            }
+            { left: vertex.x, top: vertex.y }
+            { duration: 500 }
         )
-        #$node.css({ left: vertex.x, top: vertex.y })
 
-    resizeContainer: () ->
-        xVals = (@containerMargin + n.position().left + n.width() for vid, n of @nodes)
-        yVals = (@containerMargin + n.position().top + n.height() for vid, n of @nodes)
-        max_x = Math.max(xVals..., @minX)
-        max_y = Math.max(yVals..., @minY)
-        @$outer.width(max_x)
-        @$outer.height(max_y)
-        
-    resizeContainerToFitGraph: (graph) ->
-        nodes = $("div.vertex-contents")
-        width  = nodes.width()
-        height = nodes.height()
-        xVals = []
-        yVals = []
-        for vertex in graph.getVertices()
-            xVals.push @containerMargin + vertex.x + width  
-            yVals.push @containerMargin + vertex.y + height 
-        max_x = Math.max(xVals..., @minX)
-        max_y = Math.max(yVals..., @minY)
-        @$outer.width(max_x)
-        @$outer.height(max_y)
-        #@$outer.animate({width: max_x, height: max_y}, 500)
-        
-    # TODO figure out how to deal with frames
-    updateNodeLabels: ($node, vertex, frame = {}) ->
+    updateNodeLabels: ($node, vertex) ->
         for type, style of @vertexLabels
             $target = 
                 if type is "inner"
