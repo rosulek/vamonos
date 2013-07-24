@@ -512,6 +512,7 @@ class Graph
         $editor.on "keydown.vamonos-graph", (event) =>
             if event.keyCode in [13, 32, 9, 27]
                 @doneEditingAttribute($outer, $editor, edge)
+                return false
         $editor. on "blur.vamonos-graph", (event) =>
             @doneEditingAttribute($outer, $editor, edge)
         $outer.append($editor)
