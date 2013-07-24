@@ -7,8 +7,9 @@ class ControlButtons
     NEXT  = "\u25ae\u25B6"
     PREV  = "\u25c0\u25ae"
 
-    constructor: ({container, noRunStopButton, @autoPlay}) ->
+    constructor: ({container, noRunStopButton, @autoPlay, @keyboardShortcuts}) ->
         @$container = Vamonos.jqueryify(container)
+        @keyboardShortcuts ?= true
 
         @$runStopButton   = $("<button>", {class: "controls-button", html: RUN})
         @$prevButton      = $("<button>", {class: "controls-button", html: PREV})
@@ -55,7 +56,7 @@ class ControlButtons
     event: (event, options...) -> switch event
         when "setup"
             [@visualizer] = options
-            $(window).on("keydown.controlbuttons", (e) => @keyDownHandler(e) ) 
+            $("body").on("keydown.controlbuttons", (e) => @keyDownHandler(e) ) if @keyboardShortcuts
         
         when "editStart"
             @$runStopButton.html(RUN)
@@ -94,6 +95,8 @@ class ControlButtons
 
 
     keyDownHandler: (event) -> 
+        return true if $("body").hasClass("vamonos-modal")        
+
         if @mode is "display"
             switch event.keyCode
                 when 37 # left arrow

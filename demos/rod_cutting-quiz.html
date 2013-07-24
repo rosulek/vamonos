@@ -1,0 +1,168 @@
+<html><head>
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="demos.css">
+    <script type="text/javascript" src="../deps/jquery.min.js"></script>
+    <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../lib/vamonos.js"></script>
+
+    <style type="text/css">
+        .ui-widget-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .ui-widget-overlay {
+            background-color: #cccccc;
+            opacity: .3;
+            filter: Alpha(Opacity=30);
+        }
+
+        .ui-front {
+            z-index: 100;
+        }
+
+        .ui-dialog {
+            background: white;
+            border: 1px solid #aaa;
+            box-shadow: 4px 4px 8px #ccc;
+        }
+        .userquiz {
+            padding: 10px;
+        }
+        .ui-dialog-titlebar {
+            background: #d85a1a;
+            color: white;
+            padding: 4px;
+            cursor: move;
+            margin: 2px;
+        }
+        .ui-dialog-titlebar-close {
+            display: none;
+        }
+        .userquiz-question {
+            margin-bottom: 10px;
+        }
+        .userquiz-answer {
+            width: 50px;
+        }
+        .userquiz-response {
+            text-align: center;
+        }
+        .userquiz-feedback {
+            margin-top: 10px;
+        }
+    </style>
+
+</head><body>
+
+    <h1>Rod-cutting Dynamic Programming</h1>
+
+    <div class="vamonos">
+        <div class="container" id="pseudocode" title="RodCut(price):">
+            opt[0] = 0
+            sol[0] = []
+            for k = 1 to price.length
+                opt[k] = 0
+                sol[k] = null
+                for i = 1 to k
+                    if opt[k] &lt; opt[k-i] + price[i]
+                        opt[k] = opt[k-i] + price[i]
+                        sol[k] = sol[k-i] + [i]
+        </div>
+        <br>
+        <div id="controls"></div>
+        <br><br>
+        <div class="container" id="arrays"></div>
+    </div>
+</body>
+<script type="text/javascript">
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+        new Vamonos.Widget.ParallelArrays({
+            container: "arrays",
+            showLabel: true,
+            cssRules: [[">", "k", "shaded"]],
+            arrays: [
+                {
+                    varName: "price",
+                    defaultInput: [0, 1,5,8,9,10,17,17,20,24],
+                    ignoreIndexZero: true,
+                    showIndices: ["i"],
+                },
+                {
+                    varName: "opt",
+                    showIndices: ["k", "k-i"],
+                    displayOnly: true
+                },
+                {
+                    varName: "sol",
+                    showIndices: ["k"],
+                    displayOnly: true,
+                    cellFormat: function(x) { return x ? "["+x.join(",")+"]" : "" }
+                }
+            ]
+        }),
+
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode",
+            breakpoints: [3,7],
+            editableBreakpoints: false
+        }),
+
+        new Vamonos.Widget.ControlButtons({
+            container: "controls",
+            showWhileSliding: true,
+//            keyboardShortcuts: false
+        }),
+
+        new Vamonos.Widget.UserQuiz({
+            condition: function(frame) {
+                return frame.k < frame.price.length && frame.k > 3 && frame._nextLine == 7 && frame.i == 1;
+            },
+            question: function(frame) {
+                return "What will the final value of opt[" + frame.k + "] be?"
+            },
+            answer: function(frame) {
+                var answer = 0;
+                var opt    = frame.opt;
+                var price  = frame.price;
+                var k      = frame.k;
+                for (var i = 1; i <= k; i++) {
+                    if (answer < opt[k-i] + price[i]) {
+                        answer = opt[k-i] + price[i];
+                    }
+                }
+                return answer;
+            }
+        }),
+
+    ],
+
+    breakOnReturn: false,
+
+    algorithm: function (_) {
+        with (this) {
+_(1);       opt = [0]
+_(2);       sol = [[]]
+_(3);       for (k = 1; k < price.length; _(3), k++) {
+_(4);           opt[k] = 0;
+_(5);           sol[k] = null;
+_(6);           for (i=1; i<=k; _(6), i++) {
+_(7);               if (opt[k] < opt[k-i] + price[i]) {
+_(8);                   opt[k] = opt[k-i] + price[i];
+_(9);                   sol[k] = sol[k-i].concat([i]);
+                    }
+                }
+                i = undefined;
+            }
+            k = undefined;
+        }
+    }
+});
+</script>
+</html>
