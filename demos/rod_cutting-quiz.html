@@ -55,6 +55,13 @@
         .userquiz-feedback {
             margin-top: 10px;
         }
+        .userquiz-feedback.wrong-answer {
+            color: #c55;
+        }
+        .userquiz-feedback.correct-answer {
+            color: #5c5;
+            font-weight: bold;
+        }
     </style>
 
 </head><body>
@@ -116,13 +123,12 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.ControlButtons({
             container: "controls",
-            showWhileSliding: true,
-//            keyboardShortcuts: false
+            playPauseButton: false
         }),
 
         new Vamonos.Widget.UserQuiz({
             condition: function(frame) {
-                return frame.k < frame.price.length && frame.k > 3 && frame._nextLine == 7 && frame.i == 1;
+                return frame.k > 3 && frame._nextLine == 7 && frame.i == 1;
             },
             question: function(frame) {
                 return "What will the final value of opt[" + frame.k + "] be?"

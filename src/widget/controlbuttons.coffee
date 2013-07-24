@@ -44,7 +44,9 @@ class ControlButtons
         return if @playInterval? or @atLastFrame
         @$playPauseButton.html(PAUSE)
         @$playPauseButton.prop("title", "Pause automatic playback of algorithm [shortcut: space bar]")
-        @playInterval = setInterval( (=> @visualizer.trigger("nextFrame")), 1000)
+        @playInterval = setInterval(
+            (=> @visualizer.trigger("nextFrame") unless @visualizer.frozen),
+            1000)
 
     stopPlaying: ->
         return unless @playInterval?
@@ -95,7 +97,7 @@ class ControlButtons
 
 
     keyDownHandler: (event) -> 
-        return true if $("body").hasClass("vamonos-modal")        
+        return true if @visualizer.frozen
 
         if @mode is "display"
             switch event.keyCode

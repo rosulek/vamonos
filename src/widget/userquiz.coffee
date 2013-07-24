@@ -29,12 +29,15 @@ class UserQuiz
 
     event: (event, options...) -> switch event
         when "setup"
+            [@visualizer] = options
             $("body").append(@$dialog)  
     
         when "displayStart"
             @currentAnswer = null
             @currentFrame  = null
             @framesPassed  = []
+            @wrongTimeout  = null
+            @log           = []
 
         when "render"
             [@currentFrame, type] = options
@@ -46,23 +49,39 @@ class UserQuiz
             @$question.html(@question(@currentFrame))
             @$answer.val("")
             @$feedback.html("")
+            @$feedback.removeClass("correct-answer", "wrong-answer")
 
             @currentAnswer = @answer(@currentFrame)
+            @wrongTimeout  = null
 
-            $("body").addClass("vamonos-modal")
+            @visualizer.frozen = true
+
             @$dialog.dialog({
                 modal: true,
                 closeOnEscape: false,
                 position: { my: "center", at: "center", of: window }
             })
 
+        when "displayStop"
+            console.log @log
+
     submitHandler: ->
         if @$answer.val() is @currentAnswer + ""
-            @$feedback.html("Correct!")
+            @$feedback.html("&#x2713; Correct!")
+            @$feedback.addClass("correct-answer")
             @framesPassed.push(@currentFrame._frameNumber)
-            setTimeout( (=> @$dialog.dialog("close"); $("body").removeClass("vamonos-modal")), 1000)
+            clearTimeout(@wrongTimeout) if @wrongTimeout
+            @log.push("correct answer `#{@currentAnswer}` at frame #{@currentFrame._frameNumber}")
+
+            setTimeout(
+                ( => @$dialog.dialog("close"); @visualizer.frozen = false),
+                1000)
             
         else
-            @$feedback.html("Sorry, that's not right!")
+            @$feedback.addClass("wrong-answer")
+            @$feedback.html("&#x2717; Sorry, that's not right!")
+            @wrongTimeout = setTimeout( (=> @$feedback.html("")), 2000)
+
+            @log.push("wrong answer `#{@$answer.val()}` at frame #{@currentFrame._frameNumber}")
 
 Vamonos.export { Widget: { UserQuiz } }
