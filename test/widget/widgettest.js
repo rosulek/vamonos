@@ -34,7 +34,8 @@ WidgetTest = (function() {
       switch (type) {
         case "bool":
           this.constructorOptions[attr] = $("<input>", {
-            type: "checkbox"
+            type: "checkbox",
+            checked: defaultVal
           });
           break;
         case "string":

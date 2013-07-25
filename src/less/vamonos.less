@@ -521,7 +521,7 @@ input.editing {
 /////////////////
 // CONTROLS
 
-.controls-slider.ui-slider {
+.controls-slider {
     height: 8px;
     position: relative;
     text-align: center;
@@ -531,14 +531,14 @@ input.editing {
     display: inline-block;
     margin: 0 8px 0 8px;
 
-    // when used with the "combined controls", slider goes on its own line
-    .controls-combined & {
+    // when used with the "full controls", slider goes on its own line
+    .controls-full & {
         margin-top: 12px;
         margin-bottom: 12px;
         display: block;
     }
 
-    .ease(width, background-color, border-color;);
+    .ease(background-color, border-color;);
 
     .ui-slider-handle {
         position: absolute;
@@ -562,7 +562,7 @@ input.editing {
         outline: none;
     }
 
-    &.controls-disabled {
+    .controls-disabled & {
         border-color: transparent;
         background-color: transparent;
 
@@ -591,21 +591,18 @@ button.controls-button {
     text-align: center;
     display: inline-block;
 
-    &.controls-disabled {
+    .controls-disabled & {
         color: transparent;
     }
 }
-.controls-buttons {
-    display: inline-block;
-    white-space: nowrap;
-}
-.controls-combined {
+
+.controls-buttons, .controls {
     text-align: center;
     display: inline-block;
     white-space: nowrap;
 }
 
-.controls-fullscreen {
+.controls-fullscreen .controls {
     position: fixed;
     width: 100%;
     bottom: 0px;
@@ -614,12 +611,16 @@ button.controls-button {
     border-top: 1px solid @border-color;
     padding: 8px;
 
-    .controls-buttons, .controls-slider.ui-slider {
-        display: inline-block;
-    }
-
     z-index: 50;
 }
+
+.controls-fullscreen .controls-slider {
+    display: inline-block !important;
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+}
+
+    
 
 
 //////////////////////

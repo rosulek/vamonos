@@ -15,10 +15,15 @@
     test = new WidgetTest({
         objConstructor: Vamonos.Widget.Controls,
         constructorArgs: [
-            ["showWhileSliding", "bool"],
+            ["showWhileSliding", "bool", true],
             ["runStopButton", "bool", true],
-            ["autoPlay", "bool"]
+            ["autoPlay", "bool"],
+            ["keyboardShortcuts", "bool", true],
+            ["frameNumber", "bool", true],
+            ["slider", "bool", true],
+            ["buttons", "bool", true]
         ],
-        defaultFrameVars: ["_frameNumber", "_numFrames"]
+        defaultFrameVars: ["_frameNumber", "_numFrames"],
+        cssOptions: ["controls-fullscreen"]
     })
 </script>

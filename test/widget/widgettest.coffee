@@ -61,7 +61,7 @@ class WidgetTest
         for [attr, type, defaultVal] in @constructorArgs
             switch type
                 when "bool"
-                    @constructorOptions[attr] = $("<input>", {type: "checkbox"})
+                    @constructorOptions[attr] = $("<input>", {type: "checkbox", checked: defaultVal})
                 when "string", "json"
                     @constructorOptions[attr] = $("<input>", {type: "text", value: defaultVal})
 

@@ -86,8 +86,7 @@
                     DFS-Visit(G,v)
             u.color = black
             u.f = ++time
-        </div><br>
-        <div id="controls"></div><br>
+        </div>
     </div>
 
     <div class="vamonos-col">
@@ -95,6 +94,8 @@
         <div id="display" class="container"></div><br>
         <div id="stack" class="container"></div><br>
     </div>
+
+    <div id="controls" class="controls-fullscreen"></div>
 
 </body>
 
@@ -128,8 +129,6 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Controls({
             container: "controls",
-            showWhileSliding: true,
-            fullscreen: true
         }),
 
         new Vamonos.Widget.Graph({
