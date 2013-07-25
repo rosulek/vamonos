@@ -69,23 +69,25 @@
     <h1>Depth-First Search</h1>
 
     <div class="vamonos-col">
-        <div id="pseudocode-dfs" class="container" title="DFS(G):">
-            for each vertex u &in; G.V
-                u.color = white
-            time = 0
-            for each vertex u &in; G.V
-                if u.color == white
-                    DFS-Visit(G,u)
-        </div><br>
+        <div class="container">
+            <div id="pseudocode-dfs" title="DFS(G):">
+                for each vertex u &in; G.V
+                    u.color = white
+                time = 0
+                for each vertex u &in; G.V
+                    if u.color == white
+                        DFS-Visit(G,u)
+            </div><br><br>
 
-        <div id="pseudocode-visit" class="container" title="DFS-Visit(G,u):">
-            u.d = ++time
-            u.color = gray
-            <b>for</b> each v &in; G.Adj[u]
-                <b>if</b> v.color == white
-                    DFS-Visit(G,v)
-            u.color = black
-            u.f = ++time
+            <div id="pseudocode-visit" title="DFS-Visit(G,u):">
+                u.d = ++time
+                u.color = gray
+                <b>for</b> each v &in; G.Adj[u]
+                    <b>if</b> v.color == white
+                        DFS-Visit(G,v)
+                u.color = black
+                u.f = ++time
+            </div>
         </div>
     </div>
 

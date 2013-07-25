@@ -4,25 +4,31 @@ class CallStack
         @procedureNames ?= {}
         @$container      = Vamonos.jqueryify(container)
 
+        header  = $("<div>", {text: "Call Stack", class: "callstack-header"}).appendTo(@$container)
+        @$inner = $("<div>", {class: "callstack"}).appendTo(@$container)
+        @$table = $("<table>", {class: "callstack"}).appendTo(@$inner)
+
     event: (event, options...) -> switch event
         when "setup"
             [@viz] = options
         when "render"
             [frame, type] = options
             @render(frame)
+        when "displayStop"
+            @$table.empty()
 
-        when "editStart"
-            @drawHeader()
 
     render: (frame) ->
-        @drawHeader()
         stack = frame._callStack[..]
+        @$table.empty()
         @addProcedure(c.procName, c.args) for c in stack.reverse()
         @$table.find("td.callstack-proc").last().addClass("callstack-active")
         if frame._returnStack?
             for r in frame._returnStack
                 @addProcedure(r.procName, r.args, r.returnValue ? "&nbsp;")
-        
+        @$inner.scrollTop(@$inner[0].scrollHeight)        
+
+
     addProcedure: (proc, args, ret) ->
         return if proc is 'input'
         proc = @procedureNames[proc] ? proc
@@ -43,13 +49,5 @@ class CallStack
         ret = Vamonos.arrayify(ret)
         "<span class='callstack-arrow'>&uarr;</span>" + (Vamonos.rawToTxt(r) for r in ret).join(",")
 
-    drawHeader: () ->
-        @$container.html("")
-        @$table = $(
-            "<table class='callstack'><tr class='callstack-header'>" +
-            "<td colspan='2'>Call Stack</td></tr></table>"
-        )
-        @$container.html(@$table)
-        @drawn = yes
 
 Vamonos.export { Widget: { CallStack } }

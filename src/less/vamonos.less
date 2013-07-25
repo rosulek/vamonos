@@ -9,6 +9,8 @@
 @numbering-size: 10px;
 @shadow-color: #aaa;
 
+@osu-orange: #d85a1a;
+
 @highlight-background-color: #FCFBBB;
 @highlight-text-color: red;
 @alert-color: #F77F6F;
@@ -607,7 +609,7 @@ button.controls-button {
     width: 100%;
     bottom: 0px;
     left: 0px;
-    background: @normal-item-bg-color;
+    background: screen(@osu-orange, #ddd);
     border-top: 1px solid @border-color;
     padding: 8px;
 
@@ -658,6 +660,11 @@ table.var-display {
 //////////////////////
 // CALL STACK
 
+div.callstack {
+    max-height: 180px;
+    overflow-y: auto;
+}
+
 table.callstack {
     border-collapse: collapse;
     display: inline;
@@ -668,9 +675,10 @@ table.callstack {
     // nested inside of another table. strange!
 }
 
-tr.callstack-header {
+div.callstack-header {
     font-style: italic;
     border-bottom: 1px solid black;
+    text-align: left;
 }
 
 td.callstack-args, td.callstack-return {
