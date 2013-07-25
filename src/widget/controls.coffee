@@ -1,9 +1,11 @@
 class Controls
 
-    constructor: ({container, showWhileSliding, noRunStopButton, autoPlay, keyboardShortcuts}) ->
+    constructor: ({container, showWhileSliding, noRunStopButton, autoPlay, keyboardShortcuts, fullscreen}) ->
         @$container = Vamonos.jqueryify(container)
-        @$inner     = $("<div>", {class: "controls-combined"});
+        @$inner     = $("<div>")
         @$buttons   = $("<div>", {class: "controls-buttons"});
+
+        @$inner.addClass( if fullscreen then "controls-fullscreen" else "controls-combined" )
 
         @buttons = new Vamonos.Widget.ControlButtons({
             container: @$buttons, 

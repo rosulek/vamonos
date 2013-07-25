@@ -47,24 +47,27 @@
     <h1>Dijkstra's Algorithm</h1>
 
     <table><tr><td>
-        <div id="pseudocode-main" title="Dijkstra(G,s):" class="container">
-            for each vertex u &in; G.V - {s}
-                u.d = &#x221E;
-                u.pred = null
-                u.done = false
-            s.d = 0
-            Q = G.V
-            while Q &ne; &empty;
-                u = Q.extractMin()
-                u.done = true
-                for each v &in; G.Adj[u]
-                    Relax(u,v)
-        </div><br>
-        <div id="pseudocode-relax" title="Relax(G,u,v):" class="container">
-            if u.d + G.edge(u,v).w < v.d
-                v.d = u.d + G.edge(u,v).w
-                v.pred = u
-        </div><br>
+        <div class="container">
+            <div id="pseudocode-main" title="Dijkstra(G,s):" style="display: inline-block">
+                for each vertex u &in; G.V - {s}
+                    u.d = &#x221E;
+                    u.pred = null
+                    u.done = false
+                s.d = 0
+                Q = G.V
+                while Q &ne; &empty;
+                    u = Q.extractMin()
+                    u.done = true
+                    for each v &in; G.Adj[u]
+                        Relax(u,v)
+            </div><br><br>
+            <div id="pseudocode-relax" title="Relax(G,u,v):" style="display: inline-block">
+                if u.d + G.edge(u,v).w < v.d
+                    v.d = u.d + G.edge(u,v).w
+                    v.pred = u
+            </div>
+        </div>
+        <br>
         <div id="controls"></div><br>
     </td><td>
         <div id="graph" class="container"></div><br>

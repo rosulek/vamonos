@@ -605,6 +605,22 @@ button.controls-button {
     white-space: nowrap;
 }
 
+.controls-fullscreen {
+    position: fixed;
+    width: 100%;
+    bottom: 0px;
+    left: 0px;
+    background: @normal-item-bg-color;
+    border-top: 1px solid @border-color;
+    padding: 8px;
+
+    .controls-buttons, .controls-slider.ui-slider {
+        display: inline-block;
+    }
+
+    z-index: 50;
+}
+
 
 //////////////////////
 // VAR DISPLAY
