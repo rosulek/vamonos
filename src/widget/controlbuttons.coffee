@@ -7,9 +7,10 @@ class ControlButtons
     NEXT  = "\u25ae\u25B6"
     PREV  = "\u25c0\u25ae"
 
-    constructor: ({container, noRunStopButton, @autoPlay, @keyboardShortcuts}) ->
-        @$container = Vamonos.jqueryify(container)
+    constructor: ({container, runStopButton, @autoPlay, @keyboardShortcuts}) ->
+        @$container         = Vamonos.jqueryify(container)
         @keyboardShortcuts ?= true
+        runStopButton      ?= true
 
         @$runStopButton   = $("<button>", {class: "controls-button", html: RUN})
         @$prevButton      = $("<button>", {class: "controls-button", html: PREV})
@@ -19,7 +20,7 @@ class ControlButtons
         @playInterval = null
         @atLastFrame  = no
 
-        @$container.append(@$runStopButton) unless noRunStopButton
+        @$container.append(@$runStopButton) if runStopButton
         @$container.append(@$prevButton, @$nextButton, @$playPauseButton)
 
         @$nextButton.on("click", =>

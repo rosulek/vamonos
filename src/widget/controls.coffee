@@ -1,6 +1,6 @@
 class Controls
 
-    constructor: ({container, showWhileSliding, noRunStopButton, autoPlay, keyboardShortcuts, fullscreen}) ->
+    constructor: ({container, showWhileSliding, runStopButton, autoPlay, keyboardShortcuts, fullscreen}) ->
         @$container = Vamonos.jqueryify(container)
         @$inner     = $("<div>")
         @$buttons   = $("<div>", {class: "controls-buttons"});
@@ -9,7 +9,7 @@ class Controls
 
         @buttons = new Vamonos.Widget.ControlButtons({
             container: @$buttons, 
-            noRunStopButton: noRunStopButton,
+            runStopButton: runStopButton,
             autoPlay: autoPlay,
             keyboardShortcuts: keyboardShortcuts
         })

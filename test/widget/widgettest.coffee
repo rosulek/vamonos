@@ -48,8 +48,12 @@ class WidgetTest
         $("body").append(@HTML)
 
         @constructorArgs ?= []
-        cssOptions ?= []
+        cssOptions       ?= []
         defaultFrameVars ?= []
+
+        @fakeVars         = {}
+        @fakeBreakpoints  = {}
+        @fakeWatchVars    = {}
 
         preprocessContainer( $("#wt-container") ) if preprocessContainer?
 
@@ -69,7 +73,7 @@ class WidgetTest
         $("#wt-setup").on("click", =>
             $(".wt-event-button").removeClass("wt-active-button")
             $("#wt-setup").addClass("wt-active-button")
-            @widget.event("setup", @stash = {_inputVars: []}, @)
+            @widget.event("setup", @)
             @log("sent 'setup' event")
         )
 
@@ -135,8 +139,46 @@ class WidgetTest
 
         @widget = new @objConstructor(args)
 
+    ## fake visualizer interface:
+
     trigger: (type, args...) ->
-        @log("got a trigger from the widget of type '#{type}', args=" + JSON.stringify(args))
+        @log("widget said: trigger(#{type}, #{JSON.stringify(args)})")
+
+    registerVariable: (name) ->
+        @log("widget said: registerVariable(#{name})")
+        @fakeVars[name] = null
+    setVariable: (name, val) ->
+        @log("widget said: setVariable(#{name}, #{val})")
+        @fakeVars[name] = val
+    getVariable: (name) ->
+        @log("widget said: getVariable(#{name}) --> #{JSON.stringify(@fakeVars[name])}")
+        return @fakeVars[name]
+
+    setWatchVar: (name) ->
+        @log("widget said: setWatchVar(#{name})")
+        @fakeWatchVars[name] = true
+    isWatchVar: (name) ->
+        @log("widget said: isWatchVar(#{name}) --> #{JSON.stringify(!!@fakeWatchVars[name])}")
+        return !! @fakeWatchVars[name]
+    removeWatchVar: (name) ->
+        @log("widget said: removeWatchVar(#{name})")
+        @fakeWatchVars[name] = false
+
+    getBreakpoints: (proc) ->
+        ret = @fakeBreakpoints[proc] ?= []
+        @log("widget said: getBreakpoints(#{proc}) --> #{JSON.stringify(ret)}")
+        ret        
+    setBreakpoint: (b, proc) ->
+        @log("widget said: setBreakpoints(#{b}, #{proc})")
+        b = parseInt(b)
+        @fakeBreakpoints[proc] ?= []
+        @fakeBreakpoints[proc].push(b) unless b in @fakeBreakpoints[proc]
+    removeBreakpoint: (b, proc) ->
+        @log("widget said: removeBreakpoint(#{b}, #{proc})")
+        @fakeBreakpoints[proc] ?= []
+        ((bps) -> bps.splice(bps.indexOf(b), 1))(@fakeBreakpoints[proc])
+
+
         
     JSONparse: (txt) ->
         return null if txt.length is 0
