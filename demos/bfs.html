@@ -86,9 +86,7 @@
 
 var myviz = new Vamonos.Visualizer({
     widgets: [
-        new Vamonos.Widget.Controls({
-            container: "controls",
-        }),
+        new Vamonos.Widget.Controls("controls"),
 
         new Vamonos.Widget.Queue({
             container: "queue",
@@ -97,9 +95,7 @@ var myviz = new Vamonos.Visualizer({
             displayOnly: true,
         }),
 
-        new Vamonos.Widget.Pseudocode({
-            container: "pseudocode",
-        }),
+        new Vamonos.Widget.Pseudocode("pseudocode"),
 
         new Vamonos.Widget.VarDisplay({
             container: "vardisplay",

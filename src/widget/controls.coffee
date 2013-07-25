@@ -1,7 +1,13 @@
 class Controls
 
-    constructor: ({container, showWhileSliding, runStopButton, autoPlay,
-                   keyboardShortcuts, fullscreen, frameNumber, slider, buttons}) ->
+    constructor: (arg) ->
+
+        if typeof(arg) is "object"
+            {container, showWhileSliding, runStopButton, autoPlay,
+                        keyboardShortcuts, fullscreen, frameNumber,
+                        slider, buttons} = arg
+        else
+            container = arg
 
         @$container  = Vamonos.jqueryify(container)
         buttons     ?= true

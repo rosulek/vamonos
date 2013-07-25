@@ -79,9 +79,7 @@
 <script type="text/javascript">
 var myviz = new Vamonos.Visualizer({
     widgets: [
-        new Vamonos.Widget.Controls({
-            container: "controls",
-        }),
+        new Vamonos.Widget.Controls("controls"),
 
         new Vamonos.Widget.Queue({
             container: "queue",
@@ -90,10 +88,7 @@ var myviz = new Vamonos.Visualizer({
             displayOnly: true,
         }),
 
-        new Vamonos.Widget.Pseudocode({
-            container: "pseudocode-main",
-            //breakpoints: "all"
-        }),
+        new Vamonos.Widget.Pseudocode("pseudocode-main"),
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-relax",

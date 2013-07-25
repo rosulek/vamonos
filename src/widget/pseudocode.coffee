@@ -1,6 +1,11 @@
 class Pseudocode
 
-    constructor: ({container, @editableBreakpoints, @breakpoints, @procedureName}) ->
+    constructor: (arg) ->
+
+        if typeof arg is "object"
+            {container, @editableBreakpoints, @breakpoints, @procedureName} = arg
+        else
+            container = arg
 
         @locals              ?= []
         @args                ?= []

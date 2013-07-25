@@ -57,13 +57,8 @@ var myviz = new Vamonos.Visualizer({
             n: 3,
         }),
 
-        new Vamonos.Widget.Pseudocode({
-            container: "fact",
-        }),
-
-        new Vamonos.Widget.Controls({
-            container: "controls",
-        }),
+        new Vamonos.Widget.Pseudocode("fact"),
+        new Vamonos.Widget.Controls("controls"),
 
         new Vamonos.Widget.CallStack({
             container: "stack",
@@ -93,14 +88,8 @@ var myviz2 = new Vamonos.Visualizer({
             acc: 1,
         }),
 
-        new Vamonos.Widget.Pseudocode({
-            container: "fact2",
-        }),
-
-        new Vamonos.Widget.Controls({
-            container: "controls2",
-            showWhileSliding: true,
-        }),
+        new Vamonos.Widget.Pseudocode("fact2"),
+        new Vamonos.Widget.Controls("controls2"),
 
         new Vamonos.Widget.CallStack({
             container: "stack2",

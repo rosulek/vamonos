@@ -69,8 +69,8 @@ var myviz = new Vamonos.Visualizer({
             watch: ["*i", "k", "opt[none]", "*sol[none]", "*best"]
         }),
 
-        new Vamonos.Widget.Pseudocode({ container: "pseudocode" }),
-        new Vamonos.Widget.Controls({ container: "controls" })
+        new Vamonos.Widget.Pseudocode("pseudocode"),
+        new Vamonos.Widget.Controls("controls")
     ],
     breakOnReturn: false,
     algorithm: function (_) {
