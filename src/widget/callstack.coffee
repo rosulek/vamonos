@@ -8,9 +8,13 @@ class CallStack
         @$inner = $("<div>", {class: "callstack"}).appendTo(@$container)
         @$table = $("<table>", {class: "callstack"}).appendTo(@$inner)
 
+        @$argRows  = []
+        @$procRows = []
+
     event: (event, options...) -> switch event
         when "setup"
             [@viz] = options
+
         when "render"
             [frame, type] = options
             @render(frame)
@@ -20,33 +24,63 @@ class CallStack
 
     render: (frame) ->
         stack = frame._callStack[..]
-        @$table.empty()
-        @addProcedure(c.procName, c.args) for c in stack.reverse()
-        @$table.find("td.callstack-proc").last().addClass("callstack-active")
+        stack.reverse()
+        stack = (f for f in stack when f.procName isnt "input")
+
         if frame._returnStack?
-            for r in frame._returnStack
-                @addProcedure(r.procName, r.args, r.returnValue ? "&nbsp;")
-        @$inner.scrollTop(@$inner[0].scrollHeight)        
+            stack.push(r) for r in frame._returnStack
+
+        console.log("stack = ", stack, "_callStack =", frame._callStack, "_returnStack = ", frame._returnStack)
+
+        if stack.length < @$argRows.length
+
+            newScrollTop = \
+                ( (cont, tgt) -> cont.scrollTop() - cont.offset().top \
+                                  - cont.height() + tgt.height() + tgt.offset().top + 1 \
+                )( @$inner, @$procRows[ stack.length - 1 ] )
+
+            for i,f of stack
+                @setArgRow( @$argRows[i], f )
+                @setProcRow( @$procRows[i], f )
+
+            @$inner.stop(true,true).animate { scrollTop: newScrollTop }, 500, =>
+                while stack.length < @$argRows.length
+                    @$argRows.pop().remove()
+                    @$procRows.pop().remove()
+
+        else
+            while stack.length > @$argRows.length
+                @$argRows.push( $("<tr>").appendTo(@$table) )
+                @$procRows.push( $("<tr>").appendTo(@$table) )
+
+            for i,f of stack
+                @setArgRow( @$argRows[i], f )
+                @setProcRow( @$procRows[i], f )
+
+    #        @$inner.scrollTop( @$inner.prop("scrollHeight") )
+            @$inner.stop()
+            @$inner.animate({ scrollTop: @$inner.prop("scrollHeight") }, 500)
 
 
-    addProcedure: (proc, args, ret) ->
-        return if proc is 'input'
-        proc = @procedureNames[proc] ? proc
-        $proc = $("<tr><td class='callstack-args'>" +
-          "#{@argStr(args)}</td><td class='callstack-return'>"  +
-          "#{@retStr(ret)}</td></tr><tr><td colspan='2' class='callstack-proc'><div>"  +
-          "#{proc}</div></td></tr>")
-        $proc.find("td.callstack-proc").addClass("callstack-returned") if ret?
-        $proc.appendTo(@$table)
+    setArgRow: ($tr, frame) ->
+        $tr.html("<td class='callstack-args'>" +
+          "#{@argStr(frame)}</td><td class='callstack-return'>"  +
+          "#{@retStr(frame)}</td>")
+
+    setProcRow: ($tr, frame) ->
+        procName = @procedureNames[frame.procName] ? frame.procName
+        $tr.html("<td colspan='2' class='callstack-proc'><div>#{procName}</div></td>")
+        $tr.find("td").addClass("callstack-returned") if frame.returning
+
 
     # expects format {arg1: 1, arg2: "b"}
-    argStr: (args) ->
-        ("#{k}=#{Vamonos.rawToTxt(v)}" for k,v of args).join(",") + "<span class='callstack-arrow'>&darr;</span>"
+    argStr: (frame) ->
+        ("#{k}=#{Vamonos.rawToTxt(v)}" for k,v of frame.args).join(",") + "<span class='callstack-arrow'>&darr;</span>"
 
     # expects format [true, 1] or simply "true"
-    retStr: (ret) ->
-        return "&nbsp;" unless ret?
-        ret = Vamonos.arrayify(ret)
+    retStr: (frame) ->
+        return "&nbsp;" unless frame.returning
+        ret = Vamonos.arrayify(frame.returnValue)
         "<span class='callstack-arrow'>&uarr;</span>" + (Vamonos.rawToTxt(r) for r in ret).join(",")
 
 

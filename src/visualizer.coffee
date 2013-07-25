@@ -228,6 +228,7 @@ class Visualizer
                 procName    : procName
                 args        : args
                 returnValue : ret
+                returning   : yes
 
             @line("ret", returnFrame)
 
