@@ -1,16 +1,17 @@
 class ArrayGuts
 
-    constructor: ({tableContainer, @defaultInput, @varName, ignoreIndexZero, @displayOnly
+    constructor: ({tableContainer, defaultInput, @varName, ignoreIndexZero, @displayOnly
                     showChanges, @cssRules, @showIndices, _dummyIndexZero, showLabel,
-                    cellFormat, cellParse}) ->
+                    cellFormat, cellParse, @persistent}) ->
 
         @$editBox      = null
         @editIndex     = null
         @firstIndex    = if ignoreIndexZero then 1 else 0
-        @defaultInput ?= []
+        @lastInput     = defaultInput ? []
         @showChanges   = Vamonos.arrayify(showChanges ? "next")
         @cssRules     ?= []
         @showIndices  ?= []
+        @persistent   ?= false
 
         @rawToTxt   = cellFormat ? Vamonos.rawToTxt
         @txtToRaw   = cellParse  ? Vamonos.txtToRaw
@@ -41,9 +42,11 @@ class ArrayGuts
         when "setup"
             [@viz] = options
 
-            # setup defaults in the stash (in case no edit mode happens), set isInput
-            @theArray = @viz.setVariable(@varName, @defaultInput.slice(), not @displayOnly) # shallow copy
+            @viz.registerVariable(@varName)
 
+            @viz.setVariable(@varName, @lastInput.slice()) unless @displayOnly # shallow copy
+            @theArray = []
+            
             # ensure array indices exist in the stash
             for [_,i,_] in @cssRules
                 @viz.registerVariable(v) for v in @virtualIndexDependents(i)
@@ -52,7 +55,8 @@ class ArrayGuts
            
 
         when "editStart"
-            @arrayReset(@defaultInput)
+            @arrayReset(if @persistent then @viz.getVariable(@varName) else @lastInput)
+
             if @displayOnly
                 row.hide() for row in [@$rowIndices, @$rowCells, @$rowAnnotations]
             else
@@ -62,20 +66,23 @@ class ArrayGuts
         when "editStop"
             if ! @displayOnly
                 @$rowCells.off("click.arrayguts")
+
                 # shallow copy of @theArray
-                @defaultInput = @theArray.slice(0)
+                @lastInput = @theArray.slice()
+                @viz.setVariable(@varName, @theArray.slice())
+
                 @stopEditingCell(false)        
                 @$rowCells.prop("title", "")
 
 
         when "displayStart"
-            # @defaultInput is the "input" that was passed into the algorithm.
+            # @lastInput is the "input" that was passed into the algorithm.
             # in display mode, the first "render" event will highlight changes
             # from this baseline. so when display mode starts, the array widget
-            # must be in a state where is both displaying @defaultInput, and
-            # @theArray matches @defaultInput
+            # must be in a state where is both displaying @lastInput, and
+            # @theArray matches @lastInput
             #
-            # there are two reasons to reset to @defualtArray here.
+            # there are two reasons to reset to @lastInput here.
             #
             # 1. between edit & display modes, @theArray (in the stash) was
             #    modified by the algorithm
@@ -91,7 +98,7 @@ class ArrayGuts
                 # @theArray corresponds to what's in the stash, as that's for input only
                 @theArray = []
 
-            @arrayReset(@defaultInput)
+            @arrayReset(@lastInput)
 
         when "render"
             @render(options...)
