@@ -8,7 +8,6 @@ class GraphDisplay
 
     constructor: ({
         container
-        @directed
 
         @vertexLabels
         @vertexCssAttributes
@@ -18,75 +17,79 @@ class GraphDisplay
         @containerMargin
         @minX
         @minY
-        @containerResizeLimitX
-        @containerResizeLimitY
     }) ->
 
-        @directed              ?= no
-        @containerMargin       ?= 30
-        @containerResizeLimitX ?= window.innerWidth
-        @containerResizeLimitY ?= window.innerHeight
-        @minX ?= @minY         ?= 100
+        @containerMargin ?= 30
+        @minX ?= @minY   ?= 100
+        @connections      = {}
+        @nodes            = {}
+        @$outer           = Vamonos.jqueryify(container)
+        @$inner           = $("<div>", {class: "graph-inner-container"})
+        @graphDrawn       = false
 
-        @connections = {}
-        @nodes       = {}
-
-        @$outer = Vamonos.jqueryify(container)
-        @$inner = $("<div>", {class: "graph-inner-container"})
         @$outer.append(@$inner)
         @$outer.disableSelection()
 
-        @jsPlumbInstance = jsPlumb.getInstance 
+        @jsPlumbInstance = jsPlumb.getInstance
             Connector: ["Straight"]
             PaintStyle: @normalPaintStyle
             Endpoint: "Blank"
             Anchor: [ "Perimeter", { shape: "Circle" } ]
 
-        @graphDrawn = false
 
+    # ------------ PUBLIC INTERACTION METHODS ------------- #
+
+    # draw is the main display function for the graphDisplay widget. It draws
+    # only as much of the graph that wasn't there before and removes nodes
+    # and edges that have become obsolete. it is also used by edit mode
+    # methods.
     draw: (graph, frame = {}) ->
+        # if we're in edit mode, @mode will be set already. otherwise, we need
+        # to set it to "display" so things like updateNodeLabels uses the
+        # intended mode.
         @mode ?= "display"
         @directed = graph.directed
         @resizeContainerToFitGraph(graph, false) unless @graphDrawn
         @graphDrawn = true
         @$outer.find(".changed").removeClass("changed")
-
         for vertex in graph.getVertices()
             continue if @nodes[vertex.id]?
-            @addNode(vertex) 
-
+            @addNode(vertex)
         for edge in graph.getEdges()
             continue if @connections[edge.source.id]?[edge.target.id]?
             continue if (
-                @connections[edge.target.id]?[edge.source.id]? and 
+                @connections[edge.target.id]?[edge.source.id]? and
                 not @directed
             )
-            @addConnection(edge) 
-
+            @addConnection(edge)
         @eachConnection (sourceId, targetId) =>
             unless graph.edge(sourceId, targetId)
-                @removeConnection(sourceId, targetId) 
-
-        @eachNode (vid, node) => @removeNode(vid) unless graph.vertex(vid)
-        @eachNode (vid, node) => @updateNode(node, graph.vertex(vid), frame)
-
+                @removeConnection(sourceId, targetId)
+        @eachNode (vid, node) =>
+            if graph.vertex(vid)
+                @updateNode(node, graph.vertex(vid), frame)
+            else
+                @removeNode(vid)
         @updateConnections(graph, frame)
         @previousGraph = graph
 
-    eachNode: (f) ->
-        f(vid, node) for vid, node of @nodes
+    startEditing: (@theGraph, @inputVars) ->
+        return if @mode is "edit"
+        @mode = "edit"
+        @draw(@theGraph, @inputVars)
+        @setContainerEditBindings()
+        @setNodeEditBindings()
+        @setConnectionEditBindings()
 
-    eachConnection: (f) ->
-        # If the graph is undirected, we need to keep track of which 
-        # connections have already been processed since the @connections
-        # object will contain two identical references to each connection.
-        seen = [] unless @directed
-        for sourceId, targets of @connections
-            for targetId, con of targets
-                unless @directed
-                    continue if con in seen
-                    seen.push con
-                f(sourceId, targetId, con)
+    stopEditing: ->
+        @deselect()
+        @mode = undefined
+        @unsetNodeEditBindings()
+        @unsetConnectionEditBindings()
+        @unsetContainerEditBindings()
+        return [@theGraph, @inputVars]
+
+    # ---------------------------------------------------------- #
 
     resizeContainerToFitGraph: (graph, animate = true) ->
         # Add a test node, but don't show it, in order to get the width and
@@ -109,6 +112,31 @@ class GraphDisplay
             @$outer.width(max_x)
             @$outer.height(max_y)
 
+    clearDisplay: () ->
+        @jsPlumbInstance.reset()
+        @$inner.html("")
+        @graphDrawn    = no
+        @connections   = {}
+        @nodes         = {}
+        @previousGraph = undefined
+
+    eachNode: (f) ->
+        f(vid, node) for vid, node of @nodes
+
+    eachConnection: (f) ->
+        # If the graph is undirected, we need to keep track of which
+        # connections have already been processed since the @connections
+        # object will contain two identical references to each connection.
+        seen = [] unless @directed
+        for sourceId, targets of @connections
+            for targetId, con of targets
+                unless @directed
+                    continue if con in seen
+                    seen.push con
+                f(sourceId, targetId, con)
+
+    # ----------- display mode node functions ---------- #
+
     addNode: (vertex, show = true) ->
         $v = $("<div>", {class: 'vertex', id: vertex.id})
         $v.hide()
@@ -123,8 +151,8 @@ class GraphDisplay
         @jsPlumbInstance.draggable($v,
             #containment: "parent"
             containment: [
-                @$inner.position().left        
-                @$inner.position().top         
+                @$inner.position().left
+                @$inner.position().top
                 @$inner.position().left + @$inner.width() - @containerMargin
                 @$inner.position().top + @$inner.height() - @containerMargin
             ]
@@ -159,14 +187,14 @@ class GraphDisplay
         pos = $node.position()
         return if pos.left == vertex.x and pos.top == vertex.y
         @jsPlumbInstance.animate(
-            vertex.id 
+            vertex.id
             { left: vertex.x, top: vertex.y }
             { duration: 500 }
         )
 
     updateNodeLabels: ($node, vertex, frame) ->
         for type, style of @vertexLabels
-            $target = 
+            $target =
                 if type is "inner"
                     $node.children("div.vertex-contents")
                 else if type in ["ne","nw","se","sw"]
@@ -186,7 +214,7 @@ class GraphDisplay
 
     updateNodeClasses: ($node, vertex) ->
         if @mode isnt 'edit' and @vertexChanged(vertex)
-            $node.addClass("changed") 
+            $node.addClass("changed")
         for attr, val of @vertexCssAttributes
             if val.length
                 $node.removeClass("#{attr}-#{kind}") for kind in val
@@ -216,9 +244,13 @@ class GraphDisplay
         ).filter((x)->x)
         return true if v0.length or v1.length
 
+    # --------- Display mode connection functions ---------- #
+
     addConnection: (edge) ->
         return if @connections[edge.source.id]?[edge.target.id]
-        con = @jsPlumbConnect(edge.source.id, edge.target.id)
+        con = @jsPlumbInstance.connect
+            source: edge.source.id
+            target: edge.target.id
         @setOverlays(con, edge)
         (@connections[edge.source.id] ?= {})[edge.target.id] = con
         (@connections[edge.target.id] ?= {})[edge.source.id] = con unless @directed
@@ -226,7 +258,7 @@ class GraphDisplay
 
     removeConnection: (sourceId, targetId) ->
         return unless (connection = @connections[sourceId]?[targetId])
-        @jsPlumbInstance.detach(connection) 
+        @jsPlumbInstance.detach(connection)
         delete @connections[sourceId][targetId]
         delete @connections[targetId][sourceId] unless @directed
 
@@ -245,7 +277,7 @@ class GraphDisplay
                 con.setPaintStyle(@customStyle(style[1]))
             else if typeof style[0] is 'function'
                 for edge in graph.getEdges()
-                    edgeHack = 
+                    edgeHack =
                         source: graph.vertex(edge.source)
                         target: graph.vertex(edge.target)
                     for attr, val of edge when not attr in ["source", "target"]
@@ -254,7 +286,7 @@ class GraphDisplay
                         con = @connections[edge.source.id]?[edge.target.id]
                         con.setPaintStyle(@customStyle(style[1]))
 
-    resetConnectionStyle: (c) => 
+    resetConnectionStyle: (c) =>
         c?.setPaintStyle(@normalPaintStyle)
 
     setOverlays: (connection, edge) ->
@@ -267,7 +299,7 @@ class GraphDisplay
             "Custom",
             create: () =>
                 if @mode is 'edit'
-                    @createEditableEdgeLabel(edge) 
+                    @createEditableEdgeLabel(edge)
                 else
                     @createEdgeLabel(edge)
 
@@ -280,22 +312,7 @@ class GraphDisplay
 
     # ----------------- EDITING MODE ------------------------ #
 
-    startEditing: (@theGraph, @inputVars) ->
-        return if @mode is "edit"
-        @mode = "edit"
-        @draw(@theGraph, @inputVars)
-        @setContainerEditBindings()
-        @setNodeEditBindings()
-        @setConnectionEditBindings()
-
-    stopEditing: ->
-        @deselect()
-        @mode = undefined
-        @unsetNodeEditBindings()
-        @unsetConnectionEditBindings()
-        @$outer.off("click.vamonos-graph")
-        return [@theGraph, @inputVars]
-
+    # adds a vertex to the graph being edited and redraws the graph.
     addVertex: (vertex = {}, autoSelect = true) ->
         return unless @mode is 'edit'
         newv = @theGraph.addVertex(vertex)
@@ -303,14 +320,14 @@ class GraphDisplay
         node = @nodes[newv.id]
         @selectNode(node) if autoSelect
         node
-        
+
     removeVertex: (vid) ->
         return unless @mode is 'edit'
         @deselect()
         @removeNode(vid)
         @theGraph.removeVertex(vid)
         for k, v of @inputVars when v? and v.id is vid
-            @inputVars[k] = undefined 
+            @inputVars[k] = undefined
         @draw(@theGraph, @inputVars)
 
     addEdge: (sourceId, targetId) ->
@@ -341,13 +358,13 @@ class GraphDisplay
                     sourceId = @$selectedNode.attr("id")
                     targetId = $target.parent().attr("id")
                     if sourceId is targetId
-                        @deselect() 
+                        @deselect()
                     else if @theGraph.edge(sourceId, targetId)
                         @selectNode(@nodes[targetId])
                     else
                         @addEdge(sourceId, targetId)
                         @removePotentialEdge()
-                else if $target.is("div.vertex-contents") and 'edge' is @selected() 
+                else if $target.is("div.vertex-contents") and 'edge' is @selected()
                     @selectNode($target.parent())
                 else if $target.is(@$inner)
                     @deselect()
@@ -358,7 +375,7 @@ class GraphDisplay
 
     setNodeEditBindings: ->
         @$inner.on "mouseenter", "div.vertex", (e) =>
-            if 'vertex' is @selected() 
+            if 'vertex' is @selected()
                 return if e.target.id is @$selectedNode.attr("id")
             $(e.target).addClass('hovering')
         @$inner.on "mouseleave", "div.vertex", (e) =>
@@ -369,11 +386,11 @@ class GraphDisplay
         @$inner.off "mouseleave", "div.vertex"
 
     setConnectionEditBindings: ->
-        @eachConnection (sourceId, targetId, con) => 
+        @eachConnection (sourceId, targetId, con) =>
             @connectionBindings(con)
 
     connectionBindings: (con) ->
-        con.bind "click", (c) => 
+        con.bind "click", (c) =>
             @selectConnection(c)
 
         con.bind "mouseenter", (c) =>
@@ -384,20 +401,11 @@ class GraphDisplay
             return if c.id is @$selectedConnection?.id
             @resetConnectionStyle(c)
 
-
     unsetConnectionEditBindings: ->
-        @eachConnection (sourceId, targetId, connection) => 
+        @eachConnection (sourceId, targetId, connection) =>
             connection.unbind("click")
             connection.unbind("mouseenter")
             connection.unbind("mouseexit")
-
-    clear: () ->
-        @jsPlumbInstance.reset()
-        @$inner.html("")
-        @graphDrawn    = no
-        @connections   = {}
-        @nodes         = {}
-        @previousGraph = undefined
 
     selected: () ->
         return 'vertex' if @$selectedNode?
@@ -417,7 +425,7 @@ class GraphDisplay
         @others = @$selectedNode
             .siblings("div.vertex")
             .children("div.vertex-contents")
-        @others.on "mouseenter.vamonos-graph", (e) => 
+        @others.on "mouseenter.vamonos-graph", (e) =>
             @potentialEdgeTo($(e.target).parent())
         @others.on "mouseleave.vamonos-graph", @removePotentialEdge
 
@@ -431,15 +439,12 @@ class GraphDisplay
         @$selectedConnection.setPaintStyle(@selectedPaintStyle)
 
         @openDrawer('edge', con)
-            
-    stopEditingLabel: ->
-        @$inner.find("input.editing").trigger("something-selected")
 
     deselect: () ->
         @deselectNode()
         @deselectConnection()
         @closeDrawer()
-        
+
     deselectNode: () ->
         return unless @$selectedNode?
         @jsPlumbInstance.detach(@possibleEdge) if @possibleEdge?
@@ -482,7 +487,7 @@ class GraphDisplay
         type = @selected()
 
         $inputHolder = $("<span>", {class: "right"})
-        switch type 
+        switch type
             when 'vertex'
                 elem = @theGraph.vertex(@$selectedNode.attr("id"))
                 @$drawer.html("<span class='left'>vertex&nbsp;&nbsp;#{elem.name}</span>")
@@ -495,21 +500,21 @@ class GraphDisplay
                     $inputHolder.append($button)
 
             when 'edge'
-                sourceId = @$selectedConnection.sourceId 
+                sourceId = @$selectedConnection.sourceId
                 targetId = @$selectedConnection.targetId
                 elem = @theGraph.edge(sourceId, targetId)
-                nametag = 
+                nametag =
                     elem.source.name + "&nbsp;" +
-                    (if @theGraph.directed then "->" else "-") + 
+                    (if @theGraph.directed then "->" else "-") +
                     "&nbsp;" + elem.target.name
                 @$drawer.html("<span class='left'>edge&nbsp;&nbsp;#{nametag}</span>")
 
         $deleteButton = $("<button>", {text: "del"})
         $deleteButton.on "click.vamonos-graph", (e) =>
             switch type
-                when 'vertex' 
+                when 'vertex'
                     @removeVertex(elem.id)
-                when 'edge'   
+                when 'edge'
                     @removeEdge(elem.source.id, elem.target.id)
         $inputHolder.append($deleteButton)
 
@@ -527,11 +532,11 @@ class GraphDisplay
 
     createEditableEdgeLabel: (edge) =>
         $attr = $(
-            "<div class=graph-label>" + 
+            "<div class=graph-label>" +
             Vamonos.rawToTxt(edge[@edgeLabel[0]]) +
             "&nbsp;</div>"
         )
-        $attr.on "click", => 
+        $attr.on "click", =>
             @selectConnection(@connections[edge.source.id][edge.target.id])
             @editAttribute($attr, edge)
         return $attr
@@ -543,24 +548,27 @@ class GraphDisplay
         $editor.width($outer.width())
         $editor.on "keydown.vamonos-graph", (event) =>
             if event.keyCode in [13, 32, 9, 27]
-                @doneEditingAttribute($outer, $editor, edge)
+                @doneEditingLabel($outer, $editor, edge)
                 false
         $editor.on "blur.vamonos-graph something-selected", (event) =>
-            @doneEditingAttribute($outer, $editor, edge)
+            @doneEditingLabel($outer, $editor, edge)
             true
         $outer.html($editor)
         $editor.fadeIn "fast"
         $editor.focus()
         $editor.select()
 
-    doneEditingAttribute: ($outer, $editor, edge) ->
+    doneEditingLabel: ($outer, $editor, edge) ->
         val = Vamonos.txtToRaw($editor.val())
         if val?
             edge[@edgeLabel[0]] = val
         $outer.html(@createEditableEdgeLabel(edge))
         @setOverlays(@$selectedConnection, edge)
 
-    # ----------- styles and colors and jsplumb stuff -------------- #
+    stopEditingLabel: ->
+        @$inner.find("input.inline-input").trigger("something-selected")
+
+    # ----------- styles, colors and jsplumb stuff -------------- #
 
     @editColor        = "#92E894"
     @lightEdgeColor   = "#E0E0E0"
@@ -592,10 +600,5 @@ class GraphDisplay
     customStyle: (color) ->
         lineWidth: GraphDisplay.lineWidth
         strokeStyle: color
-
-    jsPlumbConnect: (sourceId, targetId) ->
-        @jsPlumbInstance.connect
-            source: sourceId
-            target: targetId 
 
 Vamonos.export { Widget: { GraphDisplay } }

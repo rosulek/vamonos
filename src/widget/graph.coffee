@@ -6,7 +6,7 @@ class Graph
         @inputVars
 
         @colorEdges     # for registering vars with viz
-        @vertexLabels   # for registering vars with viz
+        @vertexLabels   #     "                 "
     }) ->
 
         @inputVars           ?= {}
@@ -31,12 +31,6 @@ class Graph
         when "render"
             [frame, type] = options
             @displayWidget.draw(frame[@varName], frame)
-
-        when "displayStart" 
-            @mode = "display"
-
-        when "displayStop"  
-            @displayWidget.clear()
 
         when "editStart"    
             @displayWidget.startEditing(@theGraph, @inputVars)
