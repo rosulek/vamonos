@@ -1,8 +1,9 @@
 class CallStack
 
-    constructor: ({container, @procedureNames}) ->
+    constructor: ({container, @procedureNames, @animate}) ->
         @procedureNames ?= {}
         @$container      = Vamonos.jqueryify(container)
+        @animate        ?= ["next"]
 
         header  = $("<div>", {text: "Call Stack", class: "callstack-header"}).appendTo(@$container)
         @$inner = $("<div>", {class: "callstack"}).appendTo(@$container)
@@ -17,12 +18,14 @@ class CallStack
 
         when "render"
             [frame, type] = options
-            @render(frame)
+            @render(frame, type)
         when "displayStop"
             @$table.empty()
 
 
-    render: (frame) ->
+    render: (frame, type) ->
+        @$inner.stop()
+
         stack = frame._callStack[..]
         stack.reverse()
         stack = (f for f in stack when f.procName isnt "input")
@@ -30,57 +33,49 @@ class CallStack
         if frame._returnStack?
             stack.push(r) for r in frame._returnStack
 
-        console.log("stack = ", stack, "_callStack =", frame._callStack, "_returnStack = ", frame._returnStack)
+        while stack.length > @$argRows.length
+            @$argRows.push( $("<tr>").appendTo(@$table) )
+            @$procRows.push( $("<tr>").appendTo(@$table) )
 
-        if stack.length < @$argRows.length
+        for i,scope of stack
+            @setArgRow( @$argRows[i], scope )
+            @setProcRow( @$procRows[i], scope )
 
-            newScrollTop = \
-                ( (cont, tgt) -> cont.scrollTop() - cont.offset().top \
-                                  - cont.height() + tgt.height() + tgt.offset().top + 1 \
-                )( @$inner, @$procRows[ stack.length - 1 ] )
-
-            for i,f of stack
-                @setArgRow( @$argRows[i], f )
-                @setProcRow( @$procRows[i], f )
-
-            @$inner.stop(true,true).animate { scrollTop: newScrollTop }, 500, =>
+        tgt = @$procRows[ stack.length - 1 ]
+        newScrollTop = @$inner.scrollTop() - @$inner.offset().top \
+                     - @$inner.height() + tgt.height() \
+                     + tgt.offset().top + 1
+                    
+        if type in @animate and newScrollTop > 0
+            @$inner.animate { scrollTop: newScrollTop }, 500, =>
                 while stack.length < @$argRows.length
                     @$argRows.pop().remove()
                     @$procRows.pop().remove()
+        else 
+            while stack.length < @$argRows.length
+                @$argRows.pop().remove()
+                @$procRows.pop().remove()
 
-        else
-            while stack.length > @$argRows.length
-                @$argRows.push( $("<tr>").appendTo(@$table) )
-                @$procRows.push( $("<tr>").appendTo(@$table) )
-
-            for i,f of stack
-                @setArgRow( @$argRows[i], f )
-                @setProcRow( @$procRows[i], f )
-
-    #        @$inner.scrollTop( @$inner.prop("scrollHeight") )
-            @$inner.stop()
-            @$inner.animate({ scrollTop: @$inner.prop("scrollHeight") }, 500)
+            @$inner.scrollTop( @$inner.prop("scrollHeight") )
 
 
-    setArgRow: ($tr, frame) ->
+    setArgRow: ($tr, scope) ->
         $tr.html("<td class='callstack-args'>" +
-          "#{@argStr(frame)}</td><td class='callstack-return'>"  +
-          "#{@retStr(frame)}</td>")
+          "#{@argStr(scope)}</td><td class='callstack-return'>"  +
+          "#{@retStr(scope)}</td>")
 
-    setProcRow: ($tr, frame) ->
-        procName = @procedureNames[frame.procName] ? frame.procName
+    setProcRow: ($tr, scope) ->
+        procName = @procedureNames[scope.procName] ? scope.procName
         $tr.html("<td colspan='2' class='callstack-proc'><div>#{procName}</div></td>")
-        $tr.find("td").addClass("callstack-returned") if frame.returning
+        $tr.find("td").addClass("callstack-returned") if "returnValue" of scope
+        $tr.find("td").addClass("callstack-active")   if scope.activeStackFrame
 
+    argStr: (scope) ->
+        ("#{k}=#{Vamonos.rawToTxt(v)}" for k,v of scope.args).join(",") + "<span class='callstack-arrow'>&darr;</span>"
 
-    # expects format {arg1: 1, arg2: "b"}
-    argStr: (frame) ->
-        ("#{k}=#{Vamonos.rawToTxt(v)}" for k,v of frame.args).join(",") + "<span class='callstack-arrow'>&darr;</span>"
-
-    # expects format [true, 1] or simply "true"
-    retStr: (frame) ->
-        return "&nbsp;" unless frame.returning
-        ret = Vamonos.arrayify(frame.returnValue)
+    retStr: (scope) ->
+        return "&nbsp;" unless "returnValue" of scope
+        ret = Vamonos.arrayify(scope.returnValue)
         "<span class='callstack-arrow'>&uarr;</span>" + (Vamonos.rawToTxt(r) for r in ret).join(",")
 
 

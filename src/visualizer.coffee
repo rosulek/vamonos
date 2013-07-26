@@ -89,6 +89,8 @@ class Visualizer
             _nextLine    : @stash.currentScope._nextLine
             _procName    : @stash.currentScope._procName
 
+        r._callStack[0].activeStackFrame = yes
+
         procsAlreadySeen = []
 
         for scope in @stash.callStack
@@ -197,8 +199,8 @@ class Visualizer
     wrapProcedure: (procName, procedure) ->
         return (args = {}) =>
             newScope =
-                _procName : procName
-                _args     : args
+                _procName    : procName
+                _args        : args
 
             newScope[name]  = proc for name, proc of @procedures
             newScope[name]  = value for name, value of args
@@ -222,13 +224,12 @@ class Visualizer
             ret = procedure.call(newScope, (n)=>@line(n))
 
             @stash.callStack.shift()
-            @stash.currentScope = @stash.callStack[0] 
+            @stash.currentScope = @stash.callStack[0]
 
             returnFrame = 
                 procName    : procName
                 args        : args
                 returnValue : ret
-                returning   : yes
 
             @line("ret", returnFrame)
 
