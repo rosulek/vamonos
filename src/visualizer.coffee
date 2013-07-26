@@ -1,6 +1,6 @@
 class Visualizer
 
-    constructor: ({@widgets, @maxFrames, @breakOnCall, @breakOnReturn, algorithm, autoStart}) ->
+    constructor: ({@widgets, @maxFrames, algorithm, autoStart}) ->
         @maxFrames     ?= 250
         autoStart      ?= false
 
@@ -8,9 +8,6 @@ class Visualizer
         @watchVars      = []
         @registeredVars = {}
         @procedures     = {}
-
-        @breakOnCall   ?= true
-        @breakOnReturn ?= true
 
         @initializeStash()
         @prepareAlgorithm(algorithm)
@@ -167,12 +164,12 @@ class Visualizer
             changes = @watchVarsChanged()
             (reasons ?= {}).watchVarsChanged = changes if changes?
             (reasons ?= {}).procCalled       = @calledProc if @breakOnCall and @calledProc
-            (reasons ?= {}).procReturned     = @returnedProc if @breakOnReturn and @returnedProc
+            (reasons ?= {}).procReturned     = @returnedProc if @isWatchVar("_callstack") and @returnedProc
 
-        if n is 'call' and @returnedProc and @breakOnCall and @breakOnReturn
+        if n is 'call' and @returnedProc and @breakOnCall and @isWatchVar("_callstack")
             (reasons ?= {}).procReturned = @returnedProc if @returnedProc
 
-        if n is "end" and @breakOnReturn
+        if n is "end" and @isWatchVar("_callstack")
             (reasons ?= {}).procReturned = "main"
 
         return reasons
