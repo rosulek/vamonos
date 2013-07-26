@@ -217,6 +217,7 @@ table.array {
 /*@pseudocode-breakpoint-color: red;*/
 /*@pseudocode-breakpoint-color: #FF7161;*/
 @pseudocode-breakpoint-color: #FF7D7D;
+@pseudocode-active-breakpoint-color: red;
 @pseudocode-indent: 32px;
 @pseudocode-line-number-bg-color: mix(@pseudocode-gutter-color, #fff, 50%);
 
@@ -227,100 +228,99 @@ table.pseudocode {
     td {
         vertical-align: middle;
     }
+}
 
-    td.pseudocode-title {
-        font-style: italic;
-        border-bottom: 1px solid black;
+td.pseudocode-title {
+    font-style: italic;
+    border-bottom: 1px solid black;
+}
+
+td.pseudocode-line-number {
+    text-align: right;
+    color: @numbering-color;
+    padding: 0 4px 0 4px;
+    font-size: @numbering-size;
+    background: @pseudocode-line-number-bg-color;
+
+    .no-line-numbers & {
+        display: none;
     }
+}
 
-//    td.pseudocode-line-number, td.pseudocode-gutter, td.pseudocode-text, td.pseudocode-comment {
-//        .ease(background);   // ease highlighting of active line
-//    }
+td.pseudocode-gutter {
+    width: @pseudocode-gutter-size;
+    background: @pseudocode-gutter-color;
+    text-align: center;
+    vertical-align: middle;
 
+    .no-gutter & {
+        display: none;
+    }
+}
+
+td.pseudocode-comment {
+    color: @pseudocode-comment-color;
+    font-style: italic;
+}
+
+td.pseudocode-comment, td.pseudocode-text {
+    padding-left: 8px;
+
+    .no-gutter.no-line-numbers & {
+        padding-left: 0px;
+    }
+}
+
+.pseudocode-indent {
+    width: @pseudocode-indent;
+    display: inline-block;
+}
+
+div.pseudocode-breakpoint {
+    display: inline-block;
+    width: (@pseudocode-gutter-size - 2);
+    height: (@pseudocode-gutter-size - 2);
+    @tmp-radius: (@pseudocode-gutter-size - 2)/2;
+    .border-radius(@tmp-radius);
+    background: @med-shaded-color;
+}
+
+div.pseudocode-breakpoint.pseudocode-active-breakpoint {
+    background: @pseudocode-active-breakpoint-color;
+}
+
+div.pseudocode-breakpoint.pseudocode-editmode-breakpoint {
+    background: @pseudocode-breakpoint-color;
+}
+
+tr.pseudocode-next {
+    td.pseudocode-text, td.pseudocode-comment  {
+        .bg-gradient-leftright(@highlight-background-color, rgba(255,255,255,0));
+    }
     td.pseudocode-line-number {
-        text-align: right;
-        color: @numbering-color;
-        padding: 0 4px 0 4px;
-        font-size: @numbering-size;
-        background: @pseudocode-line-number-bg-color;
-
-        .no-line-numbers & {
-            display: none;
-        }
+        background-color: multiply(@highlight-background-color, @pseudocode-line-number-bg-color);
     }
-
     td.pseudocode-gutter {
-        width: @pseudocode-gutter-size;
-        background: @pseudocode-gutter-color;
-        text-align: center;
-        vertical-align: middle;
-
-        .no-gutter & {
-            display: none;
-        }
+        background-color: multiply(@highlight-background-color, @pseudocode-gutter-color, 50%);
     }
+}
 
-    td.pseudocode-comment {
-        color: @pseudocode-comment-color;
-        font-style: italic;
+tr.pseudocode-previous {
+    td.pseudocode-text, td.pseudocode-comment  {
+        .bg-gradient-leftright(rgba(255,255,255,0), @light-shaded-color);
     }
+}
 
-    td.pseudocode-comment, td.pseudocode-text {
-        padding-left: 8px;
-
-        .no-gutter.no-line-numbers & {
-            padding-left: 0px;
-        }
+tr.pseudocode-active {
+    td.pseudocode-text, td.pseudocode-comment  {
+        background-color: @highlight-background-color;
     }
-
-    .pseudocode-indent {
-        width: @pseudocode-indent;
-        display: inline-block;
+    td.pseudocode-line-number {
+        background-color: multiply(@highlight-background-color, @pseudocode-line-number-bg-color);
     }
-
-    div.pseudocode-breakpoint {
-        display: inline-block;
-        width: (@pseudocode-gutter-size - 2);
-        height: (@pseudocode-gutter-size - 2);
-        @tmp-radius: (@pseudocode-gutter-size - 2)/2;
-        .border-radius(@tmp-radius);
-        background: @pseudocode-breakpoint-color;
-        
-        tr.pseudocode-active & {
-            background-color: multiply(@pseudocode-breakpoint-color, @highlight-background-color);
-        }
+    td.pseudocode-gutter {
+        background-color: multiply(@highlight-background-color, @pseudocode-gutter-color, 50%);
     }
-
-    tr.pseudocode-next {
-        td.pseudocode-text, td.pseudocode-comment  {
-            .bg-gradient-leftright(@highlight-background-color, rgba(255,255,255,0));
-        }
-        td.pseudocode-line-number {
-            background-color: multiply(@highlight-background-color, @pseudocode-line-number-bg-color);
-        }
-        td.pseudocode-gutter {
-            background-color: multiply(@highlight-background-color, @pseudocode-gutter-color, 50%);
-        }
-    }
-
-    tr.pseudocode-previous {
-        td.pseudocode-text, td.pseudocode-comment  {
-            .bg-gradient-leftright(rgba(255,255,255,0), @light-shaded-color);
-        }
-    }
-
-    tr.pseudocode-active {
-        td.pseudocode-text, td.pseudocode-comment  {
-            background-color: @highlight-background-color;
-        }
-        td.pseudocode-line-number {
-            background-color: multiply(@highlight-background-color, @pseudocode-line-number-bg-color);
-        }
-        td.pseudocode-gutter {
-            background-color: multiply(@highlight-background-color, @pseudocode-gutter-color, 50%);
-        }
-    }
-
 }
 
 
@@ -584,7 +584,7 @@ button.controls-button {
     margin: 2px;
 
     &:disabled {
-        color: #ccc;
+        color: @dark-shaded-color;
     }
 }
 
@@ -594,7 +594,8 @@ button.controls-button {
     display: inline-block;
 
     .controls-disabled & {
-        color: transparent;
+        color: @dark-shaded-color;
+        font-style: italic;
     }
 }
 

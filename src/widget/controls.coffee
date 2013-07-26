@@ -69,18 +69,22 @@ class ControlFrameLabel
     constructor: ({container}) ->
         @$frameLabel = Vamonos.jqueryify(container)
         @$frameLabel.addClass("controls-frame-number")
-        @writeLabel("-", "-")
+        @writeLabel(null)
 
     event: (event, options...) -> switch event
         when "editStart", "displayStart", "displayStop"
-            @writeLabel("-", "-")
+            @writeLabel(null)
 
         when "render"
             [frame, type] = options
             @writeLabel(frame._frameNumber, frame._numFrames)
  
     writeLabel: (value, max) ->
-        @$frameLabel.html( "#{value} / #{max}" )
+        if value?
+            @$frameLabel.html( "#{value} / #{max}" )
+        else
+            @$frameLabel.html( "stopped" )
+    
         
 
 #===============================================================================
