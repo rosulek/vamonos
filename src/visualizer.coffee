@@ -163,10 +163,10 @@ class Visualizer
         if typeof n is 'number'
             changes = @watchVarsChanged()
             (reasons ?= {}).watchVarsChanged = changes if changes?
-            (reasons ?= {}).procCalled       = @calledProc if @breakOnCall and @calledProc
+            (reasons ?= {}).procCalled       = @calledProc if @isWatchVar("_callstack") and @calledProc
             (reasons ?= {}).procReturned     = @returnedProc if @isWatchVar("_callstack") and @returnedProc
 
-        if n is 'call' and @returnedProc and @breakOnCall and @isWatchVar("_callstack")
+        if n is 'call' and @returnedProc and @isWatchVar("_callstack")
             (reasons ?= {}).procReturned = @returnedProc if @returnedProc
 
         if n is "end" and @isWatchVar("_callstack")

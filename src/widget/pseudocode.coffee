@@ -57,14 +57,13 @@ class Pseudocode
         @addClassToLine(prev, "pseudocode-previous") if prev?
         @addClassToLine(next, "pseudocode-next")     if next?
 
-        @$tbl.find("div.pseudocode-breakpoint").removeClass("pseudocode-active-breakpoint")
         if frame._snapshotReasons.breakpoint?
             @getLine(frame._nextLine).find("div.pseudocode-breakpoint").addClass("pseudocode-active-breakpoint")
-        @$tbl.find("td.pseudocode-gutter div.pseudocode-breakpoint")
 
     clear: () ->
         @$tbl.find("tr").removeClass("pseudocode-next")
         @$tbl.find("tr").removeClass("pseudocode-previous")
+        @$tbl.find("div.pseudocode-breakpoint").removeClass("pseudocode-active-breakpoint")
 
     addClassToLine: (n, klass) ->
         @$tbl.find("tr[vamonos-linenumber=#{ n }]").addClass(klass) if Vamonos.isNumber(n)

@@ -5,7 +5,6 @@ class CallStack
         @$container      = Vamonos.jqueryify(container)
         @animate        ?= ["next"]
 
-        header  = $("<div>", {text: "Call Stack", class: "callstack-header"}).appendTo(@$container)
         @$inner = $("<div>", {class: "callstack"}).appendTo(@$container)
         @$table = $("<table>", {class: "callstack"}).appendTo(@$inner)
 

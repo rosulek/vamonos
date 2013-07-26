@@ -36,26 +36,25 @@
             color: white; 
         }
 
-        td { 
-            vertical-align: top;
-            text-align: left;
-        }
-
         table.allvars {
             border-spacing: 5px 10px; 
             border-collapse: collapse;
             margin: -10px;
         }
+        table.allvars td {
+            vertical-align: top;
+            text-align: right;
+        }
         table.allvars div {
             border-spacing: 0;  /* weird hack! */
         }
         table.allvars > tbody > tr > td:first-child {
-            text-align: right;
             background: #eee;
+            text-align: right;
         }
         table.allvars > tbody > tr:nth-child(even) > td:first-child {
-            text-align: right;
             background: #ddd;
+            text-align: right;
         }
         table.allvars > tbody > tr > td {
             padding: 8px;

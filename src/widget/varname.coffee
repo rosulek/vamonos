@@ -14,8 +14,8 @@ class VarName
 
         if @watchable
             @$watchToggle   = $("<span>", {class: "var-watch", html: "&#x2605;"}).appendTo(@$container)
-    
-        @$varName           = $("<span>", {class: "var-name", html: @varName + ":"}).appendTo(@$container)
+
+        @$varName           = $("<span>", {class: "var-name", html: @displayName + ":"}).appendTo(@$container)
 
 
     event: (event, options...) -> switch event
@@ -27,7 +27,7 @@ class VarName
         when "editStart"
             @setWatchStatus()
             if @watchable
-                @$watchToggle.on("click", => @toggleWatch())
+                @$watchToggle.on("mousedown", => @toggleWatch())
                 @$watchToggle.prop("title", "Click to toggle breaking when this variable changes")
 
             if @inputVar
@@ -36,7 +36,7 @@ class VarName
 
         when "editStop"
             if @watchable
-                @$watchToggle.off("click")
+                @$watchToggle.off("mousedown")
                 @$watchToggle.prop("title", "")
 
             if @inputVar
