@@ -11,109 +11,120 @@
 		test("Queue Datastructure", function() {
 			//test blank constructor
 			var input = new Vamonos.DataStructure.Queue(); 
-			deepEqual(input.guts, [], "test blank constructor");
+			deepEqual(input.guts, [], "blank constructor");
 
 			//test isEmpty with an empty queue
-			equal(input.isEmpty(), true, "test isEmpty with an empty queue");
+			equal(input.isEmpty(), true, "isEmpty with an empty queue");
 
-                  //test toString
-                  equal(input.toString(), "[ ]", "test toString an empty queue");
+            //test toString
+            equal(input.toString(), "[ ]", "toString an empty queue");
 
 			//test enqueue of a single element
 			input.enqueue("bob");
-            	deepEqual(input.guts, ["bob"], "enqueue a single element");
+            deepEqual(input.guts, ["bob"], "enqueue a single element");
 
-                  //test isEmpty with a non empty queue
-            	equal(input.isEmpty(), false, "test isEmpty with a non empty queue");
+            //test isEmpty with a non empty queue
+            equal(input.isEmpty(), false, "isEmpty with a non empty queue");
 
-            	//test toString
-            	equal(input.toString(), "[bob]", "test toString a non empty queue");
+            //test toString
+            equal(input.toString(), "[bob]", "toString a non empty queue");
 
-            	//test dequeue
-            	input.dequeue();
-            	deepEqual(input.guts, [], "dequeue the element");
+            //test dequeue
+            input.dequeue();
+            deepEqual(input.guts, [], "dequeue the element");
 
-            	//test constructor with an initial array and comparator
-            	var one = {x:12, y:5}; var two = {x:3, y:7};
-            	var c = function(a,b){
-            		                    if(a.x < b.x) return 1;
-            		                    if(a.x > b.x) return -1;
-            		                    return 0;
-            	                     };
-            	input = new Vamonos.DataStructure.Queue( {initialArray:[one,two], comparator:c} ); 
-            	deepEqual(input.guts, [one, two], "test constructor");
+            //test constructor with an initial array and comparator
+            var one = {x:12, y:5}; var two = {x:3, y:7};
+            var c = function(a,b){
+                                    if(a.x < b.x) return 1;
+            	                    if(a.x > b.x) return -1;
+            	                    return 0;
+            	                 };
+            input = new Vamonos.DataStructure.Queue( {initialArray:[one,two], comparator:c} ); 
+            deepEqual(input.guts, [one, two], "constructor with parameters");
 
-            	//test extractMin which uses the comparator function to sort by x
-            	var holder = input.extractMin();
-            	deepEqual(input.guts, [two], "test extractMin while sorting by x");
+            //test extractMin which uses the comparator function to sort by x
+            var holder = input.extractMin();
+            deepEqual(input.guts, [two], "extractMin while sorting by x");
 
-            	//replace comparator function to sort by y instead of x
-            	input.comparator = function(a,b){
-            		                    if(a.y < b.y) return 1;
-            		                    if(a.y > b.y) return -1;
-            		                    return 0;
-            	                   };
-            	input.enqueue(holder); //put the dequeued object back on for the next test
+            //replace comparator function to sort by y instead of x
+            input.comparator = function(a,b){
+           		                    if(a.y < b.y) return 1;
+           		                    if(a.y > b.y) return -1;
+           		                    return 0;
+           	                   };
+           	input.enqueue(holder); //put the dequeued object back on for the next test
 
-            	//test extractMin using new comparator to sort by y
-            	input.extractMin();
-            	deepEqual(input.guts, [one], "test extractMin while sorting by y");
+           	//test extractMin using new comparator to sort by y
+           	input.extractMin();
+           	deepEqual(input.guts, [one], "extractMin while sorting by y");
 
-            	//test clone
-            	var input2 = input.clone();
-            	deepEqual(input2.guts, input.guts, "test clone function");
-		});
+           	//test clone
+           	var input2 = input.clone();
+           	deepEqual(input2.guts, input.guts, "clone function");
+		}); //end of queue unit tests
 
-            test("Vizualizer", function() {
-                  //a vizualizer can't exist without at least one widget because of the way
-                  //the observer pattern is currently implemented for subscribers
-                  var myviz = new Vamonos.Visualizer({ widgets: [] });
-                  equal(myviz.maxFrames, 250, "test constructor with minimum parameters");
+        test("Vizualizer", function() {
+        	//a vizualizer can't exist without at least one widget because of the way
+            //the observer pattern is currently implemented for subscribers
+            var myviz = new Vamonos.Visualizer({ widgets: [] });
+            equal(myviz.maxFrames, 250, "constructor with minimum parameters");
 
-                  var flag = false;
-                  myviz = new Vamonos.Visualizer({
-                        widgets: [],
-                        algorithm:  {main: function(_) { with(this) {_(1); x = 1; flag = true;}} },
-                        breakOnCall: false, //controls frame snapshot when procedure is called
-                        breakOnReturn: false //controls frame snapshot when procedure ends
-                  });
-
-                  //make sure the breakpoint gets checked and snapshotted
-                  myviz.setBreakpoint(1,"main");
-                  deepEqual(myviz.getBreakpoints("main"), [1], "break point was actually set");
-
-                  myviz.runAlgorithm();
-
-                  //test that the algo was run
-                  equal(flag, true, "test that algorithm was run");
-
-                  //confirm that the line function was called as expected
-                  //there are always 2 calls just for running the algo
-                  //there will be an additional 2 calls for each procedure in the algo
-                  equal(myviz.numCallsToLine, 5, "line function called when algo runs");
-
-                  //check for the frame from the snapshot at line 1
-                  //there should be 2 frames even if no line is snapshotted
-                  //because snapshots are taken at the begining and end of the algo
-                  equal(myviz.frames.length, 1, "breakpoint snapshotted");
-
-                  
-                  //registered vars accessible from algo
-
-                  //registered vars in frame
-
-                  //multiple procedures
-
-                  //can they call each other
-
-                  //is global stuff global (from one procedure to the other)
-
-                  //recursive main procedure (does each call have its own scope)
-
-                  //snapshot on watched var change
-
-                  //is an infinite loop caught and stopped
+            var ran = false;
+            myviz = new Vamonos.Visualizer({
+                widgets: [],
+                algorithm:  {main: function(_) { with(this) {
+                	                                   x = 1; 
+                	                            _(1);  ran = true;
+                	                             	        }
+                	                           } 
+                	                        },
             });
+
+            //make sure the breakpoint gets checked and snapshotted
+            myviz.setBreakpoint(1,"main");
+            deepEqual(myviz.getBreakpoints("main"), [1], "break point was set");
+
+            //register a variable
+            myviz.registerVariable("x");
+
+            //we know that x was registered correctly because it won't appear when we check for globals
+            deepEqual(myviz.registeredVars, {"main":["x"]}, "register a variable");
+
+            myviz.runAlgorithm();
+
+            //test that the algo was run
+            equal(ran, true, "algorithm was run");
+
+            //confirm that the line function was called as expected
+            //there are always 2 calls just for running the algo
+            //there will be an additional 2 calls for each procedure in the algo
+            equal(myviz.numCallsToLine, 5, "line function called when algo runs");
+
+            //check for the frame from the snapshot at line 1
+            //because snapshots are taken at the begining and end of the algo
+            equal(myviz.frames.length, 1, "breakpoint snapshotted");
+
+            equal(myviz.frames[0]._nextLine, 1, "next line after the breakpoint is correct");
+
+            //registered vars in frame
+            equal(myviz.frames[0].x, 1, "registered variable is in the snapshot frame");
+
+            //multiple procedures
+
+            //can they call each other
+
+            //is global stuff global (from one procedure to the other)
+
+            //recursive main procedure (does each call have its own scope)
+
+            //snapshot on watched var change
+
+            //is an infinite loop caught and stopped
+        }); //end of visualizer unit tests
+
+		//setup viz
+		//algo looks to see if this.hasownproperty("x") is defined
 		</script>
 	</head>
 	<body>
