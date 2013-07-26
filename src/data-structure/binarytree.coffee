@@ -48,11 +48,11 @@ class BinaryTree
         @eachNodeInOrder (n) =>
             thisOne = g.addVertex(n)
             if n.left?
-                leftId = g.addVertex(n.left)
-                g.addEdge(n.id, leftId)
+                left = g.addVertex(n.left)
+                g.addEdge(n.id, left.id)
             if n.right?
-                rightId = g.addVertex(n.right) 
-                g.addEdge(n.id, rightId)
+                right = g.addVertex(n.right) 
+                g.addEdge(n.id, right.id)
         return g
 
 Vamonos.export { DataStructure: { BinaryTree } }

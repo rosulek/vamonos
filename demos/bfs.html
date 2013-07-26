@@ -109,8 +109,14 @@ var myviz = new Vamonos.Visualizer({
                 s: "v0"
             },
             vertexLabels: {
-                inner : [function(vtx){return vtx.name}, function(vtx){return vtx.d}],
-                sw    : [function(vtx){return ""}, function(vtx){return vtx.name}],
+                inner : { 
+                    edit: function(vtx){return vtx.name}, 
+                    display: function(vtx){return vtx.d} 
+                },
+                sw    : { 
+                    edit: function(vtx){return ""}, 
+                    display: function(vtx){return vtx.name} 
+                },
                 ne    : ["u", "v"],
                 nw    : ["s"],
             },

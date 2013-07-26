@@ -2,6 +2,7 @@ class Graph
     constructor: (args = {}) ->
         
         @directed = args.directed ? no
+        @idPrefix = args.prefix   ? ""
 
         @type     = 'graph'
         @edges    = {}
@@ -21,15 +22,15 @@ class Graph
         vtx.name ?= @nextVertexName()
         vtx.id   ?= @nextVertexId()
         @vertices[vtx.id] = vtx
-        vtx.id
+        vtx
 
     removeVertex: (v) ->
-        vid = @idify(v)
-        vtx = @vertex(@idify(v))
+        vtx = @vertex(v)
         return unless vtx?
         @returnVertexName(vtx.name)
-        affectedEdges = @incomingEdges(vid).concat @outgoingEdges(vid)
+        affectedEdges = @incomingEdges(vtx.id).concat @outgoingEdges(vtx.id)
         @removeEdge(e.source.id, e.target.id) for e in affectedEdges
+        delete @vertices[vtx.id]
 
     getVertices: () ->
         vtx for vid, vtx of @vertices
@@ -40,7 +41,7 @@ class Graph
 
     nextVertexId: () ->
         @_customVertexNum ?= 0
-        "custom-vertex-#{@_customVertexNum++}"
+        "#{@idPrefix ? "custom"}-vertex-#{@_customVertexNum++}"
 
     returnVertexName: (n) ->
         @availableNames.unshift(n)
@@ -53,24 +54,27 @@ class Graph
     # ---------- edge functions ----------- #
 
     edge: (source, target) ->
-        sid = @idify(source)
-        tid = @idify(target)
-        return e = @edges[sid]?[tid] if e?
-        return @edges[tid]?[sid] unless @directed
+        sourceId = @idify(source)
+        targetId = @idify(target)
+        @edges[sourceId]?[targetId] or @directed and @edges[targetId]?[sourceId]
 
-    addEdge: (sourceId, targetId, args) ->
+    addEdge: (source, target, attrs) ->
+        sourceId = @idify(source)
+        targetId = @idify(target)
         return if @edge(sourceId, targetId)
         s = @vertex(sourceId) 
         t = @vertex(targetId)
         return unless s? and t?
         edge = { source: s, target: t, type: 'edge' }
-        if args?
-            edge[k] = v for k, v of args when k isnt 'source' and k isnt 'target'
+        if attrs?
+            edge[k] = v for k, v of attrs when k isnt 'source' and k isnt 'target'
 
         (@edges[sourceId] ?= {})[targetId] = edge
         (@edges[targetId] ?= {})[sourceId] = edge unless @directed
 
-    removeEdge: (sourceId, targetId) ->
+    removeEdge: (source, target) ->
+        sourceId = @idify(source)
+        targetId = @idify(target)
         edge = @edges[sourceId]?[targetId]
         delete @edges[sourceId]?[targetId]
         delete @edges[targetId]?[sourceId] unless @directed

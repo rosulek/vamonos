@@ -138,16 +138,14 @@ var myviz = new Vamonos.Visualizer({
             varName: "G",
             container: "graph",
             vertexLabels: {
-                inner : [
-                    function(vtx){ 
-                        return vtx.name 
-                    }, 
-                    function(vtx){ 
-                        return Vamonos.rawToTxt(vtx.d) + "/" + 
-                            Vamonos.rawToTxt(vtx.f)
-                    }
-                ],
-                sw    : [function(vtx){return ""}, function(vtx){return vtx.name}],
+                inner : { 
+                    edit: function(vtx){ return vtx.name }, 
+                    display: function(vtx){ return Vamonos.rawToTxt(vtx.d) + "/" + Vamonos.rawToTxt(vtx.f) }
+                },
+                sw    : { 
+                    edit: function(vtx){return ""}, 
+                    display: function(vtx){return vtx.name} 
+                },
                 ne    : ["u", "v"],
             },
             vertexCssAttributes: {
@@ -157,7 +155,7 @@ var myviz = new Vamonos.Visualizer({
                 ["u->visit::v", "#FF7D7D"],
             ],
             defaultGraph: new Vamonos.DataStructure.Graph({
-                directed: false,
+                directed: true,
                 vertices: [ 
                     {id: "v0", x: 17,  y: 10},
                     {id: "v1", x: 98,  y: 10},
