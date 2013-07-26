@@ -214,8 +214,8 @@ table.array {
 @pseudocode-gutter-color: #ddd;
 @pseudocode-gutter-size: 14px;
 @pseudocode-comment-color: #888;
-@pseudocode-breakpoint-color: screen(red, #aaa);
 @pseudocode-active-breakpoint-color: red;
+@pseudocode-breakpoint-color: screen(@pseudocode-active-breakpoint-color, #bbb);
 @pseudocode-indent: 32px;
 @pseudocode-line-number-bg-color: mix(@pseudocode-gutter-color, #fff, 50%);
 
@@ -815,11 +815,12 @@ span.var-watch, span.var-editable {
 }
 
 span.var-watch {
-    color: @light-shaded-color;
+    color: @med-shaded-color;
 }
 
 span.var-watch.var-watching {
     color: @pseudocode-breakpoint-color;
+    text-shadow: @border-color -1px -1px 1px, white 1px 1px 1px;
 }
 
 span.var-watch.var-watching.var-watch-active {
@@ -830,7 +831,9 @@ span.var-editable {
     color: transparent;
     
     &.var-editing {
-        color: #5c5;
+        color: #5b5;
+        text-shadow: yellow 0px 0px 20px;
+        font-weight: bold;
     }
 }
 

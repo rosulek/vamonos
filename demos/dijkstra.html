@@ -40,13 +40,35 @@
             vertical-align: top;
             text-align: left;
         }
+
+        table.allvars {
+            border-spacing: 5px 10px; 
+            border-collapse: collapse;
+        }
+        table.allvars div {
+            border-spacing: 0;  /* weird hack! */
+        }
+        table.allvars > tbody > tr > td:first-child {
+            text-align: right;
+            background: #eee;
+        }
+        table.allvars > tbody > tr:nth-child(even) > td:first-child {
+            text-align: right;
+            background: #ddd;
+        }
+        table.allvars > tbody > tr > td {
+            padding: 8px;
+        }
+
+        .container {
+            vertical-align: top;
+        }
     </style>
 
 </head><body>
 
     <h1>Dijkstra's Algorithm</h1>
 
-    <table><tr><td>
         <div class="container">
             <div id="pseudocode-main" title="Dijkstra(G,s):" style="display: inline-block">
                 for each vertex u &in; G.V - {s}
@@ -70,18 +92,29 @@
             <div id="controls" style="background: #eee;
                                       padding: 10px;
                                       margin: -10px;
-                                      margin-top: 0;"></div>
+                                      margin-top: 0;
+                                      border-top: 1px solid #ccc;
+                                      background: -moz-linear-gradient(top,  #f4f4f4 0%, #eeeeee 10%, #eeeeee 50%, #dddddd 90%, #cccccc 100%);
+                                      background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f4f4f4), color-stop(10%,#eeeeee), color-stop(50%,#eeeeee), color-stop(90%,#dddddd), color-stop(100%,#cccccc));
+                                      background: -webkit-linear-gradient(top,  #f4f4f4 0%,#eeeeee 10%,#eeeeee 50%,#dddddd 90%,#cccccc 100%);
+                                      background: -o-linear-gradient(top,  #f4f4f4 0%,#eeeeee 10%,#eeeeee 50%,#dddddd 90%,#cccccc 100%);
+                                      background: -ms-linear-gradient(top,  #f4f4f4 0%,#eeeeee 10%,#eeeeee 50%,#dddddd 90%,#cccccc 100%);
+                                      background: linear-gradient(to bottom,  #f4f4f4 0%,#eeeeee 10%,#eeeeee 50%,#dddddd 90%,#cccccc 100%);
+                                      filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f4f4f4', endColorstr='#cccccc',GradientType=0 );"></div>
         </div>
-        <br>
-    </td><td>
-        <div id="graph" class="container"></div><br>
-        <div id="vars" class="container" style="text-align: right">
-            <div id="varname1"></div>
-            <div id="varname2"></div>
-            <div id="varname3"></div>
-        </div><br>
-        <div id="queue"></div><br>
-    </td></tr></table>
+
+        <div class="container">
+            <table class="allvars">
+                <tr><td><div id="varname1"></div></td>
+                    <td><div id="graph"></div></td>
+                </tr>
+                <tr><td><div id="varname2"></div></td></tr>
+                <tr><td><div id="varname3"></div></td></tr>
+                <tr><td><div id="varname4"></div></td>
+                    <td><div id="queue"></div></td></tr>
+            </table>
+        </div>
+
 
 </body>
 <script type="text/javascript">
@@ -92,7 +125,7 @@ var myviz = new Vamonos.Visualizer({
         new Vamonos.Widget.Queue({
             container: "queue",
             varName: "main::Q",
-            showLabel: true,
+            showLabel: false,
             displayOnly: true,
         }),
 
@@ -122,6 +155,11 @@ var myviz = new Vamonos.Visualizer({
         new Vamonos.Widget.VarName({
             container: "varname3",
             varName: "v",
+        }),
+        new Vamonos.Widget.VarName({
+            container: "varname4",
+            varName: "Q",
+            watchable: false
         }),
 
         new Vamonos.Widget.Graph({
