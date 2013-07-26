@@ -25,6 +25,14 @@
         <br>
         <div id="controls"></div>
         <br>
+        <div class="container" style="text-align: right">
+            <div id="varname1"></div>
+            <div id="varname2"></div>
+            <div id="varname3"></div>
+            <div id="varname4"></div>
+            <div id="varname5"></div>
+        </div>
+        <br>
         <div class="container" id="arrays"></div>
     </div>
 </body>
@@ -56,12 +64,34 @@ var myviz = new Vamonos.Visualizer({
             ]
         }),
 
-        new Vamonos.Widget.Pseudocode({
-            container: "pseudocode",
-            breakpoints: [3,7],
-        }),
+        new Vamonos.Widget.Pseudocode("pseudocode"),
 
-        new Vamonos.Widget.Controls("controls")
+        new Vamonos.Widget.Controls("controls"),
+        
+        new Vamonos.Widget.VarName({
+            container: "varname1",
+            varName: "price",
+            inputVar: true,
+            watchable: false
+        }),
+        new Vamonos.Widget.VarName({
+            container: "varname2",
+            varName: "opt"
+        }),
+        new Vamonos.Widget.VarName({
+            container: "varname3",
+            varName: "sol",
+            watching: true
+        }),
+        new Vamonos.Widget.VarName({
+            container: "varname4",
+            varName: "k",
+        }),
+        new Vamonos.Widget.VarName({
+            container: "varname5",
+            varName: "i",
+            watching: true
+        }),
     ],
 
     breakOnReturn: false,

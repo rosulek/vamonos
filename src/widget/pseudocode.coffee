@@ -42,6 +42,7 @@ class Pseudocode
 
         when "displayStop"
             @clear()
+            @$tbl.find("div.pseudocode-breakpoint").addClass("pseudocode-active-breakpoint")
 
         when "render"
             [frame, type] = options

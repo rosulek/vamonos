@@ -214,9 +214,7 @@ table.array {
 @pseudocode-gutter-color: #ddd;
 @pseudocode-gutter-size: 14px;
 @pseudocode-comment-color: #888;
-/*@pseudocode-breakpoint-color: red;*/
-/*@pseudocode-breakpoint-color: #FF7161;*/
-@pseudocode-breakpoint-color: #FF7D7D;
+@pseudocode-breakpoint-color: screen(red, #aaa);
 @pseudocode-active-breakpoint-color: red;
 @pseudocode-indent: 32px;
 @pseudocode-line-number-bg-color: mix(@pseudocode-gutter-color, #fff, 50%);
@@ -282,15 +280,11 @@ div.pseudocode-breakpoint {
     height: (@pseudocode-gutter-size - 2);
     @tmp-radius: (@pseudocode-gutter-size - 2)/2;
     .border-radius(@tmp-radius);
-    background: @med-shaded-color;
+    background: @pseudocode-breakpoint-color;
 }
 
 div.pseudocode-breakpoint.pseudocode-active-breakpoint {
     background: @pseudocode-active-breakpoint-color;
-}
-
-div.pseudocode-breakpoint.pseudocode-editmode-breakpoint {
-    background: @pseudocode-breakpoint-color;
 }
 
 tr.pseudocode-next {
@@ -802,6 +796,45 @@ table.matrix {
 //    }
 
 }
+
+
+
+/////////////////
+// VAR NAME
+
+span.var-name {
+    font-weight: normal;
+    font-style: italic;
+    padding-left: 5px;
+}
+
+span.var-watch, span.var-editable {
+    font-size: 20px;
+    position: relative;
+    bottom: -2px;
+    cursor: default;
+}
+
+span.var-watch {
+    color: @light-shaded-color;
+}
+
+span.var-watch.var-watching {
+    color: @pseudocode-breakpoint-color;
+}
+
+span.var-watch.var-watching.var-watch-active {
+    color: @pseudocode-active-breakpoint-color;
+}
+
+span.var-editable {
+    color: transparent;
+    
+    &.var-editing {
+        color: #5c5;
+    }
+}
+
 
 
 
