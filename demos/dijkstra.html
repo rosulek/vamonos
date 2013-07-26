@@ -75,7 +75,11 @@
         <br>
     </td><td>
         <div id="graph" class="container"></div><br>
-        <div id="vars" class="container"></div><br>
+        <div id="vars" class="container" style="text-align: right">
+            <div id="varname1"></div>
+            <div id="varname2"></div>
+            <div id="varname3"></div>
+        </div><br>
         <div id="queue"></div><br>
     </td></tr></table>
 
@@ -101,9 +105,23 @@ var myviz = new Vamonos.Visualizer({
             setAllBreakpoints: true,
         }),
 
-        new Vamonos.Widget.VarDisplay({
-            container: "vars",
-            watch: ["u[done,pred,d]", "v[done,pred,d]", "*G[none]"],
+//        new Vamonos.Widget.VarDisplay({
+//            container: "vars",
+//            watch: ["u[done,pred,d]", "v[done,pred,d]", "*G[none]"],
+//        }),
+
+        new Vamonos.Widget.VarName({
+            container: "varname1",
+            varName: "G",
+            inputVar: true,
+        }),
+        new Vamonos.Widget.VarName({
+            container: "varname2",
+            varName: "u"
+        }),
+        new Vamonos.Widget.VarName({
+            container: "varname3",
+            varName: "v",
         }),
 
         new Vamonos.Widget.Graph({
