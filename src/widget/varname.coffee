@@ -26,12 +26,22 @@ class VarName
 
         when "editStart"
             @setWatchStatus()
-            @$watchToggle.on("click", => @toggleWatch())  if @watchable
-            @$editIndicator.addClass("var-editing")       if @inputVar
+            if @watchable
+                @$watchToggle.on("click", => @toggleWatch())
+                @$watchToggle.prop("title", "Click to toggle breaking when this variable changes")
+
+            if @inputVar
+                @$editIndicator.addClass("var-editing")
+                @$editIndicator.prop("title", "Now in edit mode, you can change the contents of this variable")
 
         when "editStop"
-            @$watchToggle.off("click")                    if @watchable
-            @$editIndicator.removeClass("var-editing")    if @inputVar
+            if @watchable
+                @$watchToggle.off("click")
+                @$watchToggle.prop("title", "")
+
+            if @inputVar
+                @$editIndicator.removeClass("var-editing")
+                @$editIndicator.prop("title", "")
 
         when "displayStart"
             @setWatchStatus()

@@ -72,8 +72,10 @@ class ControlFrameLabel
         @writeLabel(null)
 
     event: (event, options...) -> switch event
-        when "editStart", "displayStart", "displayStop"
+        when "editStart", "displayStop"
             @writeLabel(null)
+        when "displayStart"
+            @writeLabel(0,0)
 
         when "render"
             [frame, type] = options
@@ -168,13 +170,10 @@ class ControlButtons
             @$container.addClass("controls-disabled")
             @mode = "edit"
 
+        # treat displayStart as being at 0 frames out of 0
         when "displayStart"
             @$runStopButton.html(STOP)
             @$runStopButton.prop("title", "Stop the algorithm to edit inputs/breakpoints/etc [shortcut: escape]")
-
-            @prevButtonActive(true)
-            @nextButtonActive(true)
-            @playPauseButtonActive(true)
 
             @$container.removeClass("controls-disabled")
             @mode = "display"
