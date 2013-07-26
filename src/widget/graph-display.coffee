@@ -289,6 +289,7 @@ class GraphDisplay
         @setConnectionEditBindings()
 
     stopEditing: ->
+        @deselect()
         @mode = undefined
         @unsetNodeEditBindings()
         @unsetConnectionEditBindings()
@@ -536,7 +537,7 @@ class GraphDisplay
         return $attr
 
     editAttribute: ($outer, edge) =>
-        $editor = $("<input class='editing'>")
+        $editor = $("<input class='inline-input'>")
         $editor.hide()
         $editor.val(edge[@edgeLabel[0]] ? "")
         $editor.width($outer.width())
