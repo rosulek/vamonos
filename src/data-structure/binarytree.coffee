@@ -45,7 +45,7 @@ class BinaryTree
 
     asGraph: () ->
         g = new Vamonos.DataStructure.Graph()
-        @eachNodeInOrder (n) =>
+        @eachNodePreOrder (n) =>
             thisOne = g.addVertex(n)
             if n.left?
                 left = g.addVertex(n.left)
