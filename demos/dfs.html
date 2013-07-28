@@ -121,7 +121,7 @@
             </table>
         </div>
 
-    <div id="controls" class="controls-fullscreen"></div>
+    <div id="controls"></div>
 
 </body>
 
@@ -165,7 +165,10 @@ var myviz = new Vamonos.Visualizer({
             procedureName: "visit",
         }),
 
-        new Vamonos.Widget.Controls("controls"),
+        new Vamonos.Widget.Controls({
+            container: "controls",
+            fullscreen: "auto"
+        }),
 
         new Vamonos.Widget.Graph({
             varName: "G",

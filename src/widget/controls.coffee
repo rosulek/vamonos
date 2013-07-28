@@ -47,6 +47,18 @@ class Controls
         @$inner.addClass("controls-full") if buttons and slider
 
 
+        switch fullscreen
+            when "auto"
+                if (!window.screenTop && !window.screenY)
+                    @$container.addClass("controls-fullscreen")
+                $(window).on "resize", =>
+                    if (!window.screenTop && !window.screenY)
+                        @$inner.addClass("controls-fullscreen")
+                    else
+                        @$inner.removeClass("controls-fullscreen")
+            when true
+                @$inner.addClass("controls-fullscreen")
+
     event: (event, options...) ->
         @buttons   ?.event(event, options...)
         @slider    ?.event(event, options...)
