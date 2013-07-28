@@ -41,13 +41,7 @@ class BinaryTree
                 if $target.is("div.vertex-contents")
                     @selectNode($target.parent())
             else
-                if $target.is("div.vertex-contents") and 'vertex' is @selected()
-                    sourceId = @$selectedNode.attr("id")
-                    targetId = $target.parent().attr("id")
-                    if sourceId is targetId
-                        @deselect()
-                else if $target.is(@graphDisplay.$inner)
-                    @deselect()
+                @deselect()
             true
 
     selected: ->
