@@ -19,6 +19,8 @@ class CallStack
             [frame, type] = options
             @render(frame, type)
         when "displayStop"
+            @$argRows  = []
+            @$procRows = []
             @$table.empty()
 
 
