@@ -65,9 +65,9 @@ class CallStack
 
     setProcRow: ($tr, scope) ->
         procName = @procedureNames[scope.procName] ? scope.procName
-        $tr.html("<td colspan='2' class='callstack-proc'><div>#{procName}</div></td>")
-        $tr.find("td").addClass("callstack-returned") if "returnValue" of scope
-        $tr.find("td").addClass("callstack-active")   if scope.activeStackFrame
+        $tr.html("<td><td><div class='callstack-proc-container'><div class='callstack-proc'>#{procName}</div></div></td>")
+        $tr.find("div.callstack-proc").addClass("callstack-returned") if "returnValue" of scope
+        $tr.find("div.callstack-proc").addClass("callstack-active")   if scope.activeStackFrame
 
     argStr: (scope) ->
         ("#{k}=#{Vamonos.rawToTxt(v)}" for k,v of scope.args).join(",") + "<span class='callstack-arrow'>&darr;</span>"

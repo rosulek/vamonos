@@ -659,19 +659,8 @@ div.callstack {
 
 table.callstack {
     border-collapse: collapse;
-    display: inline;
-
-    table-layout: fixed;
-    // allows the 50% columns to be equal width.. somehow
-    // this all goes to hell if this callstack table is
-    // nested inside of another table. strange!
 }
 
-div.callstack-header {
-    font-style: italic;
-    border-bottom: 1px solid black;
-    text-align: left;
-}
 
 td.callstack-args, td.callstack-return {
     width: 50%;
@@ -698,22 +687,25 @@ span.callstack-arrow {
     }
 }
 
-td.callstack-proc {
+div.callstack-proc-container {
     text-align: center;
+    width: 100%;
 }
 
-td.callstack-proc div {
+div.callstack-proc {
+    right: 50%;
+    position: relative;
     border: 1px solid black;
     display: inline-block;
     font-style: italic;
     padding: 4px;
 }
 
-td.callstack-active div {
+div.callstack-active {
     background-color: @highlight-background-color;
 }
 
-td.callstack-returned div {
+div.callstack-returned {
     background-color: @light-shaded-color;
 }
 
