@@ -277,7 +277,7 @@ class GraphDisplay
         connection.removeAllOverlays()
         connection.addOverlay([
             "PlainArrow"
-            {location:-4, width:8, length:8}
+            {location:-4, width:12, length:8}
         ]) if @directed
         connection.addOverlay([
             "Custom"
@@ -293,8 +293,8 @@ class GraphDisplay
     # ----------- styles, colors and jsplumb stuff -------------- #
 
     @editColor        = "#92E894"
-    @lightEdgeColor   = "#E0E0E0"
-    @darkEdgeColor    = "#CFCFCF"
+    @lightEdgeColor   = "#cccccc"
+    @darkEdgeColor    = "#aaaaaa"
     @deletionColor    = "#FF7D7D"
     @lineWidth        = 4
 
