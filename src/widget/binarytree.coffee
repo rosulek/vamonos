@@ -37,9 +37,8 @@ class BinaryTree
     setContainerEditBindings: ->
         @graphDisplay.$outer.on "click.vamonos-graph", (e) =>
             $target = $(e.target)
-            if not @selected()
-                if $target.is("div.vertex-contents")
-                    @selectNode($target.parent())
+            if $target.is("div.vertex-contents")
+                @selectNode($target.parent())
             else
                 @deselect()
             true
@@ -81,17 +80,20 @@ class BinaryTree
                     "<span class='left'>node: val=#{elem.val}</span>"
                 )
 
-                $left = $("<button>", {text: "rotate left"})
-                $left.on "click.vamonos-graph", (e) =>
-                    @theTree.rotateLeft(id)
-                    @deselect()
-                    @draw(@theTree)
-                $right = $("<button>", {text: "rotate right"})
-                $right.on "click.vamonos-graph", (e) =>
-                    @theTree.rotateRight(id)
-                    @deselect()
-                    @draw(@theTree)
-                $inputHolder.append([$left, $right])
+                if elem.right?
+                    $left = $("<button>", {text: "rotate left"})
+                    $left.on "click.vamonos-graph", (e) =>
+                        @theTree.rotateLeft(id)
+                        @deselect()
+                        @draw(@theTree)
+                    $inputHolder.append($left)
+                if elem.left?
+                    $right = $("<button>", {text: "rotate right"})
+                    $right.on "click.vamonos-graph", (e) =>
+                        @theTree.rotateRight(id)
+                        @deselect()
+                        @draw(@theTree)
+                    $inputHolder.append($right)
 
         @$drawer.append($inputHolder)
 
