@@ -27,8 +27,6 @@
 
     <div class="vamonos left">
         <div class="container" id="tree"></div><br>
-        <button id="button-t1">Draw T1</button>
-        <button id="button-t2">Draw T2</button>
     </div>
 
 </body>
@@ -37,63 +35,34 @@
 var bin = new Vamonos.Widget.BinaryTree({
     container: "tree",
     varName: "tree",
-});
-
-var t1 = new Vamonos.DataStructure.BinaryTree({
-    val: 5,
-    id: "n5",
-    left: { 
-        val: 3,
-        id: "n3",
-        left: { 
-            val: 2,
-            id: "n2",
-            left: { val: 1, id: "n1" },
-        },
-        right: { val: 4, id: "n4" },
-    },
-    right: {
-        val: 8,
-        id: "n8",
-        left: {
-            val: 6,
-            id: "n6",
-            right: { val: 7, id: "n7" },
-        },
-        right: { val: 9, id: "n9" },
-    },
-});
-
-var t2 = new Vamonos.DataStructure.BinaryTree({
-    val: 3,
-    id: "n3",
-    left: { 
-        val: 2,
-        id: "n2",
-        left: { val: 1, id: "n1" },
-    },
-    right: {
-        val: 5,
-        id: "n5",
-        left: { val: 4, id: "n4" },
-        right: {
-            val: 8,
-            id: "n8",
-            left: {
-                val: 6,
-                id: "n6",
-                right: { val: 7, id: "n7" },
+    defaultTree: 
+        new Vamonos.DataStructure.BinaryTree({
+            val: 5,
+            id: "n5",
+            left: { 
+                val: 3,
+                id: "n3",
+                left: { 
+                    val: 2,
+                    id: "n2",
+                    left: { val: 1, id: "n1" },
+                },
+                right: { val: 4, id: "n4" },
             },
-            right: { val: 9, id: "n9" },
-        },
-    }
+            right: {
+                val: 8,
+                id: "n8",
+                left: {
+                    val: 6,
+                    id: "n6",
+                    right: { val: 7, id: "n7" },
+                },
+                right: { val: 9, id: "n9" },
+            },
+        }),
 });
 
-
-bin.event("render", {tree: t1});
-
-$("button#button-t1").on("click", function(){ bin.event("render", {tree: t1}) });
-$("button#button-t2").on("click", function(){ bin.event("render", {tree: t2}) });
+bin.editMode();
 
 </script>
 </html>
