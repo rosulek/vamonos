@@ -63,56 +63,42 @@ class BinaryTree
 
     openDrawer: ->
         if @$drawer?
-            @$drawer.html("")
+            @$drawer.html("<div class='graph-drawer'></div>")
         else
-            @$drawer = $("<div>", { class: "graph-drawer" })
-            @$drawer.hide()
-            @graphDisplay.$inner.append(@$drawer)
+            @$drawer = $("<div>", { class: "graph-drawer" }).hide()
+            @graphDisplay.$outer.parent().append(@$drawer)
 
         type = @selected()
 
-        $inputHolder = $("<span>", {class: "right"})
         switch type
             when 'node'
-                id = @$selectedNode.attr("id")
+                id   = @$selectedNode.attr("id")
                 elem = @theTree.asGraph().vertex(id)
-                @$drawer.html(
-                    "<span class='left'>node: val=#{elem.val}</span>"
-                )
+                $("<span class='label'>node: val=#{elem.val}&nbsp;&nbsp;</span>")
+                    .appendTo(@$drawer)
 
                 if elem.right?
-                    $left = $("<button>", {text: "rotate left"})
-                    $left.on "click.vamonos-graph", (e) =>
-                        @theTree.rotateLeft(id)
-                        @deselect()
-                        @draw(@theTree)
-                    $inputHolder.append($left)
+                    $("<button>", {text: "rotate left"})
+                        .on "click.vamonos-graph", (e) =>
+                            @theTree.rotateLeft(id)
+                            @deselect()
+                            @draw(@theTree)
+                        .appendTo(@$drawer)
+
                 if elem.left?
-                    $right = $("<button>", {text: "rotate right"})
-                    $right.on "click.vamonos-graph", (e) =>
-                        @theTree.rotateRight(id)
-                        @deselect()
-                        @draw(@theTree)
-                    $inputHolder.append($right)
+                    $("<button>", {text: "rotate right"})
+                        .on "click.vamonos-graph", (e) =>
+                            @theTree.rotateRight(id)
+                            @deselect()
+                            @draw(@theTree)
+                        .appendTo(@$drawer)
 
-        @$drawer.append($inputHolder)
-
-        unless @$drawer.is(":visible")
-            @$drawer.fadeIn("fast")
-            @graphDisplay.$outer.animate(
-                { height: (@graphDisplay.$outer.height() + @$drawer.height()) }
-                200
-            )
+        @$drawer.fadeIn("fast") unless @$drawer.is(":visible")
 
     closeDrawer: () ->
         return unless @$drawer?
         @$drawer.fadeOut("fast")
-        @graphDisplay.$outer.animate(
-            { height: (@graphDisplay.$outer.height() - @$drawer.height()) }
-            200
-        )
-        @$drawer = undefined
-
+        @$drawer.hide()
 
 
 Vamonos.export { Widget: { BinaryTree } }

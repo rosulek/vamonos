@@ -134,13 +134,7 @@ class GraphDisplay
                 $("<div>", { class:"vertex-#{type}-label" }).appendTo($v)
 
         @jsPlumbInstance.draggable($v,
-            containment: [
-                @$inner.position().left
-                @$inner.position().top
-                @$inner.position().left + @$inner.width() - @containerMargin
-                @$inner.position().top + @$inner.height() - @containerMargin
-            ]
-
+            containment: "parent"
             start: (event, ui) ->
                 Vamonos.moveToTop($v)
             stop: (event, ui) =>

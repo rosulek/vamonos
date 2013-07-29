@@ -50,6 +50,7 @@ class Graph
     # ----------------- EDITING MODE ------------------------ #
 
     startEditing: () ->
+        @displayWidget.clearDisplay()
         @displayWidget.mode = "edit"
         @displayWidget.fitGraph(@theGraph)
         @displayWidget.draw(@theGraph, @inputVars)
@@ -62,6 +63,7 @@ class Graph
         @unsetConnectionEditBindings()
         @unsetContainerEditBindings()
         @updateVariables()
+        @displayWidget.clearDisplay()
 
     registerVariables: ->
         @viz.registerVariable(key, true) for key of @inputVars
@@ -240,26 +242,23 @@ class Graph
         if @$drawer?
             @$drawer.html("")
         else
-            @$drawer = $("<div>", { class: "graph-drawer" })
-            @$drawer.hide()
-            @displayWidget.$inner.append(@$drawer)
+            @$drawer = $("<div>", { class: "graph-drawer" }).hide()
+            @displayWidget.$outer.parent().append(@$drawer)
 
         type = @selected()
 
-        $inputHolder = $("<span>", {class: "right"})
         switch type
             when 'vertex'
                 elem = @theGraph.vertex(@$selectedNode.attr("id"))
-                @$drawer.html(
-                    "<span class='left'>vertex&nbsp;&nbsp;#{elem.name}</span>"
-                )
+                $("<span class='label'>vertex&nbsp;&nbsp;#{elem.name}&nbsp;&nbsp;</span>")
+                    .appendTo(@$drawer)
 
                 for v of @inputVars
-                    $button = $("<button>", {text: "#{v}"})
-                    $button.on "click.vamonos-graph", (e) =>
-                        @inputVars[v] = elem
-                        @displayWidget.draw(@theGraph, @inputVars)
-                    $inputHolder.append($button)
+                    $("<button>", {text: "#{v}"})
+                        .on "click.vamonos-graph", (e) =>
+                            @inputVars[v] = elem
+                            @displayWidget.draw(@theGraph, @inputVars)
+                        .appendTo(@$drawer)
 
             when 'edge'
                 sourceId = @$selectedConnection.sourceId
@@ -269,35 +268,24 @@ class Graph
                     elem.source.name + "&nbsp;" +
                     (if @theGraph.directed then "->" else "-") +
                     "&nbsp;" + elem.target.name
-                @$drawer.html(
-                    "<span class='left'>edge&nbsp;&nbsp;#{nametag}</span>"
+                @$drawer.append(
+                    "<span class='label'>edge&nbsp;&nbsp;#{nametag}&nbsp;&nbsp;</span>"
                 )
 
         $deleteButton = $("<button>", {text: "del"})
-        $deleteButton.on "click.vamonos-graph", (e) =>
-            switch type
-                when 'vertex'
-                    @removeVertex(elem.id)
-                when 'edge'
-                    @removeEdge(elem.source.id, elem.target.id)
-        $inputHolder.append($deleteButton)
+            .on "click.vamonos-graph", (e) =>
+                switch type
+                    when 'vertex'
+                        @removeVertex(elem.id)
+                    when 'edge'
+                        @removeEdge(elem.source.id, elem.target.id)
+            .appendTo(@$drawer)
 
-        @$drawer.append($inputHolder)
-
-        unless @$drawer.is(":visible")
-            @$drawer.fadeIn("fast")
-            @displayWidget.$outer.animate(
-                { height: (@displayWidget.$outer.height() + @$drawer.height()) }
-                200
-            )
+        @$drawer.fadeIn("fast") unless @$drawer.is(":visible")
 
     closeDrawer: () ->
         return unless @$drawer?
         @$drawer.fadeOut("fast")
-        @displayWidget.$outer.animate(
-            { height: (@displayWidget.$outer.height() - @$drawer.height()) }
-            200
-        )
         @$drawer = undefined
 
     createEditableEdgeLabel: (edge, $wrapper = $("<div>")) =>

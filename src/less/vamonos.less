@@ -356,27 +356,21 @@ div.graph-label {
 }
 
 div.graph-drawer {
-    position: absolute;
-    bottom: 0;
-    background: @editing-bg-color;
+    background-color: @editing-bg-color;
     width: 100%;
     cursor: default;
+    text-align: center;
 
-    span.left {
+    span.label {
         font-style: italic;
-        margin-left: 10px;
         font-size: 1.1em;
     }
 
-    span.right {
-        float: right;
+    input {
+        border: 1px solid @border-color;
+        text-align: left;
+        outline: 0;
     }
-}
-
-input.editing {
-    border: 1px solid @border-color;
-    text-align: left;
-    outline: 0;
 }
 
 .vertex {
