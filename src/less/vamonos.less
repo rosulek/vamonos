@@ -17,13 +17,6 @@
 
 ////////////////
 
-.background-highlight-pulse () {
-    -webkit-animation: background-highlight-pulse 0.6s ease-in-out;
-    -moz-animation: background-highlight-pulse 0.6s ease-in-out;
-    -o-animation: background-highlight-pulse 0.6s ease-in-out;
-    animation: background-highlight-pulse 0.6s ease-in-out;
-}
-
 .no-animation () {
     -webkit-animation: none;
     -moz-animation: none;
@@ -119,6 +112,12 @@ body.processing *, body.processing {
     cursor:progress !important;
 }
 
+.changed {
+    -webkit-animation: background-highlight-pulse 0.6s ease-in-out !important;
+    -moz-animation: background-highlight-pulse 0.6s ease-in-out !important;
+    -o-animation: background-highlight-pulse 0.6s ease-in-out !important;
+    animation: background-highlight-pulse 0.6s ease-in-out !important;
+}
 
 
 /////////////////
@@ -158,6 +157,58 @@ input.inline-input:focus {
 .ui-resizable {
     position: relative;
 }
+
+
+
+//////////////////
+// DEFAULT LAYOUT
+
+table.vamonos {
+    border-collapse: collapse;
+    .default-box-shadow(@shadow-color);
+    border: 1px solid @border-color;
+    margin: auto;
+}
+
+td.pseudocode-and-controls, td.variable-widgets {
+    padding: 0px;
+    vertical-align: top;
+    border: 1px solid @border-color;
+}
+
+.pseudocode-procedures {
+    padding: 10px;
+    text-align: left;
+}
+
+table.vamonos .controls {
+    border-width: 0 0 1px 0;
+}
+
+table.variable-widgets {
+    border-spacing: 5px 10px; 
+    border-collapse: collapse;
+}
+table.variable-widgets > tbody > tr > td {
+    vertical-align: middle;
+}
+table.variable-widgets  div {
+    border-spacing: 0;  /* weird hack! */
+}
+table.variable-widgets > tbody > tr > td:first-child {
+    background: #eee;
+    text-align: right;
+    vertical-align: top;
+}
+table.variable-widgets > tbody > tr:nth-child(even) > td:first-child {
+    background: #ddd;
+    text-align: right;
+    vertical-align: top;
+}
+table.variable-widgets > tbody > tr > td {
+    padding: 8px;
+}
+
 
 
 
@@ -227,10 +278,6 @@ table.array {
             background-color: @med-shaded-color;
         }
 
-        &.changed {
-            .background-highlight-pulse;
-        }
-
     }
 
     .no-indices & {
@@ -265,6 +312,11 @@ table.pseudocode {
 td.pseudocode-title {
     font-style: italic;
     border-bottom: 1px solid black;
+    padding-top: 18px;
+}
+
+:first-child > table.pseudocode td.pseudocode-title {
+    padding-top: 0px;
 }
 
 td.pseudocode-line-number {
@@ -374,8 +426,9 @@ tr.pseudocode-active {
 div.graph-label {
     font-family: sans-serif;
     font-size: .8em;
-    color: #572400;
     cursor: default;
+    background: white;
+    padding: 0 1px 0 1px;
 }
 
 div.graph-drawer {
@@ -437,12 +490,8 @@ div.graph-drawer {
         cursor: crosshair;
     }
 
-    &.changed {
-        .background-highlight-pulse;
-
-        .vertex-nw-label, .vertex-ne-label, .vertex-sw-label, .vertex-se-label {
+    &.changed .vertex-nw-label, .vertex-ne-label, .vertex-sw-label, .vertex-se-label {
             .no-animation;
-        }
     }
 
     // LABELS
@@ -639,14 +688,18 @@ button.controls-button {
     white-space: nowrap;
 }
 
+.controls {
+    .bg-gradient-glossy();
+    border: 1px solid @border-color;
+
+    padding: 8px;
+}
+
 .controls-fullscreen {
     position: fixed;
     width: 100%;
     bottom: 0px;
     left: 0px;
-    .bg-gradient-glossy();
-    border-top: 1px solid @border-color;
-    padding: 8px;
 
     z-index: 50;
 }
@@ -663,32 +716,8 @@ button.controls-button {
 //////////////////////
 // VAR DISPLAY
 
-table.var-display {
-    border-collapse: collapse;
-    text-align: left;
-
-    td {
-        margin: 0;
-        padding: 2px;
-    }
-
-    tr.header {
-        font-style: italic;
-        border-bottom: 1px solid black;
-    }
-
-    td.var {
-        text-align: right;
-        .variable-name();
-    }
-
-    tr.watched-var {
-        background: #EAFADE
-    }
-
-    & tr.changed {
-        .background-highlight-pulse;
-    }
+.var-display {
+    display: inline-block;
 }
 
 
@@ -774,9 +803,6 @@ table.matrix {
 
         border: 1px solid #888;
 
-        &.changed {
-            .background-highlight-pulse();
-        }
         &.shaded, &.shaded.row-highlight, &.shaded.col-highlight, &.shaded.row-highlight.col-highlight,  {
             background-color: @dark-shaded-color;
         }

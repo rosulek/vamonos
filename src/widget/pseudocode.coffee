@@ -69,7 +69,7 @@ class Pseudocode
         @$tbl.find("tr[vamonos-linenumber=#{ n }]").addClass(klass) if Vamonos.isNumber(n)
 
     keywords: "for while if else elseif elsif elif begin end then repeat until
-               to downto by return error throw and or swap"
+               to downto by return error throw and or swap each"
                    .split(/\s+/)
                    .sort((a,b) -> b.length - a.length)
 

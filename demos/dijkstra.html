@@ -3,7 +3,7 @@
     <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
 
     <link rel="stylesheet" href="../lib/vamonos.css">
-    <link rel="stylesheet" href="demos.css">
+
     <script type="text/javascript" src="../deps/jquery.min.js"></script>
     <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
     <script type="text/javascript" src="../deps/jquery-jsplumb.js"></script>
@@ -11,112 +11,97 @@
     <script type="text/javascript" src="../lib/vamonos.js"></script>
 
     <style type="text/css">
+        .vertex {
+            width: 40;
+            height: 30;
+        }
+
         .vertex-contents {
-            font-family: sans-serif;
             font-size: .8em;
         }
 
+        .vertex-ne-label, .vertex-nw-label {
+            font-weight: bold;
+        }
+
         .vertex-sw-label {
-            font-family: sans-serif;
-            font-size: .6em; 
-        }
-
-        .vertex-ne-label {
             font-style: italic;
-            color: #FF7D7D;
         }
 
-        .vertex-nw-label {
-            font-style: italic;
-            color: #274D1A;
+        .color-white { 
+            background: white; 
         }
 
-        .done {
-            background: #1F3A66; 
+        .color-gray {
+            background: #888; 
         }
 
-        .done .vertex-contents { 
+        .color-black {
+            background: black;
+        }
+
+        .color-black .vertex-contents, .color-gray .vertex-contents { 
             color: white; 
         }
 
-        table.allvars {
-            border-spacing: 5px 10px; 
-            border-collapse: collapse;
-            margin: -10px;
-        }
-        table.allvars td {
-            vertical-align: top;
-            text-align: right;
-        }
-        table.allvars div {
-            border-spacing: 0;  /* weird hack! */
-        }
-        table.allvars > tbody > tr > td:first-child {
-            background: #eee;
-            text-align: right;
-        }
-        table.allvars > tbody > tr:nth-child(even) > td:first-child {
-            background: #ddd;
-            text-align: right;
-        }
-        table.allvars > tbody > tr > td {
-            padding: 8px;
-        }
-
-        .container {
-            vertical-align: top;
+        body {
+            text-align: center;
         }
     </style>
 
 </head><body>
 
-    <h1>Dijkstra's Algorithm</h1>
+    <h1>Dijkstra's algorithm demo using Vamonos</h1>
 
-        <div class="container">
-            <div id="pseudocode-main" title="Dijkstra(G,s):" style="display: inline-block">
-                for each vertex u &in; G.V - {s}
-                    u.d = &#x221E;
-                    u.pred = null
-                    u.done = false
-                s.d = 0
-                Q = G.V
-                while Q &ne; &empty;
-                    u = Q.extractMin()
-                    u.done = true
-                    for each v &in; G.Adj[u]
-                        Relax(u,v)
-            </div><br><br>
-            <div id="pseudocode-relax" title="Relax(G,u,v):" style="display: inline-block">
-                if u.d + G.edge(u,v).w < v.d
-                    v.d = u.d + G.edge(u,v).w
-                    v.pred = u
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
+
+            <div id="controls"></div>
+
+            <div class="pseudocode-procedures">
+
+                <div id="pseudocode-main" title="Dijkstra(G,s):">
+                    for each vertex u &in; G.V - {s}
+                        u.d = &#x221E;
+                        u.pred = null
+                        u.done = false
+                    s.d = 0
+                    Q = G.V
+                    while Q &ne; &empty;
+                        u = Q.extractMin()
+                        u.done = true
+                        for each v &in; G.Adj[u]
+                            Relax(u,v)
+                </div>
+
+                <div id="pseudocode-relax" title="Relax(G,u,v):">
+                    if u.d + G.edge(u,v).w &lt; v.d
+                        v.d = u.d + G.edge(u,v).w
+                        v.pred = u
+                </div>
+
             </div>
-            <br><br>
-            <div id="controls" style="background: #eee;
-                                      padding: 10px;
-                                      margin: -10px;
-                                      margin-top: 0;
-                                      border-top: 1px solid #ccc;
-                                      background: -moz-linear-gradient(top,  #f4f4f4 0%, #eeeeee 10%, #eeeeee 50%, #dddddd 90%, #cccccc 100%);
-                                      background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f4f4f4), color-stop(10%,#eeeeee), color-stop(50%,#eeeeee), color-stop(90%,#dddddd), color-stop(100%,#cccccc));
-                                      background: -webkit-linear-gradient(top,  #f4f4f4 0%,#eeeeee 10%,#eeeeee 50%,#dddddd 90%,#cccccc 100%);
-                                      background: -o-linear-gradient(top,  #f4f4f4 0%,#eeeeee 10%,#eeeeee 50%,#dddddd 90%,#cccccc 100%);
-                                      background: -ms-linear-gradient(top,  #f4f4f4 0%,#eeeeee 10%,#eeeeee 50%,#dddddd 90%,#cccccc 100%);
-                                      background: linear-gradient(to bottom,  #f4f4f4 0%,#eeeeee 10%,#eeeeee 50%,#dddddd 90%,#cccccc 100%);
-                                      filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f4f4f4', endColorstr='#cccccc',GradientType=0 );"></div>
-        </div>
 
-        <div class="container">
-            <table class="allvars">
-                <tr><td><div id="varname1"></div></td>
+        </td><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="g-var"></div></td>
                     <td><div id="graph"></div></td>
                 </tr>
-                <tr><td><div id="varname2"></div></td></tr>
-                <tr><td><div id="varname3"></div></td></tr>
-                <tr><td><div id="varname4"></div></td>
+                <tr><td><div id="u-var"></div></td>
+                    <td><div id="u"></div></td>
+                </tr>
+                </tr>
+                <tr><td><div id="v-var"></div></td>
+                    <td><div id="v"></div></td>
+                </tr>
+                <tr><td><div id="q-var"></div></td>
                     <td><div id="queue"></div></td></tr>
             </table>
-        </div>
+
+        </td></tr>
+
+    </table>
 
 
 </body>
@@ -127,9 +112,16 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Queue({
             container: "queue",
-            varName: "main::Q",
+            varName: "global::Q",
             showLabel: false,
             displayOnly: true,
+            cellFormat: function (v) { 
+                if (v) {
+                    var d = (v.d == Infinity ? "\u221E" : v.d);
+                    return v.name + " : " + d;
+                }
+                else return "";
+            }
         }),
 
         new Vamonos.Widget.Pseudocode("pseudocode-main"),
@@ -147,22 +139,38 @@ var myviz = new Vamonos.Visualizer({
 //        }),
 
         new Vamonos.Widget.VarName({
-            container: "varname1",
+            container: "g-var",
             varName: "G",
             inputVar: true,
         }),
         new Vamonos.Widget.VarName({
-            container: "varname2",
-            varName: "u"
+            container: "u-var",
+            varName: "u",
+            watching: true
         }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "u",
+            varName: "u",
+            attributes: ["done","pred","d"]
+        }),
+
         new Vamonos.Widget.VarName({
-            container: "varname3",
+            container: "v-var",
             varName: "v",
         }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "v",
+            varName: "v",
+            attributes: ["done","pred","d"]
+        }),
+
         new Vamonos.Widget.VarName({
-            container: "varname4",
-            varName: "Q",
-            watchable: false
+            container: "q-var",
+            varName: "global::Q",
+            displayName: "Q",
+            watching: true,
         }),
 
         new Vamonos.Widget.Graph({
@@ -234,13 +242,13 @@ _(4);               u.done = false;
                 });
 
 _(5);           s.d = 0;
-_(6);           Q = new Vamonos.DataStructure.Queue({
+_(6);           global.Q = new Vamonos.DataStructure.Queue({
                     initialArray: G.getVertices(),
                     comparator: function(a,b){ return a.d - b.d },
                 });
 
-                while (_(7), !Q.isEmpty()) {
-_(8);               u = Q.extractMin();
+                while (_(7), !global.Q.isEmpty()) {
+_(8);               u = global.Q.extractMin();
 _(9);               u.done = true;
                     G.eachNeighbor(u, function(vtx){
 _(10);                  v = vtx;
@@ -255,7 +263,7 @@ _(11);                  relax({u:u,v:v,G:G});
         relax: function(_){
             with (this) {
                 if (_(1), u.d + G.edge(u,v).w < v.d) {
-_(2);               v.d = u.d + G.edge(u,v).w;
+_(2);               v.d = u.d + G.edge(u,v).w; global.Q.resort();
 _(3);               v.pred = u;
                 }
             }

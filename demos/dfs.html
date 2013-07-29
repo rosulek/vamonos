@@ -2,44 +2,27 @@
 <head>
 
     <link rel="stylesheet" href="../lib/vamonos.css">
-    <link rel="stylesheet" href="demos.css">
     <script type="text/javascript" src="../deps/jquery.min.js"></script>
     <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
     <script type="text/javascript" src="../deps/jquery-jsplumb.js"></script>
     <script type="text/javascript" src="../lib/vamonos.js"></script>
 
     <style type="text/css">
-        .vamonos-col { 
-            display: inline;
-            float: left;
-            text-align: center;
-            margin: 8px;
-            margin-bottom: 50px;
-        }
-
         .vertex {
             width: 40;
             height: 30;
         }
 
         .vertex-contents {
-            font-family: sans-serif;
             font-size: .8em;
         }
 
+        .vertex-ne-label, .vertex-nw-label {
+            font-weight: bold;
+        }
+
         .vertex-sw-label {
-            font-family: sans-serif;
-            font-size: .6em; 
-        }
-
-        .vertex-ne-label {
             font-style: italic;
-            color: #FF7D7D;
-        }
-
-        .vertex-nw-label {
-            font-style: italic;
-            color: #274D1A;
         }
 
         .color-white { 
@@ -47,80 +30,71 @@
         }
 
         .color-gray {
-            background: #B8E8AE; 
+            background: #888; 
         }
 
         .color-black {
-            background: #1F3A66; 
+            background: black;
         }
 
-        .color-black .vertex-contents { 
+        .color-black .vertex-contents, .color-gray .vertex-contents { 
             color: white; 
         }
 
-        table.allvars {
-            border-spacing: 5px 10px; 
-            border-collapse: collapse;
-            margin: -10px;
+        body {
+            text-align: center;
         }
-        table.allvars > tbody > tr > td {
-            vertical-align: top;
-        }
-        table.allvars  div {
-            border-spacing: 0;  /* weird hack! */
-        }
-        table.allvars > tbody > tr > td:first-child {
-            background: #eee;
-            text-align: right;
-        }
-        table.allvars > tbody > tr:nth-child(even) > td:first-child {
-            background: #ddd;
-            text-align: right;
-        }
-        table.allvars > tbody > tr > td {
-            padding: 8px;
-        }
-
     </style>
 
 </head>
 <body>
 
-    <h1>Depth-First Search</h1>
+    <h1>DFS demo using Vamonos</h1>
 
-        <div class="container">
-            <div id="pseudocode-dfs" title="DFS(G):">
-                for each vertex u &in; G.V
-                    u.color = white
-                time = 0
-                for each vertex u &in; G.V
-                    if u.color == white
-                        DFS-Visit(G,u)
-            </div><br><br>
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
 
-            <div id="pseudocode-visit" title="DFS-Visit(G,u):">
-                u.d = ++time
-                u.color = gray
-                <b>for</b> each v &in; G.Adj[u]
-                    <b>if</b> v.color == white
-                        DFS-Visit(G,v)
-                u.color = black
-                u.f = ++time
+            <div id="controls"></div>
+
+            <div class="pseudocode-procedures">
+                <div id="pseudocode-dfs" title="DFS(G):">
+                    for each u &in; G.V
+                        u.color = white
+                    time = 0
+                    for each u &in; G.V
+                        if u.color == white
+                            DFS-Visit(G,u)
+                </div>
+
+                <div id="pseudocode-visit" title="DFS-Visit(G,u):">
+                    u.d = ++time
+                    u.color = gray
+                    <b>for</b> each v &in; G.Adj[u]
+                        <b>if</b> v.color == white
+                            DFS-Visit(G,v)
+                    u.color = black
+                    u.f = ++time
+                </div>
+
             </div>
-        </div>
 
-        <div class="container">
-            <table class="allvars">
-                <tr><td><div id="varname1"></div></td>
-                    <td><div id="graph"></div></td>
-                </tr>
-                <tr><td><div id="varname2"></div></td></tr>
-                <tr><td><div id="varname3"></div></td>
-                    <td><div id="stack"></div></td></tr>
-            </table>
-        </div>
+        </td><td class="variable-widgets">
 
-    <div id="controls"></div>
+                <table class="variable-widgets">
+                    <tr><td><div id="g-var"></div></td>
+                        <td><div id="graph"></div></td>
+                    </tr>
+                    <tr><td><div id="time-var"></div></td>
+                        <td><div id="time"></div></td>
+                    </tr>
+                    <tr><td><div id="stack-var"></div></td>
+                        <td><div id="stack"></div></td></tr>
+
+                </table>
+
+        </td></tr>
+    </table>
+
 
 </body>
 
@@ -130,16 +104,22 @@ var myviz = new Vamonos.Visualizer({
         new Vamonos.Widget.Console({}),
 
         new Vamonos.Widget.VarName({
-            container: "varname1",
+            container: "g-var",
             varName: "G",
             inputVar: true,
         }),
         new Vamonos.Widget.VarName({
-            container: "varname2",
+            container: "time-var",
             varName: "time"
         }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "time",
+            varName: "time"
+        }),
+
         new Vamonos.Widget.VarName({
-            container: "varname3",
+            container: "stack-var",
             varName: "_callstack",
             displayName: "Call Stack",
             watching: true
@@ -165,8 +145,7 @@ var myviz = new Vamonos.Visualizer({
         }),
 
         new Vamonos.Widget.Controls({
-            container: "controls",
-            fullscreen: "auto"
+            container: "controls"
         }),
 
         new Vamonos.Widget.Graph({

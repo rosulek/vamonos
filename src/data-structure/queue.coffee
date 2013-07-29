@@ -16,7 +16,7 @@ class Queue
         @guts.shift()
 
     extractMin: () ->
-        @guts.sort(@comparator)
+        @resort()
         @dequeue()
 
     isEmpty: () ->
@@ -27,6 +27,9 @@ class Queue
             initialArray: Vamonos.clone(@guts)
             comparator: @comparator
         })
+
+    resort: ->
+        @guts.sort(@comparator)
 
     toString: () ->
         if @isEmpty() 
