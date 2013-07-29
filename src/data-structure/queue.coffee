@@ -1,7 +1,8 @@
 class Queue
 
-    constructor: ({initialArray, @comparator}) ->
-        @initialize(initialArray)
+    constructor: (arg = {}) ->
+        @initialize(arg?.initialArray ? [])
+        @comparator = arg?.comparator
         @type = 'queue'
 
     initialize: (elems = []) ->

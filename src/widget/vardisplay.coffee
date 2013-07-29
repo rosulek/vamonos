@@ -26,13 +26,13 @@ class VarDisplay
 
     showVars: (frame, type) ->
         if not frame[@varName]?
-            newval = "<i>undef</i>" 
+            newval = "-" 
         else if @attributes?
             vals = for attr in @attributes 
                 if frame[@varName][attr]?
                     "#{attr}: #{Vamonos.rawToTxt(frame[@varName][attr])}"
                 else
-                    "#{attr}: <i>undef</i>"
+                    "#{attr}: -"
             newval = "{ #{vals.join(", ")} }"
         else
             newval = Vamonos.rawToTxt(frame[@varName])

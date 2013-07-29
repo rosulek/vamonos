@@ -1,31 +1,27 @@
 <html><head>
 
     <link rel="stylesheet" href="../lib/vamonos.css">
-    <link rel="stylesheet" href="demos.css">
     <script type="text/javascript" src="../deps/jquery.min.js"></script>
     <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
     <script type="text/javascript" src="../deps/jquery-jsplumb.js"></script>
     <script type="text/javascript" src="../lib/vamonos.js"></script>
 
     <style type="text/css">
+        .vertex {
+            width: 40;
+            height: 30;
+        }
+
         .vertex-contents {
-            font-family: sans-serif;
             font-size: .8em;
         }
 
+        .vertex-ne-label, .vertex-nw-label {
+            font-weight: bold;
+        }
+
         .vertex-sw-label {
-            font-family: sans-serif;
-            font-size: .6em; 
-        }
-
-        .vertex-ne-label {
             font-style: italic;
-            color: #FF7D7D;
-        }
-
-        .vertex-nw-label {
-            font-style: italic;
-            color: #274D1A;
         }
 
         .color-white { 
@@ -33,54 +29,74 @@
         }
 
         .color-gray {
-            background: #B8E8AE; 
+            background: #888; 
         }
 
         .color-black {
-            background: #1F3A66; 
+            background: black;
         }
 
-        .color-black .vertex-contents { 
+        .color-black .vertex-contents, .color-gray .vertex-contents { 
             color: white; 
         }
 
-        td { 
-            vertical-align: top;
-            text-align: left;
+        body {
+            text-align: center;
         }
     </style>
 
 </head><body>
 
-    <h1>Breadth-First Search</h1>
+    <h1>BFS demo using Vamonos</h1>
 
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
 
-    <div class="vamonos left">
-        <table><tr><td>
-        <div class="container" id="pseudocode" title="BFS(G,s):">
-            for each vertex u &in; G.V - {s}
-                u.color = white
-            s.color = gray
-            s.d = 0
-            Q = &empty;
-            Q.enqueue(s)
-            while Q &ne; &empty;
-                u = Q.dequeue()
-                for each v &in; G.Adj[u]
-                    if v.color == white
-                        v.color = gray
-                        v.d = u.d + 1
-                        Q.enqueue(v)
-                u.color = black
-        </div>
-        <br>
-        <div id="controls"></div>
-        </td><td valign='top' align='left'>
-            <div class="container" id="graph" style="width:220; height:180;"></div>
-            <div class="container" id="vardisplay"></div><br>
-            <div class="no-indices" id="queue"></div><br>
-        </td></tr></table>
-    </div>
+            <div id="controls"></div>
+
+            <div class="pseudocode-procedures">
+
+                <div id="pseudocode" title="BFS(G,s):">
+                    for each u &in; G.V - {s}
+                        u.color = white
+                    s.color = gray
+                    s.d = 0
+                    Q = &empty;
+                    Q.enqueue(s)
+                    while Q &ne; &empty;
+                        u = Q.dequeue()
+                        for each v &in; G.Adj[u]
+                            if v.color == white
+                                v.color = gray
+                                v.d = u.d + 1
+                                v.pred = u
+                                Q.enqueue(v)
+                        u.color = black
+                </div>
+
+            </div>
+
+        
+        </td><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="g-var"></div></td>
+                    <td><div id="graph"></div></td>
+                </tr>
+                <tr><td><div id="u-var"></div></td>
+                    <td><div id="u"></div></td>
+                </tr>
+                </tr>
+                <tr><td><div id="v-var"></div></td>
+                    <td><div id="v"></div></td>
+                </tr>
+                <tr><td><div id="q-var"></div></td>
+                    <td><div id="queue"></div></td></tr>
+            </table>
+
+        </td></tr>
+    </table>
+
 </body>
 <script type="text/javascript">
 
@@ -91,15 +107,45 @@ var myviz = new Vamonos.Visualizer({
         new Vamonos.Widget.Queue({
             container: "queue",
             varName: "Q",
-            showLabel: true,
-            displayOnly: true,
+            showLabel: false,
+            displayOnly: true
         }),
 
-        new Vamonos.Widget.Pseudocode("pseudocode"),
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode",
+            breakpoints: [8,11],
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "g-var",
+            varName: "G",
+            inputVar: true,
+        }),
+        new Vamonos.Widget.VarName({
+            container: "u-var",
+            varName: "u",
+        }),
 
         new Vamonos.Widget.VarDisplay({
-            container: "vardisplay",
-            watch: ["u[color,d]", "v[color,d]", "Q[none]", "*G[none]"]
+            container: "u",
+            varName: "u",
+            attributes: ["name","color","d","pred"]
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "v-var",
+            varName: "v",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "v",
+            varName: "v",
+            attributes: ["name","color","d","pred"]
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "q-var",
+            varName: "Q",
         }),
 
         new Vamonos.Widget.Graph({
@@ -125,6 +171,10 @@ var myviz = new Vamonos.Visualizer({
             },
             colorEdges: [ 
                 ["u->v", "#FF7D7D"],
+                [ function(edge){
+                    return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
+                        || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }
+                , "#92E894" ],
             ],
             defaultGraph: new Vamonos.DataStructure.Graph({
                 vertices: [ 
@@ -144,6 +194,9 @@ var myviz = new Vamonos.Visualizer({
                     {source: 'v1',target: 'v4'},
                     {source: 'v3',target: 'v4'},
                     {source: 'v3',target: 'v6'},
+                    {source: 'v3',target: 'v7'},
+                    {source: 'v4',target: 'v8'},
+                    {source: 'v4',target: 'v7'},
                     {source: 'v5',target: 'v8'},
                     {source: 'v6',target: 'v7'},
                     {source: 'v7',target: 'v8'},
@@ -152,8 +205,6 @@ var myviz = new Vamonos.Visualizer({
         }),
 
     ],
-
-    autoStart: false,
 
     algorithm: function (_) {
         with (this) {
@@ -174,11 +225,12 @@ _(9);               v = vtx;
 _(10);               if (v.color === "white") {
 _(11);                  v.color = "gray";
 _(12);                  v.d = u.d + 1;
-_(13);                  Q.enqueue(v);
+_(13);                  v.pred = u;
+_(14);                  Q.enqueue(v);
                     }
                 });
                 v = undefined;
-_(14);          u.color = "black";
+_(15);          u.color = "black";
             }
             u = undefined;
         }
