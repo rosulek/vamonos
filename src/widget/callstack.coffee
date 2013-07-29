@@ -1,14 +1,22 @@
 class CallStack
 
-    constructor: ({container, @procedureNames, @animate}) ->
+    constructor: ({container, @procedureNames, @animate, @resizable}) ->
         @procedureNames ?= {}
         @$container      = Vamonos.jqueryify(container)
         @animate        ?= ["next"]
+        @resizable      ?= true
 
         @$inner = $("<div>", {class: "callstack"}).appendTo(@$container)
         @$table = $("<table>", {class: "callstack"}).appendTo(@$inner)
 
         @$container.hide()
+
+        if @resizable
+            @$container.resizable(
+                handles: "se"
+                alsoResize: @$inner
+            )
+            @$container.addClass("ui-resizable-roomforscrollbar")
 
         @$argRows  = []
         @$procRows = []

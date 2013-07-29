@@ -1,52 +1,83 @@
 <html><head>
 
+    <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
+
     <link rel="stylesheet" href="../lib/vamonos.css">
-    <link rel="stylesheet" href="../demos/demos.css">
     <script type="text/javascript" src="../deps/jquery.min.js"></script>
     <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
     <script type="text/javascript" src="../lib/vamonos.js"></script>
+    <script type="text/javascript" src="../deps/jquery-qtip.min.js"></script>
 
     <style type="text/css">
-        .vamonos-col { 
-            display: inline;
-            float: left;
+        body {
             text-align: center;
-            margin: 8px;
         }
     </style>
 
+
 </head><body>
 
-    <h1>Typical recursion:</h1>
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
 
-    <div class="vamonos-col">
-        <div class="container" id="fact" title="Fact(n):">
-            if n &le; 1
-                return n
-            return n * Fact(n-1)
-        </div><br>
-        <div id="controls"></div><br>
-    </div>
-    <div class="vamonos-col">
-        <div class="container" id="stack"></div><br>
-    </div>
+            <div class="pseudocode-procedures">
 
+                <div id="fact" title="Fact(n):">
+                    if n &le; 1
+                        return n
+                    return n * Fact(n-1)
+                </div>
 
-    <div style="height: 20px; clear: left"></div>
-    <h1>Tail recursion:</h1>
+            </div>
 
+        </td></tr><tr><td>
 
-    <div class="vamonos-col">
-        <div class="container" id="fact2" title="Fact(n, acc):">
-            if n &le; 1
-                return acc
-            return Fact(n-1, acc*n)
-        </div><br>
-        <div id="controls2"></div><br>
-    </div>
-    <div class="vamonos-col">
-        <div class="container" id="stack2"></div><br>
-    </div>
+            <div id="controls"></div>
+
+        </td></tr><tr><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="stack-var"></div></td>
+                    <td><div id="stack"></div></td>
+                </tr>
+            </table>
+
+        </td></tr>
+
+    </table>
+
+    &nbsp;
+    &nbsp;
+    &nbsp;
+
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
+
+            <div class="pseudocode-procedures">
+
+                <div id="fact2" title="Fact(n, acc):">
+                    if n &le; 1
+                        return acc
+                    return Fact(n-1, acc*n)
+                </div>
+
+            </div>
+
+        </td></tr><tr><td>
+
+            <div id="controls2"></div>
+
+        </td></tr><tr><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="stack-var2"></div></td>
+                    <td><div id="stack2"></div></td>
+                </tr>
+            </table>
+
+        </td></tr>
+
+    </table>
 
 
 </body><script>
@@ -66,6 +97,12 @@ var myviz = new Vamonos.Visualizer({
                 main: "Fact",
             },
         }),
+        new Vamonos.Widget.VarName({
+            container: "stack-var",
+            varName: "_callstack",
+            displayName: "Call Stack",
+            watching: true
+        })
     ],
 
     algorithm: function(_) {
@@ -97,6 +134,13 @@ var myviz2 = new Vamonos.Visualizer({
                 main: "Fact",
             },
         }),
+
+        new Vamonos.Widget.VarName({
+            container: "stack-var2",
+            varName: "_callstack",
+            displayName: "Call Stack",
+            watching: true
+        })
     ],
 
     algorithm: function(_) {
