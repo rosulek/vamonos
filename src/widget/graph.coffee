@@ -233,6 +233,8 @@ class Graph
             target: targetId
             paintStyle: @displayWidget.potentialEdgePaintStyle
 
+        @displayWidget.setOverlays(@potentialEdge)
+
     removePotentialEdge: () =>
         return unless @potentialEdge?
         @displayWidget.jsPlumbInstance.detach(@potentialEdge)
@@ -240,7 +242,7 @@ class Graph
 
     openDrawer: ->
         if @$drawer?
-            @$drawer.html("")
+            @$drawer.html("<div class='graph-drawer'></div>")
         else
             @$drawer = $("<div>", { class: "graph-drawer" }).hide()
             @displayWidget.$outer.parent().append(@$drawer)
@@ -249,44 +251,43 @@ class Graph
 
         switch type
             when 'vertex'
-                elem = @theGraph.vertex(@$selectedNode.attr("id"))
-                $("<span class='label'>vertex&nbsp;&nbsp;#{elem.name}&nbsp;&nbsp;</span>")
+                vtx = @theGraph.vertex(@$selectedNode.attr("id"))
+                $("<span class='label'>vertex&nbsp;&nbsp;#{vtx.name}&nbsp;&nbsp;</span>")
                     .appendTo(@$drawer)
 
                 for v of @inputVars
                     $("<button>", {text: "#{v}"})
                         .on "click.vamonos-graph", (e) =>
-                            @inputVars[v] = elem
+                            @inputVars[v] = vtx
                             @displayWidget.draw(@theGraph, @inputVars)
                         .appendTo(@$drawer)
+
+                $("<button>", {text: "del"})
+                    .on "click.vamonos-graph", (e) =>
+                        @removeVertex(vtx.id)
+                    .appendTo(@$drawer)
 
             when 'edge'
                 sourceId = @$selectedConnection.sourceId
                 targetId = @$selectedConnection.targetId
-                elem = @theGraph.edge(sourceId, targetId)
-                nametag =
-                    elem.source.name + "&nbsp;" +
-                    (if @theGraph.directed then "->" else "-") +
-                    "&nbsp;" + elem.target.name
-                @$drawer.append(
-                    "<span class='label'>edge&nbsp;&nbsp;#{nametag}&nbsp;&nbsp;</span>"
-                )
+                edge     = @theGraph.edge(sourceId, targetId)
+                nametag  = 
+                    edge.source.name + "&nbsp;" +
+                    (if @theGraph.directed then "&rarr;" else "-") +
+                    "&nbsp;" + edge.target.name
+                $("<span class='label'>edge&nbsp;&nbsp;#{nametag}&nbsp;&nbsp;</span>")
+                    .appendTo(@$drawer)
 
-        $deleteButton = $("<button>", {text: "del"})
-            .on "click.vamonos-graph", (e) =>
-                switch type
-                    when 'vertex'
-                        @removeVertex(elem.id)
-                    when 'edge'
-                        @removeEdge(elem.source.id, elem.target.id)
-            .appendTo(@$drawer)
+                $("<button>", {text: "del"})
+                    .on "click.vamonos-graph", (e) =>
+                        @removeEdge(edge.source.id, edge.target.id)
+                    .appendTo(@$drawer)
 
         @$drawer.fadeIn("fast") unless @$drawer.is(":visible")
 
     closeDrawer: () ->
         return unless @$drawer?
         @$drawer.fadeOut("fast")
-        @$drawer = undefined
 
     createEditableEdgeLabel: (edge, $wrapper = $("<div>")) =>
         val = Vamonos.rawToTxt(edge[@edgeLabel[0]] ? "")

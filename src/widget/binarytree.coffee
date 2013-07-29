@@ -98,7 +98,6 @@ class BinaryTree
     closeDrawer: () ->
         return unless @$drawer?
         @$drawer.fadeOut("fast")
-        @$drawer.hide()
 
 
 Vamonos.export { Widget: { BinaryTree } }

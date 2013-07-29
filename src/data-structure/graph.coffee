@@ -56,7 +56,7 @@ class Graph
     edge: (source, target) ->
         sourceId = @idify(source)
         targetId = @idify(target)
-        @edges[sourceId]?[targetId] or @directed and @edges[targetId]?[sourceId]
+        @edges[sourceId]?[targetId] or not @directed and @edges[targetId]?[sourceId]
 
     addEdge: (source, target, attrs) ->
         sourceId = @idify(source)
