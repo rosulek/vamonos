@@ -1,7 +1,6 @@
 <html><head>
 
     <link rel="stylesheet" href="../lib/vamonos.css">
-    <link rel="stylesheet" href="demos.css">
     <script type="text/javascript" src="../deps/jquery.min.js"></script>
     <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
     <script type="text/javascript" src="../lib/vamonos.js"></script>
@@ -9,24 +8,38 @@
 
 </head><body>
 
-    <h1>Selection Sort</h1>
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
 
+            <div class="pseudocode-procedures">
 
-    <div class="vamonos">
-        <div class="container" id="pseudocode" title="SelectionSort(A):">
-            for i = 0 to A.length-2
-                # find smallest item in A[i..]
-                m = i
-                for j = i+1 to A.length-1
-                    if A[j] &lt; A[m]
-                        m = j
-                swap A[i] and A[m]
-        </div>
-        <br>
-        <div id="controls"></div>
-        <br>
-        <div class="container" id="array"></div>
-    </div>
+                <div id="pseudocode" title="SelectionSort(A):">
+                    for i = 0 to A.length-2
+                        # find smallest item in A[i..]
+                        m = i
+                        for j = i+1 to A.length-1
+                            if A[j] &lt; A[m]
+                                m = j
+                        swap A[i] and A[m]
+                </div>
+
+            </div>
+
+        </td></tr><tr><td>
+
+            <div id="controls"></div>
+
+        </td></tr><tr><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="a-var"></div></td>
+                    <td><div id="array"></div></td>
+                </tr>
+            </table>
+
+        </td></tr>
+
+    </table>
 </body>
 
 <script type="text/javascript">
@@ -44,7 +57,14 @@ var myviz = new Vamonos.Visualizer({
                 ["<", "i", "shaded"]
             ],
             showIndices: ["i", "m", "j"],
-            showLabel: true
+            showLabel: false
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "a-var",
+            varName: "A",
+            inputVar: true,
+            watchable: false
         }),
 
         new Vamonos.Widget.Pseudocode({

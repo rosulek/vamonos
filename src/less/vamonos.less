@@ -170,7 +170,7 @@ table.vamonos {
     margin: auto;
 }
 
-td.pseudocode-and-controls, td.variable-widgets {
+table.vamonos > tbody > tr > td {
     padding: 0px;
     vertical-align: top;
     border: 1px solid @border-color;
@@ -682,16 +682,18 @@ button.controls-button {
     }
 }
 
-.controls-buttons, .controls {
+.controls-buttons {
     text-align: center;
     display: inline-block;
     white-space: nowrap;
 }
 
+
 .controls {
     .bg-gradient-glossy();
     border: 1px solid @border-color;
-
+    display: block;
+    text-align: center;
     padding: 8px;
 }
 

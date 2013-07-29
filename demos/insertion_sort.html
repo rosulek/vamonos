@@ -3,34 +3,46 @@
     <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
 
     <link rel="stylesheet" href="../lib/vamonos.css">
-    <link rel="stylesheet" href="demos.css">
     <script type="text/javascript" src="../deps/jquery.min.js"></script>
     <script type="text/javascript" src="../deps/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="../deps/jquery.ui.touch-punch.min.js"></script>
     <script type="text/javascript" src="../lib/vamonos.js"></script>
+    <script type="text/javascript" src="../deps/jquery-qtip.min.js"></script>
 
 </head><body>
 
-    <h1>Insertion Sort</h1>
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
 
+            <div class="pseudocode-procedures">
 
-    <div class="vamonos">
-        <div class="container" id="pseudocode" title="InsertionSort(A):">
-            for j = 2 to A.length
-                key = A[j]
-                i = j - 1
-                while i &gt; 0 and A[i] &gt; key
-                    A[i + 1]  = A[i]
-                    i = i - 1
-                A[i + 1] = key
-        </div>
-        <br>
-        <div id="controls"></div>
-        <br>
-        <div class="container" id="array"></div>
-    </div>
+                <div id="pseudocode" title="InsertionSort(A):">
+                    for j = 2 to A.length
+                        key = A[j]
+                        i = j - 1
+                        while i &gt; 0 and A[i] &gt; key
+                            A[i + 1]  = A[i]
+                            i = i - 1
+                        A[i + 1] = key
+                </div>
+
+            </div>
+
+        </td></tr><tr><td>
+
+            <div id="controls"></div>
+
+        </td></tr><tr><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="a-var"></div></td>
+                    <td><div id="array"></div></td>
+                </tr>
+            </table>
+
+        </td></tr>
+
+    </table>
 </body>
-
 <script type="text/javascript">
 
 var myviz = new Vamonos.Visualizer({
@@ -45,8 +57,15 @@ var myviz = new Vamonos.Visualizer({
                 [">", "j", "shaded"]
             ],
             showIndices: ["i", "j"],
-            showLabel: true,
-            persistent: true
+            showLabel: false,
+//            persistent: true
+            
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "a-var",
+            varName: "A",
+            inputVar: true,
         }),
 
         new Vamonos.Widget.Pseudocode({
