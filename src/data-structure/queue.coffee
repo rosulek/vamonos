@@ -1,12 +1,11 @@
 class Queue
 
-    constructor: (@args = {}) ->
-        @initialize(@args.initialArray?.slice())
+    constructor: ({initialArray, @comparator}) ->
+        @initialize(initialArray)
         @type = 'queue'
-        @comparator = @args.comparator
 
     initialize: (elems = []) ->
-        @guts = elems
+        @guts = elems[..]
         return this
 
     enqueue: (elem) ->
