@@ -80,17 +80,24 @@
 
         </td><td class="variable-widgets">
 
-                <table class="variable-widgets">
-                    <tr><td><div id="g-var"></div></td>
-                        <td><div id="graph"></div></td>
-                    </tr>
-                    <tr><td><div id="time-var"></div></td>
-                        <td><div id="time"></div></td>
-                    </tr>
-                    <tr><td><div id="stack-var"></div></td>
-                        <td><div id="stack"></div></td></tr>
+            <table class="variable-widgets">
+                <tr><td><div id="g-var"></div></td>
+                    <td><div id="graph"></div></td>
+                </tr>
+                <tr><td><div id="time-var"></div></td>
+                    <td><div id="time"></div></td>
+                </tr>
+                <tr><td><div id="u-var"></div></td>
+                    <td><div id="u"></div></td>
+                </tr>
+                </tr>
+                <tr><td><div id="v-var"></div></td>
+                    <td><div id="v"></div></td>
+                </tr>
+                <tr><td><div id="stack-var"></div></td>
+                    <td><div id="stack"></div></td></tr>
 
-                </table>
+            </table>
 
         </td></tr>
     </table>
@@ -146,6 +153,28 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Controls({
             container: "controls"
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "u-var",
+            varName: "u",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "u",
+            varName: "u",
+            attributes: ["name","color","d", "f"]
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "v-var",
+            varName: "v",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "v",
+            varName: "v",
+            attributes: ["name","color","d", "f"]
         }),
 
         new Vamonos.Widget.Graph({
