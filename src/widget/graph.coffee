@@ -12,6 +12,7 @@ class Graph
         containerMargin
         minX
         minY
+        resizable
     }) ->
 
         @inputVars    ?= {}
@@ -29,6 +30,7 @@ class Graph
             containerMargin: containerMargin
             minX: minX
             minY: minY
+            resizable: resizable
    
     event: (event, options...) -> switch event
         when "setup"
@@ -38,8 +40,12 @@ class Graph
 
         when "render"
             [frame, type] = options
-            @displayWidget.fitGraph(frame[@varName])
+            @displayWidget.fitGraph(frame[@varName]) unless @fitAlready
+            @fitAlready = true
             @displayWidget.draw(frame[@varName], frame)
+
+        when "displayStop"
+            @fitAlready = false
 
         when "editStart"    
             @startEditing()

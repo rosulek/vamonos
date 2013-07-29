@@ -10,6 +10,7 @@ class BinaryTree
             vertexLabels: {inner: (n)->n.val}
             draggable: false
             highlightChanges: false
+            resizable: false
 
     event: (event, options...) -> switch event
         when "setup"

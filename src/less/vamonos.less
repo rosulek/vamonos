@@ -138,6 +138,28 @@ input.inline-input:focus {
     outline: none;
 }
 
+
+/////////////////
+// JQUERY RESIZABLE
+
+.ui-resizable-se {
+    z-index: 90;
+    width: 16px;
+    height: 16px;
+    cursor: se-resize;
+    right: 1px;
+    bottom: 1px;    
+    position: absolute;
+    display: block;
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB90HHRMPFPEFI5gAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAUklEQVQ4y6XMyRHAIAzAQMX9t+aanF8GiAEf+q8eM6Oaqpp0MIB0cGkw4vRgxamBh8ODHQ4NTvg6uOHjIIK3gyh2Bxn8G2TxNKjgb1DFANLBAC/YXDl9wbVgpgAAAABJRU5ErkJggg==");
+}
+
+.ui-resizable {
+    position: relative;
+}
+
+
+
 ////////////////
 // ARRAYS
 
@@ -658,12 +680,14 @@ table.var-display {
 // CALL STACK
 
 div.callstack {
-    max-height: 180px;
-    overflow-y: auto;
+    height: 180px;
+    overflow-y: scroll;
+    text-align: center;
 }
 
 table.callstack {
     border-collapse: collapse;
+    margin: 0 auto 0 auto;
 }
 
 

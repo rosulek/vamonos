@@ -8,6 +8,8 @@ class CallStack
         @$inner = $("<div>", {class: "callstack"}).appendTo(@$container)
         @$table = $("<table>", {class: "callstack"}).appendTo(@$inner)
 
+        @$container.hide()
+
         @$argRows  = []
         @$procRows = []
 
@@ -22,6 +24,9 @@ class CallStack
             @$argRows  = []
             @$procRows = []
             @$table.empty()
+            @$container.hide()
+        when "displayStart"
+            @$container.show()
 
 
     render: (frame, type) ->

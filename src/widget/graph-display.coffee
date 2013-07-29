@@ -17,6 +17,7 @@ class GraphDisplay
         @minX
         @minY
         @draggable
+        @resizable
     }) ->
 
         @containerMargin  ?= 30
@@ -28,9 +29,17 @@ class GraphDisplay
         @$outer            = Vamonos.jqueryify(container)
         @$inner            = $("<div>", {class: "graph-inner-container"})
         @graphDrawn        = no
+        @resizable        ?= yes
 
         @$outer.append(@$inner)
         @$outer.disableSelection()
+
+        if @resizable
+            @$outer.resizable(
+                handles: "se"
+                minWidth: @minX
+                minHeight: @minY               
+            )
 
         @jsPlumbInstance = jsPlumb.getInstance
             Connector: ["Straight"]
@@ -96,6 +105,11 @@ class GraphDisplay
         else
             @$outer.width(max_x)
             @$outer.height(max_y)
+
+        if @resizable
+            @$outer.resizable("option", "minWidth", max_x)
+            @$outer.resizable("option", "minHeight", max_y)
+        
 
     clearDisplay: () ->
         @jsPlumbInstance.reset()
