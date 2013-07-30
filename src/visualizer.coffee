@@ -169,7 +169,7 @@ class Visualizer
         if n is 'call' and @returnedProc and @isWatchVar("_callstack")
             (reasons ?= {}).procReturned = @returnedProc if @returnedProc
 
-        if n is "end" and @isWatchVar("_callstack")
+        if n is "end" #and @isWatchVar("_callstack")
             (reasons ?= {}).procReturned = "main"
 
         return reasons
