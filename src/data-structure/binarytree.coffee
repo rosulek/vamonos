@@ -108,6 +108,7 @@ class BinaryTree
         addNodeHelper(@guts)
         @assignOrder()
         @assignDepth()
+        return newNode.id
 
     deleteNode: (targetId) ->
         deleteNodeHelper = (node) ->

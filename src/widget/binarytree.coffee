@@ -51,7 +51,8 @@ class BinaryTree
         @deselectNode() if 'node' is @selected()
         @$selectedNode = node
         node.addClass("selected")
-        @editValue(@$selectedNode)
+        node.find("div.vertex-contents").on "click", =>
+            @editValue(@$selectedNode)
         @openDrawer()
 
     deselect: ->
@@ -60,6 +61,7 @@ class BinaryTree
 
     deselectNode: ->
         return unless @$selectedNode
+        @$selectedNode.find("div.vertex-contents").off "click"
         @$selectedNode.removeClass("selected")
         @$selectedNode = undefined
 
@@ -79,44 +81,47 @@ class BinaryTree
                 if node.right?
                     $("<button>", {text: "rotate left"})
                         .on "click.vamonos-graph", (e) =>
+                            rightChild = node.right
                             @theTree.rotateLeft(node.id)
-                            @deselect()
                             @draw(@theTree)
+                            @selectNode(@graphDisplay.nodes[rightChild.id])
                         .appendTo(@$drawer)
 
                 if node.left?
                     $("<button>", {text: "rotate right"})
                         .on "click.vamonos-graph", (e) =>
+                            leftChild = node.left
                             @theTree.rotateRight(node.id)
-                            @deselect()
                             @draw(@theTree)
+                            @selectNode(@graphDisplay.nodes[leftChild.id])
                         .appendTo(@$drawer)
 
                 unless node.left?
                     $("<button>", {text: "add left child"})
                         .on "click.vamonos-graph", (e) =>
-                            @theTree.addNode(node.id, "left", {val: node.val})
-                            @deselect()
+                            nodeId = @theTree.addNode(node.id, "left", {val: node.val})
                             @draw(@theTree)
+                            @selectNode(@graphDisplay.nodes[nodeId])
                         .appendTo(@$drawer)
 
                 unless node.right?
                     $("<button>", {text: "add right child"})
                         .on "click.vamonos-graph", (e) =>
-                            @theTree.addNode(node.id, "right", {val: node.val})
-                            @deselect()
+                            nodeId = @theTree.addNode(node.id, "right", {val: node.val})
                             @draw(@theTree)
+                            @selectNode(@graphDisplay.nodes[nodeId])
                         .appendTo(@$drawer)
 
                 $("<span>", {html: "&nbsp;"}).appendTo(@$drawer)
 
-                $("<button>", {text: "del"})
-                    .on "click.vamonos-graph", (e) =>
-                        @theTree.deleteNode(node.id)
-                        @deselect()
-                        @draw(@theTree)
-                    .appendTo(@$drawer)
-                        
+                unless node.depth is 0
+                    $("<button>", {text: "del"})
+                        .on "click.vamonos-graph", (e) =>
+                            @theTree.deleteNode(node.id)
+                            @deselect()
+                            @draw(@theTree)
+                        .appendTo(@$drawer)
+                                
 
         @$drawer.fadeIn("fast") unless @$drawer.is(":visible")
 
