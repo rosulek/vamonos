@@ -29,13 +29,14 @@ class VarDisplay
             newval = "-" 
         else if @attributes?
             newval = Vamonos.formatObject(frame[@varName], @attributes)
+            @dontShowChange = true
         else
             newval = Vamonos.rawToTxt(frame[@varName])
 
         oldval = @$container.html()
 
         if newval isnt oldval and type in @showChanges
-            @$container.addClass("changed")
+            @$container.addClass("changed") unless @dontShowChange
             @$container.html(newval)
             dup = @$container.clone()
             @$container.replaceWith( dup )
@@ -43,6 +44,8 @@ class VarDisplay
         else
             @$container.html(newval)
             @$container.removeClass("changed")
+
+        @dontShowChange = undefined
 
 
 Vamonos.export { Widget: { VarDisplay } }
