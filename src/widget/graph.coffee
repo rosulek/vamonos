@@ -21,7 +21,6 @@ class Graph
         @container     = Vamonos.jqueryify(container)
 
         @displayWidget = new Vamonos.Widget.GraphDisplay
-            editableEdgeLabelMaker: @createEditableEdgeLabel
             container: @container
             vertexLabels: @vertexLabels
             vertexCssAttributes: vertexCssAttributes
@@ -163,10 +162,10 @@ class Graph
             con.addOverlay([
                 "Custom"
                 create: => 
-                    @createEditableEdgeLabel(
-                        @theGraph.edge(con.sourceId, con.targetId)
-                    )
+                    edge = @theGraph.edge(con.sourceId, con.targetId)
+                    @createEditableEdgeLabel(edge)
                 id: "editableEdgeLabel"
+                cssClass: "graph-label"
             ])
 
 
@@ -295,16 +294,13 @@ class Graph
         return unless @$drawer?
         @$drawer.fadeOut("fast")
 
-    createEditableEdgeLabel: (edge, $wrapper = $("<div>")) =>
-        val = Vamonos.rawToTxt(edge[@edgeLabel[0]] ? "")
-        $label = $("<div class='graph-label'>#{val}</div>")
-        $wrapper.append($label)
-        $label.on "click", =>
-            @selectConnection(
-                @displayWidget.connections[edge.source.id][edge.target.id]
-            )
-            @editAttribute($label, edge)
-        return $wrapper
+    createEditableEdgeLabel: (edge) =>
+        val    = Vamonos.rawToTxt(edge[@edgeLabel[0]] ? "")
+        $label = $("<div>#{val}</div>")
+            .on "click", =>
+                con = @displayWidget.connections[edge.source.id][edge.target.id]
+                @selectConnection(con)
+                @editAttribute($label, edge)
 
     editAttribute: ($label, edge) =>
         $editor = $("<input class='inline-input'>")
@@ -316,18 +312,17 @@ class Graph
                 @doneEditingLabel($label, $editor, edge)
                 false
             .on "blur.vamonos-graph something-was-selected", (event) =>
-                @doneEditingLabel($editor, edge)
+                @doneEditingLabel($label, $editor, edge)
                 true
         $label.html($editor)
         $editor.fadeIn("fast")
             .focus()
             .select()
 
-    doneEditingLabel: ($editor, edge) =>
+    doneEditingLabel: ($label, $editor, edge) =>
         val = Vamonos.txtToRaw($editor.val())
-        if val?
-            edge[@edgeLabel[0]] = val
-        $editor.html(@createEditableEdgeLabel(edge, $editor))
+        edge[@edgeLabel[0]] = val if val?
+        $label.html(@createEditableEdgeLabel(edge))
 
     stopEditingLabel: =>
         @displayWidget.$inner
