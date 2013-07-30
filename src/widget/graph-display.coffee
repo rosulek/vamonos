@@ -300,8 +300,8 @@ class GraphDisplay
         else
             @$drawer = $("<div>", { class: "graph-drawer" }).hide()
             @$outer.after(@$drawer)
-        @$drawer.append(label)
-        @$drawer.append(buttons)
+        @$drawer.append(label) if label?
+        @$drawer.append(buttons) if buttons?
         @$drawer.fadeIn("fast") unless @$drawer.is(":visible")
 
     closeDrawer: () ->

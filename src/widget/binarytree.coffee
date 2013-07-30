@@ -68,6 +68,7 @@ class BinaryTree
     openDrawer: ->
         return unless 'node' is @selected()
         node = @theTree.asGraph().vertex(@$selectedNode.attr("id"))
+        buttons = []
         if node.right?
             buttons.push(
                 $("<button>", {text: "rotate left"})
@@ -110,11 +111,11 @@ class BinaryTree
                         @deselect()
                         @draw(@theTree)
             )
-        @displayWidget.openDrawer({buttons, label})
+        @graphDisplay.openDrawer({buttons})
 
 
     closeDrawer: () ->
-        @displayWidget.closeDrawer()
+        @graphDisplay.closeDrawer()
 
     editValue: ($node) ->
         $contents = $node.find("div.vertex-contents")
