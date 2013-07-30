@@ -1,5 +1,29 @@
 root = exports ? window
 root.Vamonos = 
+    editableValue: ($elem, valFunc, returnFunc) ->
+        # $elem is the element that needs to change into a input box
+        # valFunc is a function that takes an $elem and returns its value
+        # returnFunc is a function that takes the final value from the input box
+        #   and returns the new value for the uneditable element
+        doneEditing = () =>
+            newVal = returnFunc($editor.val())
+            $elem.html(if newVal.length then newVal else oldVal)
+
+        oldVal = valFunc($elem)
+        $editor = $("<input class='inline-input'>")
+            .hide()
+            .width($elem.width())
+            .val(oldVal)
+            .on "keydown.vamonos-graph", (event) =>
+                return unless event.keyCode in [13, 32, 9, 27]
+                doneEditing()
+                false
+            .on "blur.vamonos-graph something-was-selected", (event) =>
+                doneEditing()
+                true
+
+        $elem.html($editor)
+        $editor.fadeIn("fast").focus().select()
 
     moveToTop: ($elem, $container = $("*")) ->
         $elem.css("z-index", @highestZIndex($container) + 1)

@@ -303,26 +303,12 @@ class Graph
                 @editAttribute($label, edge)
 
     editAttribute: ($label, edge) =>
-        $editor = $("<input class='inline-input'>")
-            .hide()
-            .val(edge[@edgeLabel[0]] ? "")
-            .width($label.width()) 
-            .on "keydown.vamonos-graph", (event) =>
-                return unless event.keyCode in [13, 32, 9, 27]
-                @doneEditingLabel($label, $editor, edge)
-                false
-            .on "blur.vamonos-graph something-was-selected", (event) =>
-                @doneEditingLabel($label, $editor, edge)
-                true
-        $label.html($editor)
-        $editor.fadeIn("fast")
-            .focus()
-            .select()
-
-    doneEditingLabel: ($label, $editor, edge) =>
-        val = Vamonos.txtToRaw($editor.val())
-        edge[@edgeLabel[0]] = val if val?
-        $label.html(@createEditableEdgeLabel(edge))
+        valFunc = () => edge[@edgeLabel[0]] ? ""
+        returnFunc = (newVal) =>
+            val = Vamonos.txtToRaw(newVal)
+            edge[@edgeLabel[0]] = val if val?
+            Vamonos.rawToTxt(val)
+        Vamonos.editableValue($label, valFunc, returnFunc)
 
     stopEditingLabel: =>
         @displayWidget.$inner

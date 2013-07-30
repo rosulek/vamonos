@@ -129,35 +129,33 @@ class BinaryTree
         return unless @$drawer?
         @$drawer.fadeOut("fast")
 
+    editableValue: ($elem, valFunc, returnFunc) ->
+        doneEditing = () =>
+            newVal = returnFunc($editor.val())
+            $elem.html(newVal)
+        $editor = $("<input class='inline-input'>")
+            .hide()
+            .width($elem.width())
+            .val(valFunc($elem))
+            .on "keydown.vamonos-graph", (event) =>
+                return unless event.keyCode in [13, 32, 9, 27]
+                doneEditing()
+                false
+            .on "blur.vamonos-graph something-was-selected", (event) =>
+                doneEditing()
+                true
+        $elem.html($editor)
+        $editor.fadeIn("fast").focus().select()
+
     editValue: ($node) ->
         $contents = $node.find("div.vertex-contents")
         nodeId = $node.attr("id")
-        val = $contents.text()
-        $editor = $("<input class='inline-input'>")
-            .hide()
-            .width($contents.width())
-            .val(val)
-            .on "keydown.vamonos-graph", (event) =>
-                return unless event.keyCode in [13, 32, 9, 27]
-                @doneEditing($editor, $contents, nodeId)
-                false
-            .on "blur.vamonos-graph something-was-selected", (event) =>
-                @doneEditing($editor, $contents, nodeId)
-                true
-        $contents.html($editor)
-        $editor.fadeIn("fast")
-            .focus()
-            .select()
-
-    doneEditing: ($editor, $contents, nodeId) =>
-        val = Vamonos.txtToRaw($editor.val())
-        @theTree.changeVal(nodeId, val) if val?
-        $contents.html(Vamonos.rawToTxt(val))
-
-    stopEditingLabel: =>
-        @displayWidget.$inner
-            .find("input.inline-input")
-            .trigger("something-was-selected")
-
+        valFunc = ($contents) -> 
+            $contents.text()
+        returnFunc = (newVal) =>
+            val = Vamonos.txtToRaw(newVal)
+            @theTree.changeVal(nodeId, val) if newVal?
+            return Vamonos.rawToTxt(val)
+        Vamonos.editableValue($contents, valFunc, returnFunc)
 
 Vamonos.export { Widget: { BinaryTree } }
