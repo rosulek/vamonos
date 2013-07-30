@@ -56,7 +56,7 @@ class BinaryTree
         return g
 
     rotateRight: (id) ->
-        rotateRightHelper = (node, id) ->
+        rotateRightHelper = (node) ->
             return unless node?
             if node?.id is id
                 return node unless node.left?
@@ -76,7 +76,7 @@ class BinaryTree
         "ok"
 
     rotateLeft: (id) ->
-        rotateLeftHelper = (node, id) ->
+        rotateLeftHelper = (node) ->
             return unless node?
             if node?.id is id
                 return node unless node.right?
@@ -95,5 +95,35 @@ class BinaryTree
         @assignDepth()
         "ok"
 
+    addNode: (targetId, direction, newNode = {}) ->
+        @nextId ?= 0
+        newNode.id ?= "tree-node-" + @nextId++
+        addNodeHelper = (node) ->
+            return unless node?
+            if node?.id is targetId
+                node[direction] = newNode
+            else
+                addNodeHelper(node.left)
+                addNodeHelper(node.right)
+        addNodeHelper(@guts)
+        @assignOrder()
+        @assignDepth()
+
+    deleteNode: (targetId) ->
+        deleteNodeHelper = (node) ->
+            return unless node?
+            if node.right?.id is targetId
+                node.right = undefined
+            else if node.left?.id is targetId
+                node.left = undefined
+            else
+                deleteNodeHelper(node.left)
+                deleteNodeHelper(node.right)
+        if @guts.id is targetId
+            @guts = undefined
+        else
+            deleteNodeHelper(@guts)
+        @assignOrder()
+        @assignDepth()
 
 Vamonos.export { DataStructure: { BinaryTree } }
