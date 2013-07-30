@@ -1,9 +1,3 @@
-# modify edge attributes by clicking on them
-# deletion of edges only via selection
-# callbacks for buttons in drawer
-#
-# organize code, comment
-
 class GraphDisplay
 
     constructor: ({
@@ -297,6 +291,22 @@ class GraphDisplay
         val = Vamonos.rawToTxt(edge[@edgeLabel[0]] ? "")
         $label = $("<div class='graph-label'>#{val}</div>")
         return $("<div>").append($label)
+
+    # ----------------- drawer --------------- # 
+    
+    openDrawer: ({buttons, label}) ->
+        if @$drawer?
+            @$drawer.html("<div class='graph-drawer'></div>")
+        else
+            @$drawer = $("<div>", { class: "graph-drawer" }).hide()
+            @$outer.after(@$drawer)
+        @$drawer.append(label)
+        @$drawer.append(buttons)
+        @$drawer.fadeIn("fast") unless @$drawer.is(":visible")
+
+    closeDrawer: () ->
+        return unless @$drawer?
+        @$drawer.fadeOut("fast")
 
     # ----------- styles, colors and jsplumb stuff -------------- #
 

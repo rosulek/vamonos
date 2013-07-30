@@ -246,53 +246,46 @@ class Graph
         @potentialEdge = undefined
 
     openDrawer: ->
-        if @$drawer?
-            @$drawer.html("<div class='graph-drawer'></div>")
-        else
-            @$drawer = $("<div>", { class: "graph-drawer" }).hide()
-            @displayWidget.$outer.parent().append(@$drawer)
 
+    openDrawer: ->
         type = @selected()
-
-        switch type
-            when 'vertex'
-                vtx = @theGraph.vertex(@$selectedNode.attr("id"))
-                $("<span class='label'>vertex&nbsp;&nbsp;#{vtx.name}&nbsp;&nbsp;</span>")
-                    .appendTo(@$drawer)
-
-                for v of @inputVars
+        if type is 'vertex'
+            vtx     = @theGraph.vertex(@$selectedNode.attr("id"))
+            label   = $("<span class='label'>vertex&nbsp;&nbsp;" +
+                        "#{vtx.name}&nbsp;&nbsp;</span>")
+            buttons = 
+                (for v of @inputVars
                     $("<button>", {text: "#{v}"})
                         .on "click.vamonos-graph", (e) =>
                             @inputVars[v] = vtx
                             @displayWidget.draw(@theGraph, @inputVars)
-                        .appendTo(@$drawer)
-
-                $("<button>", {text: "del"})
+                )
+            buttons.push($("<button>", {text: "del"})
                     .on "click.vamonos-graph", (e) =>
-                        @removeVertex(vtx.id)
-                    .appendTo(@$drawer)
+                        @removeVertex(vtx.id))
+        else if type is 'edge'
+            sourceId = @$selectedConnection.sourceId
+            targetId = @$selectedConnection.targetId
+            edge     = @theGraph.edge(sourceId, targetId)
+            nametag  = 
+                edge.source.name + "&nbsp;" +
+                (if @theGraph.directed then "&rarr;" else "-") +
+                "&nbsp;" + edge.target.name
+            label = $("<span class='label'>edge&nbsp;&nbsp;" +
+                      "#{nametag}&nbsp;&nbsp;</span>")
 
-            when 'edge'
-                sourceId = @$selectedConnection.sourceId
-                targetId = @$selectedConnection.targetId
-                edge     = @theGraph.edge(sourceId, targetId)
-                nametag  = 
-                    edge.source.name + "&nbsp;" +
-                    (if @theGraph.directed then "&rarr;" else "-") +
-                    "&nbsp;" + edge.target.name
-                $("<span class='label'>edge&nbsp;&nbsp;#{nametag}&nbsp;&nbsp;</span>")
-                    .appendTo(@$drawer)
-
+            buttons = [
                 $("<button>", {text: "del"})
                     .on "click.vamonos-graph", (e) =>
                         @removeEdge(edge.source.id, edge.target.id)
-                    .appendTo(@$drawer)
+            ]
+        else 
+            return
+        @displayWidget.openDrawer({buttons, label})
 
-        @$drawer.fadeIn("fast") unless @$drawer.is(":visible")
 
     closeDrawer: () ->
-        return unless @$drawer?
-        @$drawer.fadeOut("fast")
+        @displayWidget.closeDrawer()
 
     createEditableEdgeLabel: (edge) =>
         val    = Vamonos.rawToTxt(edge[@edgeLabel[0]] ? "")
