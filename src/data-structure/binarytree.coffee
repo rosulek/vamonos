@@ -114,15 +114,28 @@ class BinaryTree
             return unless node?
             if node.right?.id is targetId
                 node.right = undefined
+                return true
             else if node.left?.id is targetId
                 node.left = undefined
+                return true
             else
-                deleteNodeHelper(node.left)
-                deleteNodeHelper(node.right)
+                deleteNodeHelper(node.left) or deleteNodeHelper(node.right)
         if @guts.id is targetId
             @guts = undefined
         else
             deleteNodeHelper(@guts)
+        @assignOrder()
+        @assignDepth()
+
+    changeVal: (targetId, newVal) ->
+        changeValHelper = (node) ->
+            return unless node?
+            if node.id is targetId
+                node.val = newVal
+                return true
+            else
+                changeValHelper(node.left) or changeValHelper(node.right)
+        changeValHelper(@guts)
         @assignOrder()
         @assignDepth()
 

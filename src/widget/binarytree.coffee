@@ -6,11 +6,11 @@ class BinaryTree
     constructor: ({container, @varName, defaultTree}) ->
         @theTree = defaultTree ?= new Vamonos.DataStructure.Tree()
         @graphDisplay = new Vamonos.Widget.GraphDisplay
-            container: container
-            vertexLabels: {inner: (n)->n.val}
-            draggable: false
-            highlightChanges: false
-            resizable: false
+            container        : container
+            vertexLabels     : {inner: (n)->n.val}
+            draggable        : false
+            highlightChanges : false
+            resizable        : false
 
     event: (event, options...) -> switch event
         when "setup"
@@ -51,6 +51,7 @@ class BinaryTree
         @deselectNode() if 'node' is @selected()
         @$selectedNode = node
         node.addClass("selected")
+        @editValue(@$selectedNode)
         @openDrawer()
 
     deselect: ->
@@ -122,6 +123,36 @@ class BinaryTree
     closeDrawer: () ->
         return unless @$drawer?
         @$drawer.fadeOut("fast")
+
+    editValue: ($node) ->
+        $contents = $node.find("div.vertex-contents")
+        nodeId = $node.attr("id")
+        val = $contents.text()
+        $editor = $("<input class='inline-input'>")
+            .hide()
+            .width($contents.width())
+            .val(val)
+            .on "keydown.vamonos-graph", (event) =>
+                return unless event.keyCode in [13, 32, 9, 27]
+                @doneEditing($editor, $contents, nodeId)
+                false
+            .on "blur.vamonos-graph something-was-selected", (event) =>
+                @doneEditing($editor, $contents, nodeId)
+                true
+        $contents.html($editor)
+        $editor.fadeIn("fast")
+            .focus()
+            .select()
+
+    doneEditing: ($editor, $contents, nodeId) =>
+        val = Vamonos.txtToRaw($editor.val())
+        @theTree.changeVal(nodeId, val) if val?
+        $contents.html(Vamonos.rawToTxt(val))
+
+    stopEditingLabel: =>
+        @displayWidget.$inner
+            .find("input.inline-input")
+            .trigger("something-was-selected")
 
 
 Vamonos.export { Widget: { BinaryTree } }
