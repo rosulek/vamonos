@@ -105,7 +105,7 @@ class GraphDisplay
             @$outer.resizable("option", "minHeight", max_y)
         
 
-    clearDisplay: () ->
+    clearDisplay: ->
         @jsPlumbInstance.reset()
         @$inner.html("")
         @graphDrawn    = no
@@ -161,7 +161,7 @@ class GraphDisplay
         node = @nodes[vid]
         @jsPlumbInstance.removeAllEndpoints(node)
         delete @nodes[vid]
-        node.fadeOut(100, () -> node.remove())
+        node.fadeOut(100, -> node.remove())
 
     updateNode: ($node = @nodes[vid], vertex, frame) ->
         return unless $node? and vertex?
@@ -304,7 +304,7 @@ class GraphDisplay
         @$drawer.append(buttons) if buttons?
         @$drawer.fadeIn("fast") unless @$drawer.is(":visible")
 
-    closeDrawer: () ->
+    closeDrawer: ->
         return unless @$drawer?
         @$drawer.fadeOut("fast")
 
@@ -317,28 +317,28 @@ class GraphDisplay
     @lineWidth        = 4
 
     normalPaintStyle:
-        lineWidth: @lineWidth
-        strokeStyle: @lightEdgeColor
+        lineWidth   : @lineWidth
+        strokeStyle : @lightEdgeColor
 
     deletionPaintStyle:
-        strokeStyle: @deletionColor
-        lineWidth: @lineWidth
+        strokeStyle : @deletionColor
+        lineWidth   : @lineWidth
 
     potentialEdgePaintStyle:
-        dashstyle: "1 1"
-        strokeStyle: @editColor
-        lineWidth: @lineWidth
+        dashstyle   : "1 1"
+        strokeStyle : @editColor
+        lineWidth   : @lineWidth
 
     selectedPaintStyle:
-        lineWidth: @lineWidth
-        strokeStyle: @editColor
+        lineWidth   : @lineWidth
+        strokeStyle : @editColor
 
     hoverPaintStyle:
-        lineWidth: @lineWidth
-        strokeStyle: @darkEdgeColor
+        lineWidth   : @lineWidth
+        strokeStyle : @darkEdgeColor
 
     customStyle: (color) ->
-        lineWidth: GraphDisplay.lineWidth
-        strokeStyle: color
+        lineWidth   : GraphDisplay.lineWidth
+        strokeStyle : color
 
 Vamonos.export { Widget: { GraphDisplay } }

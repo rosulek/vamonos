@@ -21,16 +21,16 @@ class Graph
         @container     = Vamonos.jqueryify(container)
 
         @displayWidget = new Vamonos.Widget.GraphDisplay
-            container: @container
-            vertexLabels: @vertexLabels
-            vertexCssAttributes: vertexCssAttributes
-            edgeLabel: @edgeLabel
-            colorEdges: @colorEdges
-            containerMargin: containerMargin
-            minX: minX
-            minY: minY
-            resizable: resizable
-   
+            container           : @container
+            vertexLabels        : @vertexLabels
+            vertexCssAttributes : vertexCssAttributes
+            edgeLabel           : @edgeLabel
+            colorEdges          : @colorEdges
+            containerMargin     : containerMargin
+            minX                : minX
+            minY                : minY
+            resizable           : resizable
+
     event: (event, options...) -> switch event
         when "setup"
             [@viz] = options
@@ -46,15 +46,15 @@ class Graph
         when "displayStop"
             @fitAlready = false
 
-        when "editStart"    
+        when "editStart"
             @startEditing()
 
-        when "editStop"     
+        when "editStop"
             @stopEditing()
 
     # ----------------- EDITING MODE ------------------------ #
 
-    startEditing: () ->
+    startEditing: ->
         @displayWidget.clearDisplay()
         @displayWidget.mode = "edit"
         @displayWidget.fitGraph(@theGraph)
@@ -161,7 +161,7 @@ class Graph
             con.hideOverlay("edgeLabel")
             con.addOverlay([
                 "Custom"
-                create: => 
+                create: =>
                     edge = @theGraph.edge(con.sourceId, con.targetId)
                     @createEditableEdgeLabel(edge)
                 id: "editableEdgeLabel"
@@ -177,7 +177,7 @@ class Graph
             con.removeOverlay("editableEdgeLabel")
             con.showOverlay("edgeLabel")
 
-    selected: () ->
+    selected: ->
         return 'vertex' if @$selectedNode?
         return 'edge'   if @$selectedConnection?
         return false
@@ -210,42 +210,40 @@ class Graph
 
         @openDrawer()
 
-    deselect: () ->
+    deselect: ->
         @deselectNode()
         @deselectConnection()
         @closeDrawer()
 
-    deselectNode: () ->
+    deselectNode: ->
         return unless @$selectedNode?
         @displayWidget.jsPlumbInstance.detach(@possibleEdge) if @possibleEdge?
         @others.off("mouseenter.vamonos-graph mouseleave.vamonos-graph")
         @$selectedNode.removeClass("selected")
         @$selectedNode = undefined
 
-    deselectConnection: () ->
+    deselectConnection: ->
         return unless @$selectedConnection?
         @displayWidget.resetConnectionStyle(@$selectedConnection)
         @$selectedConnection = undefined
         @removePotentialEdge()
 
     potentialEdgeTo: (node) =>
-        sourceId   = @$selectedNode.attr("id")
-        targetId   = node.attr("id")
+        sourceId = @$selectedNode.attr("id")
+        targetId = node.attr("id")
         return if @displayWidget.connections[sourceId]?[targetId]?
 
         @potentialEdge = @displayWidget.jsPlumbInstance.connect
-            source: sourceId
-            target: targetId
-            paintStyle: @displayWidget.potentialEdgePaintStyle
+            source     : sourceId
+            target     : targetId
+            paintStyle : @displayWidget.potentialEdgePaintStyle
 
         @displayWidget.setOverlays(@potentialEdge)
 
-    removePotentialEdge: () =>
+    removePotentialEdge: =>
         return unless @potentialEdge?
         @displayWidget.jsPlumbInstance.detach(@potentialEdge)
         @potentialEdge = undefined
-
-    openDrawer: ->
 
     openDrawer: ->
         type = @selected()
@@ -253,7 +251,7 @@ class Graph
             vtx     = @theGraph.vertex(@$selectedNode.attr("id"))
             label   = $("<span class='label'>vertex&nbsp;&nbsp;" +
                         "#{vtx.name}&nbsp;&nbsp;</span>")
-            buttons = 
+            buttons =
                 (for v of @inputVars
                     $("<button>", {text: "#{v}"})
                         .on "click.vamonos-graph", (e) =>
@@ -267,7 +265,7 @@ class Graph
             sourceId = @$selectedConnection.sourceId
             targetId = @$selectedConnection.targetId
             edge     = @theGraph.edge(sourceId, targetId)
-            nametag  = 
+            nametag  =
                 edge.source.name + "&nbsp;" +
                 (if @theGraph.directed then "&rarr;" else "-") +
                 "&nbsp;" + edge.target.name
@@ -279,12 +277,12 @@ class Graph
                     .on "click.vamonos-graph", (e) =>
                         @removeEdge(edge.source.id, edge.target.id)
             ]
-        else 
+        else
             return
         @displayWidget.openDrawer({buttons, label})
 
 
-    closeDrawer: () ->
+    closeDrawer: ->
         @displayWidget.closeDrawer()
 
     createEditableEdgeLabel: (edge) =>
@@ -296,7 +294,9 @@ class Graph
                 @editAttribute($label, edge)
 
     editAttribute: ($label, edge) =>
-        valFunc = () => edge[@edgeLabel[0]] ? ""
+        valFunc = () =>
+            edge[@edgeLabel[0]] ? ""
+
         returnFunc = (newVal) =>
             val = Vamonos.txtToRaw(newVal)
             edge[@edgeLabel[0]] = val if val?

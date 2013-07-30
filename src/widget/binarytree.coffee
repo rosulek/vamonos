@@ -114,7 +114,7 @@ class BinaryTree
         @graphDisplay.openDrawer({buttons})
 
 
-    closeDrawer: () ->
+    closeDrawer: ->
         @graphDisplay.closeDrawer()
 
     editValue: ($node) ->
