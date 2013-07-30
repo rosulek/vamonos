@@ -28,12 +28,7 @@ class VarDisplay
         if not frame[@varName]?
             newval = "-" 
         else if @attributes?
-            vals = for attr in @attributes 
-                if frame[@varName][attr]?
-                    "#{attr}: #{Vamonos.rawToTxt(frame[@varName][attr])}"
-                else
-                    "#{attr}: -"
-            newval = "{ #{vals.join(", ")} }"
+            newval = Vamonos.formatObject(frame[@varName], @attributes)
         else
             newval = Vamonos.rawToTxt(frame[@varName])
 

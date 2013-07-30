@@ -1,5 +1,13 @@
 root = exports ? window
 root.Vamonos = 
+    formatObject: (object, attributes = []) ->
+        tbl  = "<table>"
+        rows = (for attribute in attributes
+            "<tr><td>#{attribute}</td><td>&nbsp=&nbsp" + 
+                Vamonos.rawToTxt(object[attribute]) + "</td></tr>")
+        tbl += rows.join("") + "</table>"
+        tbl
+
     editableValue: ($elem, valFunc, returnFunc) ->
         # $elem is the element that needs to change into a input box
         # valFunc is a function that takes an $elem and returns its value
