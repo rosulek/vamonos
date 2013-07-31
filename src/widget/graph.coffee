@@ -163,7 +163,7 @@ class Graph
                 "Custom"
                 create: =>
                     edge = @theGraph.edge(con.sourceId, con.targetId)
-                    @createEditableEdgeLabel(edge)
+                    @createEditableEdgeLabel(edge, con)
                 id: "editableEdgeLabel"
                 cssClass: "graph-label"
             ])
@@ -186,28 +186,22 @@ class Graph
         @stopEditingLabel()
         @deselectNode()       if 'vertex' is @selected()
         @deselectConnection() if 'edge' is @selected()
-
         @$selectedNode = node
         @$selectedNode.addClass("selected")
         @$selectedNode.removeClass('hovering')
-
-        # Show dotted and red lines for potential edge additions/deletions
         @others = @$selectedNode
             .siblings("div.vertex")
             .children("div.vertex-contents")
         @others.on "mouseenter.vamonos-graph", (e) =>
             @potentialEdgeTo($(e.target).parent())
         @others.on "mouseleave.vamonos-graph", @removePotentialEdge
-
         @openDrawer()
 
     selectConnection: (con) ->
         @deselectNode()       if 'vertex' is @selected()
         @deselectConnection() if 'edge' is @selected()
-
         @$selectedConnection = con
         @$selectedConnection.setPaintStyle(@displayWidget.selectedPaintStyle)
-
         @openDrawer()
 
     deselect: ->
@@ -249,15 +243,14 @@ class Graph
         type = @selected()
         if type is 'vertex'
             vtx     = @theGraph.vertex(@$selectedNode.attr("id"))
-            label   = $("<span class='label'>vertex&nbsp;&nbsp;" +
-                        "#{vtx.name}&nbsp;&nbsp;</span>")
-            buttons =
-                (for v of @inputVars
-                    $("<button>", {text: "#{v}"})
-                        .on "click.vamonos-graph", (e) =>
-                            @inputVars[v] = vtx
-                            @displayWidget.draw(@theGraph, @inputVars)
-                )
+            label   = "vertex&nbsp;&nbsp;#{vtx.name}&nbsp;&nbsp;"
+            buttons = []
+            for v of @inputVars
+                buttons.push $("<button>", {text: "#{v}"})
+                    .on "click.vamonos-graph", (e) =>
+                        @inputVars[v] = vtx
+                        @displayWidget.draw(@theGraph, @inputVars)
+
             buttons.push($("<button>", {text: "del"})
                     .on "click.vamonos-graph", (e) =>
                         @removeVertex(vtx.id))
@@ -265,13 +258,10 @@ class Graph
             sourceId = @$selectedConnection.sourceId
             targetId = @$selectedConnection.targetId
             edge     = @theGraph.edge(sourceId, targetId)
-            nametag  =
-                edge.source.name + "&nbsp;" +
+            nametag  = edge.source.name + "&nbsp;" +
                 (if @theGraph.directed then "&rarr;" else "-") +
                 "&nbsp;" + edge.target.name
-            label = $("<span class='label'>edge&nbsp;&nbsp;" +
-                      "#{nametag}&nbsp;&nbsp;</span>")
-
+            label = "edge&nbsp;&nbsp;#{nametag}&nbsp;&nbsp;"
             buttons = [
                 $("<button>", {text: "del"})
                     .on "click.vamonos-graph", (e) =>
@@ -281,22 +271,19 @@ class Graph
             return
         @displayWidget.openDrawer({buttons, label})
 
-
     closeDrawer: ->
         @displayWidget.closeDrawer()
 
-    createEditableEdgeLabel: (edge) =>
+    createEditableEdgeLabel: (edge, con) =>
         val    = Vamonos.rawToTxt(edge[@edgeLabel[0]] ? "")
         $label = $("<div>#{val}</div>")
             .on "click", =>
-                con = @displayWidget.connections[edge.source.id][edge.target.id]
                 @selectConnection(con)
                 @editAttribute($label, edge)
 
     editAttribute: ($label, edge) =>
         valFunc = () =>
             edge[@edgeLabel[0]] ? ""
-
         returnFunc = (newVal) =>
             val = Vamonos.txtToRaw(newVal)
             edge[@edgeLabel[0]] = val if val?

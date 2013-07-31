@@ -99,11 +99,9 @@ class GraphDisplay
         else
             @$outer.width(max_x)
             @$outer.height(max_y)
-
         if @resizable
             @$outer.resizable("option", "minWidth", max_x)
             @$outer.resizable("option", "minHeight", max_y)
-        
 
     clearDisplay: ->
         @jsPlumbInstance.reset()
@@ -250,10 +248,8 @@ class GraphDisplay
 
     updateConnections: (graph, frame) ->
         return unless @colorEdges?
-
         @eachConnection (sourceId, targetId, con) =>
             @resetConnectionStyle(con)
-
         for style in @colorEdges
             if typeof style[0] is 'string'
                 [source, target] = style[0].split(/->/).map((v)->frame[v])
@@ -300,7 +296,7 @@ class GraphDisplay
         else
             @$drawer = $("<div>", { class: "graph-drawer" }).hide()
             @$outer.after(@$drawer)
-        @$drawer.append(label) if label?
+        $("<span class='label'>#{label}</span>").appendTo(@$drawer)
         @$drawer.append(buttons) if buttons?
         @$drawer.fadeIn("fast") unless @$drawer.is(":visible")
 
@@ -319,10 +315,6 @@ class GraphDisplay
     normalPaintStyle:
         lineWidth   : @lineWidth
         strokeStyle : @lightEdgeColor
-
-    deletionPaintStyle:
-        strokeStyle : @deletionColor
-        lineWidth   : @lineWidth
 
     potentialEdgePaintStyle:
         dashstyle   : "1 1"

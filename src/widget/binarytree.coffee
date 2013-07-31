@@ -111,7 +111,7 @@ class BinaryTree
                         @deselect()
                         @draw(@theTree)
             )
-        @graphDisplay.openDrawer({buttons})
+        @graphDisplay.openDrawer({buttons, label: ""})
 
 
     closeDrawer: ->
