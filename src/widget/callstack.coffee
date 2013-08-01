@@ -85,7 +85,7 @@ class CallStack
         $tr.find("div.callstack-proc").addClass("callstack-active")   if scope.activeStackFrame
 
     argStr: (scope) ->
-        ("#{k}=#{Vamonos.rawToTxt(v)}" for k,v of scope.args).join(",") + "<span class='callstack-arrow'>&darr;</span>"
+        ("#{k}=#{Vamonos.rawToTxt(v)}" for k,v of scope.args when not /^_/.test(k)).join(",") + "<span class='callstack-arrow'>&darr;</span>"
 
     retStr: (scope) ->
         return "&nbsp;" unless "returnValue" of scope

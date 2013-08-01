@@ -80,6 +80,41 @@
     </table>
 
 
+    &nbsp;
+    &nbsp;
+    &nbsp;
+
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
+
+            <div class="pseudocode-procedures">
+
+                <div id="fact3" title="Fact(n, acc):">
+                    if n &le; 1
+                        return acc
+                    // tail call!
+                    return Fact(n-1, acc*n)
+                </div>
+
+            </div>
+
+        </td></tr><tr><td>
+
+            <div id="controls3"></div>
+
+        </td></tr><tr><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="stack-var3"></div></td>
+                    <td><div id="stack3"></div></td>
+                </tr>
+            </table>
+
+        </td></tr>
+
+    </table>
+
+
 </body><script>
 
 var myviz = new Vamonos.Visualizer({
@@ -153,6 +188,43 @@ _(3);       return main({n : n-1, acc: n*acc});
     }
 });
 
+
+//////////////////////////
+
+var myviz3 = new Vamonos.Visualizer({
+    widgets: [
+        new Vamonos.Widget.Hardcoded({
+            n: 3,
+            acc: 1,
+        }),
+
+        new Vamonos.Widget.Pseudocode("fact3"),
+        new Vamonos.Widget.Controls("controls3"),
+
+        new Vamonos.Widget.CallStack({
+            container: "stack3",
+            procedureNames: { 
+                main: "Fact",
+            },
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "stack-var3",
+            varName: "_callstack",
+            displayName: "Call Stack",
+            watching: true
+        })
+    ],
+
+    algorithm: function(_) {
+        with (this) {
+_(1);       if (n <= 1) { 
+_(2);           return acc; 
+            }
+_(3);       return main({n : n-1, acc: n*acc, _tailCall: true});
+        }
+    }
+});
 
 
 </script></html>
