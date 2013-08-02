@@ -1,13 +1,21 @@
 class BinaryTree
 
-    @xscalar = 60
+    @xscalar = 30
     @yscalar = 40
 
-    constructor: ({container, @varName, defaultTree}) ->
+    constructor: ({
+        container
+        @varName
+        defaultTree
+        vertexLabels
+        colorEdges
+    }) ->
+
         @theTree = defaultTree ?= new Vamonos.DataStructure.Tree()
         @graphDisplay = new Vamonos.Widget.GraphDisplay
             container        : container
-            vertexLabels     : {inner: (n)->n.val}
+            vertexLabels     : vertexLabels
+            colorEdges       : colorEdges
             draggable        : false
             highlightChanges : false
             resizable        : false
@@ -18,8 +26,11 @@ class BinaryTree
         when "render"
             [frame, type] = options
             @draw(frame[@varName])
+        when "editStart"
+            @draw(@theTree)
 
     draw: (tree) ->
+        return unless tree?
         @generatePositions(tree)
         graph = tree.asGraph()
         @graphDisplay.fitGraph(graph, @graphDrawn)

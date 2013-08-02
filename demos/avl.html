@@ -19,12 +19,18 @@
             -webkit-transition-delay: 0s;
             -webkit-transition-timing-function: ease;
         }
+        
+        .vertex-sw-label {
+            font-size: .8em;
+            color: red;
+        }
+
     </style>
 
 </head>
 <body>
 
-    <h1>AVL Tree Insertion demo using Vamonos</h1>
+    <h1>AVL Tree demo using Vamonos</h1>
 
     <table class="vamonos">
         <tr><td class="pseudocode-and-controls">
@@ -34,49 +40,24 @@
             <div class="pseudocode-procedures">
                 <div id="pseudocode-insert" title="Insert(node, newval):">
                         if newval < node.val
-                            // go left if you can
                             if node.left == null 
                                 node.left = new Node(newval)
                             else
                                 Insert(node.left, newval)
                         else
-                            // go right if you can
                             if node.right == null
                                 node.right = new Node(newval)
                             else
                                 Insert(node.right, newval)
                         UpdateHeight(node)
-                        Restructure(node)
-                </div>
-
-                <div id="pseudocode-update" title="UpdateHeight(node):">
-                    hl = (node.left == null) ? -1 : node.left.height
-                    hr = (node.right == null) ? -1 : node.right.height
-                    node.height = max(hl, hr) + 1
-                </div>
-
-                <div id="pseudocode-balance" title="BalanceFactor(node):">
-                    int hl = (left == null) ? -1 : node.left.height
-                    int hr = (right == null) ? -1 : node.right.height
-                    return hl - hr
-                </div>
-
-                <div id="pseudocode-restructure" title="Restructure(node):">
-                    if BalanceFactor(node) == 2
-                        if BalanceFactor(node.left) == -1
-                            node.left = node.left.rotateLeft()
-                        return node.rotateRight()
-                    else if BalanceFactor(node) == -2
-                        if BalanceFactor(node.right) == 1
-                            node.right = node.right.rotateRight()
-                        return node.rotateLeft()
-                    else
-                        return node
+                        return Restructure(node)
                 </div>
 
             </div>
 
         </td><td class="variable-widgets">
+
+            input here maybe
 
             <table class="variable-widgets">
                 <tr><td><div id="tree-var"></div></td>
@@ -121,21 +102,6 @@ var myviz = new Vamonos.Visualizer({
             procedureName: "insert",
         }),
 
-        new Vamonos.Widget.Pseudocode({
-            container: "pseudocode-update",
-            procedureName: "update",
-        }),
-
-        new Vamonos.Widget.Pseudocode({
-            container: "pseudocode-balance",
-            procedureName: "balanceFactor",
-        }),
-
-        new Vamonos.Widget.Pseudocode({
-            container: "pseudocode-restructure",
-            procedureName: "restructure",
-        }),
-
         new Vamonos.Widget.Controls({
             container: "controls"
         }),
@@ -157,50 +123,45 @@ var myviz = new Vamonos.Visualizer({
         }),
 
         new Vamonos.Widget.BinaryTree({
-            varName: "tree",
             container: "tree",
+            varName: "tree",
             vertexLabels: {
-                inner : { 
-                    edit: function(vtx){ return vtx.name }, 
-                    display: function(vtx){ return Vamonos.rawToTxt(vtx.d) + "/" + Vamonos.rawToTxt(vtx.f) }
-                },
-                sw    : { 
-                    edit: function(vtx){return ""}, 
-                    display: function(vtx){return vtx.name} 
-                },
-                ne    : ["u", "v"],
+                inner: function(n){ return n.val },
+                sw: function(n){ return n.height },
+                nw: ["node"],
             },
-            vertexCssAttributes: {
-                color: ["white", "gray", "black"],
-            },
-            colorEdges: [ 
-                ["u->visit::v", "#FF7D7D"],
+            colorEdges: [
+                [ function(e){
+                    return (
+                        e.target.next ? 
+                        e.target.next.id === e.source.id :
+                        false
+                    ) || (
+                        e.source.next ?
+                        e.source.next.id === e.target.id :
+                        false
+                    )
+                  }
+                , "#92E894" ],
             ],
-            defaultGraph: new Vamonos.DataStructure.Graph({
-                directed: true,
-                vertices: [ 
-                    {id: "v0", x: 17,  y: 10},
-                    {id: "v1", x: 98,  y: 10},
-                    {id: "v2", x: 176, y: 13},
-                    {id: "v3", x: 15,  y: 78},
-                    {id: "v4", x: 100, y: 80},
-                    {id: "v5", x: 182, y: 80},
-                    {id: "v6", x: 15,  y: 138},
-                    {id: "v7", x: 100, y: 140},
-                    {id: "v8", x: 182, y: 140},
-                ],
-                edges: [
-                    {source: 'v0',target: 'v4'},
-                    {source: 'v1',target: 'v2'},
-                    {source: 'v1',target: 'v4'},
-                    {source: 'v3',target: 'v4'},
-                    {source: 'v3',target: 'v6'},
-                    {source: 'v5',target: 'v8'},
-                    {source: 'v6',target: 'v7'},
-                    {source: 'v7',target: 'v8'},
-                ]
-            })
-        })
+            defaultTree: new Vamonos.DataStructure.BinaryTree({
+                id: "n5",
+                val: 5,
+                height: 1,
+                left: { 
+                    id: "n3",
+                    val: 3,
+                    height: 0,
+                },
+                right: {
+                    id: "n8",
+                    val: 8,
+                    height: 0,
+                },
+            }),
+        }),
+
+
     ],
 
     autoStart: false,
@@ -211,26 +172,60 @@ var myviz = new Vamonos.Visualizer({
             }
         },
 
-        update: function(_) {
-            with (this) {
-            }
-        },
-
-        restructure: function(_) {
-            with (this) {
-            }
-        },
-
         insert: function(_) {
             with (this) {
+                if (newval < node.val) {
+                    if (typeof node.left === 'undefined') {
+                        node.left = { val: newval, height: 0 };
+                    } else {
+                        node.left = insert({newval: newval, node: node.left});
+                    }
+                } else {
+                    if (typeof node.right === 'undefined') {
+                        node.right = { val: newval, height: 0 };
+                    } else {
+                        node.right = insert({newval: newval, node: node.left});
+                    }                
+                }
+                updateHeight({node: node});
+                return restructure({node: node});
+                
+            }
+        },
+
+        updateHeight: function(_) {
+            with (this) {
+                var hl = node.left === null ? -1 : node.left.height;
+                var hr = node.right === null ? -1 : node.right.height;
+                node.height = Math.max(hl, hr);
             }
         },
 
         balanceFactor: function(_) {
             with (this) {
+                var hl = node.left === null ? -1 : node.left.height;
+                var hr = node.right === null ? -1 : node.right.height;
+                return hl - hr;
             }
         },
 
+        restructure: function(_) {
+            with (this) {
+                if (balanceFactor({node: node}) == 2) {
+                    if (balanceFactor({node: node.left}) == -1) {
+                        node.left = node.left.rotateLeft();
+                    }
+                    return node.rotateRight();
+                } else if (balanceFactor({node: node}) == -2) {
+                    if (balanceFactor({node: node.right}) == 1) {
+                        node.right = node.right.rotateRight();
+                    }
+                    return node.rotateLeft();
+                } else {
+                    return node;
+                }
+            }
+        },
     },
 })
 </script>

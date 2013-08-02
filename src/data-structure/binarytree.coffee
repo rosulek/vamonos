@@ -73,7 +73,7 @@ class BinaryTree
         @guts = rotateRightHelper(@guts, id)
         @assignOrder()
         @assignDepth()
-        "ok"
+        return node.left
 
     rotateLeft: (id) ->
         rotateLeftHelper = (node) ->
@@ -93,7 +93,7 @@ class BinaryTree
         @guts = rotateLeftHelper(@guts, id)
         @assignOrder()
         @assignDepth()
-        "ok"
+        return node.right
 
     addNode: (targetId, direction, newNode = {}) ->
         @nextId ?= 0
@@ -139,5 +139,6 @@ class BinaryTree
         changeValHelper(@guts)
         @assignOrder()
         @assignDepth()
+
 
 Vamonos.export { DataStructure: { BinaryTree } }

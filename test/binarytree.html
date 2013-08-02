@@ -35,6 +35,7 @@
 var bin = new Vamonos.Widget.BinaryTree({
     container: "tree",
     varName: "tree",
+    vertexLabels: {inner: function(n){return n.val}},
     defaultTree: 
         new Vamonos.DataStructure.BinaryTree({
             val: 5,
