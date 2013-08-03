@@ -120,9 +120,8 @@ class Visualizer
             when "call"
                 @calledProc = relevantScope.procName
             when "ret"
-                (@returnStack ?= []).unshift(relevantScope)
+                (@returnStack ?= []).unshift(relevantScope) unless relevantScope.tailCall
                 @returnedProc  = relevantScope.procName
-
 
         if typeof n is 'number' 
             @stash.currentScope._nextLine = n
@@ -216,19 +215,31 @@ class Visualizer
 
             @line("call", { procName: procName })
 
-            @stash.callStack.unshift(newScope)
+            if args._tailCall
+                @stash.callStack[0] = newScope
+            else
+                @stash.callStack.unshift(newScope)
+
+            console.log "calling:", @stash.currentScope
 
             ret = procedure.call(newScope, (n)=>@line(n))
 
-            @stash.callStack.shift()
-            @stash.currentScope = @stash.callStack[0]
-
             returnFrame = 
-                procName    : procName
-                args        : args
+                procName    : @stash.currentScope._procName
+                args        : @stash.currentScope._args
                 returnValue : ret
+                tailCall    : args._tailCall
+
+
+            console.log "returning now, from", @stash.currentScope
+
 
             @line("ret", returnFrame)
+
+            unless args._tailCall
+                @stash.callStack.shift()
+                @stash.currentScope = @stash.callStack[0]
+
 
             return ret
 
