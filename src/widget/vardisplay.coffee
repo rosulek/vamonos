@@ -1,6 +1,7 @@
 class VarDisplay
     
-    constructor: ({container, watch, showChanges, @varName, @attributes}) ->
+    constructor: ({@input, container, watch, showChanges, @varName, @attributes}) ->
+        @input      ?= no
         @$container  = Vamonos.jqueryify(container)
         @showChanges = Vamonos.arrayify(showChanges ? "next")
 
@@ -9,14 +10,28 @@ class VarDisplay
     event: (event, options...) -> switch event
         when "setup"
             [@viz] = options
-
             @viz.registerVariable(@varName)
         
         when "editStart"
-            @$container.empty()
+            if @input
+                @editMode()
+            else
+                @$container.empty()
+
+        when "editStop"
+            @setVals() if @input
 
         when "render"
             @showVars(options...)
+
+    editMode: ->
+        val = @viz.getVariable(@varName)
+        @$input = $("<input>", {text: Vamonos.rawToTxt(val)})
+        @$container.html(@$input)
+
+    setVals: ->
+        return unless @$input?
+        @viz.setVariable(@varName, Vamonos.txtToRaw(@$input.val()))
 
     parseVarName: (str) ->
         str.match(/^\*?([\w:]+)/)?[1]

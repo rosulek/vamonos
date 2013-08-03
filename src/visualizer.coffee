@@ -220,8 +220,6 @@ class Visualizer
             else
                 @stash.callStack.unshift(newScope)
 
-            console.log "calling:", @stash.currentScope
-
             ret = procedure.call(newScope, (n)=>@line(n))
 
             returnFrame = 
@@ -230,16 +228,11 @@ class Visualizer
                 returnValue : ret
                 tailCall    : args._tailCall
 
-
-            console.log "returning now, from", @stash.currentScope
-
-
             @line("ret", returnFrame)
 
             unless args._tailCall
                 @stash.callStack.shift()
                 @stash.currentScope = @stash.callStack[0]
-
 
             return ret
 

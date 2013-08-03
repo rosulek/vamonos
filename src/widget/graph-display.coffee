@@ -188,8 +188,11 @@ class GraphDisplay
                 if typeof style is "function"
                     Vamonos.rawToTxt(style(vertex))
                 else if style.length
-                    (v for v in style when frame[v]?.id is vertex.id)
-                        .join(",")
+                    (for v in style 
+                        [varName, varStyle] = if /@/.test v then v.split(/@/) else [v,v]
+                        continue unless frame[varName]?.id is vertex.id
+                        varStyle
+                    ).join(",")
                 else if typeof style is "object"
                     Vamonos.rawToTxt(style[@mode](vertex))
                 else

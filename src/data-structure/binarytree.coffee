@@ -1,6 +1,9 @@
 class BinaryTree
 
     constructor: (@guts) ->
+        @refresh()
+
+    refresh: ->
         @assignOrder()
         @assignDepth()
 
@@ -56,7 +59,7 @@ class BinaryTree
         return g
 
     rotateRight: (id) ->
-        rotateRightHelper = (node) ->
+        rotateRightHelper = (node) =>
             return unless node?
             if node?.id is id
                 return node unless node.left?
@@ -73,10 +76,9 @@ class BinaryTree
         @guts = rotateRightHelper(@guts, id)
         @assignOrder()
         @assignDepth()
-        return node.left
 
     rotateLeft: (id) ->
-        rotateLeftHelper = (node) ->
+        rotateLeftHelper = (node) =>
             return unless node?
             if node?.id is id
                 return node unless node.right?
@@ -93,7 +95,10 @@ class BinaryTree
         @guts = rotateLeftHelper(@guts, id)
         @assignOrder()
         @assignDepth()
-        return node.right
+
+    newNode: (val) ->
+        @nextId ?= 0
+        { height: 0, id: "tree-node-" + @nextId++, val: val }
 
     addNode: (targetId, direction, newNode = {}) ->
         @nextId ?= 0
@@ -125,20 +130,56 @@ class BinaryTree
             @guts = undefined
         else
             deleteNodeHelper(@guts)
-        @assignOrder()
-        @assignDepth()
+        @refresh()
 
-    changeVal: (targetId, newVal) ->
-        changeValHelper = (node) ->
+    changeAttr: (targetId, attr, newVal) ->
+        changeAttrHelper = (node) ->
             return unless node?
             if node.id is targetId
-                node.val = newVal
+                node[attr] = newVal
                 return true
             else
-                changeValHelper(node.left) or changeValHelper(node.right)
-        changeValHelper(@guts)
-        @assignOrder()
-        @assignDepth()
+                changeAttrHelper(node.left) or changeAttrHelper(node.right)
+        changeAttrHelper(@guts)
+        @refresh()
+
+    getNode: (targetId) ->
+        traverse = (node) ->
+            return unless node?
+            if node.id is targetId
+                return node
+            else
+                traverse(node.left) or traverse(node.right)
+        traverse(@guts)
+
+    updateHeight: (id) ->
+        node = @getNode(id)
+        hl = if node.left? then node.left.height else -1
+        hr = if node.right? then node.right.height else -1
+        node.height = Math.max(hl, hr) + 1
+
+    updateHeights: ->
+        @eachNodePostOrder (n) =>
+            @updateHeight(n.id)
+
+    balanceFactor: (id) ->
+        node = @getNode(id)
+        hl = if node.left? then node.left.height else -1
+        hr = if node.right? then node.right.height else -1
+        hl - hr
+
+    restructure: (id) ->
+        node = @getNode(id)
+        if @balanceFactor(id) == 2
+            if @balanceFactor(node.left.id) == -1
+                @rotateLeft(node.left.id)
+            @rotateRight(node.id)
+        else if @balanceFactor(id) == -2
+            if @balanceFactor(node.right.id) == 1
+                @rotateRight(node.right.id)
+            @rotateLeft(node.id)
+        @updateHeights()
+
 
 
 Vamonos.export { DataStructure: { BinaryTree } }

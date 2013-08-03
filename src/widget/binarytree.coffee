@@ -9,32 +9,36 @@ class BinaryTree
         defaultTree
         vertexLabels
         colorEdges
+        vertexCssAttributes
     }) ->
 
         @theTree = defaultTree ?= new Vamonos.DataStructure.Tree()
         @graphDisplay = new Vamonos.Widget.GraphDisplay
-            container        : container
-            vertexLabels     : vertexLabels
-            colorEdges       : colorEdges
-            draggable        : false
-            highlightChanges : false
-            resizable        : false
+            container           : container
+            vertexLabels        : vertexLabels
+            colorEdges          : colorEdges
+            vertexCssAttributes : vertexCssAttributes
+            draggable           : false
+            highlightChanges    : false
+            resizable           : false
 
     event: (event, options...) -> switch event
         when "setup"
             [@viz] = options
         when "render"
             [frame, type] = options
-            @draw(frame[@varName])
+            @draw(frame[@varName], frame)
         when "editStart"
             @draw(@theTree)
+        when "editStop"
+            @viz.setVariable(@varName, @theTree)
 
-    draw: (tree) ->
+    draw: (tree, frame) ->
         return unless tree?
         @generatePositions(tree)
         graph = tree.asGraph()
         @graphDisplay.fitGraph(graph, @graphDrawn)
-        @graphDisplay.draw(graph, @graphDrawn)
+        @graphDisplay.draw(graph, frame)
         @graphDrawn ?= true
 
     generatePositions: (tree) ->

@@ -1,3 +1,13 @@
+<!--
+
+TODO 
+show each rotation seperately
+    which probably means restructure needs to be a procedure not a BinaryTree method
+
+clean up pathway highlighting
+
+-->
+
 <html><head>
 
     <link rel="stylesheet" href="../lib/vamonos.css">
@@ -38,28 +48,32 @@
             <div id="controls"></div>
 
             <div class="pseudocode-procedures">
-                <div id="pseudocode-insert" title="Insert(node, newval):">
-                        if newval < node.val
-                            if node.left == null 
-                                node.left = new Node(newval)
+                <div id="pseudocode-insert" title="node.insert(newVal):">
+                        if newVal < val
+                            if left == null 
+                                left = new Node(newVal)
                             else
-                                Insert(node.left, newval)
+                                left.insert(newVal)
                         else
-                            if node.right == null
-                                node.right = new Node(newval)
+                            if right == null
+                                right&nbsp;=&nbsp;new&nbsp;Node(newVal)
                             else
-                                Insert(node.right, newval)
-                        UpdateHeight(node)
-                        return Restructure(node)
+                                right.insert(newVal)
+                        updateHeight()
+                        restructure()
                 </div>
 
             </div>
 
         </td><td class="variable-widgets">
 
-            input here maybe
-
             <table class="variable-widgets">
+                <tr><td><div id="insertVal-var"></div></td>
+                    <td><div id="insertVal"></div></td>
+                </tr>
+                <tr><td><div id="deleteVar-var"></div></td>
+                    <td><div id="deleteVar"></div></td>
+                </tr>
                 <tr><td><div id="tree-var"></div></td>
                     <td><div id="tree"></div></td>
                 </tr>
@@ -81,6 +95,32 @@
 var myviz = new Vamonos.Visualizer({
     widgets: [
         new Vamonos.Widget.Console(),
+
+        new Vamonos.Widget.VarName({
+            container: "insertVal-var",
+            varName: "insertVal",
+            displayName: "Insert Value",
+            watchable: false,
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "insertVal",
+            varName: "insertVal",
+            input: true,
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "deleteVar-var",
+            varName: "deleteVar",
+            displayName: "Delete Value",
+            watchable: false,
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "deleteVar",
+            varName: "deleteVar",
+            input: true,
+        }),
 
         new Vamonos.Widget.VarName({
             container: "stack-var",
@@ -128,7 +168,7 @@ var myviz = new Vamonos.Visualizer({
             vertexLabels: {
                 inner: function(n){ return n.val },
                 sw: function(n){ return n.height },
-                nw: ["node"],
+                nw: ["node@n"],
             },
             colorEdges: [
                 [ function(e){
@@ -169,61 +209,39 @@ var myviz = new Vamonos.Visualizer({
     algorithm: {
         main: function(_) {
             with (this) {
+                global.tree = tree;
+                if (typeof insertVal === 'number') {
+                    insert({node: tree.guts, newVal: insertVal, _tailCall: true});
+                }
+                global.tree.eachNodeInOrder(function(n){n.next = undefined});
+                if (typeof deleteVal === 'number') {
+                    nodedelete({node: tree.guts, deleteVal: deleteVal, _tailCall: true});
+                }
             }
         },
 
         insert: function(_) {
             with (this) {
-                if (newval < node.val) {
-                    if (typeof node.left === 'undefined') {
-                        node.left = { val: newval, height: 0 };
+                if (_(1), newVal < node.val) {
+                    if (_(2), typeof node.left === 'undefined') {
+_(3);                   global.tree.changeAttr(node.id, "left", global.tree.newNode(newVal))
+                        node.next = node.left;
                     } else {
-                        node.left = insert({newval: newval, node: node.left});
+_(4); _(5);             node.next = node.left;
+                        insert({node: node.left, newVal: newVal});
                     }
                 } else {
-                    if (typeof node.right === 'undefined') {
-                        node.right = { val: newval, height: 0 };
+_(6);               if (_(7), typeof node.right === 'undefined') {
+_(8);                   global.tree.changeAttr(node.id, "right", global.tree.newNode(newVal))
+                        node.next = node.right;
                     } else {
-                        node.right = insert({newval: newval, node: node.left});
-                    }                
-                }
-                updateHeight({node: node});
-                return restructure({node: node});
-                
-            }
-        },
-
-        updateHeight: function(_) {
-            with (this) {
-                var hl = node.left === null ? -1 : node.left.height;
-                var hr = node.right === null ? -1 : node.right.height;
-                node.height = Math.max(hl, hr);
-            }
-        },
-
-        balanceFactor: function(_) {
-            with (this) {
-                var hl = node.left === null ? -1 : node.left.height;
-                var hr = node.right === null ? -1 : node.right.height;
-                return hl - hr;
-            }
-        },
-
-        restructure: function(_) {
-            with (this) {
-                if (balanceFactor({node: node}) == 2) {
-                    if (balanceFactor({node: node.left}) == -1) {
-                        node.left = node.left.rotateLeft();
+                        node.next = node.right;
+_(9); _(10);            insert({node: node.right, newVal: newVal});
                     }
-                    return node.rotateRight();
-                } else if (balanceFactor({node: node}) == -2) {
-                    if (balanceFactor({node: node.right}) == 1) {
-                        node.right = node.right.rotateRight();
-                    }
-                    return node.rotateLeft();
-                } else {
-                    return node;
                 }
+                node.next = undefined;
+_(11);          global.tree.updateHeights(node.id);
+_(12);          global.tree.restructure(node.id);
             }
         },
     },
