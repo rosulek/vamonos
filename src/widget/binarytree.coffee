@@ -1,6 +1,6 @@
 class BinaryTree
 
-    @xscalar = 30
+    @xscalar = 50
     @yscalar = 40
 
     constructor: ({

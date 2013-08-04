@@ -178,26 +178,29 @@ class GraphDisplay
 
     updateNodeLabels: ($node, vertex, frame) ->
         for type, style of @vertexLabels
-            $target =
-                if type is "inner"
-                    $node.children("div.vertex-contents")
-                else if type in ["ne","nw","se","sw"]
-                    $node.children("div.vertex-#{type}-label")
-            return unless $target?
-            $target.html(
-                if typeof style is "function"
-                    Vamonos.rawToTxt(style(vertex))
-                else if style.length
-                    (for v in style 
-                        [varName, varStyle] = if /@/.test v then v.split(/@/) else [v,v]
-                        continue unless frame[varName]?.id is vertex.id
-                        varStyle
-                    ).join(",")
-                else if typeof style is "object"
-                    Vamonos.rawToTxt(style[@mode](vertex))
-                else
-                    style
-            )
+            if type is "arbitrary" and typeof style is "function"
+                style($node, vertex, frame)
+            else
+                $target =
+                    if type is "inner"
+                        $node.children("div.vertex-contents")
+                    else if type in ["ne","nw","se","sw"]
+                        $node.children("div.vertex-#{type}-label")
+                return unless $target?
+                $target.html(
+                    if typeof style is "function"
+                        Vamonos.rawToTxt(style(vertex))
+                    else if style.length
+                        (for v in style 
+                            [varName, varStyle] = if /@/.test v then v.split(/@/) else [v,v]
+                            continue unless frame[varName]?.id is vertex.id
+                            varStyle
+                        ).join(",")
+                    else if typeof style is "object"
+                        Vamonos.rawToTxt(style[@mode](vertex))
+                    else
+                        style
+                )
 
     updateNodeClasses: ($node, vertex) ->
         if @highlightChanges and @mode is 'display' and @vertexChanged(vertex)

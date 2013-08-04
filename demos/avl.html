@@ -18,21 +18,31 @@ clean up pathway highlighting
     <script type="text/javascript" src="../lib/vamonos.js"></script>
 
     <style type="text/css">
-        .vertex-contents {
-            font-family: sans-serif;
-            font-size: .8em;
-        }
 
         .vertex {
+            width: 40;
+            height: 30;
             -webkit-transition-property: top, left;
             -webkit-transition-duration: 1 s;
             -webkit-transition-delay: 0s;
             -webkit-transition-timing-function: ease;
         }
         
-        .vertex-sw-label {
+        .vertex-contents {
             font-size: .8em;
-            color: red;
+        }
+
+        .vertex-ne-label, .vertex-nw-label {
+            font-weight: bold;
+        }
+
+        .vertex-sw-label {
+            font-style: italic;
+            font-size: .8em;
+        }
+
+        .current {
+            box-shadow:0px 0px 5px 5px #92E894;
         }
 
     </style>
@@ -48,17 +58,17 @@ clean up pathway highlighting
             <div id="controls"></div>
 
             <div class="pseudocode-procedures">
-                <div id="pseudocode-insert" title="node.insert(newVal):">
-                        if newVal < val
+                <div id="pseudocode-insert" title="node.insert(v):">
+                        if v < val
                             if left == null 
-                                left = new Node(newVal)
+                                left = new Node(v)
                             else
-                                left.insert(newVal)
+                                left.insert(v)
                         else
                             if right == null
-                                right&nbsp;=&nbsp;new&nbsp;Node(newVal)
+                                right&nbsp;=&nbsp;new&nbsp;Node(v)
                             else
-                                right.insert(newVal)
+                                right.insert(v)
                         updateHeight()
                         restructure()
                 </div>
@@ -160,6 +170,7 @@ var myviz = new Vamonos.Visualizer({
         new Vamonos.Widget.VarName({
             container: "tree-var",
             varName: "tree",
+            watching: true,
         }),
 
         new Vamonos.Widget.BinaryTree({
@@ -168,7 +179,13 @@ var myviz = new Vamonos.Visualizer({
             vertexLabels: {
                 inner: function(n){ return n.val },
                 sw: function(n){ return n.height },
-                nw: ["node@n"],
+                arbitrary: function($node, vertex, frame) {
+                    if (frame.This && frame.This.id === vertex.id) {
+                        $node.addClass("current");
+                    } else {
+                        $node.removeClass("current");
+                    }
+                }
             },
             colorEdges: [
                 [ function(e){
@@ -211,37 +228,39 @@ var myviz = new Vamonos.Visualizer({
             with (this) {
                 global.tree = tree;
                 if (typeof insertVal === 'number') {
-                    insert({node: tree.guts, newVal: insertVal, _tailCall: true});
+                    insert({This: tree.guts, v: insertVal, _tailCall: true});
                 }
                 global.tree.eachNodeInOrder(function(n){n.next = undefined});
                 if (typeof deleteVal === 'number') {
-                    nodedelete({node: tree.guts, deleteVal: deleteVal, _tailCall: true});
+                    nodedelete({This: tree.guts, deleteVal: deleteVal, _tailCall: true});
                 }
             }
         },
 
         insert: function(_) {
             with (this) {
-                if (_(1), newVal < node.val) {
-                    if (_(2), typeof node.left === 'undefined') {
-_(3);                   global.tree.changeAttr(node.id, "left", global.tree.newNode(newVal))
-                        node.next = node.left;
+                if (_(1), v < This.val) {
+                    if (_(2), typeof This.left === 'undefined') {
+_(3);                   This.left = global.tree.newNode(v);
+                        global.tree.refresh();
+                        This.next = This.left;
                     } else {
-_(4); _(5);             node.next = node.left;
-                        insert({node: node.left, newVal: newVal});
+_(4); _(5);             This.next = This.left;
+                        insert({This: This.left, v: v});
                     }
                 } else {
-_(6);               if (_(7), typeof node.right === 'undefined') {
-_(8);                   global.tree.changeAttr(node.id, "right", global.tree.newNode(newVal))
-                        node.next = node.right;
+_(6);               if (_(7), typeof This.right === 'undefined') {
+_(8);                   This.right = global.tree.newNode(v);
+                        global.tree.refresh();
+                        This.next = This.right;
                     } else {
-                        node.next = node.right;
-_(9); _(10);            insert({node: node.right, newVal: newVal});
+                        This.next = This.right;
+_(9); _(10);            insert({This: This.right, v: v});
                     }
                 }
-                node.next = undefined;
-_(11);          global.tree.updateHeights(node.id);
-_(12);          global.tree.restructure(node.id);
+                This.next = undefined;
+_(11);          global.tree.updateHeight(This.id);
+_(12);          global.tree.restructure(This.id);
             }
         },
     },
