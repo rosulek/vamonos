@@ -42,7 +42,7 @@ clean up pathway highlighting
         }
 
         .current {
-            box-shadow:0px 0px 5px 5px #92E894;
+            box-shadow:0px 0px 5px 5px #FCFBBB;
         }
 
     </style>
@@ -145,7 +145,6 @@ var myviz = new Vamonos.Visualizer({
             container: "stack-var",
             varName: "_callstack",
             displayName: "Call Stack",
-            watching: true
         }),
 
         new Vamonos.Widget.CallStack({
@@ -201,20 +200,6 @@ var myviz = new Vamonos.Visualizer({
                     }
                 }
             },
-            colorEdges: [
-                [ function(e){
-                    return (
-                        e.target.next ? 
-                        e.target.next.id === e.source.id :
-                        false
-                    ) || (
-                        e.source.next ?
-                        e.source.next.id === e.target.id :
-                        false
-                    )
-                  }
-                , "#92E894" ],
-            ],
             defaultTree: new Vamonos.DataStructure.BinaryTree({
                 id: "n5",
                 val: 5,
@@ -244,7 +229,6 @@ var myviz = new Vamonos.Visualizer({
                 if (typeof insertVal === 'number') {
                     insert({This: tree.guts, v: insertVal, _tailCall: true});
                 }
-                global.tree.eachNodeInOrder(function(n){n.next = undefined});
                 if (typeof deleteVal === 'number') {
                     nodedelete({This: tree.guts, deleteVal: deleteVal, _tailCall: true});
                 }
@@ -257,22 +241,17 @@ var myviz = new Vamonos.Visualizer({
                     if (_(2), typeof This.left === 'undefined') {
 _(3);                   This.left = global.tree.newNode(v);
                         global.tree.refresh();
-                        This.next = This.left;
                     } else {
-_(4); _(5);             This.next = This.left;
                         insert({This: This.left, v: v});
                     }
                 } else {
 _(6);               if (_(7), typeof This.right === 'undefined') {
 _(8);                   This.right = global.tree.newNode(v);
                         global.tree.refresh();
-                        This.next = This.right;
                     } else {
-                        This.next = This.right;
 _(9); _(10);            insert({This: This.right, v: v});
                     }
                 }
-                This.next = undefined;
 _(11);          global.tree.updateHeight(This.id);
 _(12);          restructure({This: This});
             }
