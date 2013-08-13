@@ -168,18 +168,4 @@ class BinaryTree
         hr = if node.right? then node.right.height else -1
         hl - hr
 
-    restructure: (id) ->
-        node = @getNode(id)
-        if @balanceFactor(id) == 2
-            if @balanceFactor(node.left.id) == -1
-                @rotateLeft(node.left.id)
-            @rotateRight(node.id)
-        else if @balanceFactor(id) == -2
-            if @balanceFactor(node.right.id) == 1
-                @rotateRight(node.right.id)
-            @rotateLeft(node.id)
-        @updateHeights()
-
-
-
 Vamonos.export { DataStructure: { BinaryTree } }

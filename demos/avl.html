@@ -59,20 +59,29 @@ clean up pathway highlighting
 
             <div class="pseudocode-procedures">
                 <div id="pseudocode-insert" title="node.insert(v):">
-                        if v < val
-                            if left == null 
-                                left = new Node(v)
-                            else
-                                left.insert(v)
+                    if v < val
+                        if left is null 
+                            left = new Node(v)
                         else
-                            if right == null
-                                right&nbsp;=&nbsp;new&nbsp;Node(v)
-                            else
-                                right.insert(v)
-                        updateHeight()
-                        restructure()
+                            left.insert(v)
+                    else
+                        if right is null
+                            right&nbsp;=&nbsp;new&nbsp;Node(v)
+                        else
+                            right.insert(v)
+                    updateHeight()
+                    restructure()
                 </div>
-
+                <div id="pseudocode-restructure" title="node.restructure():">
+                    if balanceFactor is 2
+                        if left.balanceFactor is -1
+                            left.rotateLeft()
+                        rotateRight()
+                    else if balanceFactor is -2
+                        if right.balanceFactor is 1
+                            right.rotateRight()
+                        rotateLeft()
+                    updateHeight()
             </div>
 
         </td><td class="variable-widgets">
@@ -150,6 +159,11 @@ var myviz = new Vamonos.Visualizer({
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-insert",
             procedureName: "insert",
+        }),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-restructure",
+            procedureName: "restructure",
         }),
 
         new Vamonos.Widget.Controls({
@@ -260,7 +274,24 @@ _(9); _(10);            insert({This: This.right, v: v});
                 }
                 This.next = undefined;
 _(11);          global.tree.updateHeight(This.id);
-_(12);          global.tree.restructure(This.id);
+_(12);          restructure({This: This});
+            }
+        },
+
+        restructure: function(_) {
+            with (this) {
+                if (_(1), global.tree.balanceFactor(This.id) == 2) {
+                    if (_(2), global.tree.balanceFactor(This.left.id) == -1) {
+_(3);                   global.tree.rotateLeft(This.left.id);
+                    }
+_(4);               global.tree.rotateRight(This.id);
+                } else if (_(5), global.tree.balanceFactor(This.id) == -2) {
+                    if (_(6), global.tree.balanceFactor(This.right.id) == 1) {
+_(7);                   global.tree.rotateRight(This.right.id);
+                    }
+_(8);               global.tree.rotateLeft(This.id);
+                }
+_(9);           global.tree.updateHeights();
             }
         },
     },
