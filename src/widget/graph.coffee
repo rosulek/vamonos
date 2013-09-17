@@ -16,6 +16,7 @@ class Graph
     }) ->
 
         @inputVars    ?= {}
+        @colorEdges   ?= []
         @theGraph      = defaultGraph ? new Vamonos.DataStructure.Graph()
         @inputVars[k]  = @theGraph.vertex(v) for k,v of @inputVars
         @container     = Vamonos.jqueryify(container)
