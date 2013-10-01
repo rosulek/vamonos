@@ -1,16 +1,50 @@
 class Matrix
 
+    @spec =
+        container:
+            type: "String"
+            description: "id of the div within which this widget should draw itself"
+        varName:
+            type: "String"
+            description: "the name of variable that this widget represents"
+        showChanges:
+            type: ["String", "Array"]
+            defaultValue: "next"
+            description: 
+                "type of frame shifts to highlight changes at,
+                 can be multiple types with an array of strings"
+        cssRules:
+            type: "Array"
+            defaultValue: []
+            description: 
+                "an array of quadruples of the form [row/column,
+                 comparison, index-variable-expr, css-class]
+                 where every row/column in the matrix that matches the
+                 comparason against the given index-variable-expr receives
+                 the given css class."
+        showIndices:
+            type: "Array"
+            defaultValue: []
+            description: 
+                "an array of doubles of the form [row/column,
+                 index-variable-expr] that show the text of the
+                 index-variable-expr on the row/column it corresponds to."
+        cellFormat:
+            type: "Function"
+            defaultValue: Vamonos.rawToTxt
+            description: 
+                "A function that takes the raw contents of each entry and
+                 returns the html to be displayed."
 
-    constructor: ({container, @defaultInput, @varName,
-                    showChanges, @cssRules, @showIndices, cellFormat}) ->
 
-        @$container     = Vamonos.jqueryify(container)
-        @defaultInput  ?= {}
-        @rawToTxt       = cellFormat ? Vamonos.rawToTxt
-        @showChanges    = Vamonos.arrayify(showChanges ? "next")
+    constructor: (args) ->
 
-        @cssRules      ?= []
-        @showIndices   ?= []
+        Vamonos.handleArguments
+            widgetName   : "Matrix"
+            widgetObject : this
+            givenArgs    : args
+
+        @$container     = Vamonos.jqueryify(@container)
 
         @rows           = []
         @cols           = []
@@ -242,7 +276,7 @@ class Matrix
         # we must always cast to strings, or else comparison will fail
         # between integer 1 and string "1"
 
-        newhtml = if rawVal? then "" + @rawToTxt(rawVal) else ""
+        newhtml = if rawVal? then "" + @cellFormat(rawVal) else ""
 
         if oldhtml isnt newhtml
             $cell.html(newhtml)

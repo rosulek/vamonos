@@ -1,5 +1,16 @@
 class Console
 
+    # Console takes no arguments
+    @spec = {}
+
+    constructor: (args = {}) ->
+
+        Vamonos.handleArguments
+            widgetName     : "Console"
+            widgetObject   : this
+            givenArgs      : args
+
+
     event: (event, options...) -> 
 
         if event is 'render'

@@ -1,7 +1,23 @@
 class ModeLine
 
-    constructor: ({container, @editModeText, @displayModeText}) ->
-        @$container = Vamonos.jqueryify(container)
+    @spec =
+        container:
+            type: "String"
+            description: "id of the div within which this widget should draw itself"
+        editModeText:
+            type: "String"
+            description: "message ModeLine displays in editMode"
+        displayModeText:
+            type: "String"
+            description: "message ModeLine displays in displayMode"
+
+    constructor: (args) ->
+        Vamonos.handleArguments
+            widgetName   : "ModeLine"
+            widgetObject : this
+            givenArgs    : args
+
+        @$container = Vamonos.jqueryify(@container)
 
     event: (event, options...) -> switch event
         when "editStart"

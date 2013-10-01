@@ -1,10 +1,38 @@
 class CallStack
 
-    constructor: ({container, @procedureNames, @animate, @resizable}) ->
-        @procedureNames ?= {}
-        @$container      = Vamonos.jqueryify(container)
-        @animate        ?= ["next"]
-        @resizable      ?= true
+    @spec =
+        container:
+            type: "String"
+            description: "id of the div within which this widget should draw itself"
+        procedureNames:
+            type: "Object"
+            defaultValue: {}
+            description: 
+                "an object mapping procedure names (those in the Visualizer's
+                 'algorithm' argument) to their fully capitalized and formatted
+                 display forms."
+            example:  
+                    "procedureNames: {\n" +
+                    "    main: \"DFS\",\n" +
+                    "    visit: \"DFS-Visit\",\n" +
+                    "}"
+        animate:
+            type: "Array"
+            defaultValue: ["next"]
+            description: "types of frame changes to show an animation on"
+        resizable:
+            type: "Boolean"
+            defaultValue: true
+            description: "whether the widget should have a resize triangle"
+
+    constructor: (args) ->
+
+        Vamonos.handleArguments
+            widgetName     : "CallStack"
+            widgetObject   : this
+            givenArgs      : args
+
+        @$container      = Vamonos.jqueryify(@container)
 
         @$inner = $("<div>", {class: "callstack"}).appendTo(@$container)
         @$table = $("<table>", {class: "callstack"}).appendTo(@$inner)

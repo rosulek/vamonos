@@ -1,10 +1,34 @@
 class VarDisplay
-    
-    constructor: ({container, watch, showChanges, @varName, @attributes}) ->
-        @$container  = Vamonos.jqueryify(container)
-        @showChanges = Vamonos.arrayify(showChanges ? "next")
 
+    @spec = 
+        container: 
+            type: "String"
+            description: "id of the div within which this widget should draw itself"
+        varName:
+            type: "String"
+            description: "the name of variable that this widget represents"
+        attributes:
+            type: "Array"
+            defaultValue: undefined
+            description: 
+                "if the variable is an object, an array of which attributes to display"
+        showChanges:
+            type: ["String", "Array"]
+            defaultValue: "next"
+            description: 
+                "type of frame shifts to highlight changes at, can be multiple
+                types with an array of strings"
+    
+    constructor: (args) ->
+
+        Vamonos.handleArguments
+            widgetName   : "VarDisplay"
+            widgetObject : this
+            givenArgs    : args
+
+        @$container  = Vamonos.jqueryify(@container)
         @$container.addClass("var-display")
+        @showChanges = Vamonos.arrayify(@showChanges)
 
     event: (event, options...) -> switch event
         when "setup"

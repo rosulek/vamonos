@@ -1,22 +1,86 @@
 class ArrayGuts
 
-    constructor: ({tableContainer, defaultInput, @varName, ignoreIndexZero, @displayOnly
-                    showChanges, @cssRules, @showIndices, _dummyIndexZero, showLabel,
-                    cellFormat, cellParse, @persistent}) ->
+    @spec =
+        tableContainer: 
+            type: "" # Jquery object
+            description: "a selector of the dom element the guts should go in"
+        varName:
+            type: "String"
+            description: "the name of variable that this widget represents"
+        defaultInput:
+            type: "Array"
+            defaultValue: []
+            description: "the initial value for this array"
+        ignoreIndexZero:
+            type: "Boolean"
+            defaultValue: false
+            description: "whether the array should appear to be 1-indexed"
+        displayOnly:
+            type: "Boolean"
+            defaultValue: false
+            description: "whether the array is editable"
+        showChanges:
+            type: ["String", "Array"]
+            description: "type of frame shifts to highlight changes at, " +
+                            "can be multiple types with an array of strings"
+            defaultValue: "next"
+        cssRules:
+            type: "Array"
+            defaultValue: []
+            description: 
+                "an array of triples of the form [comparison, 
+                 index-variable-expr, css-class] where every index in 
+                 the array that matches the comparason against the given 
+                 index-variable-expr receives the given css class."
+            example:
+                "cssRules: [['>', 'k', 'shaded']]"
+        showIndices:
+            type: "Array"
+            description: 
+                "an array of index-variable-exprs of the form that show the
+                 text of the index-variable-exprs on the indices they
+                 correspond to."
+            defaultValue: []
+        showLabel:
+            type: "Boolean"
+            defaultValue: false
+            description: "whether to show the varName before the array"
+        cellFormat:
+            type: "Function"
+            defaultValue: Vamonos.rawToTxt
+            description: 
+                "A function that takes the raw contents of each entry and 
+                 returns the html to be displayed."
+        cellParse:
+            type: "Function"
+            defaultValue: Vamonos.txtToRaw
+            description:
+                "A function that parses the text input from an editable cell
+                 to an internal representation."
+        persistent:
+            type: "Boolean"
+            defaultValue: false
+            description: 
+                "whether to save the result of running the algorithm and to
+                 use it as the initial value upon returning to edit mode."
+        _dummyIndexZero:
+            type: "Boolean"
+            defaultValue: false
+
+
+    constructor: (args) ->
+
+        Vamonos.handleArguments
+            widgetName   : "ArrayGuts"
+            widgetObject : this
+            givenArgs    : args
 
         @$editBox      = null
         @editIndex     = null
-        @firstIndex    = if ignoreIndexZero then 1 else 0
-        @lastInput     = defaultInput ? []
-        @showChanges   = Vamonos.arrayify(showChanges ? "next")
-        @cssRules     ?= []
-        @showIndices  ?= []
-        @persistent   ?= false
-
-        @rawToTxt   = cellFormat ? Vamonos.rawToTxt
-        @txtToRaw   = cellParse  ? Vamonos.txtToRaw
-        @txtValid   = (txt) -> return @txtToRaw(txt)?
-
+        @lastInput     = @defaultInput
+        @firstIndex    = if @ignoreIndexZero then 1 else 0
+        @showChanges   = Vamonos.arrayify(@showChanges ? "next")
+        @txtValid      = (txt) -> return @cellParse(txt)?
 
         @$rowIndices     = $("<tr>", {class: "array-indices"})
         @$rowCells       = $("<tr>", {class: "array-cells"})
@@ -25,16 +89,16 @@ class ArrayGuts
         @$cells        = []
         @$annotations  = []
 
-        tableContainer.append( @$rowIndices, @$rowCells, @$rowAnnotations )
+        @tableContainer.append( @$rowIndices, @$rowCells, @$rowAnnotations )
 
         # interestingly, "if blah" and "if blah is true" are different
-        showLabel = @varName + ":" if showLabel is true
+        @showLabel = @varName + ":" if @showLabel is true
 
-        if typeof showLabel is "string"
+        if typeof @showLabel is "string"
             row.append("<th></th>") for row in [@$rowIndices, @$rowCells, @$rowAnnotations]
-            @$rowCells.find("th").html(showLabel)
+            @$rowCells.find("th").html(@showLabel)
 
-        if ignoreIndexZero and _dummyIndexZero
+        if @ignoreIndexZero and @_dummyIndexZero
             row.append("<th></th>") for row in [@$rowIndices, @$rowCells, @$rowAnnotations]
 
 
@@ -184,7 +248,7 @@ class ArrayGuts
 
         @editIndex = index
         @$editBox = $("<input>", {class: "inline-input"})
-        @$editBox.val( @rawToTxt(@theArray[index]) )
+        @$editBox.val( @cellFormat(@theArray[index]) )
         @$editBox.width( $cell.width() );           
         @$editBox.on("blur.arrayguts",    (e) => @stopEditingCell(yes) )
         @$editBox.on("keydown.arrayguts", (e) => @editKeyDown(e) ) 
@@ -277,7 +341,7 @@ class ArrayGuts
         newindex = @theArray.length
         @theArray.push(val);
 
-        $newCell = $("<td>", {text: @rawToTxt(val)})
+        $newCell = $("<td>", {text: @cellFormat(val)})
         $newAnnotation = $("<td>")
 
         @$cells.push( $newCell )
@@ -297,7 +361,7 @@ class ArrayGuts
         row.find("td:last-child").remove() for row in [@$rowIndices, @$rowCells, @$rowAnnotations]
     
     arraySetFromTxt: (index, txtVal, showChanges) ->
-        @arraySetFromRaw(index, @txtToRaw(txtVal), showChanges)
+        @arraySetFromRaw(index, @cellParse(txtVal), showChanges)
 
     arraySetFromRaw: (index, rawVal, showChanges) ->
         @theArray[index] = rawVal
@@ -311,7 +375,7 @@ class ArrayGuts
         # also, we must always cast to strings, or else comparison will fail
         # between integer 1 and string "1"
 
-        newhtml = if @theArray[index]? then "" + @rawToTxt( @theArray[index] ) else ""
+        newhtml = if @theArray[index]? then "" + @cellFormat( @theArray[index] ) else ""
 
         if oldhtml isnt newhtml
             $cell.html(newhtml)

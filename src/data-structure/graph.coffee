@@ -4,7 +4,7 @@ class Graph
         @directed = args.directed ? no
         @idPrefix = args.prefix   ? ""
 
-        @type     = 'graph'
+        @type     = 'Graph'
         @edges    = {}
         @vertices = {}
 

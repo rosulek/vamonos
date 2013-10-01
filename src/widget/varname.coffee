@@ -1,13 +1,40 @@
 class VarName
 
-    constructor: ({container, @varName, @inputVar, @displayName, @watchable, @watching}) ->
-        @$container   = Vamonos.jqueryify(container)
-        @displayName ?= @varName
-        @inputVar    ?= false
-        @watchable   ?= true
-        @watching    ?= false
+    @spec = 
+        container: 
+            type: "String"
+            description: "id of the div within which this widget should draw itself"
+        varName:
+            type: "String"
+            description: "the name of variable that this widget represents"
+        displayName:
+            type: "String"
+            description: "alternate varname to display - defaults to varName"
+            defaultValue: undefined
+        inputVar:
+            type: "Boolean"
+            description: "whether to accept input for this variable in edit mode"
+            defaultValue: false
+        watchable: 
+            type: "Boolean"
+            description: "whether the variable can be set as a watchVar"
+            defaultValue: true
+        watching:
+            type: "Boolean"
+            description: "whether the variable starts off set as a watchVar"
+            defaultValue: false
 
-        @watching   &&= @watchable
+    constructor: (args) ->
+
+        Vamonos.handleArguments
+            widgetName   : "VarName"
+            widgetObject : this
+            givenArgs    : args
+
+        @displayName ?= @varName
+
+        @$container = Vamonos.jqueryify(@container)
+        @watching &&= @watchable
 
         if @inputVar
             @$editIndicator = $("<span>", {class: "var-editable", html: "&#x270e;"}).appendTo(@$container)

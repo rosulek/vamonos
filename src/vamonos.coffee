@@ -1,5 +1,64 @@
 root = exports ? window
 root.Vamonos = 
+
+    # assigns arguments and default arguments inside widgets. warns when
+    # required arguments are not present. warns when unused arguments are
+    # present. type-checks arguments.
+    handleArguments: ({
+        widgetName,         # a string containing the name of the widget for errors
+
+        widgetObject,       # "this"/"@" from widget object
+                            
+        givenArgs,          # the args object passed to widget constructor
+
+        ignoreExtraArgs,    # optional argument: whether or not to check for extra args.
+                            # for use when using constructor args multiple times.
+        }) ->
+
+        ignoreExtraArgs ?= false
+
+        throw Error "handleArguments: widgetName required" unless widgetName?
+        throw Error "handleArguments: widgetObject required for #{widgetName} widget" unless widgetObject?
+        throw Error "handleArguments: givenArgs required for #{widgetName} widget" unless givenArgs?
+        throw Error "handleArguments: no spec for #{widgetName} widget" unless widgetObject.constructor.spec?
+
+        # The spec object is required for all widgets. It is an object mapping arg
+        # names to objects of the form:
+        #
+        #            { type, description, [defaultValue] }
+        #
+        #    args without a default value are required and will cause an error.
+        #    optional arguments can be created by using a defaultValue of
+        #    undefined. 
+        #
+        #    type can be a string ("String", "Integer", "Function", etc) or an
+        #    array when an argument can be one of many types.
+
+        for argName, specs of widgetObject.constructor.spec
+            { type, description, defaultValue } = specs
+            throw Error "handleArguments: no type provided for #{widgetName}.#{argName}" unless type?
+            type = @arrayify(type)
+            if givenArgs[argName]?
+                # type-check
+                unless givenArgs[argName].constructor.name in type
+                    throw TypeError "WIDGET #{widgetName}: constructor argument " +
+                        "'#{argName}' expects type '#{type}' but got " +
+                        "type '#{givenArgs[argName].constructor.name}'"
+                # type-check passed: assign value in widget object
+                widgetObject[argName] = givenArgs[argName]
+                delete givenArgs[argName] unless ignoreExtraArgs
+            else
+                if specs.hasOwnProperty("defaultValue")
+                    widgetObject[argName] = defaultValue
+                else
+                    throw Error "#{widgetName}: required argument #{argName} missing."
+
+        unless ignoreExtraArgs
+            @warn(widgetName, "unused argument \"#{arg}\"") for arg of givenArgs
+
+    warn: (objName, str) ->
+        console.log("### WARNING ### #{objName}: #{str}")
+
     formatObject: (object, attributes = []) ->
         tbl  = "<table>"
         rows = (for attribute in attributes
@@ -67,6 +126,10 @@ root.Vamonos =
     isNumber: (val) ->
         return ! isNaN(parseInt(val))
     
+    funcify: (arg) ->
+        return arg if typeof(arg) is "function"
+        return -> arg
+
     arrayify: (obj) ->
         if obj instanceof Array then obj else [obj]
 

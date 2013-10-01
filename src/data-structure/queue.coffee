@@ -3,7 +3,7 @@ class Queue
     constructor: (arg = {}) ->
         @initialize(arg?.initialArray ? [])
         @comparator = arg?.comparator
-        @type = 'queue'
+        @type = 'Queue'
 
     initialize: (elems = []) ->
         @guts = elems[..]

@@ -11,7 +11,23 @@ DIRS = {
 
 class QTipTutorial
 
-    constructor: (@states) ->
+    @spec =
+        states:
+            type: "Array"
+            description: 
+                "array of objects of the format { target, dir, tooltip } where
+                 target is a jQuery selector for where you want the tooltip to
+                 appear, tooltip is the message to be displayed."
+
+    constructor: (args) ->
+
+        args = { states: args } if args.constructor.name is 'Array'
+
+        Vamonos.handleArguments
+            widgetName   : "QTipTutorial"
+            widgetObject : this
+            givenArgs    : args
+
         @currStateIndex = null
         @$currTarget    = null
 

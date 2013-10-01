@@ -1,53 +1,87 @@
 class Controls
 
+    @spec = 
+        container:
+            type: "String"
+            description: "id of the div within which this widget should draw itself"
+        autoPlay:
+            type: "Boolean"
+            defaultValue: false
+            description: "whether the visualization should skip edit mode"
+        fullscreen:
+            type: "Boolean"
+            defaultValue: false
+            description: "whether the visualization is in fullscreen mode"
+        buttons:
+            type: "Boolean"
+            defaultValue: true
+            description: "whether to show the buttons"
+        slider:
+            type: "Boolean"
+            defaultValue: true
+            description: "whether to show the slider"
+        frameNumber:
+            type: "Boolean"
+            defaultValue: true
+            description: "whether to show the frame number"
+        showWhileSliding:
+            type: "Boolean"
+            defaultValue: true
+            description: "whether to update visualization when sliding"
+        keyboardShortcuts:
+            type: "Boolean"
+            defaultValue: true
+            description: "whether to handle keyboard shortcuts"
+        runStopButton:
+            type: "Boolean"
+            defaultValue: true
+            description: "whether to show the run and stop button"
+
     constructor: (arg) ->
 
-        if typeof(arg) is "object"
-            {container, showWhileSliding, runStopButton, autoPlay,
-                        keyboardShortcuts, fullscreen, frameNumber,
-                        slider, buttons} = arg
-        else
-            container = arg
+        unless typeof(arg) is "object"
+            arg = {container: arg}
 
-        @$container  = Vamonos.jqueryify(container)
-        buttons     ?= true
-        frameNumber ?= true
-        slider      ?= true
+        Vamonos.handleArguments
+            widgetName: "Controls"
+            widgetObject: this
+            givenArgs: arg
 
+        @$container  = Vamonos.jqueryify(@container)
         @$inner      = $("<div>", {class: "controls controls-disabled"})
 
         @$slider     = $("<div>")
         @$buttons    = $("<div>")
         @$frameLabel = $("<div>")
 
-        if frameNumber
+        if @frameNumber
             @frameLabel = new ControlFrameLabel({ container: @$frameLabel })
         
-        if slider
-            @slider = new ControlSlider({
+        if @slider
+            @sliderObj = new ControlSlider({
                 container: @$slider,
-                showWhileSliding: showWhileSliding,
+                showWhileSliding: @showWhileSliding,
                 labelWidget: @frameLabel
             })
 
-        if buttons
-            @buttons = new ControlButtons({
+        if @buttons
+            @buttonsObj = new ControlButtons({
                 container: @$buttons, 
-                runStopButton: runStopButton,
-                autoPlay: autoPlay,
-                keyboardShortcuts: keyboardShortcuts
+                runStopButton: @runStopButton,
+                autoPlay: @autoPlay,
+                keyboardShortcuts: @keyboardShortcuts
             })
 
         @$container.append(@$inner)
 
-        @$inner.append(@$buttons)     if buttons
-        @$inner.append(@$frameLabel)  if frameNumber
-        @$inner.append(@$slider)      if slider
+        @$inner.append(@$buttons)     if @buttons
+        @$inner.append(@$frameLabel)  if @frameNumber
+        @$inner.append(@$slider)      if @slider
 
-        @$inner.addClass("controls-full") if buttons and slider
+        @$inner.addClass("controls-full") if @buttons and @slider
 
 
-        switch fullscreen
+        switch @fullscreen
             when "auto"
                 if (!window.screenTop && !window.screenY)
                     @$container.addClass("controls-fullscreen")
@@ -60,8 +94,8 @@ class Controls
                 @$inner.addClass("controls-fullscreen")
 
     event: (event, options...) ->
-        @buttons   ?.event(event, options...)
-        @slider    ?.event(event, options...)
+        @buttonsObj?.event(event, options...)
+        @sliderObj?.event(event, options...)
         @frameLabel?.event(event, options...)
 
         switch event
@@ -118,8 +152,6 @@ class ControlButtons
 
     constructor: ({container, runStopButton, @autoPlay, @keyboardShortcuts}) ->
         @$container         = Vamonos.jqueryify(container)
-        @keyboardShortcuts ?= true
-        runStopButton      ?= true
 
         @$runStopButton   = $("<button>", {class: "controls-button", html: RUN})
         @$prevButton      = $("<button>", {class: "controls-button", html: PREV})
@@ -268,7 +300,6 @@ class ControlSlider
 
     constructor: ({container, @showWhileSliding, @labelWidget}) ->
         @$slider           = Vamonos.jqueryify(container)
-        @showWhileSliding ?= true
 
         @$slider.addClass("controls-slider")
         @$slider.attr("title", "Slide to jump forward/backward through algorithm's execution")

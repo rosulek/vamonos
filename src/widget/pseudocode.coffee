@@ -1,27 +1,43 @@
 class Pseudocode
 
-    constructor: (arg) ->
+    @spec =
+        container:
+            type: "String"
+            description: "id of the div within which this widget should draw itself"
+        editableBreakpoints:
+            type: "Boolean"
+            defaultValue: true
+            description: "whether breakpoints can be modified with this widget"
+        breakpoints:
+            type: ["Array", "String"]
+            defaultValue: []
+            description: 
+                "initial breakpoints, as an array of line numbers, 
+                 or 'all' for all breakpoints"
+        procedureName:
+            type: "String"
+            defaultValue: "main"
+            description: "the name of the procedure in the algorithm"
 
-        if typeof arg is "object"
-            {container, @editableBreakpoints, @breakpoints, @procedureName} = arg
-        else
-            container = arg
+    constructor: (args) ->
+
+        args = { container: args } unless typeof args is "object"
+
+        Vamonos.handleArguments
+            widgetName   : "Pseudocode"
+            widgetObject : this
+            givenArgs    : args
 
         @locals              ?= []
         @args                ?= []
-        @procedureName       ?= "main"
-        @editableBreakpoints ?= yes
 
         # most recently displayed line
         @mostRecent = 0
 
         # sets @$tbl as the jquery selector for the pseudocode table
-        nLines = @formatContainer(Vamonos.jqueryify(container))
+        nLines = @formatContainer(Vamonos.jqueryify(@container))
 
-        if @breakpoints is "all"
-            @breakpoints = [1..nLines]
-        else
-            @breakpoints ?= []
+        @breakpoints = [1..nLines] if @breakpoints is "all"
 
     event: (event, options...) -> switch event
         when "setup"

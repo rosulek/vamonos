@@ -3,6 +3,7 @@ class BinaryTree
     constructor: (@guts) ->
         @assignOrder()
         @assignDepth()
+        @type = "BinaryTree"
 
     assignOrder: -> 
         @count = 0

@@ -1,9 +1,21 @@
 class Queue
 
-    constructor: (options) ->
-        @varName     = options.varName
-        @$container  = Vamonos.jqueryify(options.container)
-        @arrayWidget = new Vamonos.Widget.Array(options)
+    @spec =
+        varName:
+            type: "String"
+            description: "the name of variable that this widget represents"
+
+    constructor: (args) ->
+
+        # Queue passes most of its args to the underlying Array widget,
+        # so set ignoreExtraArgs to true.
+        Vamonos.handleArguments
+            widgetName      : "Queue"
+            widgetObject    : this
+            givenArgs       : args
+            ignoreExtraArgs : true
+
+        @arrayWidget = new Vamonos.Widget.Array(args)
 
     event: (event, options...) -> switch event
         when "setup"

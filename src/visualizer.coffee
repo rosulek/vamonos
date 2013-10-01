@@ -1,8 +1,30 @@
 class Visualizer
 
-    constructor: ({@widgets, @maxFrames, algorithm, autoStart}) ->
-        @maxFrames     ?= 250
-        autoStart      ?= false
+    @spec = 
+        widgets: 
+            type: "Array" 
+            description: "a list of widgets for use in the visualization"
+        algorithm: 
+            type: ["Function", "Object"]
+            descripton: 
+                "as a function, the 'main' procedure. as an object, an
+                 association of procedure names to functions. 'main' must be
+                 provided"
+        maxFrames: 
+            type: "Integer"
+            defaultValue: 250
+            description: "the maximum number of snapshots"
+        autoStart:
+            type: "Boolean"
+            defaultValue: false
+            description: "whether to skip edit mode at load time"
+
+    constructor: (args) ->
+
+        Vamonos.handleArguments
+            widgetName   : "Visualizer"
+            widgetObject : this
+            givenArgs    : args
 
         @breakpoints    = {}
         @watchVars      = []
@@ -10,11 +32,11 @@ class Visualizer
         @procedures     = {}
 
         @initializeStash()
-        @prepareAlgorithm(algorithm)
+        @prepareAlgorithm(@algorithm)
 
         @tellWidgets("setup", @)
 
-        if autoStart
+        if @autoStart
             @runAlgorithm() 
         else
             @editMode() 

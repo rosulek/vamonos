@@ -1,29 +1,108 @@
 class GraphDisplay
 
-    constructor: ({
-        container
-        @vertexLabels
-        @vertexCssAttributes
-        @edgeLabel
-        @colorEdges
-        @highlightChanges
-        @containerMargin
-        @minX
-        @minY
-        @draggable
-        @resizable
-    }) ->
+    @spec =
+        container:
+            type: "String"
+            description: "id of the div within which this widget should draw itself"
+        vertexLabels:
+            type: "Object"
+            defaultValue: {}
+            description:
+                "an object containing a mapping of label positions 
+                (inner, nw, sw, ne, se) to labels. Labels can display
+                simple variable names (corresponding to inputVars).
+                This must be provided in the form: label: ['var1', 'var2'].
+                It can be more complicated, as a function that takes
+                a vertex and returns some html. if we give a label
+                an object, we can control what is shown in edit/display
+                mode in the form: 
+                label : { edit: function{..}, display: function{..} }"
+            example: 
+                "vertexLabels: {\n" +
+                "    inner : {\n" +
+                "        edit: function(vtx){return vtx.name}, \n" +
+                "        display: function(vtx){return vtx.d} \n" +
+                "    },\n" +
+                "    sw    : function(vtx){return vtx.name} \n" +
+                "    },\n" +
+                "    ne    : ['u', 'v'],\n" +
+                "    nw    : ['s'],\n" +
+                "}"
+        edgeLabel: 
+            type: "Array"
+            defaultValue: []
+            description: 
+                "an array, containing the name of the edge attribute to display
+                and the default value for new edges."
+            example:
+                "edgeLabel: [ 'w', 1 ]"
+        colorEdges:
+            type: "Array"
+            defaultValue: []
+            description:
+                "provides a way to set edge coloring based on vertex variables
+                or edge properties. takes an array of doubles of the form 
+                [ edge-predicate, color ], where color is a hex color and edge-
+                predicate is either a string of the form 'vertex1->vertex2' or
+                a function that takes an edge and returns a boolean"
+            example:
+                "colorEdges: [\n" +
+                "    ['u->v', '#FF7D7D'],\n" +
+                "    [ function(edge){\n" +
+                "        return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)\n" +
+                "            || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }\n" +
+                "    , '#92E894' ],\n" +
+                "]"
+        vertexCssAttributes:
+            type: "Object"
+            defaultValue: {}
+            description:
+                "provides a way to change CSS classes of vertices based on 
+                 vertex attributes. takes an object of the form { attribute: 
+                 value/[list of values]. in the case of a single value, 
+                 the vertex will simply get a class with the same name as
+                 the attribute. in the case of a list of values, the css
+                 class will be of the form 'attribute-value' when its value
+                 matches."
+            example:
+                "vertexCssAttributes: { done: true }\n
+                 vertexCssAttributes: { color: ['white', 'gray', 'black'] }"
+        containerMargin:
+            type: "Number"
+            defaultValue: 30
+        minX:
+            type: "Number"
+            defaultValue: 100
+            description: "minimum width of the graph widget"
+        minY:
+            type: "Number"
+            defaultValue: 100
+            description: "minimum height of the graph widget"
+        resizable:
+            type: "Boolean"
+            defaultValue: true
+            description: "whether the graph widget is resizable"
+        draggable:
+            type: "Boolean"
+            defaultValue: true
+            description: "whether nodes can be moved"
+        highlightChanges:
+            type: "Boolean"
+            defaultValue: true
+            description: "whether nodes will get the css class 'changed' when they are modified"
 
-        @containerMargin  ?= 30
-        @minX ?= @minY    ?= 100
-        @draggable        ?= yes
-        @highlightChanges ?= yes
+    constructor: (args) ->
+
+        Vamonos.handleArguments
+            widgetName   : "GraphDisplay"
+            widgetObject : this
+            givenArgs    : args
+
         @connections       = {}
         @nodes             = {}
-        @$outer            = Vamonos.jqueryify(container)
+        @$outer            = Vamonos.jqueryify(@container)
         @$inner            = $("<div>", {class: "graph-inner-container"})
         @graphDrawn        = no
-        @resizable        ?= yes
 
         @$outer.append(@$inner)
         @$outer.disableSelection()

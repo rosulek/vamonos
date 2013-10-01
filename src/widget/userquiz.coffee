@@ -1,9 +1,37 @@
 class UserQuiz
 
-    constructor: ({@condition, @question, @answer, @title}) ->
-        @title   ?= @funcify("Self-test question:")
-        @question = @funcify(@question)
-        @answer   = @funcify(@answer)
+    @spec =
+        question:
+            type: ["String", "Function"]
+            description: 
+                "either a string or a function that takes a frame and returns a
+                 string" 
+        answer:
+            type: ["String", "Function"]
+            description: 
+                "either a string or a function that takes a frame and returns a
+                 string" 
+        condition:
+            type: "Function"
+            description: 
+                "a function taking the current frame, returning a boolean, 
+                 used to determine when to ask a question"
+        title:
+            type: "Function"
+            defaultValue: Vamonos.funcify("Self-test question")
+            description: 
+                "the title of the quiz. either as a plain string or as a function 
+                 that takes the current frame as an argument and returns a string."
+
+    constructor: (args) ->
+
+        Vamonos.handleArguments
+            widgetName   : "UserQuiz"
+            widgetObject : this
+            givenArgs    : args
+
+        @question = Vamonos.funcify(@question)
+        @answer   = Vamonos.funcify(@answer)
 
         @$dialog = $("<div>", {class: "userquiz"})
         @$dialog.hide()
@@ -22,10 +50,6 @@ class UserQuiz
                 @$submit.trigger("click")
                 return false
         )
-
-    funcify: (arg) ->
-        return arg if typeof(arg) is "function"
-        return -> arg
 
     event: (event, options...) -> switch event
         when "setup"

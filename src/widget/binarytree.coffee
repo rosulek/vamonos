@@ -1,12 +1,36 @@
 class BinaryTree
 
-    @xscalar = 60
-    @yscalar = 40
+    @spec =
+        container:
+            type: "String"
+            description: "id of the div within which this widget should draw itself"
+        varName:
+            type: "String"
+            description: "the name of variable that this widget represents"
+        defaultTree:
+            type: "BinaryTree"
+            description: "the initial tree"
+            defaultValue: new Vamonos.DataStructure.BinaryTree()
+        xscalar:
+            type: "Number"
+            defaultValue: 60
+            description: "how far to seperate nodes on the x axis"
+        yscalar:
+            type: "Number"
+            defaultValue: 40
+            description: "how far to seperate nodes on the y axis"
 
-    constructor: ({container, @varName, defaultTree}) ->
-        @theTree = defaultTree ?= new Vamonos.DataStructure.Tree()
+    constructor: (args) ->
+
+        Vamonos.handleArguments
+            widgetName     : "BinaryTree"
+            widgetObject   : this
+            givenArgs      : args
+
+        @theTree = @defaultTree
+
         @graphDisplay = new Vamonos.Widget.GraphDisplay
-            container        : container
+            container        : @container
             vertexLabels     : {inner: (n)->n.val}
             draggable        : false
             highlightChanges : false
@@ -28,8 +52,8 @@ class BinaryTree
 
     generatePositions: (tree) ->
         tree.eachNodeInOrder (n) =>
-            n.x = n.order * BinaryTree.xscalar + @graphDisplay.containerMargin
-            n.y = n.depth * BinaryTree.yscalar + @graphDisplay.containerMargin
+            n.x = n.order * @xscalar + @graphDisplay.containerMargin
+            n.y = n.depth * @yscalar + @graphDisplay.containerMargin
 
     editMode: ->
         @draw(@theTree)
