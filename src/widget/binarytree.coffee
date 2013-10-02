@@ -10,7 +10,7 @@ class BinaryTree
         defaultTree:
             type: "BinaryTree"
             description: "the initial tree"
-            defaultValue: new Vamonos.DataStructure.BinaryTree()
+            defaultValue: undefined
         xscalar:
             type: "Number"
             defaultValue: 60
@@ -27,7 +27,7 @@ class BinaryTree
             widgetObject   : this
             givenArgs      : args
 
-        @theTree = @defaultTree
+        @theTree = @defaultTree ? new Vamonos.DataStructure.BinaryTree()
 
         @graphDisplay = new Vamonos.Widget.GraphDisplay
             container        : @container
@@ -152,4 +152,4 @@ class BinaryTree
             return Vamonos.rawToTxt(val)
         Vamonos.editableValue($contents, valFunc, returnFunc)
 
-Vamonos.export { Widget: { BinaryTree } }
+@Vamonos.export { Widget: { BinaryTree } }

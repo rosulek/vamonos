@@ -53,4 +53,4 @@ class Hardcoded
         else if typeof vars is 'string'
             @viz.setWatchVar(vars)
 
-Vamonos.export { Widget: { Hardcoded } }
+@Vamonos.export { Widget: { Hardcoded } }

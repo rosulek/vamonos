@@ -22,4 +22,4 @@ class Array
     event: (args...) -> 
         @guts.event(args...)
 
-Vamonos.export { Widget: { Array } }
+@Vamonos.export { Widget: { Array } }

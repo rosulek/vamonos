@@ -116,4 +116,4 @@ class Graph
         Vamonos.mixin(r, this, Vamonos.clone)
 
 
-Vamonos.export { DataStructure: { Graph } }
+@Vamonos.export { DataStructure: { Graph } }

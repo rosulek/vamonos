@@ -47,13 +47,13 @@ class ArrayGuts
             description: "whether to show the varName before the array"
         cellFormat:
             type: "Function"
-            defaultValue: Vamonos.rawToTxt
+            defaultValue: undefined
             description: 
                 "A function that takes the raw contents of each entry and 
                  returns the html to be displayed."
         cellParse:
             type: "Function"
-            defaultValue: Vamonos.txtToRaw
+            defaultValue: undefined
             description:
                 "A function that parses the text input from an editable cell
                  to an internal representation."
@@ -75,6 +75,8 @@ class ArrayGuts
             widgetObject : this
             givenArgs    : args
 
+        @cellFormat   ?= Vamonos.rawToTxt
+        @cellParse    ?= Vamonos.txtToRaw
         @$editBox      = null
         @editIndex     = null
         @lastInput     = @defaultInput
@@ -409,4 +411,4 @@ class ArrayGuts
         $cell.replaceWith( dup )
         @$cells[index] = dup
 
-Vamonos.export { Widget: { ArrayGuts } }
+@Vamonos.export { Widget: { ArrayGuts } }

@@ -202,4 +202,4 @@ class Pseudocode
         $container.html(@$tbl)
         return lineNumber
 
-Vamonos.export { Widget: { Pseudocode } }
+@Vamonos.export { Widget: { Pseudocode } }

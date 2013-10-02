@@ -141,4 +141,4 @@ class BinaryTree
         @assignOrder()
         @assignDepth()
 
-Vamonos.export { DataStructure: { BinaryTree } }
+@Vamonos.export { DataStructure: { BinaryTree } }

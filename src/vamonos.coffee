@@ -1,6 +1,4 @@
-root = exports ? window
-root.Vamonos = 
-
+@Vamonos =
     # assigns arguments and default arguments inside widgets. warns when
     # required arguments are not present. warns when unused arguments are
     # present. type-checks arguments.
@@ -137,7 +135,7 @@ root.Vamonos =
         if typeof obj is 'string' then $("#" + obj) else obj
 
     export: (obj) ->
-        root = exports ? window
+        root = module?.exports ? window
         root.Vamonos or= {}
         @mixin( root.Vamonos, obj )
 

@@ -121,4 +121,4 @@ class CallStack
         "<span class='callstack-arrow'>&uarr;</span>" + (Vamonos.rawToTxt(r) for r in ret).join(",")
 
 
-Vamonos.export { Widget: { CallStack } }
+@Vamonos.export { Widget: { CallStack } }

@@ -339,4 +339,4 @@ class Visualizer
         @tellWidgets("render", @frames[@frameNumber-1], type)
 
 
-Vamonos.export { Visualizer }
+@Vamonos.export { Visualizer }

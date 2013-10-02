@@ -33,4 +33,4 @@ class Queue
             @arrayWidget.event(event, options...)
 
 
-Vamonos.export { Widget: { Queue } }
+@Vamonos.export { Widget: { Queue } }

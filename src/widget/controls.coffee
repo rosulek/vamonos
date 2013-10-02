@@ -104,7 +104,7 @@ class Controls
             when "displayStop"
                 @$inner.addClass("controls-disabled")
 
-Vamonos.export { Widget: { Controls } }
+@Vamonos.export { Widget: { Controls } }
 
 #===============================================================================
 #===============================================================================

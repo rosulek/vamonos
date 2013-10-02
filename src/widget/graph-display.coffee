@@ -412,4 +412,4 @@ class GraphDisplay
         lineWidth   : GraphDisplay.lineWidth
         strokeStyle : color
 
-Vamonos.export { Widget: { GraphDisplay } }
+@Vamonos.export { Widget: { GraphDisplay } }

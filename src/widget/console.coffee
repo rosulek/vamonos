@@ -25,4 +25,4 @@ class Console
 
 
 
-Vamonos.export { Widget: { Console } }
+@Vamonos.export { Widget: { Console } }

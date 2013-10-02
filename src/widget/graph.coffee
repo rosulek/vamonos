@@ -9,7 +9,7 @@ class Graph
             description: "the name of variable that this widget represents"
         defaultGraph:
             type: "Graph"
-            defaultValue: new Vamonos.DataStructure.Graph()
+            defaultValue: undefined
             description: "the initial graph, as a Vamonos.DataStructure.Graph"
         inputVars:
             type: "Object"
@@ -105,7 +105,7 @@ class Graph
             givenArgs      : args
             ignoreExtraArgs: true
 
-        @theGraph      = @defaultGraph
+        @theGraph      = @defaultGraph ? new Vamonos.DataStructure.Graph()
         @inputVars[k]  = @theGraph.vertex(v) for k,v of @inputVars
 
         @displayWidget = new Vamonos.Widget.GraphDisplay
@@ -383,4 +383,4 @@ class Graph
             .find("input.inline-input")
             .trigger("something-was-selected")
 
-Vamonos.export { Widget: { Graph } }
+@Vamonos.export { Widget: { Graph } }

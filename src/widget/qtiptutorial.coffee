@@ -82,4 +82,4 @@ class QTipTutorial
     restart: ->
         @doState(0)
 
-Vamonos.export { Widget: { QTipTutorial } }
+@Vamonos.export { Widget: { QTipTutorial } }

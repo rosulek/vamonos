@@ -31,7 +31,7 @@ class Matrix
                  index-variable-expr on the row/column it corresponds to."
         cellFormat:
             type: "Function"
-            defaultValue: Vamonos.rawToTxt
+            defaultValue: undefined
             description: 
                 "A function that takes the raw contents of each entry and
                  returns the html to be displayed."
@@ -44,6 +44,7 @@ class Matrix
             widgetObject : this
             givenArgs    : args
 
+        @cellFormat    ?= Vamonos.rawToTxt
         @$container     = Vamonos.jqueryify(@container)
 
         @rows           = []
@@ -329,4 +330,4 @@ class Matrix
             when ">="       then return res >= 0
             
 
-Vamonos.export { Widget: { Matrix } }
+@Vamonos.export { Widget: { Matrix } }

@@ -32,4 +32,4 @@ class ParallelArrays
     event: (args...) -> 
         g.event(args...) for g in @guts
         
-Vamonos.export { Widget: { ParallelArrays } }
+@Vamonos.export { Widget: { ParallelArrays } }

@@ -101,4 +101,4 @@ class PriorityQueue
     size: ({}) ->
         return @q.size
 
-Vamonos.export { DataStructure: { PriorityQueue } }
+@Vamonos.export { DataStructure: { PriorityQueue } }

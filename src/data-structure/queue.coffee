@@ -38,4 +38,4 @@ class Queue
             "[#{(Vamonos.rawToTxt(elem) for elem in @guts).join(", ")}]"
 
 
-Vamonos.export { DataStructure: { Queue } }
+@Vamonos.export { DataStructure: { Queue } }

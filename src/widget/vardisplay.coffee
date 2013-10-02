@@ -72,4 +72,4 @@ class VarDisplay
         @dontShowChange = undefined
 
 
-Vamonos.export { Widget: { VarDisplay } }
+@Vamonos.export { Widget: { VarDisplay } }

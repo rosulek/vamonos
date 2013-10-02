@@ -102,4 +102,4 @@ class VarName
         @setWatchStatus()
         return false
         
-Vamonos.export { Widget: { VarName }}
+@Vamonos.export { Widget: { VarName }}

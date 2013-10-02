@@ -25,4 +25,4 @@ class ModeLine
         when "displayStart"
             @$container.html(@displayModeText)
         
-Vamonos.export { Widget: { ModeLine } }
+@Vamonos.export { Widget: { ModeLine } }

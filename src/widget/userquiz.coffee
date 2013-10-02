@@ -18,7 +18,7 @@ class UserQuiz
                  used to determine when to ask a question"
         title:
             type: "Function"
-            defaultValue: Vamonos.funcify("Self-test question")
+            defaultValue: undefined
             description: 
                 "the title of the quiz. either as a plain string or as a function 
                  that takes the current frame as an argument and returns a string."
@@ -30,6 +30,7 @@ class UserQuiz
             widgetObject : this
             givenArgs    : args
 
+        @title   ?= Vamonos.funcify("Self-test question")
         @question = Vamonos.funcify(@question)
         @answer   = Vamonos.funcify(@answer)
 
@@ -108,4 +109,4 @@ class UserQuiz
 
             @log.push("wrong answer `#{@$answer.val()}` at frame #{@currentFrame._frameNumber}")
 
-Vamonos.export { Widget: { UserQuiz } }
+@Vamonos.export { Widget: { UserQuiz } }
