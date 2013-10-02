@@ -100,7 +100,6 @@ class Graph
     constructor: (args) ->
 
         Vamonos.handleArguments
-            widgetName     : "Graph"
             widgetObject   : this
             givenArgs      : args
             ignoreExtraArgs: true

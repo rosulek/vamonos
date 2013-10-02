@@ -22,7 +22,6 @@ class Visualizer
     constructor: (args) ->
 
         Vamonos.handleArguments
-            widgetName   : "Visualizer"
             widgetObject : this
             givenArgs    : args
 

@@ -24,7 +24,6 @@ class Pseudocode
         args = { container: args } unless typeof args is "object"
 
         Vamonos.handleArguments
-            widgetName   : "Pseudocode"
             widgetObject : this
             givenArgs    : args
 

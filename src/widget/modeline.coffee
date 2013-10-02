@@ -13,7 +13,6 @@ class ModeLine
 
     constructor: (args) ->
         Vamonos.handleArguments
-            widgetName   : "ModeLine"
             widgetObject : this
             givenArgs    : args
 

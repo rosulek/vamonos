@@ -22,7 +22,6 @@ class VarDisplay
     constructor: (args) ->
 
         Vamonos.handleArguments
-            widgetName   : "VarDisplay"
             widgetObject : this
             givenArgs    : args
 

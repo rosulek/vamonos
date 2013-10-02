@@ -3,8 +3,6 @@
     # required arguments are not present. warns when unused arguments are
     # present. type-checks arguments.
     handleArguments: ({
-        widgetName,         # a string containing the name of the widget for errors
-
         widgetObject,       # "this"/"@" from widget object
                             
         givenArgs,          # the args object passed to widget constructor
@@ -14,6 +12,7 @@
         }) ->
 
         ignoreExtraArgs ?= false
+        widgetName = widgetObject.constructor.name
 
         throw Error "handleArguments: widgetName required" unless widgetName?
         throw Error "handleArguments: widgetObject required for #{widgetName} widget" unless widgetObject?

@@ -10,7 +10,6 @@ class Queue
         # Queue passes most of its args to the underlying Array widget,
         # so set ignoreExtraArgs to true.
         Vamonos.handleArguments
-            widgetName      : "Queue"
             widgetObject    : this
             givenArgs       : args
             ignoreExtraArgs : true

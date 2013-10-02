@@ -8,7 +8,6 @@ class Array
     constructor: (options) ->
         
         Vamonos.handleArguments
-            widgetName      : "Array"
             widgetObject    : this
             givenArgs       : options
             ignoreExtraArgs : true

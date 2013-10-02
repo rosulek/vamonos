@@ -40,7 +40,6 @@ class Matrix
     constructor: (args) ->
 
         Vamonos.handleArguments
-            widgetName   : "Matrix"
             widgetObject : this
             givenArgs    : args
 

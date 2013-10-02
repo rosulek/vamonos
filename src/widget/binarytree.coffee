@@ -23,7 +23,6 @@ class BinaryTree
     constructor: (args) ->
 
         Vamonos.handleArguments
-            widgetName     : "BinaryTree"
             widgetObject   : this
             givenArgs      : args
 

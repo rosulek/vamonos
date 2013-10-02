@@ -28,7 +28,6 @@ class CallStack
     constructor: (args) ->
 
         Vamonos.handleArguments
-            widgetName     : "CallStack"
             widgetObject   : this
             givenArgs      : args
 

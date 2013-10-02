@@ -8,7 +8,6 @@ class ParallelArrays
     constructor: (sharedOptions) ->
 
         Vamonos.handleArguments
-            widgetName: "ParallelArrays"
             widgetObject: this
             givenArgs: sharedOptions
             ignoreExtraArgs: true

@@ -94,7 +94,6 @@ class GraphDisplay
     constructor: (args) ->
 
         Vamonos.handleArguments
-            widgetName   : "GraphDisplay"
             widgetObject : this
             givenArgs    : args
 

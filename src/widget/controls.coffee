@@ -43,7 +43,6 @@ class Controls
             arg = {container: arg}
 
         Vamonos.handleArguments
-            widgetName: "Controls"
             widgetObject: this
             givenArgs: arg
 

@@ -71,7 +71,6 @@ class ArrayGuts
     constructor: (args) ->
 
         Vamonos.handleArguments
-            widgetName   : "ArrayGuts"
             widgetObject : this
             givenArgs    : args
 

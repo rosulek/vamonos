@@ -27,7 +27,6 @@ class VarName
     constructor: (args) ->
 
         Vamonos.handleArguments
-            widgetName   : "VarName"
             widgetObject : this
             givenArgs    : args
 

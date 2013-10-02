@@ -24,7 +24,6 @@ class QTipTutorial
         args = { states: args } if args.constructor.name is 'Array'
 
         Vamonos.handleArguments
-            widgetName   : "QTipTutorial"
             widgetObject : this
             givenArgs    : args
 

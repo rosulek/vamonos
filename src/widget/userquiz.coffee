@@ -26,7 +26,6 @@ class UserQuiz
     constructor: (args) ->
 
         Vamonos.handleArguments
-            widgetName   : "UserQuiz"
             widgetObject : this
             givenArgs    : args
 

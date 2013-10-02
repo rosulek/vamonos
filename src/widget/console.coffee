@@ -6,7 +6,6 @@ class Console
     constructor: (args = {}) ->
 
         Vamonos.handleArguments
-            widgetName     : "Console"
             widgetObject   : this
             givenArgs      : args
 
