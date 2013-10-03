@@ -1,6 +1,6 @@
 { Vamonos } = require '../lib/vamonos.js'
 
-p = (s) -> console.log s        # print
+p = (s) -> console.log s + "\n" # print
 b = (s) -> p("* " + s)          # bulletpoint
 i = (s) -> p("    " + s)        # indent
 
@@ -8,10 +8,10 @@ h1 = (s) -> p("\n" + s + "\n" + (new Array(s.length + 1)).join("="))
 h2 = (s) -> p("\n" + s + "\n" + (new Array(s.length + 1)).join("-"))
 h3 = (s) -> p("\n### " + s)
 
-code = (s) -> p(s.replace(/^/gm, ">    "))
+code = (s) -> p(s.replace(/^/gm, ">     "))
 
 docs = (type, widget) ->
-    h1 "Vamonos.#{type}.#{widget.name}"
+    h1 "Vamonos.#{if type.length then type + "." else ""}#{widget.name}"
     p widget.description if widget.description?
     if (1 for x,y of widget.spec).length
         h2 "Arguments"
@@ -19,6 +19,7 @@ docs = (type, widget) ->
 
 printArgSpec = (spec, name) ->
     for argName, specs of spec
+        continue if /^_/.test argName
         { type, defaultValue, description, example } = specs
         unless description?
             console.warn "warning: no description provided for argument " +
@@ -39,6 +40,14 @@ printArgSpec = (spec, name) ->
         if example?
             i "Example:"
             code example 
+
+p """
+    ---
+    layout: main
+    title: "Vamonos: Dynamic algorithm visualization in the browser"
+    header: Vamonos API
+    ---
+  """
 
 docs("", Vamonos.Visualizer)
 docs("DataStructure", d) for name, d of Vamonos.DataStructure

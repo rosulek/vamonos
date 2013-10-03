@@ -19,7 +19,7 @@ class GraphDisplay
                 "a vertex and returns some html. if we give a label " +
                 "an object, we can control what is shown in edit/display " +
                 "mode in the form: " +
-                "label : { edit: function{..}, display: function{..} }"
+                "label : { edit: function{}, display: function{} }"
             example: 
                 "vertexLabels: {\n" +
                 "    inner : {\n" +
