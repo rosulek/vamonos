@@ -25,7 +25,8 @@ module.exports = (grunt) ->
 
         shell:
             docs:
-                command: 'coffee tools/docgen.coffee > lib/vamonos-api.md'
+                command: 'coffee tools/docgen.coffee'
+                options: { stderr: true, stdout: true }
             
 
     grunt.loadNpmTasks('grunt-contrib-coffee')
