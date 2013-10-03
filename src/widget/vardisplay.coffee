@@ -1,5 +1,8 @@
 class VarDisplay
 
+    @description = "VarDisplay allows viewing of the contents of variables, and " +
+        "if they are objects, their attributes."
+
     @spec = 
         container: 
             type: "String"
@@ -16,8 +19,8 @@ class VarDisplay
             type: ["String", "Array"]
             defaultValue: "next"
             description: 
-                "type of frame shifts to highlight changes at, can be multiple
-                types with an array of strings"
+                "type of frame shifts to highlight changes at, can be multiple " +
+                "types with an array of strings"
     
     constructor: (args) ->
 
@@ -40,12 +43,6 @@ class VarDisplay
 
         when "render"
             @showVars(options...)
-
-    parseVarName: (str) ->
-        str.match(/^\*?([\w:]+)/)?[1]
-
-    parseAttributes: (str) ->
-        str.match(/^\*?[\w:]+\[([\w,]+)\]/)?[1].split(/\s*,\s*/)
 
     showVars: (frame, type) ->
         if not frame[@varName]?

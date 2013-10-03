@@ -1,5 +1,7 @@
 class Queue
 
+    @description = "TODO"
+
     constructor: (arg = {}) ->
         @initialize(arg?.initialArray ? [])
         @comparator = arg?.comparator

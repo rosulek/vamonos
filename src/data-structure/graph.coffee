@@ -1,4 +1,7 @@
 class Graph
+
+    @description: "TODO"
+
     constructor: (args = {}) ->
         
         @directed = args.directed ? no

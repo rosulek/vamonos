@@ -1,15 +1,20 @@
 class Visualizer
 
+    @description = 
+        "The central object of the Vamonos system. The Visualizer controls " +
+        "the flow of information to and from Widgets, keeps track of " +
+        "namespaces and variables, and runs the simulation itself."
+
     @spec = 
         widgets: 
             type: "Array" 
             description: "a list of widgets for use in the visualization"
         algorithm: 
             type: ["Function", "Object"]
-            descripton: 
-                "as a function, the 'main' procedure. as an object, an
-                 association of procedure names to functions. 'main' must be
-                 provided"
+            description: 
+                "as a function, the 'main' procedure. as an object, an " +
+                "association of procedure names to functions. 'main' must be " + 
+                "provided."
         maxFrames: 
             type: "Integer"
             defaultValue: 250

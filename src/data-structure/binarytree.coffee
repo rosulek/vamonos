@@ -1,5 +1,9 @@
 class BinaryTree
 
+    @description = "Warning: Experimental. BinaryTree takes the a tree " +
+        "encoded as nested objects of the form { val, id, left, right } " +
+        "where left and right are optional objects of the same form."
+
     constructor: (@guts) ->
         @assignOrder()
         @assignDepth()

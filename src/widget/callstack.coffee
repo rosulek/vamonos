@@ -1,5 +1,9 @@
 class CallStack
 
+    @description = "CallStack is a representation of the stash's call stack. " +
+        "It also displays the values a procedure was called with, and its " +
+        "return value."
+
     @spec =
         container:
             type: "String"
@@ -8,9 +12,9 @@ class CallStack
             type: "Object"
             defaultValue: {}
             description: 
-                "an object mapping procedure names (those in the Visualizer's
-                 'algorithm' argument) to their fully capitalized and formatted
-                 display forms."
+                "an object mapping procedure names (those in the Visualizer's " +
+                "'algorithm' argument) to their fully capitalized and formatted " +
+                "display forms."
             example:  
                     "procedureNames: {\n" +
                     "    main: \"DFS\",\n" +

@@ -1,5 +1,7 @@
 class Matrix
 
+    @description = "Displays a two dimensional array."
+
     @spec =
         container:
             type: "String"
@@ -11,31 +13,30 @@ class Matrix
             type: ["String", "Array"]
             defaultValue: "next"
             description: 
-                "type of frame shifts to highlight changes at,
-                 can be multiple types with an array of strings"
+                "type of frame shifts to highlight changes at, " +
+                "can be multiple types with an array of strings"
         cssRules:
             type: "Array"
             defaultValue: []
             description: 
-                "an array of quadruples of the form [row/column,
-                 comparison, index-variable-expr, css-class]
-                 where every row/column in the matrix that matches the
-                 comparason against the given index-variable-expr receives
-                 the given css class."
+                "an array of quadruples of the form [row/column, " +
+                "comparison, index-variable-expr, css-class] " +
+                "where every row/column in the matrix that matches the " +
+                "comparason against the given index-variable-expr receives " +
+                "the given css class."
         showIndices:
             type: "Array"
             defaultValue: []
             description: 
-                "an array of doubles of the form [row/column,
-                 index-variable-expr] that show the text of the
-                 index-variable-expr on the row/column it corresponds to."
+                "an array of doubles of the form [row/column, " +
+                "index-variable-expr] that show the text of the " +
+                "index-variable-expr on the row/column it corresponds to."
         cellFormat:
             type: "Function"
             defaultValue: undefined
             description: 
-                "A function that takes the raw contents of each entry and
-                 returns the html to be displayed."
-
+                "A function that takes the raw contents of each entry and " +
+                "returns the html to be displayed."
 
     constructor: (args) ->
 

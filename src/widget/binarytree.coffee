@@ -1,5 +1,7 @@
 class BinaryTree
 
+    @description = "A representation of a binary tree."
+
     @spec =
         container:
             type: "String"

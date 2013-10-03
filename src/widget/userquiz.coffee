@@ -4,24 +4,24 @@ class UserQuiz
         question:
             type: ["String", "Function"]
             description: 
-                "either a string or a function that takes a frame and returns a
-                 string" 
+                "either a string or a function that takes a frame and returns a " +
+                "string" 
         answer:
             type: ["String", "Function"]
             description: 
-                "either a string or a function that takes a frame and returns a
-                 string" 
+                "either a string or a function that takes a frame and returns a " +
+                "string" 
         condition:
             type: "Function"
             description: 
-                "a function taking the current frame, returning a boolean, 
-                 used to determine when to ask a question"
+                "a function taking the current frame, returning a boolean, " +
+                "used to determine when to ask a question"
         title:
             type: "Function"
             defaultValue: undefined
             description: 
-                "the title of the quiz. either as a plain string or as a function 
-                 that takes the current frame as an argument and returns a string."
+                "the title of the quiz. either as a plain string or as a function " +
+                "that takes the current frame as an argument and returns a string."
 
     constructor: (args) ->
 

@@ -1,5 +1,7 @@
 class ArrayGuts
 
+    @description: "ArrayGuts is where array input and display happen."
+
     @spec =
         tableContainer: 
             type: "" # Jquery object
@@ -22,24 +24,24 @@ class ArrayGuts
         showChanges:
             type: ["String", "Array"]
             description: "type of frame shifts to highlight changes at, " +
-                            "can be multiple types with an array of strings"
+                        "can be multiple types with an array of strings"
             defaultValue: "next"
         cssRules:
             type: "Array"
             defaultValue: []
             description: 
-                "an array of triples of the form [comparison, 
-                 index-variable-expr, css-class] where every index in 
-                 the array that matches the comparason against the given 
-                 index-variable-expr receives the given css class."
+                "an array of triples of the form [comparison, " +
+                "index-variable-expr, css-class] where every index in " +
+                "the array that matches the comparason against the given " +
+                "index-variable-expr receives the given css class."
             example:
                 "cssRules: [['>', 'k', 'shaded']]"
         showIndices:
             type: "Array"
             description: 
-                "an array of index-variable-exprs of the form that show the
-                 text of the index-variable-exprs on the indices they
-                 correspond to."
+                "an array of index-variable-exprs of the form that show the " +
+                "text of the index-variable-exprs on the indices they " +
+                "correspond to."
             defaultValue: []
         showLabel:
             type: "Boolean"
@@ -49,22 +51,23 @@ class ArrayGuts
             type: "Function"
             defaultValue: undefined
             description: 
-                "A function that takes the raw contents of each entry and 
-                 returns the html to be displayed."
+                "A function that takes the raw contents of each entry and " +
+                "returns the html to be displayed."
         cellParse:
             type: "Function"
             defaultValue: undefined
             description:
-                "A function that parses the text input from an editable cell
-                 to an internal representation."
+                "A function that parses the text input from an editable cell " +
+                "to an internal representation."
         persistent:
             type: "Boolean"
             defaultValue: false
             description: 
-                "whether to save the result of running the algorithm and to
-                 use it as the initial value upon returning to edit mode."
+                "whether to save the result of running the algorithm and to " +
+                "use it as the initial value upon returning to edit mode."
         _dummyIndexZero:
             type: "Boolean"
+            description: ""
             defaultValue: false
 
 

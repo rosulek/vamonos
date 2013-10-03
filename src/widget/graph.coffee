@@ -1,5 +1,8 @@
 class Graph
 
+    @description: "The Graph widget provides graph input functionality. It " +
+        "uses GraphDisplay for functionality that is not related to input."
+
     @spec =
         container:
             type: "String"
@@ -84,6 +87,7 @@ class Graph
         containerMargin:
             type: "Number"
             defaultValue: 30
+            description: "how close nodes can get to the container edge"
         minX:
             type: "Number"
             defaultValue: 100

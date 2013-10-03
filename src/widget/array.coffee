@@ -1,4 +1,8 @@
 class Array
+
+    @description = 
+        "The Array widget displays an array. It is a minimal wrapper " +
+        "around the ArrayGuts widget."
     
     @spec =
         container:

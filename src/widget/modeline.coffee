@@ -1,5 +1,8 @@
 class ModeLine
 
+    @description = "Display a string that changes depending upon which mode " +
+        "the visualizer is in."
+
     @spec =
         container:
             type: "String"

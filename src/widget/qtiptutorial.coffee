@@ -15,9 +15,9 @@ class QTipTutorial
         states:
             type: "Array"
             description: 
-                "array of objects of the format { target, dir, tooltip } where
-                 target is a jQuery selector for where you want the tooltip to
-                 appear, tooltip is the message to be displayed."
+                "array of objects of the format { target, dir, tooltip } where " +
+                "target is a jQuery selector for where you want the tooltip to " +
+                "appear, tooltip is the message to be displayed."
 
     constructor: (args) ->
 

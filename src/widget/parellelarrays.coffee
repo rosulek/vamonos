@@ -1,5 +1,7 @@
 class ParallelArrays
 
+    @description = "Display multiple arrays, all lined up nice."
+
     @spec =
         container:
             type: "String"

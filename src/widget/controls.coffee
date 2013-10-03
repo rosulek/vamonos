@@ -1,5 +1,8 @@
 class Controls
 
+    @description = "The Controls widget controls the Visualizer - switching " +
+        "modes and frames."
+
     @spec = 
         container:
             type: "String"
