@@ -23,8 +23,14 @@ module.exports = (grunt) ->
             files: ['src/**/*']
             tasks: ['coffee', 'less']
 
+        shell:
+            docs:
+                command: 'coffee tools/docgen.coffee > lib/vamonos-api.md'
+            
+
     grunt.loadNpmTasks('grunt-contrib-coffee')
     grunt.loadNpmTasks('grunt-contrib-watch')
     grunt.loadNpmTasks('grunt-contrib-less')
+    grunt.loadNpmTasks('grunt-shell')
 
-    grunt.registerTask('default', ['coffee', 'less'])
+    grunt.registerTask('default', ['coffee', 'less', 'shell:docs'])
