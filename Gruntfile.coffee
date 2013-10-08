@@ -27,11 +27,25 @@ module.exports = (grunt) ->
             docs:
                 command: 'coffee tools/docgen.coffee'
                 options: { stderr: true, stdout: true }
-            
+            concat:
+                command: 'cat deps/jquery.min.js deps/jquery-ui.min.js deps/jquery-jsplumb.js deps/jquery-qtip.min.js lib/vamonos.js > lib/vamonos-all.js'
+                options: { stderr: true, stdout: true }
+            tarConcat:
+                command: 'tar czf lib/vamonos-all.tgz lib/vamonos-all.js lib/vamonos.css'
+                options: { stderr: true, stdout: true }
+            tarWithDeps:
+                command: 'tar czf lib/vamonos.tgz deps/jquery.min.js deps/jquery-ui.min.js deps/jquery-jsplumb.js deps/jquery-qtip.min.js lib/vamonos.js lib/vamonos.css'
+                options: { stderr: true, stdout: true }
+            tar:
+                command: 'tar czf lib/vamonos.tgz lib/vamonos-all.js lib/vamonos.css'
+                options: { stderr: true, stdout: true }
+            tarDemos:
+                command: 'tar czf lib/vamonos-demos.tgz demos/* lib/vamonos-all.js lib/vamonos.css'
+                options: { stderr: true, stdout: true }
 
     grunt.loadNpmTasks('grunt-contrib-coffee')
     grunt.loadNpmTasks('grunt-contrib-watch')
     grunt.loadNpmTasks('grunt-contrib-less')
     grunt.loadNpmTasks('grunt-shell')
 
-    grunt.registerTask('default', ['coffee', 'less', 'shell:docs'])
+    grunt.registerTask('default', ['coffee', 'less', 'shell:docs', 'shell:concat'])
