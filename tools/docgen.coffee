@@ -1,12 +1,12 @@
 fs = require 'fs'
 
-# In order to modify strings in place, which coffeescript does not support,
-# we use an object and modify its "val" attribute... which conveniently can
-# be a string.
-make_printers = (obj) ->
+make_printers = (obj) -># {{{
+    # In order to modify strings in place, which coffeescript does not support,
+    # we use an object and modify its "val" attribute... which conveniently can
+    # be a string.
     r = {}
     r.pr = (s) -> obj.val += s        # print
-    r.p = (s) -> r.pr(s + "\n")
+    r.p = (s) -> r.pr(s + "\n\n")
     r.b = (s) -> r.p("* " + s)          # bulletpoint
     r.i = (s) -> r.p("    " + s)        # indent
     r.h1 = (s) -> r.p("\n" + s + "\n" + (new Array(s.length + 1)).join("="))
@@ -14,7 +14,7 @@ make_printers = (obj) ->
     r.h3 = (s) -> r.p("\n### " + s)
     r.code = (s) -> r.p(s.replace(/^/gm, ">     "))
     return r
-
+# }}}
 formattedName = (nameSpace, objectItself) ->
     return "Vamonos.#{(if nameSpace.length then nameSpace + "." else "") + objectItself.name}"
 
@@ -26,14 +26,15 @@ mdHeader = (title, hdr) -> return """
     ---
     """
 
-docs = (nameSpace, widget) -># {{{
+docs = (nameSpace, widget) ->
     ret = {val: ""}
     { pr,p,b,i,h1,h2,h3,code } = make_printers(ret)
 
     p mdHeader(
-        "Vamonos: #{ widget.name } Widget API Reference",
-        formattedName(nameSpace, name: widget.name)
+        formattedName(nameSpace, name: widget.name),
+        widget.name
     )
+    h1(formattedName(nameSpace, name: widget.name) + " API Reference")
     p "[Back](index.html)"
     p widget.description if widget.description?
 
@@ -42,7 +43,7 @@ docs = (nameSpace, widget) -># {{{
         pr makeArgSpec(widget.spec, widget.name)
 
     return ret.val
-# }}}
+
 makeArgSpec = (spec, name) -># {{{
     ret = {val: ""}
     { pr,p,b,i,h1,h2,h3,code } = make_printers(ret)
@@ -93,10 +94,9 @@ index = (filesList) ->
     return ret.val
 
 writeApiFile = (fileName, nameSpace, objectItself) -># {{{
-    fs.writeFile(
+    fs.writeFileSync(
         buildDir + targetDirName + fileName + ".md",
-        docs(nameSpace, objectItself),
-        (err) -> console.error err if err?
+        docs(nameSpace, objectItself)
     )
     return { name: formattedName(nameSpace, objectItself), fileName: fileName + finalSuffix }# }}}
 
@@ -118,8 +118,7 @@ files.push (writeApiFile("widget-" + name.toLowerCase(), "Widget", w) for name, 
 
 # create the index file
 
-fs.writeFile(
+fs.writeFileSync(
     buildDir + targetDirName + "index.md",
-    index(files),
-    (e) -> console.error e if e?
+    index(files)
 )
