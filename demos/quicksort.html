@@ -1,0 +1,83 @@
+<html>
+<head>
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js">
+    </script>
+
+</head>
+<body>
+
+    <div id="quicksort" title="Quicksort(A,p,r):">
+        if p &lt r;
+            mid = Partition(A,p,r)
+            Quicksort(A,p,mid - 1)
+            Quicksort(A,mid + 1,r)
+    </div>
+    <div id="partition" title="Partition(A,p,r):">
+        x = A[r]
+        i = p-1
+        for j = p to r-1
+            if A[j] &le; x
+                i = i + 1
+                exchange A[i] with A[j]
+        exchange A[i+1] with A[r]
+        return i+1
+    </div>
+
+</body>
+<script type="text/javascript">
+
+var qs = new Vamonos.Visualizer({
+    widgets: [
+
+        new Vamonos.Widget.Pseudocode({
+            container: "quicksort",
+            procedureName: "quicksort"
+        }),
+    
+        new Vamonos.Widget.Pseudocode({
+            container: "partition",
+            procedureName: "partition"
+        }),
+    ],
+
+    algorithm: {
+        main: function(_){
+            with(this){
+                quicksort({ A:A, p:0, r:A.length });
+            }
+        },
+        quicksort: function(_){
+            with(this){
+                _(1);   if (p < r) {
+                _(2);       q = partition({ A:A, p:p, r:r });
+                _(3);       quicksort({ A:A, p:p, r:q-1 });
+                _(4);       quicksort({ A:A, p:q+1, r:r });
+                        }
+            }
+        },
+        partition: function(_){
+            with(this){
+                _(1);   x = A[r];
+                _(2);   i = p-1;
+                _(3);   for (j=p; j<r; _(3), j++) {
+                _(4);       if (A[j] < x) {
+                _(5);           i = i + 1;
+                _(6);           var temp = A[i]; 
+                                A[i] = A[j];
+                                A[j] = temp;
+                            }
+                        }
+                _(7);   var temp = A[i+1];
+                        A[i+1] = A[r];
+                        A[r] = temp;
+                _(8);   return(i+1);
+            }
+        }
+    }
+
+});
+
+</script>
+</html>

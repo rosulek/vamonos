@@ -48,7 +48,7 @@
                 if specs.hasOwnProperty("defaultValue")
                     widgetObject[argName] = defaultValue
                 else
-                    throw Error "#{widgetName}: required argument #{argName} missing."
+                    throw Error "#{widgetName}: required argument '#{argName}' missing."
 
         unless ignoreExtraArgs
             @warn(widgetName, "unused argument \"#{arg}\"") for arg of givenArgs

@@ -9,12 +9,13 @@ class Visualizer
         widgets: 
             type: "Array" 
             description: "a list of widgets for use in the visualization"
+            defaultValue: []
         algorithm: 
             type: ["Function", "Object"]
             description: 
                 "as a function, the 'main' procedure. as an object, an " +
-                "association of procedure names to functions. 'main' must be " + 
-                "provided."
+                "association of procedure names to functions."
+            defaultValue: (->)
         maxFrames: 
             type: "Integer"
             defaultValue: 250

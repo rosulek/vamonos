@@ -21,7 +21,7 @@ module.exports = (grunt) ->
 
         watch:
             files: ['src/**/*']
-            tasks: ['coffee', 'less']
+            tasks: ['coffee', 'less', 'shell:concat', 'shell:docs']
 
         shell:
             docs:
