@@ -2,7 +2,8 @@ class CallStack
 
     @description = "CallStack is a representation of the stash's call stack. " +
         "It also displays the values a procedure was called with, and its " +
-        "return value."
+        "return value. Note: setting \"\_callStack\" as a watchVar will cause " +
+        "the visualizer to break on procedure calls and returns."
 
     @spec =
         container:
@@ -116,7 +117,15 @@ class CallStack
         $tr.find("div.callstack-proc").addClass("callstack-active")   if scope.activeStackFrame
 
     argStr: (scope) ->
-        ("#{k}=#{Vamonos.rawToTxt(v)}" for k,v of scope.args when not /^_/.test(k)).join(",") + "<span class='callstack-arrow'>&darr;</span>"
+        r = (for k,v of scope.args when not /^_/.test(k)
+            if v.constructor.name is 'Array'
+                "#{k}=#{k}"
+            else
+                "#{k}=#{Vamonos.rawToTxt(v)}" 
+        )
+            
+            
+        return r.join(",") + "<span class='callstack-arrow'>&darr;</span>"
 
     retStr: (scope) ->
         return "&nbsp;" unless "returnValue" of scope

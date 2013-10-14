@@ -16,7 +16,10 @@ class Hardcoded
         "\n" +
         "'watch' takes a list of variable names to add to watchVars. \n" +
         "\n" +
-        ">     new Vamonos.Widget.Hardcoded({ watch: [\"i\", \"k\"] }) "
+        ">     new Vamonos.Widget.Hardcoded({ watch: [\"i\", \"k\"] }) " +
+        "\n" +
+        "Note: setting \"\_callStack\" as a watch var will break on procedure " +
+        "calls and returns"
 
     # Since Hardcoded has a non-standard constructor, it does not use 
     # Vamonos.handleArguments, and does not have a @spec.

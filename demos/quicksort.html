@@ -8,28 +8,49 @@
 </head>
 <body>
 
-    <div id="quicksort" title="Quicksort(A,p,r):">
-        if p &lt r;
-            mid = Partition(A,p,r)
-            Quicksort(A,p,mid - 1)
-            Quicksort(A,mid + 1,r)
-    </div>
-    <div id="partition" title="Partition(A,p,r):">
-        x = A[r]
-        i = p-1
-        for j = p to r-1
-            if A[j] &le; x
-                i = i + 1
-                exchange A[i] with A[j]
-        exchange A[i+1] with A[r]
-        return i+1
-    </div>
+<table class="vamonos">
+    <tr><td class="pseudocode-and-controls">
+        <div id="quicksort" title="Quicksort(A,p,r):">
+            if p &lt r;
+                mid = Partition(A,p,r)
+                Quicksort(A,p,mid - 1)
+                Quicksort(A,mid + 1,r)
+        </div>
+        <div id="partition" title="Partition(A,p,r):">
+            x = A[r]
+            i = p-1
+            for j = p to r-1
+                if A[j] &le; x
+                    i = i + 1
+                    exchange A[i] with A[j]
+            exchange A[i+1] with A[r]
+            return i+1
+        </div>
+
+        <div id="controls">
+        </div>
+
+    </td><td class="variable-widgets">
+
+            <table class="variable-widgets">
+
+                <tr><td><div id="callstack-var"></div></td>
+                    <td><div id="callstack"></div></td></tr>
+
+            </table>
+
+    </td></tr>
+</table>
 
 </body>
 <script type="text/javascript">
 
 var qs = new Vamonos.Visualizer({
     widgets: [
+
+        new Vamonos.Widget.Controls({
+            container: "controls"
+        }),
 
         new Vamonos.Widget.Pseudocode({
             container: "quicksort",
@@ -40,6 +61,26 @@ var qs = new Vamonos.Visualizer({
             container: "partition",
             procedureName: "partition"
         }),
+
+        new Vamonos.Widget.VarName({
+            container: "callstack-var",
+            varName: "_callstack",
+            displayName: "Call Stack",
+            watching: true
+        }),
+
+        new Vamonos.Widget.CallStack({
+            container: "callstack",
+            procedureNames: {
+                quicksort: "Quicksort",
+                partition: "Partition"
+            }
+        }),
+    
+        new Vamonos.Widget.Hardcoded({
+            A: [0,3,1,4,5,9,6,2],
+        })
+
     ],
 
     algorithm: {
