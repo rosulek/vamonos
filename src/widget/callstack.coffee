@@ -29,6 +29,13 @@ class CallStack
             type: "Boolean"
             defaultValue: true
             description: "whether the widget should have a resize triangle"
+        ignoreMain:
+            type: "Boolean"
+            defaultValue: false
+            description: 
+                "CallStack will not display calls to the \"main\" procedure when set. " +
+                "This is useful when you'd like to use \"main\" to set variables, or " +
+                "do other useful housekeeping."
 
     constructor: (args) ->
 
@@ -68,16 +75,18 @@ class CallStack
         when "displayStart"
             @$container.show()
 
+    ignoreFrame: (frame) ->
+        frame.procName is "input" or @ignoreMain and frame.procName is 'main'
 
     render: (frame, type) ->
         @$inner.stop()
 
         stack = frame._callStack[..]
         stack.reverse()
-        stack = (f for f in stack when f.procName isnt "input")
+        stack = (f for f in stack when not @ignoreFrame(f))
 
         if frame._returnStack?
-            stack.push(r) for r in frame._returnStack
+            stack.push(r) for r in frame._returnStack when not @ignoreFrame(r)
 
         while stack.length > @$argRows.length
             @$argRows.push( $("<tr>").appendTo(@$table) )

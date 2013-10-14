@@ -203,6 +203,9 @@ class ArrayGuts
 
         indices = {}
         for i in @showIndices
+            # strip namespaces from indices
+            if /::/.test(i)
+                i = i.split(/::/)[1]
             target = @virtualIndex(frame, i)
             indices[target] ?= []
             indices[target].push(i)
@@ -229,8 +232,11 @@ class ArrayGuts
         return total
                     
     virtualIndexDependents: (indexStr) ->
-        return [] unless indexStr.match(/^([a-zA-Z_]+|\d+)((-|\+)([a-zA-Z_]+|\d+))*$/g)
-        return indexStr.match(/([a-zA-Z_]+)/g)
+        return [] unless indexStr.match(
+            # "i+j" or "j+1" or "j" or "partition::j"
+            /^((?:[\w\d_]+::)?[a-zA-Z_]+|\d+)((-|\+)((?:[\w\d_]+::)?[a-zA-Z_]+|\d+))*$/g
+        )
+        return indexStr.match(/((?:[\w\d_]+::)?[a-zA-Z_]+)/g)
 
 
 
