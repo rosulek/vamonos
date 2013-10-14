@@ -28,16 +28,18 @@ module.exports = (grunt) ->
                 command: 'coffee tools/docgen.coffee'
                 options: { stderr: true, stdout: true }
             concat:
-                command: 'cat deps/jquery.min.js deps/jquery-ui.min.js deps/jquery-jsplumb.js deps/jquery-qtip.min.js lib/vamonos.js > lib/vamonos-all.js'
+                command: "cat header.js deps/jquery.min.js deps/jquery-ui.min.js deps/jquery-jsplumb.js deps/jquery-qtip.min.js lib/vamonos.js > lib/vamonos-all.js"
                 options: { stderr: true, stdout: true }
-            tar:
+            zip:
                 command: """
                     cd lib
-                    mkdir vamonos-all
-                    cp vamonos-all.js vamonos.css vamonos-all
-                    tar czf vamonos-all.tgz vamonos-all
-                    rm -r vamonos-all
-                    echo created file lib/vamonos-all.tgz
+                    mkdir vamonos
+                    cp vamonos-all.js vamonos.css vamonos
+                    zip -r vamonos.zip vamonos
+                    rm -r vamonos
+                    [ ! -e '../dist' ] && mkdir ../dist
+                    mv vamonos.zip ../dist
+                    echo created file dist/vamonos.zip
                     """
                 options: { stderr: true, stdout: true }
 
@@ -48,4 +50,4 @@ module.exports = (grunt) ->
 
     grunt.registerTask('default', ['coffee', 'less', 'shell:docs', 'shell:concat'])
 
-    grunt.registerTask('release', ['coffee','less','shell:concat','shell:tar'])
+    grunt.registerTask('release', ['coffee','less','shell:concat','shell:zip'])
