@@ -24,6 +24,9 @@ module.exports = (grunt) ->
             tasks: ['coffee', 'less', 'shell:concat', 'shell:docs']
 
         shell:
+            header:
+                command: "cat header.js lib/vamonos.js > temp; mv temp lib/vamonos.js"
+
             docs:
                 command: 'coffee tools/docgen.coffee'
                 options: { stderr: true, stdout: true }
@@ -48,6 +51,6 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks('grunt-contrib-less')
     grunt.loadNpmTasks('grunt-shell')
 
-    grunt.registerTask('default', ['coffee', 'less', 'shell:docs', 'shell:concat'])
+    grunt.registerTask('default', ['coffee', 'less', 'shell:header', 'shell:docs', 'shell:concat'])
 
-    grunt.registerTask('release', ['coffee','less','shell:concat','shell:zip'])
+    grunt.registerTask('release', ['coffee','less', 'shell:header', 'shell:concat','shell:zip'])
