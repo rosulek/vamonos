@@ -5,6 +5,18 @@
     <script type="text/javascript" src="../lib/vamonos-all.js">
     </script>
 
+    <style type="text/css">
+
+        td.gt-i.leq-j {
+            background-color: white !important;
+        }
+
+        td.gt-r, td.lt-p {
+            background-color: #999 !important;
+        }
+
+    </style>
+
 </head>
 <body>
 
@@ -90,8 +102,15 @@ var qs = new Vamonos.Visualizer({
         new Vamonos.Widget.Array({
             container: "array",
             varName: "A",
-            defaultInput: [3,1,4,5,9,6,2],
-            showIndices: ["p","r","partition::j","partition::i"]
+            defaultInput: [0,2,8,7,1,3,5,6,4],
+            ignoreIndexZero: true,
+            showIndices: ["p","r","partition::j","partition::i"],
+            cssRules: [
+                ['>', 'i', 'gt-i'],
+                ['<', 'p', 'lt-p'],
+                ['<=', 'j', 'leq-j'],
+                ['>','r','gt-r'],
+            ],
         }),
     
     ],
@@ -99,7 +118,7 @@ var qs = new Vamonos.Visualizer({
     algorithm: {
         main: function(_){
             with(this){
-                quicksort({ A:A, p:0, r:A.length-1 });
+                quicksort({ A:A, p:1, r:A.length-1});
             }
         },
         quicksort: function(_){
