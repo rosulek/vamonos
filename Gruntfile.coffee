@@ -46,6 +46,21 @@ module.exports = (grunt) ->
                     """
                 options: { stderr: true, stdout: true }
 
+            demos:
+                command: """
+                    mkdir -p lib/vamonos-demos
+                    for DEMO in demos/*
+                        do tools/inline.pl $DEMO > lib/vamonos-demos/$(basename $DEMO)
+                    done
+                    cd lib
+                    zip -r vamonos-demos.zip vamonos-demos
+                    rm -r vamonos-demos
+                    [ ! -e '../dist' ] && mkdir ../dist
+                    mv vamonos-demos.zip ../dist
+                    echo created file dist/vamonos.zip
+                    """
+                options: { stderr: true, stdout: true }
+
     grunt.loadNpmTasks('grunt-contrib-coffee')
     grunt.loadNpmTasks('grunt-contrib-watch')
     grunt.loadNpmTasks('grunt-contrib-less')
@@ -53,4 +68,4 @@ module.exports = (grunt) ->
 
     grunt.registerTask('default', ['coffee', 'less', 'shell:header', 'shell:docs', 'shell:concat'])
 
-    grunt.registerTask('release', ['coffee','less', 'shell:header', 'shell:concat','shell:zip'])
+    grunt.registerTask('release', ['coffee','less', 'shell:header', 'shell:concat','shell:zip', 'shell:demos'])
