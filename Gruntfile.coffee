@@ -35,9 +35,11 @@ module.exports = (grunt) ->
                 options: { stderr: true, stdout: true }
             zip:
                 command: """
+                    mkdir -p lib/vamonos
+                    cat generic-readme.txt dist-readme.txt > lib/vamonos/readme.txt
                     cd lib
-                    mkdir vamonos
-                    cp vamonos-all.js vamonos.css vamonos
+                    cp vamonos.js vamonos-all.js vamonos.css vamonos
+                    cp -r ../deps vamonos 
                     zip -r vamonos.zip vamonos
                     rm -r vamonos
                     [ ! -e '../dist' ] && mkdir ../dist
@@ -49,6 +51,7 @@ module.exports = (grunt) ->
             demos:
                 command: """
                     mkdir -p lib/vamonos-demos
+                    cat generic-readme.txt demos-readme.txt > lib/vamonos-demos/readme.txt
                     for DEMO in demos/*
                         do tools/inline.pl $DEMO > lib/vamonos-demos/$(basename $DEMO)
                     done
