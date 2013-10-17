@@ -17,7 +17,7 @@ chdir $dir;
 open my $fh, "<", $file or die "$file: $!";
 my $data = <$fh>;
 
-$data =~ s{<script type="text/javascript" src="(.+?)"></script>}
+$data =~ s{<script type="text/javascript" src="(.+?)">\s*</script>}
           { qq[<script type="text/javascript">] . slurp($1) . qq[</script>] }ge;
 
 $data =~ s{<link rel="stylesheet" href="(.+?)">}
