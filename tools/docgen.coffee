@@ -30,11 +30,8 @@ docs = (nameSpace, widget) ->
     ret = {val: ""}
     { pr,p,b,i,h1,h2,h3,code } = make_printers(ret)
 
-    p mdHeader(
-        formattedName(nameSpace, name: widget.name),
-        widget.name
-    )
-    h1(formattedName(nameSpace, name: widget.name) + " API Reference")
+    p mdHeader("Vamonos API Reference", "Vamonos API Reference")
+    h1(formattedName(nameSpace, name: widget.name))
     p "[Back](index.html)"
     p widget.description if widget.description?
 
@@ -65,7 +62,7 @@ makeArgSpec = (spec, name) -># {{{
         else
             # a defaultValue can be 'undefined', in which case the argument is optional
             if defaultValue?
-                "Default Value: #{ defaultValue }"
+                "Default Value: `#{ JSON.stringify(defaultValue) }`"
             else
                 "Optional"
 
@@ -74,7 +71,7 @@ makeArgSpec = (spec, name) -># {{{
             type.join(" | ")            
         else
             type
-        b "#{argName} :: #{t} -- #{r}"
+        b "**#{argName}** :: *#{t}* -- #{r}"
         i description if description?
         if example?
             i "Example:"
