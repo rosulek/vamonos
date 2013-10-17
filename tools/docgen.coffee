@@ -95,6 +95,8 @@ index = (filesList) ->
     ret = {val: ""}
     { pr,p,b,i,h1,h2,h3,code } = make_printers(ret)
     p mdHeader("Vamonos API Reference", "Vamonos API Reference")
+
+    p "[Back](../index-vamonos.html)"
     
     for { name, fileName } in filesList
         b "[#{name}](#{fileName})"

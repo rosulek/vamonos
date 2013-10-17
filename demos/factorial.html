@@ -55,6 +55,7 @@
                 <div id="fact2" title="Fact(n, acc):">
                     if n &le; 1
                         return acc
+                    // no tail call optimization
                     return Fact(n-1, acc*n)
                 </div>
 
@@ -89,7 +90,7 @@
                 <div id="fact3" title="Fact(n, acc):">
                     if n &le; 1
                         return acc
-                    // tail call!
+                    // tail call optimization!
                     return Fact(n-1, acc*n)
                 </div>
 
