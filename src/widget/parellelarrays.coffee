@@ -2,6 +2,8 @@ class ParallelArrays
 
     @description = "Display multiple arrays, all lined up nice."
 
+    @dependencies = [ "Widget.ArrayGuts" ]
+
     @spec =
         container:
             type: "String"

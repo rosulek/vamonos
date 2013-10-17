@@ -31,7 +31,9 @@ module.exports = (grunt) ->
                 command: 'coffee tools/docgen.coffee'
                 options: { stderr: true, stdout: true }
             concat:
-                command: "cat header.js deps/jquery.min.js deps/jquery-ui.min.js deps/jquery-jsplumb.js deps/jquery-qtip.min.js lib/vamonos.js > lib/vamonos-all.js"
+                command: "cat header-all.js deps/jquery.min.js deps/jquery-ui.min.js " +
+                         "deps/jquery-jsplumb.js deps/jquery-qtip.min.js lib/vamonos.js " +
+                         "> lib/vamonos-all.js"
                 options: { stderr: true, stdout: true }
             zip:
                 command: """

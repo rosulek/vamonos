@@ -39,3 +39,11 @@ section:
 
     <link rel="stylesheet" href="path/to/vamonos.css" />
     <script type="text/javascript" src="path/to/vamonos-all.js"></script>
+
+You can follow our guide to creating visualzations at:
+
+    http://rosulek.github.io/vamonos/guide
+
+We also recommend deconstructing some of our pre-made demos, available at:
+
+    http://rosulek.github.io/vamonos

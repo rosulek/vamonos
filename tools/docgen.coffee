@@ -7,7 +7,7 @@ make_printers = (obj) -># {{{
     r = {}
     r.pr = (s) -> obj.val += s        # print
     r.p = (s) -> r.pr(s + "\n\n")
-    r.b = (s) -> r.p("* " + s)          # bulletpoint
+    r.b = (s) -> r.p(" * " + s)          # bulletpoint
     r.i = (s) -> r.p("    " + s)        # indent
     r.h1 = (s) -> r.p("\n" + s + "\n" + (new Array(s.length + 1)).join("="))
     r.h2 = (s) -> r.p("\n" + s + "\n" + (new Array(s.length + 1)).join("-"))
@@ -34,6 +34,17 @@ docs = (nameSpace, widget) ->
     h1(formattedName(nameSpace, name: widget.name))
     p "[Back](index.html)"
     p widget.description if widget.description?
+
+    if widget.dependencies?.length
+        p "Arguments are shared with inner objects:"
+        # dependencies come in as "Namespace.Widget"
+        for dep in widget.dependencies
+            if /\./.test dep
+                [nameSpace, name] = dep.split(/\./)
+                b "[#{ formattedName(nameSpace, name: name) }]" +
+                  "(#{ nameSpace.toLowerCase() }-#{ name.toLowerCase() }.html)"
+            else
+                b "[#{ name }](#{ name.toLowerCase() }.html)"
 
     if (1 for x,y of widget.spec).length # if the spec object has any attributes
         h3 "Arguments"

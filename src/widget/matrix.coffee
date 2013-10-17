@@ -2,6 +2,8 @@ class Matrix
 
     @description = "Displays a two dimensional array."
 
+    @dependencies = [ "Widget.ArrayGuts" ]
+
     @spec =
         container:
             type: "String"

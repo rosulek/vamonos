@@ -1,5 +1,9 @@
 class Queue
 
+    @description = "TODO"
+
+    @dependencies = [ "Widget.ArrayGuts" ]
+
     @spec =
         varName:
             type: "String"
