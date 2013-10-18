@@ -8,69 +8,124 @@
 
     <h1>Longest Increasing Subsequence</h1>
 
-    <div class="vamonos">
-        <div class="container" id="pseudocode" title="LIS(A):">
-            opt[0] = 0
-            sol[0] = []
-            for k = 1 to A.length
-                opt[k] = 1
-                sol[k] = [A[k]]
-                for i = 1 to k-1
-                    if A[i] &lt; A[k] and opt[k] &lt; opt[i] + 1
-                        opt[k] = opt[i] + 1
-                        sol[k] = sol[i] + [A[i]]
-            best = 1
-            for j = 2 to A.length
-                if opt[best] &lt; opt[j]
-                    best = j
-        </div>
-        <br>
-        <div id="controls"></div>
-        <br>
-        <div class="container" id="display"></div>
-        <br>
-        <div class="container" id="arrays"></div>
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
+
+            <div id="controls"></div>
+
+            <div class="pseudocode-procedures">
+                <div id="pseudocode" title="LIS(A):">
+                    opt[0] = 0
+                    sol[0] = []
+                    for k = 1 to A.length
+                        opt[k] = 1
+                        sol[k] = [A[k]]
+                        for i = 1 to k-1
+                            if A[i] &lt; A[k] and opt[k] &lt; opt[i] + 1
+                                opt[k] = opt[i] + 1
+                                sol[k] = sol[i] + [A[i]]
+                    best = 1
+                    for j = 2 to A.length
+                        if opt[best] &lt; opt[j]
+                            best = j
+                </div>
+            </div>
+
+        </td><td class="variable-widgets">
+            <table class="variable-widgets">
+                <tr><td><div id="i-var"></div></td>
+                    <td><div id="i"></div></td>
+                </tr>
+                <tr><td><div id="k-var"></div></td>
+                    <td><div id="k"></div></td>
+                </tr>
+                <tr><td><div id="A-var"></div></td>
+                    <td><div id="A"></div></td>
+                </tr>
+                <tr><td><div id="sol-var"></div></td>
+                    <td><div id="sol"></div></td></tr>
+                <tr><td><div id="opt-var"></div></td>
+                    <td><div id="opt"></div></td></tr>
+                </tr>
+            </table>
+
+        <div id="arrays">
+
+        </td></tr>
+    </table>
+
     </div>
+
 </body>
 <script type="text/javascript">
 var myviz = new Vamonos.Visualizer({
     widgets: [
-        new Vamonos.Widget.Console(),
-        new Vamonos.Widget.ParallelArrays({
-            container: "arrays",
-            showLabel: true,
-            arrays: [
-                {
-                    varName: "A",
-                    defaultInput: [0, 3,1,4,1,5,9,2,6,5],
-                    ignoreIndexZero: true,
-                    cssRules: [[">", "k", "shaded"]],
-                    showIndices: ["i", "k"],
-                },
-                {
-                    varName: "opt",
-                    displayOnly: true,
-                    showIndices: ["i", "k"],
-                },
-                {
-                    varName: "sol",
-                    displayOnly: true,
-                    cssRules: [["=", "best", "dark-shaded"]],
-                    showIndices: ["i", "k", "best"],
-                    cellFormat: function(x) { return x ? "["+x.join(",")+"]" : "" }
-                }
-            ]
+
+        new Vamonos.Widget.VarName({
+            container: "A-var",
+            varName: "A",
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "A",
+            varName: "A",
+            defaultInput: [0, 3,1,4,1,5,9,2,6,5],
+            ignoreIndexZero: true,
+            cssRules: [[">", "k", "shaded"]],
+            showIndices: ["i", "k"],
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "opt-var",
+            varName: "opt",
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "opt",
+            varName: "opt",
+            displayOnly: true,
+            showIndices: ["i", "k"],
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "sol-var",
+            varName: "sol",
+            watching: true,
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "sol",
+            varName: "sol",
+            displayOnly: true,
+            cssRules: [["=", "best", "dark-shaded"]],
+            showIndices: ["i", "k", "best"],
+            cellFormat: function(x) { return x ? "["+x.join(",")+"]" : "" }
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "i-var",
+            varName: "i",
         }),
 
         new Vamonos.Widget.VarDisplay({
-            container: "display",
-            watch: ["*i", "k", "opt[none]", "*sol[none]", "*best"]
+            container: "i",
+            varName: "i",
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "k-var",
+            varName: "k",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "k",
+            varName: "k",
         }),
 
         new Vamonos.Widget.Pseudocode("pseudocode"),
         new Vamonos.Widget.Controls("controls")
     ],
-    breakOnReturn: false,
+
     algorithm: function (_) {
         with (this) {
 _(1);       opt = [0]
