@@ -34,6 +34,9 @@
         for argName, specs of widgetObject.constructor.spec
             { type, description, defaultValue } = specs
             throw Error "handleArguments: no type provided for #{widgetName}.#{argName}" unless type?
+
+            type = "" if type is "jQuery Selector"          # Special case
+
             type = @arrayify(type)
             if givenArgs[argName]?
                 # type-check

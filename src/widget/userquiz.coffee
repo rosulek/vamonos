@@ -17,7 +17,7 @@ class UserQuiz
                 "a function taking the current frame, returning a boolean, " +
                 "used to determine when to ask a question"
         title:
-            type: "Function"
+            type: ["String", "Function"]
             defaultValue: undefined
             description: 
                 "the title of the quiz. either as a plain string or as a function " +

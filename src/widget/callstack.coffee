@@ -7,8 +7,10 @@ class CallStack
 
     @spec =
         container:
-            type: "String"
-            description: "id of the div within which this widget should draw itself"
+            type: ["String", "jQuery Selector"]
+            description:
+                "The id or a jQuery selector of the div in which this widget " +
+                "should draw itself."
         procedureNames:
             type: "Object"
             defaultValue: {}
