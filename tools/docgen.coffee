@@ -91,15 +91,17 @@ makeArgSpec = (spec, name) -># {{{
     return ret.val
 # }}}
 
-index = (filesList) ->
+index = (fileTypes) ->
     ret = {val: ""}
     { pr,p,b,i,h1,h2,h3,code } = make_printers(ret)
     p mdHeader("Vamonos API Reference", "Vamonos API Reference")
 
     p "[Back](../index-vamonos.html)"
     
-    for { name, fileName } in filesList
-        b "[#{name}](#{fileName})"
+    for [ title, filesList ] in fileTypes
+        h2 title if title.length
+        for { name, fileName } in filesList
+            b "[#{name}](#{fileName})"
 
     return ret.val
 
@@ -117,18 +119,20 @@ targetDirName = 'api/'
 finalSuffix = '.html'
 Vamonos = require('../' + buildDir + "vamonos.js").Vamonos
 
-files = []
-
 unless fs.existsSync(buildDir + targetDirName) 
     fs.mkdir(buildDir + targetDirName)
 
-files.push writeApiFile("visualizer", "", Vamonos.Visualizer)
-files.push (writeApiFile("data-" + name.toLowerCase(), "DataStructure", d) for name, d of Vamonos.DataStructure)...
-files.push (writeApiFile("widget-" + name.toLowerCase(), "Widget", w) for name, w of Vamonos.Widget)...
+viz =  writeApiFile("visualizer", "", Vamonos.Visualizer)
+ds = (writeApiFile("data-" + name.toLowerCase(), "DataStructure", d) for name, d of Vamonos.DataStructure)
+ws = (writeApiFile("widget-" + name.toLowerCase(), "Widget", w) for name, w of Vamonos.Widget)
 
 # create the index file
 
 fs.writeFileSync(
     buildDir + targetDirName + "index.md",
-    index(files)
+    index([
+        ["", [viz]]
+        ["Data Structures", ds]
+        ["Widgets", ws]
+    ])
 )
