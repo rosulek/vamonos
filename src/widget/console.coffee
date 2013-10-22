@@ -1,6 +1,8 @@
 class Console
 
-    # Console takes no arguments
+    @description = "The `Console` widget is for debugging. It will print each " +
+        "frame and event to the console. It takes no arguments."
+
     @spec = {}
 
     constructor: (args = {}) ->

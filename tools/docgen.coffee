@@ -36,7 +36,7 @@ docs = (nameSpace, widget) ->
     p widget.description if widget.description?
 
     if widget.dependencies?.length
-        p "Arguments are shared with inner objects:"
+        h3 "Arguments are shared with inner objects:"
         # dependencies come in as "Namespace.Widget"
         for dep in widget.dependencies
             if /\./.test dep
@@ -69,17 +69,17 @@ makeArgSpec = (spec, name) -># {{{
 
         # an argument is required unless it has a defaultValue
         r = unless specs.hasOwnProperty("defaultValue")
-            "Required"
+            "**required**"
         else
             # a defaultValue can be 'undefined', in which case the argument is optional
             if defaultValue?
-                "Default Value: `#{ JSON.stringify(defaultValue) }`"
+                "default Value: `#{ JSON.stringify(defaultValue) }`"
             else
-                "Optional"
+                "optional"
 
         #
         t = if type.constructor.name is 'Array'
-            type.join(" | ")            
+            type.join("* | *")            
         else
             type
         b "**#{argName}** :: *#{t}* -- #{r}"

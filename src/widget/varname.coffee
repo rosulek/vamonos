@@ -1,6 +1,6 @@
 class VarName
 
-    @description = "VarName shows the variable name (duh), and also provides " +
+    @description = "VarName shows the variable name and provides " +
         "a buton to set the variable as a watchVar, and visual feedback for " +
         "editable variables in editMode."
 

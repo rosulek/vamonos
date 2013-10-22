@@ -35,8 +35,8 @@ class CallStack
             type: "Boolean"
             defaultValue: false
             description: 
-                "CallStack will not display calls to the \"main\" procedure when set. " +
-                "This is useful when you'd like to use \"main\" to set variables, or " +
+                "CallStack will not display calls to the `main` procedure when set. " +
+                "This is useful when you'd like to use `main` to set variables, or " +
                 "do other useful housekeeping."
 
     constructor: (args) ->

@@ -1,7 +1,5 @@
 class Queue
 
-    @description = "TODO"
-
     @dependencies = [ "Widget.ArrayGuts" ]
 
     @spec =
@@ -11,8 +9,6 @@ class Queue
 
     constructor: (args) ->
 
-        # Queue passes most of its args to the underlying Array widget,
-        # so set ignoreExtraArgs to true.
         Vamonos.handleArguments
             widgetObject    : this
             givenArgs       : args

@@ -16,12 +16,12 @@ class GraphDisplay
                 "an object containing a mapping of label positions " +
                 "(inner, nw, sw, ne, se) to labels. Labels can display " +
                 "simple variable names (corresponding to inputVars). " +
-                "This must be provided in the form: label: ['var1', 'var2']. " +
+                "This must be provided in the form: `{ label: ['var1', 'var2'] }`. " +
                 "It can be more complicated, as a function that takes " +
                 "a vertex and returns some html. if we give a label " +
                 "an object, we can control what is shown in edit/display " +
                 "mode in the form: " +
-                "label : { edit: function{}, display: function{} }"
+                "`{ label : { edit: function{}, display: function{} } }`"
             example: 
                 "vertexLabels: {\n" +
                 "    inner : {\n" +
@@ -47,8 +47,8 @@ class GraphDisplay
             description:
                 "provides a way to set edge coloring based on vertex variables " +
                 "or edge properties. takes an array of doubles of the form  " +
-                "[ edge-predicate, color ], where color is a hex color and edge- " +
-                "predicate is either a string of the form 'vertex1->vertex2' or " +
+                "`[ edge-predicate, color ]`, where color is a hex color and edge-" +
+                "predicate is either a string of the form `'vertex1->vertex2'` or " +
                 "a function that takes an edge and returns a boolean"
             example:
                 "colorEdges: [\n" +
@@ -63,8 +63,8 @@ class GraphDisplay
             defaultValue: {}
             description:
                 "provides a way to change CSS classes of vertices based on " +
-                "vertex attributes. takes an object of the form { attribute: " +
-                "value/[list of values]. in the case of a single value,  " +
+                "vertex attributes. takes an object of the form `{ attribute: " +
+                "value | [list of values] }`. in the case of a single value,  " +
                 "the vertex will simply get a class with the same name as " +
                 "the attribute. in the case of a list of values, the css " +
                 "class will be of the form 'attribute-value' when its value " +
@@ -125,6 +125,14 @@ class GraphDisplay
             Endpoint: "Blank"
             Anchor: [ "Perimeter", { shape: "Circle" } ]
 
+    event: (event, options...) -> switch event
+        when "setup"
+            [@viz] = options
+            for e in @colorEdges when typeof e[0] is 'string'
+                @viz.registerVariable(v) for v in e[0].split(/<?->?/)
+            for label, values of @vertexLabels
+                for v in values when typeof v is 'string'
+                    @viz.registerVariable(v)
 
     # ------------ PUBLIC INTERACTION METHODS ------------- #
 

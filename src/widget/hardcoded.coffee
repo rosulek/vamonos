@@ -8,17 +8,17 @@ class Hardcoded
         ">         A: [3,1,4] \n" +
         ">     }) \n" +
         "\n" +
-        "Hardcoded has a couple magical variable names: 'breakpoints' and \n" +
-        "'watch'. 'breakpoints' is used for setting breakpoints without a \n" +
+        "Hardcoded has a couple magical variable names: `breakpoints` and \n" +
+        "`watch`. `breakpoints` is used for setting breakpoints without a \n" +
         "Pseudocode widget. It takes a list of linenumbers. \n" +
         "\n" +
         ">     new Vamonos.Widget.Hardcoded({ breakpoints: [3,1,4] }) \n" +
         "\n" +
-        "'watch' takes a list of variable names to add to watchVars. \n" +
+        "`watch` takes a list of variable names to add to watchVars. \n" +
         "\n" +
         ">     new Vamonos.Widget.Hardcoded({ watch: [\"i\", \"k\"] }) " +
         "\n" +
-        "Note: setting \"\_callStack\" as a watch var will break on procedure " +
+        "Note: setting `_callStack` as a watch var will break on procedure " +
         "calls and returns"
 
     # Since Hardcoded has a non-standard constructor, it does not use 

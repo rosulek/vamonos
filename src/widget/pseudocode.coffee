@@ -19,7 +19,7 @@ class Pseudocode
             defaultValue: []
             description: 
                 "initial breakpoints, as an array of line numbers, " +
-                "or 'all' for all breakpoints"
+                "or `'all'` for all breakpoints"
         procedureName:
             type: "String"
             defaultValue: "main"

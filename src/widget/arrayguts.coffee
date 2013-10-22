@@ -4,7 +4,7 @@ class ArrayGuts
 
     @spec =
         tableContainer: 
-            type: "" # Jquery object
+            type:  "jQuery Selector"
             description: "a selector of the dom element the guts should go in"
         varName:
             type: "String"
@@ -30,8 +30,8 @@ class ArrayGuts
             type: "Array"
             defaultValue: []
             description: 
-                "an array of triples of the form [comparison, " +
-                "index-variable-expr, css-class] where every index in " +
+                "an array of triples of the form `\\[comparison, " +
+                "index-variable-expr, css-class\\]` where every index in " +
                 "the array that matches the comparason against the given " +
                 "index-variable-expr receives the given css class."
             example:
