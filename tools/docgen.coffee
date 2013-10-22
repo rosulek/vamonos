@@ -110,7 +110,7 @@ writeApiFile = (fileName, nameSpace, objectItself) -># {{{
         buildDir + targetDirName + fileName + ".md",
         docs(nameSpace, objectItself)
     )
-    return { name: formattedName(nameSpace, objectItself), fileName: fileName + finalSuffix }# }}}
+    return { name: objectItself.name, fileName: fileName + finalSuffix }# }}}
 
 #####################################################################
 
