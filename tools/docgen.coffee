@@ -47,10 +47,32 @@ docs = (nameSpace, widget) ->
                 b "[#{ name }](#{ name.toLowerCase() }.html)"
 
     if (1 for x,y of widget.spec).length # if the spec object has any attributes
-        h3 "Arguments"
+        h3 "Constructor Arguments"
         pr makeArgSpec(widget.spec, widget.name)
 
+    if (1 for x,y of widget.interface).length # if the interface object has attributes
+        h1 "Public Interface"
+        pr makeInterface(widget.interface, widget.name)
+
     return ret.val
+
+makeInterface = (interObj, name) ->
+    ret = {val: ""}
+    { pr,p,b,i,h1,h2,h3,code } = make_printers(ret)
+
+    for funcName, funcObj of interObj
+        pr "## **#{funcName}**("
+        if funcObj.args?
+            pr ("`#{argName}`" for [argName, _] in funcObj.args).join(", ") 
+        pr ")\n"
+
+        if funcObj.args?
+            b "`#{argName}`: #{argDesc}" for [argName, argDesc] in funcObj.args
+
+        p funcObj.description
+
+    return ret.val
+
 
 makeArgSpec = (spec, name) -># {{{
     ret = {val: ""}

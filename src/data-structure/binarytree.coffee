@@ -1,28 +1,19 @@
 class BinaryTree
 
-    @description = "Warning: Experimental. BinaryTree takes the a tree " +
-        "encoded as nested objects of the form { val, id, left, right } " +
-        "where left and right are optional objects of the same form."
+    @interface = {}
+    @description = 
+        "*Experimental*. BinaryTree takes a tree encoded as nested objects of " +
+        "the form `{ val, id, left, right }` where left and right are optional " +
+        "objects of the same form."
 
     constructor: (@guts) ->
-        @assignOrder()
-        @assignDepth()
+        @_refresh()
         @type = "BinaryTree"
 
-    assignOrder: -> 
-        @count = 0
-        @eachNodeInOrder (n) =>
-            n.order = @count++
 
-    assignDepth: ->
-        @maxDepth = 0
-        (helper = (node, depth) =>
-            return unless node?
-            node.depth = depth
-            @maxDepth = depth if depth > @maxDepth
-            helper(node.left, depth + 1)
-            helper(node.right, depth + 1)
-        )(@guts, 0)
+    @interface.eachNodeInOrder = 
+        args: [["f", "a function that takes a node"]]
+        description: "applies `f` to each node using an in-order traversal"
 
     eachNodeInOrder: (f) ->
         (helper = (node) ->
@@ -32,6 +23,11 @@ class BinaryTree
             helper(node.right)
         )(@guts)
 
+
+    @interface.eachNodePreOrder = 
+        args: [["f", "a function that takes a node"]]
+        description: "applies `f` to each node using a pre-order traversal"
+
     eachNodePreOrder: (f) ->
         (helper = (node) ->
             return unless node?
@@ -40,6 +36,11 @@ class BinaryTree
             helper(node.right)
         )(@guts)
 
+
+    @interface.eachNodePostOrder = 
+        args: [["f", "a function that takes a node"]]
+        description: "applies `f` to each node using a post-order traversal"
+
     eachNodePostOrder: (f) ->
         (helper = (node) ->
             return unless node?
@@ -47,6 +48,10 @@ class BinaryTree
             helper(node.right)
             f(node)
         )(@guts)
+
+
+    @interface.asGraph = 
+        description: "returns an equivalent `Vamonos.DataStructure.Graph`"
 
     asGraph: ->
         g = new Vamonos.DataStructure.Graph()
@@ -59,6 +64,11 @@ class BinaryTree
                 right = g.addVertex(n.right) 
                 g.addEdge(n.id, right.id)
         return g
+
+
+    @interface.rotateRight = 
+        args: [["id", "a node id"]]
+        description: "rotates the tree right at the node matching id"
 
     rotateRight: (id) ->
         rotateRightHelper = (node) ->
@@ -76,9 +86,13 @@ class BinaryTree
                 node.right = rotateRightHelper(node.right, id)
                 return node
         @guts = rotateRightHelper(@guts, id)
-        @assignOrder()
-        @assignDepth()
+        @_refresh()
         "ok"
+
+
+    @interface.rotateLeft = 
+        args: [["id", "a node id"]]
+        description: "rotates the tree left at the node matching id"
 
     rotateLeft: (id) ->
         rotateLeftHelper = (node) ->
@@ -96,9 +110,17 @@ class BinaryTree
                 node.right = rotateLeftHelper(node.right, id)
                 return node
         @guts = rotateLeftHelper(@guts, id)
-        @assignOrder()
-        @assignDepth()
+        @_refresh()
         "ok"
+
+
+    @interface.addNode = 
+        args: [
+            ["targetId", "a node id"], 
+            ["direction", "`\"left\"` or `\"right\"`"]
+            ["newNode", "optional: a node object"]
+        ]
+        description: "adds `newNode` as the `direction` child of the node matching `targetId`"
 
     addNode: (targetId, direction, newNode = {}) ->
         @nextId ?= 0
@@ -111,9 +133,13 @@ class BinaryTree
                 addNodeHelper(node.left)
                 addNodeHelper(node.right)
         addNodeHelper(@guts)
-        @assignOrder()
-        @assignDepth()
+        @_refresh()
         return newNode.id
+
+
+    @interface.deleteNode = 
+        args: [["targetId", "a node id"]]
+        description: "deletes the node matching `targetId`, preforming rotations as necessary"
 
     deleteNode: (targetId) ->
         deleteNodeHelper = (node) ->
@@ -130,8 +156,12 @@ class BinaryTree
             @guts = undefined
         else
             deleteNodeHelper(@guts)
-        @assignOrder()
-        @assignDepth()
+        @_refresh()
+
+
+    @interface.changeVal = 
+        args: [["targetId", "a node id"], ["newVal", "an arbitrary value"]]
+        description: "changes the val field of the node matching `targetId` to `newVal`"
 
     changeVal: (targetId, newVal) ->
         changeValHelper = (node) ->
@@ -142,7 +172,27 @@ class BinaryTree
             else
                 changeValHelper(node.left) or changeValHelper(node.right)
         changeValHelper(@guts)
-        @assignOrder()
-        @assignDepth()
+        @_refresh()
+
+
+    _refresh: ->
+        @_assignOrder()
+        @_assignDepth()
+
+    _assignOrder: -> 
+        @count = 0
+        @eachNodeInOrder (n) =>
+            n.order = @count++
+
+    _assignDepth: ->
+        @maxDepth = 0
+        (helper = (node, depth) =>
+            return unless node?
+            node.depth = depth
+            @maxDepth = depth if depth > @maxDepth
+            helper(node.left, depth + 1)
+            helper(node.right, depth + 1)
+        )(@guts, 0)
+
 
 @Vamonos.export { DataStructure: { BinaryTree } }
