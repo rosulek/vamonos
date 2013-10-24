@@ -8,7 +8,7 @@ class VarDisplay
             type: ["String", "jQuery Selector"]
             description:
                 "The id or a jQuery selector of the div in which this widget " +
-                "should draw itself."
+                "should draw itself"
         varName:
             type: "String"
             description: "the name of variable that this widget represents"
@@ -16,7 +16,8 @@ class VarDisplay
             type: "Array"
             defaultValue: undefined
             description: 
-                "if the variable is an object, an array of which attributes to display"
+                "if the variable is an object, an array of strings representing " +
+                "which object attributes to show"
         showChanges:
             type: ["String", "Array"]
             defaultValue: "next"
