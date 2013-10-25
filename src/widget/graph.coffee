@@ -123,7 +123,9 @@ class Graph
                 if $target.is("div.vertex-contents")
                     @selectNode($target.parent())
                 if $target.is(@displayWidget.$inner)
-                    @addVertex({x: e.offsetX - 12, y: e.offsetY - 12})
+                    x = e.offsetX ? e.clientX - $(e.target).offset().left
+                    y = e.offsetY ? e.clientY - $(e.target).offset().top
+                    @addVertex({x: x - 20, y: y - 15})
             else
                 if $target.is("div.vertex-contents") and 'vertex' is @selected()
                     sourceId = @$selectedNode.attr("id")
