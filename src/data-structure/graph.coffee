@@ -62,7 +62,7 @@ class Graph
         description: "adds `vtx` to the graph"
     addVertex: (vtx) ->
         return vtx.id if @vertices[vtx.id]?
-        vtx.type  = 'vertex'
+        vtx.type  = 'Vertex'
         vtx.name ?= @nextVertexName()
         vtx.id   ?= @nextVertexId()
         @vertices[vtx.id] = vtx
@@ -147,7 +147,7 @@ class Graph
         s = @vertex(sourceId) 
         t = @vertex(targetId)
         return unless s? and t?
-        edge = { source: s, target: t, type: 'edge' }
+        edge = { source: s, target: t, type: 'Edge' }
         if attrs?
             edge[k] = v for k, v of attrs when k isnt 'source' and k isnt 'target'
 
