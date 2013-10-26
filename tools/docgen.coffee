@@ -37,12 +37,14 @@ docs = (nameSpace, widget) ->
 
     if widget.dependencies?.length
         h3 "Arguments are shared with inner objects:"
-        # dependencies come in as "Namespace.Widget"
+        # dependencies come in as "Vamonos.Namespace.Widget"
         for dep in widget.dependencies
             if /\./.test dep
-                [nameSpace, name] = dep.split(/\./)
+                [_,nameSpace, name] = dep.split(/\./)
                 b "[#{ formattedName(nameSpace, name: name) }]" +
                   "(#{ nameSpace.toLowerCase() }-#{ name.toLowerCase() }.html)"
+                depObj = Vamonos[nameSpace][name]
+                Vamonos.mixin(widget.spec, depObj.spec)
             else
                 b "[#{ name }](#{ name.toLowerCase() }.html)"
 
@@ -74,44 +76,56 @@ makeInterface = (interObj, name) ->
     return ret.val
 
 
-makeArgSpec = (spec, name) -># {{{
+makeArgSpec = (spec, name) ->
     ret = {val: ""}
     { pr,p,b,i,h1,h2,h3,code } = make_printers(ret)
 
-    for argName, specs of spec
+    requiredArgs = []
+    otherArgs = []
 
+    for argName, specs of spec
         # Do not publish private constructor arguments
         continue if /^_/.test argName 
-
-        { type, defaultValue, description, example } = specs
-
-        unless description?
-            console.warn "warning: no description provided for argument " +
-                "\"#{ argName }\" of widget \"#{name}\""
-
-        # an argument is required unless it has a defaultValue
-        r = unless specs.hasOwnProperty("defaultValue")
-            "**required**"
+        [required, doc] = argSpec(argName, specs)
+        if required
+            requiredArgs.push doc
         else
-            # a defaultValue can be 'undefined', in which case the argument is optional
-            if defaultValue?
-                "default Value: `#{ JSON.stringify(defaultValue) }`"
-            else
-                "optional"
+            otherArgs.push doc
 
-        #
-        t = if type.constructor.name is 'Array'
-            type.join("* | *")            
-        else
-            type
-        b "**#{argName}** :: *#{t}* -- #{r}"
-        i description if description?
-        if example?
-            i "Example:"
-            code example 
+    p d for d in requiredArgs
+    p d for d in otherArgs
 
     return ret.val
-# }}}
+
+argSpec = (argName, specs) ->
+    ret = {val: ""}
+    { pr,p,b,i,h1,h2,h3,code } = make_printers(ret)
+    { type, defaultValue, description, example } = specs
+    required = false
+    unless description?
+        console.warn "warning: no description provided for argument " +
+            "\"#{ argName }\" of widget \"#{name}\""
+    # an argument is required unless it has a defaultValue
+    unless specs.hasOwnProperty("defaultValue")
+        r = "**required**"
+        required = true
+    else
+        # a defaultValue can be 'undefined', in which case the argument is optional
+        if defaultValue?
+            "default Value: `#{ JSON.stringify(defaultValue) }`"
+        else
+            "optional"
+    if type.constructor.name is 'Array'
+        t = type.join("* | *")            
+    else
+        t = type
+    b "**#{argName}** :: *#{t}* -- #{r}"
+    i description if description?
+    if example?
+        i "Example:"
+        code example 
+    return [required, ret.val]
+
 
 index = (fileTypes) ->
     ret = {val: ""}

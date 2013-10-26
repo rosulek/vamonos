@@ -3,7 +3,7 @@ class Graph
     @description: "The Graph widget provides graph input functionality. It " +
         "uses GraphDisplay for functionality that is not related to input."
 
-    @dependencies = [ "Widget.GraphDisplay" ]
+    @dependencies = [ "Vamonos.Widget.GraphDisplay" ]
 
     @spec =
         varName:

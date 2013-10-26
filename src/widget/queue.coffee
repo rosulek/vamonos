@@ -1,6 +1,6 @@
 class Queue
 
-    @dependencies = [ "Widget.ArrayGuts" ]
+    @dependencies = [ "Vamonos.Widget.ArrayGuts" ]
 
     @spec =
         varName:

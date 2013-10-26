@@ -2,7 +2,7 @@ class Matrix
 
     @description = "Displays a two dimensional array."
 
-    @dependencies = [ "Widget.ArrayGuts" ]
+    @dependencies = [ "Vamonos.Widget.ArrayGuts" ]
 
     @spec =
         container:

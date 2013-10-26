@@ -2,7 +2,7 @@ class ParallelArrays
 
     @description = "Display multiple arrays, all lined up nice."
 
-    @dependencies = [ "Widget.ArrayGuts" ]
+    @dependencies = [ "Vamonos.Widget.ArrayGuts" ]
 
     @spec =
         container:

@@ -4,7 +4,7 @@ class Array
         "The Array widget displays an array. It is a minimal wrapper " +
         "around the ArrayGuts widget."
 
-    @dependencies = [ "Widget.ArrayGuts" ]
+    @dependencies = [ "Vamonos.Widget.ArrayGuts" ]
     
     @spec =
         container:
