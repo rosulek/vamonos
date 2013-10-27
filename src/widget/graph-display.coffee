@@ -28,8 +28,7 @@ class GraphDisplay
                 "        edit: function(vtx){return vtx.name}, \n" +
                 "        display: function(vtx){return vtx.d} \n" +
                 "    },\n" +
-                "    sw    : function(vtx){return vtx.name} \n" +
-                "    },\n" +
+                "    sw    : function(vtx){return vtx.name}, \n" +
                 "    ne    : ['u', 'v'],\n" +
                 "    nw    : ['s'],\n" +
                 "}"
@@ -303,22 +302,19 @@ class GraphDisplay
                     $node.removeClass(attr)
 
     vertexChanged: (newv) ->
-        return unless newv?
-        return unless @previousGraph?
-        return unless oldv = @previousGraph.vertex(newv.id)
-        v0 = (for k, v of newv
-            if v.type is "vertex"
-                oldv[k]?.id isnt v.id
+        return false unless newv?
+        return false unless @previousGraph?
+        return false unless oldv = @previousGraph.vertex(newv.id)
+        for k,v of newv
+            if v.type is "Vertex"
+                return true if oldv[k]?.id isnt v.id
             else
-                oldv[k] isnt v
-        ).filter((x)->x)
-        v1 = (for k, v of newv
-            if v.type is "vertex"
-                newv[k]?.id isnt v.id
+                return true if oldv[k] isnt v
+        for k,v of newv
+            if v.type is "Vertex"
+                return true if newv[k]?.id isnt v.id
             else
-                newv[k] isnt v
-        ).filter((x)->x)
-        return true if v0.length or v1.length
+                return true if newv[k] isnt v
 
     # --------- Display mode connection functions ---------- #
 

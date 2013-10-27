@@ -1,6 +1,6 @@
 fs = require 'fs'
 
-make_printers = (obj) -># {{{
+make_printers = (obj) ->
     # In order to modify strings in place, which coffeescript does not support,
     # we use an object and modify its "val" attribute... which conveniently can
     # be a string.
@@ -14,7 +14,7 @@ make_printers = (obj) -># {{{
     r.h3 = (s) -> r.p("\n### " + s)
     r.code = (s) -> r.p(s.replace(/^/gm, ">     "))
     return r
-# }}}
+
 formattedName = (nameSpace, objectItself) ->
     return "Vamonos.#{(if nameSpace.length then nameSpace + "." else "") + objectItself.name}"
 
@@ -105,16 +105,18 @@ argSpec = (argName, specs) ->
     unless description?
         console.warn "warning: no description provided for argument " +
             "\"#{ argName }\" of widget \"#{name}\""
+
     # an argument is required unless it has a defaultValue
-    unless specs.hasOwnProperty("defaultValue")
-        r = "**required**"
-        required = true
-    else
+    if specs.hasOwnProperty("defaultValue")
         # a defaultValue can be 'undefined', in which case the argument is optional
         if defaultValue?
-            "default Value: `#{ JSON.stringify(defaultValue) }`"
+            r = "default Value: `#{ JSON.stringify(defaultValue) }`"
         else
-            "optional"
+            r = "optional"
+    else
+        r = "**required**"
+        required = true
+
     if type.constructor.name is 'Array'
         t = type.join("* | *")            
     else

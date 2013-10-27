@@ -82,11 +82,10 @@ class Graph
         graph = Vamonos.clone(@theGraph)
         @viz.setVariable(@varName, graph)
         for k, v of @inputVars
-            # TODO do alerting in a friendlier way - maybe using mikes boxes
-            unless v?
-                alert "GRAPH WIDGET: please set #{k}!"
-                throw "GRAPH WIDGET: need a value for #{k}!"
-            @viz.setVariable(k, graph.vertex(v.id), true)
+            if v?
+                @viz.setVariable(k, graph.vertex(v.id), true)
+            else
+                console.log "GRAPH WIDGET: please set #{k}!"
 
     # adds a vertex to the graph being edited and redraws the graph.
     addVertex: (vertex = {}, autoSelect = true) ->
@@ -125,7 +124,7 @@ class Graph
                 if $target.is(@displayWidget.$inner)
                     x = e.offsetX ? e.clientX - $(e.target).offset().left
                     y = e.offsetY ? e.clientY - $(e.target).offset().top
-                    @addVertex({x: x - 20, y: y - 15})
+                    @addVertex({x: x - 12, y: y - 12})
             else
                 if $target.is("div.vertex-contents") and 'vertex' is @selected()
                     sourceId = @$selectedNode.attr("id")

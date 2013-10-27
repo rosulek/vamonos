@@ -185,7 +185,7 @@ class Graph
         (@vertex(target) for target, edge of @edges[@idify(v)])
             .sort (a,b) -> a.name - b.name
 
-    @interface.neighbors = 
+    @interface.eachNeighbor = 
         args: [
             ["v", "a vertex object containing an id field, or an id"]
             ["f", "a function that takes a vertex as input"]
