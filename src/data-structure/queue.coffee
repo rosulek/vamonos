@@ -75,5 +75,10 @@ class Queue
         else
             "[#{(Vamonos.rawToTxt(elem) for elem in @guts).join(", ")}]"
 
+    @interface.contains =
+        args: [["x", "an element"]]
+        description: "Returns true if `x` is in the queue."
+    contains: (x) ->
+        @guts.some (elem) -> elem is x
 
 @Vamonos.export { DataStructure: { Queue } }
