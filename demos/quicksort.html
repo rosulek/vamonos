@@ -23,10 +23,14 @@
 </head>
 <body>
 
+<h1>Quicksort demo using Vamonos</h1>
+
 <table class="vamonos">
     <tr><td class="pseudocode-and-controls">
+        <div id="controls"> </div>
+
         <div id="quicksort" title="Quicksort(A,p,r):">
-            if p &lt r;
+            if p &lt; r
                 q = Partition(A,p,r)
                 Quicksort(A,p,q - 1)
                 Quicksort(A,q + 1,r)
@@ -41,8 +45,6 @@
             return i+1
         </div>
 
-        <div id="controls">
-        </div>
 
     </td><td class="variable-widgets">
 
@@ -77,7 +79,6 @@ var qs = new Vamonos.Visualizer({
         new Vamonos.Widget.Pseudocode({
             container: "partition",
             procedureName: "partition",
-            breakpoints: "all"
         }),
 
         new Vamonos.Widget.VarName({
