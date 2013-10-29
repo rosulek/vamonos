@@ -124,8 +124,8 @@ class Graph
                 if $target.is("div.vertex-contents")
                     @selectNode($target.parent())
                 if $target.is(@displayWidget.$inner)
-                    x = e.offsetX ? e.clientX - $(e.target).offset().left
-                    y = e.offsetY ? e.clientY - $(e.target).offset().top
+                    x = e.offsetX ? e.pageX - @displayWidget.$outer.offset().left
+                    y = e.offsetY ? e.pageY - @displayWidget.$outer.offset().top
                     @addVertex({x: x - 12, y: y - 12})
             else
                 if $target.is("div.vertex-contents") and 'vertex' is @selected()
