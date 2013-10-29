@@ -1,7 +1,6 @@
 <html><head>
 
     <link rel="stylesheet" href="../lib/vamonos.css">
-    <link rel="stylesheet" href="demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
     <style type="text/css">
@@ -16,9 +15,7 @@
 
     <table class="vamonos">
         <tr><td class="pseudocode-and-controls">
-
             <div id="controls"></div>
-
             <div class="pseudocode-procedures">
                 <div id="pseudocode" title="LIS(A):">
                     opt[0] = 0
@@ -53,9 +50,10 @@
                 <tr><td><div id="opt-var"></div></td>
                     <td><div id="opt"></div></td></tr>
                 </tr>
+                <tr><td><div id="best-var"></div></td>
+                    <td><div id="best"></div></td>
+                </tr>
             </table>
-
-        <div id="arrays">
 
         </td></tr>
     </table>
@@ -83,27 +81,32 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.VarName({
             container: "opt-var",
-            varName: "opt",
+            varName: "global::opt",
+            displayName: "opt",
         }),
 
         new Vamonos.Widget.Array({
             container: "opt",
-            varName: "opt",
+            varName: "global::opt",
             displayOnly: true,
             showIndices: ["i", "k"],
         }),
 
         new Vamonos.Widget.VarName({
             container: "sol-var",
-            varName: "sol",
+            varName: "global::sol",
+            displayName: "sol",
             watching: true,
         }),
 
         new Vamonos.Widget.Array({
             container: "sol",
-            varName: "sol",
+            varName: "global::sol",
             displayOnly: true,
-            cssRules: [["=", "best", "dark-shaded"]],
+            cssRules: [
+                ["<", "best", "shaded"],
+                [">", "best", "shaded"],
+            ],
             showIndices: ["i", "k", "best"],
             cellFormat: function(x) { return x ? "["+x.join(",")+"]" : "" }
         }),
@@ -128,30 +131,46 @@ var myviz = new Vamonos.Visualizer({
             varName: "k",
         }),
 
+        new Vamonos.Widget.VarName({
+            container: "best-var",
+            varName: "global::best",
+            displayName: "best",
+            watching: true,
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "best",
+            varName: "global::best",
+        }),
+
         new Vamonos.Widget.Pseudocode("pseudocode"),
-        new Vamonos.Widget.Controls("controls")
+
+        new Vamonos.Widget.Controls({
+            container: "controls",
+            expandWidth: true,
+        }),
     ],
 
     algorithm: function (_) {
         with (this) {
-_(1);       opt = [0]
-_(2);       sol = [[]]
+_(1);       global.opt = [0]
+_(2);       global.sol = [[]]
 _(3);       for (k = 1; k < A.length; _(3), k++) {
-_(4);           opt[k] = 1;
-_(5);           sol[k] = [A[k]];
+_(4);           global.opt[k] = 1;
+_(5);           global.sol[k] = [A[k]];
 _(6);           for (i=1; i<k; _(6), i++) {
-_(7);               if (A[i] < A[k] && opt[k] < opt[i] + 1) {
-_(8);                   opt[k] = opt[i] + 1;
-_(9);                   sol[k] = sol[i].concat([A[k]]);
+_(7);               if (A[i] < A[k] && global.opt[k] < global.opt[i] + 1) {
+_(8);                   global.opt[k] = global.opt[i] + 1;
+_(9);                   global.sol[k] = global.sol[i].concat([A[k]]);
                     }
                 }
                 i = undefined;
             }
             k = undefined;
-_(10);      best = 1;
+_(10);      global.best = 1;
 _(11);      for (var j = 2; j < A.length; _(11), j++) {
-_(12);          if (opt[best] < opt[j]) {
-_(13);              best = j;
+_(12);          if (global.opt[global.best] < global.opt[j]) {
+_(13);              global.best = j;
                 }
             }
             k = undefined;

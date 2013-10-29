@@ -40,6 +40,7 @@ class Visualizer
         @prepareAlgorithm(@algorithm)
 
         @tellWidgets("setup", @)
+        @tellWidgets("setupEnd")
 
         if @autoStart
             @runAlgorithm() 

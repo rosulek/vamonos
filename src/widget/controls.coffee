@@ -41,6 +41,10 @@ class Controls
             type: "Boolean"
             defaultValue: true
             description: "whether to show the run and stop button"
+        expandWidth:
+            type: "Boolean"
+            defaultValue: false
+            description: "whether to expand the controls to fill its parent"
 
     constructor: (arg) ->
 
@@ -103,6 +107,8 @@ class Controls
         @frameLabel?.event(event, options...)
 
         switch event
+            when "setupEnd"
+                @$container.width(@$container.parent().width() + 1) if @expandWidth
             when "displayStart"
                 @$inner.removeClass("controls-disabled")
             when "displayStop"

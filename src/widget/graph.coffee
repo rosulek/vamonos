@@ -28,6 +28,8 @@ class Graph
             givenArgs      : args
             ignoreExtraArgs: true
 
+        @edgeLabel = args.edgeLabel # for default weights in addEdge
+
         @theGraph      = @defaultGraph ? new Vamonos.DataStructure.Graph()
         @inputVars[k]  = @theGraph.vertex(v) for k,v of @inputVars
 

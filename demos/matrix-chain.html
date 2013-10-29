@@ -1,7 +1,6 @@
 <html><head>
 
     <link rel="stylesheet" href="../lib/vamonos.css">
-    <link rel="stylesheet" href="demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
     <style type="text/css">
@@ -20,45 +19,119 @@
 
     <h1>Matrix-chain Multiplication demo using Vamonos</h1>
 
-    <div class="vamonos">
-        <div class="container" id="pseudocode" title="MatrixChainMult(dim):">
-            for i = 1 to dim.length - 1
-                opt[i,i] = 0
-                sol[i,i] = "M i"
-            for l = 2 to dim.length
-                for i = 1 to dim.length - l
-                    k = i + l - 1
-                    opt[i,k] = &infin;
-                    for j = i to k-1
-                        if opt[i,k] &gt; dim[i-1]*dim[j]*dim[k] + best[i,j] + best[j+1,k]
-                            opt[i,k] = dim[i-1]*dim[j]*dim[k] + best[i,j] + best[j+1,k]
-                            sol[i,k] = "(sol[i][j] sol[j+1][k])"
-        </div>
-        <br>
-        <div id="controls"></div>
-        <br>
-        <div class="container" id="array"></div>
-        <br>
-        <div class="container" id="opt"></div>
-        <br>
-        <div class="container" id="sol"></div>
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
+            <div id="controls"></div>
+            <div class="pseudocode-procedures">
+                <div id="pseudocode" title="MatrixChainMult(dim):">
+                    for i = 1 to dim.length - 1
+                        opt[i,i] = 0
+                        sol[i,i] = "M i"
+                    for l = 2 to dim.length
+                        for i = 1 to dim.length - l
+                            k = i + l - 1
+                            opt[i,k] = &infin;
+                            for j = i to k-1
+                                if opt[i,k] &gt; dim[i-1]*dim[j]*dim[k] + best[i,j] + best[j+1,k]
+                                    opt[i,k] = dim[i-1]*dim[j]*dim[k] + best[i,j] + best[j+1,k]
+                                    sol[i,k] = "(sol[i][j] sol[j+1][k])"
+                </div>
+            </div>
+        </td><td class="variable-widgets">
+            <table class="variable-widgets">
+                <tr><td><div id="i-var"></div></td>
+                    <td><div id="i"></div></td>
+                </tr>
+                <tr><td><div id="j-var"></div></td>
+                    <td><div id="j"></div></td>
+                </tr>
+                <tr><td><div id="k-var"></div></td>
+                    <td><div id="k"></div></td>
+                </tr>
+                <tr><td><div id="l-var"></div></td>
+                    <td><div id="l"></div></td>
+                </tr>
+                <tr><td><div id="dim-var"></div></td>
+                    <td><div id="dim"></div></td>
+                </tr>
+                <tr><td><div id="opt-var"></div></td>
+                    <td><div id="opt"></div></td>
+                </tr>
+                <tr><td><div id="sol-var"></div></td>
+                    <td><div id="sol"></div></td>
+                </tr>
+            </table>
+        </td></tr>
     </div>
 </body>
 
 <script type="text/javascript">
 var myviz = new Vamonos.Visualizer({
     widgets: [
+        new Vamonos.Widget.VarName({
+            container: "i-var",
+            varName: "i",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "i",
+            varName: "i",
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "j-var",
+            varName: "j",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "j",
+            varName: "j",
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "k-var",
+            varName: "k",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "k",
+            varName: "k",
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "l-var",
+            varName: "l",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "l",
+            varName: "l",
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "dim-var",
+            varName: "dim",
+            inputVar: true,
+            watchable: false
+        }),
+
         new Vamonos.Widget.Array({
-            container: "array",
+            container: "dim",
             showLabel: true,
             varName: "dim",
             defaultInput: [4, 3, 5, 1, 2, 7],
             showIndices: ["i-1", "j", "k"],
         }),
 
+        new Vamonos.Widget.VarName({
+            container: "opt-var",
+            varName: "global::opt",
+            displayName: "opt",
+        }),
+
         new Vamonos.Widget.Matrix({
             container: "opt",
-            varName: "opt",
+            varName: "global::opt",
             cssRules: [
                 ["row", ">", "col", "shaded"],
                 ["row", "=", "i", "row-i"],
@@ -72,11 +145,18 @@ var myviz = new Vamonos.Visualizer({
                 ["col", "j"],
                 ["col", "k"]
             ]
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "sol-var",
+            varName: "global::sol",
+            displayName: "sol",
+            watching: true,
         }),
 
         new Vamonos.Widget.Matrix({
             container: "sol",
-            varName: "sol",
+            varName: "global::sol",
             cssRules: [
                 ["row", ">", "col", "shaded"],
                 ["row", "=", "i", "row-i"],
@@ -91,37 +171,44 @@ var myviz = new Vamonos.Visualizer({
                 ["col", "k"]
             ]
         }),
-
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode",
             breakpoints: [7,9],
         }),
 
-        new Vamonos.Widget.Controls("controls")
+        new Vamonos.Widget.Controls({
+            container: "controls",
+            expandWidth: true,
+        }),
+        
     ],
 
     algorithm: function (_) {
         with (this) {
             var l;
-            opt = {};
-            sol = {};
+            global.opt = {};
+            global.sol = {};
             for (var _i = 1; _i < dim.length; _i++) {
 _(1);               i = _i;
-_(2);               opt[i] = {}; opt[i][i] = 0;
-_(3);               sol[i] = {}; sol[i][i] = "M" + i;
+_(2);               global.opt[i] = {}; global.opt[i][i] = 0;
+_(3);               global.sol[i] = {}; global.sol[i][i] = "M" + i;
             }
             i = null;
             for (l = 2; l < dim.length; _(4), l++) {
 _(4);           for (var _i = 1; _i < dim.length - l + 1; _i++) {
 _(5);               i = _i;
 _(6);               k = i + l - 1;
-_(7);               opt[i][k] = Infinity;
+_(7);               global.opt[i][k] = Infinity;
                     for (var _j = i; _j < k; _j++) {
 _(8);                   j = _j;
-_(9);                   if (opt[i][k] > dim[i-1]*dim[j]*dim[k] + opt[i][j] + opt[j+1][k]) {
-_(10);                      opt[i][k] = dim[i-1]*dim[j]*dim[k] + opt[i][j] + opt[j+1][k];
-_(11);                      sol[i][k] = "(" + sol[i][j] + " " + sol[j+1][k] + ")";
+_(9);                   if (global.opt[i][k] > dim[i-1]*dim[j]*dim[k] + 
+                                                    global.opt[i][j] + 
+                                                    global.opt[j+1][k]) {
+_(10);                      global.opt[i][k] = dim[i-1]*dim[j]*dim[k] + 
+                                global.opt[i][j] + global.opt[j+1][k];
+_(11);                      global.sol[i][k] = 
+                                "(" + global.sol[i][j] + " " + global.sol[j+1][k] + ")";
                         }
                     }
                     j = null;
