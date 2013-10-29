@@ -1,5 +1,11 @@
 fs = require 'fs'
 
+buildDir = 'lib/'
+targetDirName = 'api/'
+finalSuffix = '.html'
+
+Vamonos = require('../' + buildDir + "vamonos.js").Vamonos
+
 make_printers = (obj) ->
     # In order to modify strings in place, which coffeescript does not support,
     # we use an object and modify its "val" attribute... which conveniently can
@@ -16,9 +22,9 @@ make_printers = (obj) ->
     return r
 
 formattedName = (nameSpace, objectItself) ->
-    return "Vamonos.#{(if nameSpace.length then nameSpace + "." else "") + objectItself.name}"
+    "Vamonos.#{(if nameSpace.length then nameSpace + "." else "") + objectItself.name}"
 
-mdHeader = (title, hdr) -> return """
+mdHeader = (title, hdr) -> """
     ---
     layout: main
     title: "#{ title }"
@@ -143,19 +149,14 @@ index = (fileTypes) ->
 
     return ret.val
 
-writeApiFile = (fileName, nameSpace, objectItself) -># {{{
+writeApiFile = (fileName, nameSpace, objectItself) ->
     fs.writeFileSync(
         buildDir + targetDirName + fileName + ".md",
         docs(nameSpace, objectItself)
     )
-    return { name: objectItself.name, fileName: fileName + finalSuffix }# }}}
+    return { name: objectItself.name, fileName: fileName + finalSuffix }
 
 #####################################################################
-
-buildDir = 'lib/'
-targetDirName = 'api/'
-finalSuffix = '.html'
-Vamonos = require('../' + buildDir + "vamonos.js").Vamonos
 
 unless fs.existsSync(buildDir + targetDirName) 
     fs.mkdir(buildDir + targetDirName)
@@ -165,7 +166,6 @@ ds = (writeApiFile("data-" + name.toLowerCase(), "DataStructure", d) for name, d
 ws = (writeApiFile("widget-" + name.toLowerCase(), "Widget", w) for name, w of Vamonos.Widget)
 
 # create the index file
-
 fs.writeFileSync(
     buildDir + targetDirName + "index.md",
     index([
