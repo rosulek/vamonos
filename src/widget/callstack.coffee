@@ -38,6 +38,12 @@ class CallStack
                 "CallStack will not display calls to the `main` procedure when set. " +
                 "This is useful when you'd like to use `main` to set variables, or " +
                 "do other useful housekeeping."
+        ignoreArgumentValues:
+            type: "Array"
+            defaultValue: []
+            description:
+                "An array of argument names `\['arg1','arg2'\]` that should only " +
+                "show their name in the Call Stack."
 
     constructor: (args) ->
 
@@ -129,7 +135,9 @@ class CallStack
 
     argStr: (scope) ->
         r = (for k,v of scope.args when not /^_/.test(k)
-            if v.constructor.name is 'Array'
+            if k in @ignoreArgumentValues
+                k
+            else if v.constructor.name is 'Array'
                 "#{k}=#{k}"
             else
                 "#{k}=#{Vamonos.rawToTxt(v)}" 
