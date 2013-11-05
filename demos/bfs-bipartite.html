@@ -52,7 +52,7 @@
             <div id="controls"></div>
 
             <div class="pseudocode-procedures">
-                <div id="pseudocode" title="BFS(G,s):">
+                <div id="pseudocode" title="BFS-Bipartite(G,s):">
                     for each u &in; G.V - {s}
                         u.color = white
                     s.color = red
@@ -153,7 +153,7 @@ var myviz = new Vamonos.Visualizer({
             },
             vertexLabels: {
                 inner : function(vtx){return vtx.name}, 
-                ne    : ["v"],
+                ne    : ["v", "u"],
                 nw    : ["s"],
             },
             vertexCssAttributes: {
@@ -162,10 +162,7 @@ var myviz = new Vamonos.Visualizer({
             colorEdges: [ 
                 ["u->v", "#595959"],
                 [ function(edge){
-                    if (edge.source.color !== undefined && edge.target.color !== undefined &&
-                        edge.source.color !== "white"   && edge.target.color !== "white") {
-                        return (edge.target.color === edge.source.color)
-                    }
+                    return (edge.target.bad && edge.source.bad)
                   }
                 , "red" ],
             ],
@@ -210,11 +207,15 @@ _(2);               u.color = "white";
 _(3);       s.color = "red";
 _(4);       Q = new Vamonos.DataStructure.Queue();
 _(5);       Q.enqueue(s);
-            while (_(6), !Q.isEmpty()) {
+            var done = false;
+            while (_(6), !done && !Q.isEmpty()) {
 _(7);           u = Q.dequeue();
                 G.eachNeighbor(u, function(vtx) {
 _(8);               v = vtx;
                     if (_(9), v.color === u.color) {
+                        v.bad = true;
+                        u.bad = true;
+                        done = true;
 _(10);                  return "not bipartite!"
                     }
                     if (_(11), v.color === "white") {
