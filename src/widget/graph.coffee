@@ -50,6 +50,9 @@ class Graph
             @fitAlready = true
             @displayWidget.draw(frame[@varName], frame)
 
+        when "displayStart"
+            @setDisplayToolTips()
+
         when "displayStop"
             @fitAlready = false
 
@@ -60,6 +63,24 @@ class Graph
             @stopEditing()
 
     # ----------------- EDITING MODE ------------------------ #
+    
+    setDefaultToolTips: ->
+        @displayWidget.$inner.prop("title", "Click on whitespace to add vertices, edges to modify them.")
+        @displayWidget.$inner.children(".vertex").prop("title", "Click a vertex to modify vertex attributes and edges.")
+        @displayWidget.$inner.children(".graph-label").prop("title","Click an edge attribute to modify it.")
+
+    setNodeSelectionToolTips: ->
+        @displayWidget.$inner.prop("title", "Click on white space to deselect.")
+        @displayWidget.$inner.children(".vertex").prop("title", "Click a vertex to add an edge or change selected vertex.")
+
+    setConnectionSelectionToolTips: ->
+        @displayWidget.$inner.prop("title", "Click on white space to deselect. Click on another edge to select it.")
+        @displayWidget.$inner.children(".vertex").prop("title", "Click a vertex to select it.")
+
+    setDisplayToolTips: ->
+        @displayWidget.$inner.prop("title", "Drag a vertex to move it.")
+        @displayWidget.$inner.children(".vertex").removeAttr("title")
+        @displayWidget.$inner.children(".graph-label").removeAttr("title")
 
     startEditing: ->
         @displayWidget.clearDisplay()
@@ -68,6 +89,7 @@ class Graph
         @displayWidget.draw(@theGraph, @inputVars)
         @setContainerEditBindings()
         @setConnectionEditBindings()
+        @setDefaultToolTips()
 
     stopEditing: ->
         @deselect()
@@ -199,6 +221,7 @@ class Graph
             @potentialEdgeTo($(e.target).parent())
         @others.on "mouseleave.vamonos-graph", @removePotentialEdge
         @openDrawer()
+        @setNodeSelectionToolTips()
 
     selectConnection: (con) ->
         @deselectNode()       if 'vertex' is @selected()
@@ -206,11 +229,13 @@ class Graph
         @$selectedConnection = con
         @$selectedConnection.setPaintStyle(@displayWidget.selectedPaintStyle)
         @openDrawer()
+        @setConnectionSelectionToolTips()
 
     deselect: ->
         @deselectNode()
         @deselectConnection()
         @closeDrawer()
+        @setDefaultToolTips()
 
     deselectNode: ->
         return unless @$selectedNode?
@@ -249,12 +274,12 @@ class Graph
             label   = "vertex&nbsp;&nbsp;#{vtx.name}&nbsp;&nbsp;"
             buttons = []
             for v of @inputVars
-                buttons.push $("<button>", {text: "#{v}"})
+                buttons.push $("<button>", { text: "#{v}", title: "Set #{v}=#{vtx.name}" })
                     .on "click.vamonos-graph", (e) =>
                         @inputVars[v] = vtx
                         @displayWidget.draw(@theGraph, @inputVars)
 
-            buttons.push($("<button>", {text: "del"})
+            buttons.push($("<button>", {text: "del", title: "Delete #{vtx.name}"})
                     .on "click.vamonos-graph", (e) =>
                         @removeVertex(vtx.id))
         else if type is 'edge'
@@ -266,7 +291,7 @@ class Graph
                 "&nbsp;" + edge.target.name
             label = "edge&nbsp;&nbsp;#{nametag}&nbsp;&nbsp;"
             buttons = [
-                $("<button>", {text: "del"})
+                $("<button>", {text: "del", title: "Delete #{edge.source.name}->#{edge.target.name}"})
                     .on "click.vamonos-graph", (e) =>
                         @removeEdge(edge.source.id, edge.target.id)
             ]
