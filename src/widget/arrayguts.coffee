@@ -30,12 +30,16 @@ class ArrayGuts
             type: "Array"
             defaultValue: []
             description: 
-                "an array of triples of the form `\\[comparison, " +
-                "index-variable-expr, css-class\\]` where every index in " +
+                "an array of triples of the form `\[comparison, " +
+                "index-variable-expr, css-class\]` where every index in " +
                 "the array that matches the comparason against the given " +
                 "index-variable-expr receives the given css class."
-            example:
-                "cssRules: [['>', 'k', 'shaded']]"
+            example: """
+                cssRules: [
+                    ['>', 'k', 'shaded'],
+                    ['=', 'k+i', 'green'],
+                ]
+                """
         showIndices:
             type: "Array"
             description: 

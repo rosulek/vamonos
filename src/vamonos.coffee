@@ -59,11 +59,21 @@
     warn: (objName, str) ->
         console.log("### WARNING ### #{objName}: #{str}")
 
-    formatObject: (object, attributes = []) ->
-        tbl  = "<table>"
+    formatObject: (object, attributes = [], prevObj) ->
+        if prevObj? and object.name? and object.name isnt prevObj.name
+            console.log "GOT HERE4 formatObject #{object.name}"
+            addClass = "class='changed'"
+        else
+            addClass = ""
+        tbl  = "<table #{ addClass } >"
         rows = (for attribute in attributes
-            "<tr><td>#{attribute}</td><td>&nbsp=&nbsp" + 
-                Vamonos.rawToTxt(object[attribute]) + "</td></tr>")
+            str = Vamonos.rawToTxt(object[attribute])
+            if prevObj? and str isnt Vamonos.rawToTxt(prevObj[attribute])
+                addClass = "class='changed'"
+            else
+                addClass = ""
+            "<tr #{ addClass } ><td>#{attribute}</td><td>&nbsp=&nbsp" + 
+                str + "</td></tr>")
         tbl += rows.join("") + "</table>"
         tbl
 

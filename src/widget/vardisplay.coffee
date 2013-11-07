@@ -49,26 +49,38 @@ class VarDisplay
 
     showVars: (frame, type) ->
         if not frame[@varName]?
-            newval = "-" 
+            newstr = "-" 
         else if @attributes?
-            newval = Vamonos.formatObject(frame[@varName], @attributes)
-            @dontShowChange = true
+            if type in @showChanges
+                newstr = Vamonos.formatObject(frame[@varName], @attributes, @oldval)
+            else
+                newstr = Vamonos.formatObject(frame[@varName], @attributes)
+            @dontShowChange = true # formatObject will add changed class for attributes
         else
-            newval = Vamonos.rawToTxt(frame[@varName])
+            newstr = Vamonos.rawToTxt(frame[@varName])
 
-        oldval = @$container.html()
+        oldstr = @$container.html()
 
-        if newval isnt oldval and type in @showChanges
-            @$container.addClass("changed") unless @dontShowChange
-            @$container.html(newval)
-            dup = @$container.clone()
-            @$container.replaceWith( dup )
-            @$container = dup
+        if newstr isnt oldstr 
+            if type in @showChanges
+                if @dontShowChange
+                    @$container.removeClass("changed")
+                else
+                    @$container.addClass("changed") 
+                @$container.html(newstr)
+                dup = @$container.clone()
+                @$container.replaceWith( dup )
+                @$container = dup
+            else
+                @$container.html(newstr)
+                @$container.removeClass("changed")
+                @$container.children().removeClass("changed")
         else
-            @$container.html(newval)
             @$container.removeClass("changed")
+            @$container.children().removeClass("changed")
 
         @dontShowChange = undefined
+        @oldval = frame[@varName] ? { dummyObj: true } 
 
 
 @Vamonos.export { Widget: { VarDisplay } }
