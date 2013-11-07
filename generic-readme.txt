@@ -2,11 +2,15 @@
 
           VAMONOS : Dynamic Algorithm Visualization in the Browser
 
+                       http://rosulek.github.io/vamonos
+
                                Version: 0.0.0.0
-                    http://rosulek.github.io/vamonos
+                             Released: 07-11-2013
 
                               Licenced under MIT
                 http://www.opensource.org/licenses/mit-license.php
+
+            Copyright 2012-2013 Mike Rosulek & the Vamonos project team
 
 ================================================================================
 
@@ -50,4 +54,3 @@ The Vamonos project team:
     Brent Carmer 
     Pat Kujawa (graduated) 
     Eric Spaulding (graduated) 
-

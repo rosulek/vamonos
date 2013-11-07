@@ -1,10 +1,11 @@
 class BinaryTree
 
     @interface = {}
-    @description = 
-        "*Experimental*. BinaryTree takes a tree encoded as nested objects of " +
-        "the form `{ val, id, left, right }` where left and right are optional " +
-        "objects of the same form."
+    @description = """
+        *Experimental*. BinaryTree takes a tree encoded as nested objects of
+        the form `{ val, id, left, right }` where left and right are optional
+        objects of the same form.
+        """
 
     constructor: (@guts) ->
         @_refresh()

@@ -140,7 +140,7 @@ index = (fileTypes) ->
     { pr,p,b,i,h1,h2,h3,code } = make_printers(ret)
     p mdHeader("Vamonos API Reference", "Vamonos API Reference")
 
-    p "[Back](../index-vamonos.html)"
+    p "[Back](../index.html)"
     
     for [ title, filesList ] in fileTypes
         h2 title if title.length

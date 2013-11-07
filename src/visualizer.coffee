@@ -1,9 +1,10 @@
 class Visualizer
 
-    @description = 
-        "The central object of the Vamonos system. The Visualizer controls " +
-        "the flow of information to and from Widgets, keeps track of " +
-        "namespaces and variables, and runs the simulation itself."
+    @description = """
+        The central object of the Vamonos system. The Visualizer controls
+        the flow of information to and from Widgets, keeps track of
+        namespaces and variables, and runs the simulation itself.
+        """
 
     @spec = 
         widgets: 

@@ -1,7 +1,9 @@
 class Graph
 
-    @description: "The Graph data structure provides standard graph functionality " +
-        "to Vamonos. You can use it in your algorithms, or inside widgets."
+    @description: """
+        The Graph data structure provides standard graph functionality
+        to Vamonos.
+        """
 
     @spec:
         directed: 
