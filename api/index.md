@@ -4,7 +4,7 @@ title: "Vamonos API Reference"
 header: Vamonos API Reference
 ---
 
-[Back](../index-vamonos.html)
+[Back](../index.html)
 
  * [Visualizer](visualizer.html)
 

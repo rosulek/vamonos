@@ -63,19 +63,17 @@ We have developed pre-made visualizations of many common algorithms. Click any o
 
 * Dynamic programming:
 
-   * [Rod-cutting](demos/rod_cutting.html)([with quiz](demos/rod_cutting-quiz.html))
+   * [Rod-cutting](demos/rod_cutting.html) ([with quiz](demos/rod_cutting-quiz.html))
    * [Matrix-chain multiplication](demos/matrix-chain.html)
    * [Longest increasing subsequence](demos/lis.html)
 
 * Graphs:
 
-   * Understanding adjacency list & adjacency matrix representations
    * [Breadth-first search](demos/bfs.html)
    * [Detecting bipartiteness](demos/bfs-bipartite.html) (2-colorability)
    * [Depth-first search](demos/dfs.html)
    * [Dijkstra's SSSP algorithm](demos/dijkstra.html)
    * [Prim's MST algorithm](demos/prims.html)
-   * Kruskal's MST algorithm
 
 # Download: <span class="construction"></span>
 The latest version of Vamonos is v0.0.0.
@@ -101,7 +99,7 @@ More detailed information can be found in our **API reference**:
 
 # Getting Help:
 
-For now, you can find us on IRC in #vamonos at freenode.net.
+For now, you can find us on IRC in #vamonos at [freenode.net](http://freenode.net/).
 
 # About the Project:
 

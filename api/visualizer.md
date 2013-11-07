@@ -10,7 +10,9 @@ Vamonos.Visualizer
 
 [Back](index.html)
 
-The central object of the Vamonos system. The Visualizer controls the flow of information to and from Widgets, keeps track of namespaces and variables, and runs the simulation itself.
+The central object of the Vamonos system. The Visualizer controls
+the flow of information to and from Widgets, keeps track of
+namespaces and variables, and runs the simulation itself.
 
 
 ### Constructor Arguments

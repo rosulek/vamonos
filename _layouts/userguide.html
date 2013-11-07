@@ -2,6 +2,7 @@
 {% capture relative %}{% for i in (3..lvl) %}../{% endfor %}{% endcapture %}
 <html><head>
 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>{{ page.title }}</title>
 
     <link rel="stylesheet" href="{{ relative }}css/vamonos-web.css">
@@ -22,7 +23,7 @@
     <div id="main">
         <div id="header">
             <h1>Vamonos User's Guide</h1>
-            <a href="{{ relative }}index-vamonos.html">Back</a>
+            <a href="{{ relative }}index.html">Back</a>
             {% include userguide-toc.html %}
         </div>
 
