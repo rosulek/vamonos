@@ -10,7 +10,8 @@ Vamonos.DataStructure.Graph
 
 [Back](index.html)
 
-The Graph data structure provides standard graph functionality to Vamonos. You can use it in your algorithms, or inside widgets.
+The Graph data structure provides standard graph functionality
+to Vamonos.
 
 
 ### Constructor Arguments

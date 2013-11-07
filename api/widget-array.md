@@ -64,11 +64,14 @@ The Array widget displays an array. It is a minimal wrapper around the ArrayGuts
 
  * **cssRules** :: *Array* -- default Value: `[]`
 
-    an array of triples of the form `\[comparison, index-variable-expr, css-class\]` where every index in the array that matches the comparason against the given index-variable-expr receives the given css class.
+    an array of triples of the form `[comparison, index-variable-expr, css-class]` where every index in the array that matches the comparason against the given index-variable-expr receives the given css class.
 
     Example:
 
->     cssRules: [['>', 'k', 'shaded']]
+>     cssRules: [
+>         ['>', 'k', 'shaded'],
+>         ['=', 'k+i', 'green'],
+>     ]
 
 
 
