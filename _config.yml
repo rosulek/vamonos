@@ -2,7 +2,7 @@
 
 userguide:
 - title: "Getting things started"
-  page: index.html
+  page: getting-started.html
 - title: "Overview of a Vamonos visualization"
   page: overview.html
 - title: "Implementing the algorithm for Vamonos"
