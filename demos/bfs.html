@@ -1,0 +1,238 @@
+<html><head>
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <style type="text/css">
+        .vertex {
+            width: 40;
+            height: 30;
+        }
+
+        .vertex-contents {
+            font-size: .8em;
+        }
+
+        .vertex-ne-label, .vertex-nw-label {
+            font-weight: bold;
+        }
+
+        .vertex-sw-label {
+            font-style: italic;
+        }
+
+        .color-white { 
+            background: white; 
+        }
+
+        .color-gray {
+            background: #888; 
+        }
+
+        .color-black {
+            background: black;
+        }
+
+        .color-black .vertex-contents, .color-gray .vertex-contents { 
+            color: white; 
+        }
+
+        body {
+            text-align: center;
+        }
+    </style>
+
+</head><body>
+
+    <h1>BFS demo using Vamonos</h1>
+
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
+
+            <div id="controls"></div>
+
+            <div class="pseudocode-procedures">
+
+                <div id="pseudocode" title="BFS(G,s):">
+                    for each u &in; G.V - {s}
+                        u.color = white
+                    s.color = gray
+                    s.d = 0
+                    Q = &empty;
+                    Q.enqueue(s)
+                    while Q &ne; &empty;
+                        u = Q.dequeue()
+                        for each v &in; G.Adj[u]
+                            if v.color == white
+                                v.color = gray
+                                v.d = u.d + 1
+                                v.pred = u
+                                Q.enqueue(v)
+                        u.color = black
+                </div>
+
+            </div>
+
+        
+        </td><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="g-var"></div></td>
+                    <td><div id="graph"></div></td>
+                </tr>
+                <tr><td><div id="u-var"></div></td>
+                    <td><div id="u"></div></td>
+                </tr>
+                </tr>
+                <tr><td><div id="v-var"></div></td>
+                    <td><div id="v"></div></td>
+                </tr>
+                <tr><td><div id="q-var"></div></td>
+                    <td><div id="queue"></div></td></tr>
+            </table>
+
+        </td></tr>
+    </table>
+
+</body>
+<script type="text/javascript">
+
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+        new Vamonos.Widget.Controls("controls"),
+
+        new Vamonos.Widget.Queue({
+            container: "queue",
+            varName: "Q",
+            showLabel: false,
+            displayOnly: true
+        }),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode",
+            breakpoints: [8,11],
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "g-var",
+            varName: "G",
+            inputVar: true,
+        }),
+        new Vamonos.Widget.VarName({
+            container: "u-var",
+            varName: "u",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "u",
+            varName: "u",
+            attributes: ["name","color","d","pred"]
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "v-var",
+            varName: "v",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "v",
+            varName: "v",
+            attributes: ["name","color","d","pred"]
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "q-var",
+            varName: "Q",
+        }),
+
+        new Vamonos.Widget.Graph({
+            varName: "G",
+            container: "graph",
+            inputVars: {
+                s: "v0"
+            },
+            vertexLabels: {
+                inner : { 
+                    edit: function(vtx){return vtx.name}, 
+                    display: function(vtx){return vtx.d} 
+                },
+                sw    : { 
+                    edit: function(vtx){return ""}, 
+                    display: function(vtx){return vtx.name} 
+                },
+                ne    : ["u", "v"],
+                nw    : ["s"],
+            },
+            vertexCssAttributes: {
+                color: ["white", "gray", "black"],
+            },
+            colorEdges: [ 
+                ["u->v", "#FF7D7D"],
+                [ function(edge){
+                    return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
+                        || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }
+                , "#92E894" ],
+            ],
+            defaultGraph: new Vamonos.DataStructure.Graph({
+                vertices: [ 
+                    {id: "v0", x: 17,  y: 10},
+                    {id: "v1", x: 98,  y: 10},
+                    {id: "v2", x: 176, y: 13},
+                    {id: "v3", x: 15,  y: 78},
+                    {id: "v4", x: 100, y: 80},
+                    {id: "v5", x: 182, y: 80},
+                    {id: "v6", x: 15,  y: 138},
+                    {id: "v7", x: 100, y: 140},
+                    {id: "v8", x: 182, y: 140},
+                ],
+                edges: [
+                    {source: 'v0',target: 'v4'},
+                    {source: 'v1',target: 'v2'},
+                    {source: 'v1',target: 'v4'},
+                    {source: 'v3',target: 'v4'},
+                    {source: 'v3',target: 'v6'},
+                    {source: 'v3',target: 'v7'},
+                    {source: 'v4',target: 'v8'},
+                    {source: 'v4',target: 'v7'},
+                    {source: 'v5',target: 'v8'},
+                    {source: 'v6',target: 'v7'},
+                    {source: 'v7',target: 'v8'},
+                ]
+            })
+        }),
+
+    ],
+
+    algorithm: function (_) {
+        with (this) {
+            G.eachVertex(function(vtx){
+                if (vtx.id === s.id) { return }
+_(1);               u = vtx;
+_(2);               u.color = "white";
+            });
+            u = undefined;
+_(3);       s.color = "gray";
+_(4);       s.d = 0;
+_(5);       Q = new Vamonos.DataStructure.Queue();
+_(6);       Q.enqueue(s);
+            while (_(7), !Q.isEmpty()) {
+_(8);           u = Q.dequeue();
+                G.eachNeighbor(u, function(vtx) {
+_(9);               v = vtx;
+_(10);               if (v.color === "white") {
+_(11);                  v.color = "gray";
+_(12);                  v.d = u.d + 1;
+_(13);                  v.pred = u;
+_(14);                  Q.enqueue(v);
+                    }
+                });
+                v = undefined;
+_(15);          u.color = "black";
+            }
+            u = undefined;
+        }
+    },
+});
+
+</script>
+</html>

@@ -1,0 +1,104 @@
+<html><head>
+
+    <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <style type="text/css">
+        body {
+            text-align: center;
+        }
+    </style>
+
+</head><body>
+
+    <h1>Insertion Sort demo using Vamonos</h1>
+
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
+
+            <div class="pseudocode-procedures">
+
+                <div id="pseudocode" title="InsertionSort(A):">
+                    for j = 2 to A.length
+                        key = A[j]
+                        i = j - 1
+                        while i &gt; 0 and A[i] &gt; key
+                            A[i + 1]  = A[i]
+                            i = i - 1
+                        A[i + 1] = key
+                </div>
+
+            </div>
+
+        </td></tr><tr><td>
+
+            <div id="controls"></div>
+
+        </td></tr><tr><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="a-var"></div></td>
+                    <td><div id="array"></div></td>
+                </tr>
+            </table>
+
+        </td></tr>
+
+    </table>
+</body>
+<script type="text/javascript">
+
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+
+        new Vamonos.Widget.Array({
+            container: "array",
+            defaultInput: [0, 3, 1, 4, 1, 5, 9],
+            ignoreIndexZero: true,
+            varName: "A",
+            cssRules: [
+                [">", "j", "shaded"]
+            ],
+            showIndices: ["i", "j"],
+            showLabel: false,
+//            persistent: true
+            
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "a-var",
+            varName: "A",
+            inputVar: true,
+        }),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode",
+            breakpoints: "all",
+        }),
+
+        new Vamonos.Widget.Controls("controls")
+    ],
+
+    algorithm: function (_) {
+        with (this) {
+            for (j = 2; j < A.length; _(1), j++) {
+_(2);           key = A[j];
+_(3);           i = j - 1;
+                while (_(4), i > 0 && A[i] > key) {
+_(5);               A[i + 1] = A[i];
+_(6);               i = i - 1;
+                }
+_(7);           A[i + 1] = key;
+                i = null;
+            }
+            j = null;
+        }
+    },
+
+});
+
+</script>
+
+</html>

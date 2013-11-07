@@ -1,0 +1,264 @@
+<html><head>
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <style type="text/css">
+        .vertex {
+            width: 40;
+            height: 30;
+        }
+
+        .vertex-contents {
+            font-size: .8em;
+        }
+
+        .vertex-ne-label, .vertex-nw-label {
+            font-weight: bold;
+        }
+
+        .vertex-sw-label {
+            font-style: italic;
+        }
+
+        .color-white { 
+            background: white; 
+        }
+
+        .color-gray {
+            background: #888; 
+        }
+
+        .color-black {
+            background: black;
+        }
+
+        .color-black .vertex-contents, .color-gray .vertex-contents { 
+            color: white; 
+        }
+
+        body {
+            text-align: center;
+        }
+    </style>
+
+</head>
+<body>
+
+    <h1>DFS demo using Vamonos</h1>
+
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
+
+            <div id="controls"></div>
+
+            <div class="pseudocode-procedures">
+                <div id="pseudocode-dfs" title="DFS(G):">
+                    for each u &in; G.V
+                        u.color = white
+                    time = 0
+                    for each u &in; G.V
+                        if u.color == white
+                            DFS-Visit(G,u)
+                </div>
+
+                <div id="pseudocode-visit" title="DFS-Visit(G,u):">
+                    u.d = ++time
+                    u.color = gray
+                    <b>for</b> each v &in; G.Adj[u]
+                        <b>if</b> v.color == white
+                            DFS-Visit(G,v)
+                    u.color = black
+                    u.f = ++time
+                </div>
+
+            </div>
+
+        </td><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="g-var"></div></td>
+                    <td><div id="graph"></div></td>
+                </tr>
+                <tr><td><div id="time-var"></div></td>
+                    <td><div id="time"></div></td>
+                </tr>
+                <tr><td><div id="u-var"></div></td>
+                    <td><div id="u"></div></td>
+                </tr>
+                </tr>
+                <tr><td><div id="v-var"></div></td>
+                    <td><div id="v"></div></td>
+                </tr>
+                <tr><td><div id="stack-var"></div></td>
+                    <td><div id="stack"></div></td></tr>
+
+            </table>
+
+        </td></tr>
+    </table>
+
+
+</body>
+
+<script type="text/javascript">
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+        new Vamonos.Widget.Console({}),
+
+        new Vamonos.Widget.VarName({
+            container: "g-var",
+            varName: "G",
+            inputVar: true,
+        }),
+        new Vamonos.Widget.VarName({
+            container: "time-var",
+            varName: "time"
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "time",
+            varName: "time"
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "stack-var",
+            varName: "_callstack",
+            displayName: "Call Stack",
+            watching: true
+        }),
+
+        new Vamonos.Widget.CallStack({
+            container: "stack",
+            procedureNames: {
+                main: "DFS",
+                visit: "DFS-Visit",
+            },
+            animate: ["next", "prev"],
+            ignoreArgumentValues: ["G"]
+        }),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-dfs",
+            procedureName: "main",
+        }),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-visit",
+            procedureName: "visit",
+        }),
+
+        new Vamonos.Widget.Controls({
+            container: "controls"
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "u-var",
+            varName: "u",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "u",
+            varName: "u",
+            attributes: ["name","color","d", "f"]
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "v-var",
+            varName: "v",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "v",
+            varName: "v",
+            attributes: ["name","color","d", "f"]
+        }),
+
+        new Vamonos.Widget.Graph({
+            varName: "G",
+            container: "graph",
+            vertexLabels: {
+                inner : { 
+                    edit: function(vtx){ return vtx.name }, 
+                    display: function(vtx){ return Vamonos.rawToTxt(vtx.d) + "/" + Vamonos.rawToTxt(vtx.f) }
+                },
+                sw    : { 
+                    edit: function(vtx){return ""}, 
+                    display: function(vtx){return vtx.name} 
+                },
+                ne    : ["u", "v"],
+            },
+            vertexCssAttributes: {
+                color: ["white", "gray", "black"],
+            },
+            colorEdges: [ 
+                ["u->visit::v", "#FF7D7D"],
+            ],
+            defaultGraph: new Vamonos.DataStructure.Graph({
+                directed: true,
+                vertices: [ 
+                    {id: "v0", x: 17,  y: 10},
+                    {id: "v1", x: 98,  y: 10},
+                    {id: "v2", x: 176, y: 13},
+                    {id: "v3", x: 15,  y: 78},
+                    {id: "v4", x: 100, y: 80},
+                    {id: "v5", x: 182, y: 80},
+                    {id: "v6", x: 15,  y: 138},
+                    {id: "v7", x: 100, y: 140},
+                    {id: "v8", x: 182, y: 140},
+                ],
+                edges: [
+                    {source: 'v0',target: 'v4'},
+                    {source: 'v1',target: 'v2'},
+                    {source: 'v1',target: 'v4'},
+                    {source: 'v3',target: 'v4'},
+                    {source: 'v3',target: 'v6'},
+                    {source: 'v5',target: 'v8'},
+                    {source: 'v6',target: 'v7'},
+                    {source: 'v7',target: 'v8'},
+                ]
+            })
+        })
+    ],
+
+    autoStart: false,
+
+    algorithm: {
+        main: function(_) {
+            with (this) {
+                global.time = undefined;
+                G.eachVertex(function(vtx){
+_(1);               u = vtx;
+_(2);               u.color = "white";
+                });
+                u = undefined;
+_(3);           global.time = 0;
+                G.eachVertex(function(vtx){
+_(4);               u = vtx;
+_(5);               if (u.color === "white") {
+_(6);                   visit({G:G, u:u}, ["v"]);
+                    }
+                });
+                u = undefined;
+            }
+        },
+
+        visit: function(_) {
+            with (this) {
+_(1);           u.d = ++global.time;
+_(2);           u.color = "gray";
+                G.eachNeighbor(u, function(vtx){
+_(3);               v = vtx;
+_(4);               if (v.color === "white") {
+_(5);                   visit({G:G, u:v});
+                    }
+                });
+                v = undefined;
+_(6);           u.color = "black";
+_(7);           u.f = ++global.time;
+            }
+        },
+    },
+})
+</script>
+</html>

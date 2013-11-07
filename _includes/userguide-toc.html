@@ -1,0 +1,23 @@
+{% capture filename %}{{ page.url | split:'/' | last }}{% endcapture %}
+<ol class="table-of-contents">
+{% for link in site.userguide %}
+    {% if link.page %}
+        {% if filename == link.page %}
+            <li class="active-chapter">{{ link.title | escape }}</li>
+        {% else %}
+            <li><a href="{{ userguideprefix }}{{ link.page }}">{{ link.title | escape }}</a></li>
+        {% endif %}
+    {% else %}
+        <li>{{ link.title | escape }}</li>
+        <ol>
+        {% for sublink in link.subpages %}
+            {% if filename == sublink.page %}
+                <li class="active-chapter">{{ sublink.title | escape }}</li>
+            {% else %}
+                <li><a href="{{ userguideprefix }}{{ sublink.page }}">{{ sublink.title | escape }}</a></li>
+            {% endif %}
+        {% endfor %}
+        </ol>
+    {% endif %}
+{% endfor %}
+</ol>

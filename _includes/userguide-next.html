@@ -1,0 +1,19 @@
+{% capture filename %}{{ page.url | split:'/' | last }}{% endcapture %}
+<div class="next-page">
+{% assign prev = false %}
+{% for link in site.userguide %}
+    {% if link.subpages %}
+        {% for sublink in link.subpages %}
+            {% if prev %}
+                Next page: <a href="{{ sublink.page }}">{{ sublink.title | escape }}</a>
+            {% endif %}
+            {% if filename == sublink.page %}{% assign prev = true %}{% else %}{% assign prev = false %}{% endif %}
+        {% endfor %}
+    {% else %}
+        {% if prev %}
+            Next page: <a href="{{ link.page }}">{{ link.title | escape }}</a>
+        {% endif %}
+        {% if filename == link.page %}{% assign prev = true %}{% else %}{% assign prev = false %}{% endif %}
+    {% endif %}
+{% endfor %}
+</div>

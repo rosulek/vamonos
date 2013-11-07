@@ -1,0 +1,232 @@
+<html><head>
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <style type="text/css">
+        .ui-widget-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .ui-widget-overlay {
+            background-color: #cccccc;
+            opacity: .3;
+            filter: Alpha(Opacity=30);
+        }
+
+        .ui-front {
+            z-index: 100;
+        }
+
+        .ui-dialog {
+            background: white;
+            border: 1px solid #aaa;
+            box-shadow: 4px 4px 8px #ccc;
+        }
+        .userquiz {
+            padding: 10px;
+        }
+        .ui-dialog-titlebar {
+            background: #d85a1a;
+            color: white;
+            padding: 4px;
+            cursor: move;
+            margin: 2px;
+        }
+        .ui-dialog-titlebar-close {
+            display: none;
+        }
+        .userquiz-question {
+            margin-bottom: 10px;
+        }
+        .userquiz-answer {
+            width: 50px;
+        }
+        .userquiz-response {
+            text-align: center;
+        }
+        .userquiz-feedback {
+            margin-top: 10px;
+        }
+        .userquiz-feedback.wrong-answer {
+            color: #c55;
+        }
+        .userquiz-feedback.correct-answer {
+            color: #5c5;
+            font-weight: bold;
+        }
+        body {
+            text-align: center;
+        }
+    </style>
+
+</head><body>
+
+    <h1>Rod-cutting demo with quiz using Vamonos</h1>
+
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
+            <div id="controls"></div>
+            <div class="pseudocode-procedures">
+                <div id="pseudocode" title="RodCut(price):">
+                    opt[0] = 0
+                    sol[0] = []
+                    for k = 1 to price.length
+                        opt[k] = 0
+                        sol[k] = null
+                        for i = 1 to k
+                            if opt[k] &lt; opt[k-i] + price[i]
+                                opt[k] = opt[k-i] + price[i]
+                                sol[k] = sol[k-i] + [i]
+                </div>
+            </div>
+        </td><td class="variable-widgets">
+            <table class="variable-widgets">
+                <tr><td><div id="k-var"></div></td>
+                    <td><div id="k"></div></td>
+                </tr>
+                <tr><td><div id="i-var"></div></td>
+                    <td><div id="i"></div></td>
+                </tr>
+                <tr><td><div id="price-var"></div></td>
+                    <td><div id="price"></div></td>
+                </tr>
+                <tr><td><div id="opt-var"></div></td>
+                    <td><div id="opt"></div></td>
+                </tr>
+                <tr><td><div id="sol-var"></div></td>
+                    <td><div id="sol"></div></td>
+                </tr>
+            </table>
+        </td></tr>
+    </table>
+
+</body>
+
+<script type="text/javascript">
+
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+        new Vamonos.Widget.VarName({
+            container: "price-var",
+            varName: "price",
+            inputVar: true,
+            watchable: false
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "price",
+            varName: "price",
+            defaultInput: [0, 1,5,8,9,10,17,17,20,24],
+            ignoreIndexZero: true,
+            cssRules: [[">", "k", "shaded"]],
+            showIndices: ["i", "k"],
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "opt-var",
+            varName: "global::opt",
+            displayName: "opt",
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "opt",
+            varName: "global::opt",
+            showIndices: ["k", "k-i"],
+            cssRules: [[">", "k", "shaded"]],
+            displayOnly: true,
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "sol-var",
+            varName: "global::sol",
+            displayName: "sol",
+            watching: true,
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "sol",
+            varName: "global::sol",
+            showIndices: ["k"],
+            displayOnly: true,
+            cssRules: [[">", "k", "shaded"]],
+            cellFormat: function(x) { return x ? "["+x.join(",")+"]" : "" }
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "i-var",
+            varName: "i",
+            watching: true,
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "i",
+            varName: "i",
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "k-var",
+            varName: "k",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "k",
+            varName: "k",
+        }),
+
+        new Vamonos.Widget.Pseudocode("pseudocode"),
+
+        new Vamonos.Widget.Controls({
+            container: "controls",
+            expandWidth: true,
+            slider: false,
+        }),
+        
+        new Vamonos.Widget.UserQuiz({
+            condition: function(frame) {
+                return frame.k > 3 && frame._nextLine == 7 && frame.i == 1;
+            },
+            question: function(frame) {
+                return "What will the final value of opt[" + frame.k + "] be?"
+            },
+            answer: function(frame) {
+                var answer = 0;
+                var opt    = frame.opt;
+                var price  = frame.price;
+                var k      = frame.k;
+                for (var i = 1; i <= k; i++) {
+                    if (answer < opt[k-i] + price[i]) {
+                        answer = opt[k-i] + price[i];
+                    }
+                }
+                return answer;
+            }
+        }),
+    ],
+
+    algorithm: function (_) {
+        with (this) {
+_(1);       global.opt = [0]
+_(2);       global.sol = [[]]
+_(3);       for (k = 1; k < price.length; _(3), k++) {
+_(4);           global.opt[k] = 0;
+_(5);           global.sol[k] = null;
+_(6);           for (i=1; i<=k; _(6), i++) {
+_(7);               if (global.opt[k] < global.opt[k-i] + price[i]) {
+                        console.log("got here" + i);
+_(8);                   global.opt[k] = global.opt[k-i] + price[i];
+_(9);                   global.sol[k] = global.sol[k-i].concat([i]);
+                    }
+                }
+                i = undefined;
+            }
+            k = undefined;
+        }
+    }
+});
+</script>
+</html>

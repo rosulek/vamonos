@@ -1,0 +1,40 @@
+{% capture lvl %}{{ page.url | append:'index.html' | split:'/' | size }}{% endcapture %}
+{% capture relative %}{% for i in (3..lvl) %}../{% endfor %}{% endcapture %}
+<html><head>
+
+    <title>{{ page.title }}</title>
+
+    <link rel="stylesheet" href="{{ relative }}css/vamonos-web.css">
+    <link rel="stylesheet" href="{{ relative }}lib/vamonos.css">
+    <script type="text/javascript" src="{{ relative }}lib/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ relative }}lib/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{ relative }}lib/jquery-qtip.min.js"></script>
+    <script type="text/javascript" src="{{ relative }}lib/jquery-jsplumb.js"></script>
+    <script type="text/javascript" src="{{ relative }}lib/vamonos.js"></script>
+{% if page.scriptinclude %}
+    <script type="text/javascript" src="{{ page.scriptinclude }}"></script>
+{% endif %}
+
+    <meta name="google" content="notranslate" />
+
+</head><body>
+
+    <div id="main">
+        <div id="header">
+            <h1>Vamonos User's Guide</h1>
+            <a href="{{ relative }}index-vamonos.html">Back</a>
+            {% include userguide-toc.html %}
+        </div>
+
+
+        {{ content }}
+
+        {% include userguide-next.html %}
+
+    </div>
+
+    <div id="footer">
+    </div>
+
+
+</body></html>
