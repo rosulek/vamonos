@@ -40,6 +40,11 @@ class Graph
 
         delete args[a] for a in ["varName","defaultGraph","inputVars", "editable"]
 
+        unless @editable
+            args.minX = 0
+            args.minY = 0
+            args.resizable = false
+
         @displayWidget = new Vamonos.Widget.GraphDisplay(args)
 
     event: (event, options...) -> switch event
@@ -51,8 +56,9 @@ class Graph
 
         when "render"
             [frame, type] = options
-            @displayWidget.fitGraph(frame[@varName]) unless @fitAlready
-            @fitAlready = true
+            #@displayWidget.fitGraph(frame[@varName]) unless @fitAlready
+            #@fitAlready = true
+            @displayWidget.fitGraph(frame[@varName])
             @displayWidget.draw(frame[@varName], frame)
 
         when "displayStart"
@@ -108,6 +114,7 @@ class Graph
             @updateVariables()
 
     registerVariables: ->
+        @viz.registerVariable(@varName, @editable)
         @viz.registerVariable(key, true) for key of @inputVars
 
     updateVariables: ->

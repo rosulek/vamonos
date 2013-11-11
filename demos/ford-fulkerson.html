@@ -48,7 +48,7 @@
                             if (u,v) &in; E
                                 (u,v).f = (u,v).f + c<sub><i>f</i></sub>(p)
                             else 
-                            (v,u).f = (v,u).f - c<sub><i>f</i></sub>(p)
+                                (v,u).f = (v,u).f - c<sub><i>f</i></sub>(p)
                 </div>
 
                 <div id="pseudocode-augmenting-path" title="AugmentingPath(G,s,t):">
@@ -83,7 +83,7 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-augmenting-path",
-            procedureName: "augmenting-path",
+            procedureName: "augmentingPath",
         }),
 
         new Vamonos.Widget.VarName({
@@ -146,10 +146,11 @@ var myviz = new Vamonos.Visualizer({
         new Vamonos.Widget.VarName({
             container: "gf-var",
             varName: "Gf",
+            watching: true,
         }),
 
         new Vamonos.Widget.Graph({
-            varName: "Gf",
+            varName: "augmentingPath::Gf",
             container: "graph-gf",
             editable: false,
         }),
@@ -172,38 +173,58 @@ var myviz = new Vamonos.Visualizer({
 
         main: function(_){
             with (this) {
-                G.eachVertex(function(vtx){
-_(1);               u = vtx;
-_(2);               u.d = Infinity;
-_(3);               u.pred = undefined;
-_(4);               u.done = false;
-                });
 
-_(5);           s.d = 0;
-_(6);           global.Q = new Vamonos.DataStructure.Queue({
-                    initialArray: G.getVertices(),
-                    comparator: function(a,b){ return a.d - b.d },
-                });
+                G.eachEdge(function(e){
+_(1);               u = e.source;
+                    v = e.target;
+_(2);               e.f = 0;
+                })
 
-                while (_(7), !global.Q.isEmpty()) {
-_(8);               u = global.Q.extractMin();
-_(9);               u.done = true;
-                    G.eachNeighbor(u, function(vtx){
-_(10);                  v = vtx;
-_(11);                  relax({u:u,v:v,G:G});
-                    });
-                    v = undefined;
+                // augmenting path should return an array of edges
+                while (_(3), p = augmentingPath({ G:G, s:s, t:t })) {
+                    var flows = p.filter(function(e){ return G.edge(e.source, e.target) !== undefined })
+                                 .map(function(e){ return e.cf });
+_(4);               cfp = Math.min.apply(null, flows);
+                    
+                    for (var i = 0; i < p.length; i++) {
+_(5);                   u = p[i].source;
+                        v = p[i].target;
+                        if (_(6), (e = G.edge(u,v)) !== undefined) {
+_(7);                       e.f += cfp;
+                        } else {
+_(8);                       e = G.edge(v,u);
+_(9);                       e.f -= cfp;
+                        }
+                    }
                 }
-                u = undefined;
             }
         },
 
-        relax: function(_){
+
+        augmentingPath: function(_){
             with (this) {
-                if (_(1), u.d + G.edge(u,v).w < v.d) {
-_(2);               v.d = u.d + G.edge(u,v).w; global.Q.sort();
-_(3);               v.pred = u;
-                }
+                Gf = new Vamonos.DataStructure.Graph({ 
+                    directed: G.directed,
+                    prefix: "gf",
+                });
+
+                G.eachVertex(function(vtx){
+                    var newVtx = Vamonos.clone(vtx);
+_(1);               Gf.addVertex(newVtx);
+                });
+
+                Gf.eachVertex(function(u){
+                    Gf.eachVertex(function(v){
+                        if (u.id === v.id) { return }
+                        if ((e = G.edge(u,v)) !== undefined) {
+                            Gf.addEdge(u,v,{ cf: e.c - e.f });
+                        } else if ((e = G.edge(v,u)) !== undefined) {
+                            Gf.addEdge(v,u,{ cf: e.f });
+                        }
+                        _(2);
+                    });
+                });
+
             }
         }
     }

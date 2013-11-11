@@ -178,6 +178,12 @@ class Graph
             edge for target, edge of outgoingEdges)
         [].concat(uglyArray...) # flatten array
 
+    @interface.eachEdge = 
+        args: [["f", "a function taking an edge"]]
+        description: "applies `f` to each edge"
+    eachEdge: (f) ->
+        f(e) for e in @getEdges() when e?
+
     # ----------- edge and vertex functions ---------- #
 
     @interface.neighbors = 
