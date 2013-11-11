@@ -224,4 +224,32 @@ class Graph
         Vamonos.mixin(r, this, Vamonos.clone)
 
 
+    @interface.toString = 
+        description: "returns a javascripty string you could use to initialize a graph with."
+    toString: () ->
+        s  = """
+            defaultGraph: new Vamonos.DataStructure.Graph({
+                directed: #{ @directed },
+                vertices: [\n
+            """
+
+        @eachVertex (vtx) ->
+            s += "\t\t{id: '#{ vtx.id }', x:#{ vtx.x }, y:#{ vtx.y } },\n"
+
+        s += """
+            \t],
+            \tedges: [\n
+            """
+
+        for e in @getEdges()
+            s += "\t\t{source: '#{ e.source.id }',target: '#{ e.target.id }', w:'#{ e.w }'},\n"
+
+        s += """
+                ]
+            }),
+            """
+
+        return s
+
+
 @Vamonos.export { DataStructure: { Graph } }
