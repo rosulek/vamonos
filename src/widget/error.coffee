@@ -13,6 +13,19 @@ class Error
             description: 
                 "a list of functions that take a viz object and return " +
                 "a string saying what went wrong."
+            example: """
+                new Vamonos.Widget.Error({
+                    conditions: [
+                        function(viz){ 
+                            var s = viz.getVariable("s");
+                            var t = viz.getVariable("t");
+                            if (s.id === t.id) {
+                                return "Ford-Fulkerson says: s and t must be different!";
+                            }
+                        }
+                    ]
+                })
+                """
 
     constructor: (args) ->
 
@@ -25,7 +38,6 @@ class Error
             [viz] = options
             s = ""
             s += c(viz) ? "" for c in @conditions
-            console.log s
             return s if s.length
 
 @Vamonos.export { Widget: { Error } }
