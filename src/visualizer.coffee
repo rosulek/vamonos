@@ -269,6 +269,10 @@ class Visualizer
     runAlgorithm: ->
         return if @mode is "display"
 
+        unless @checkErrors() is "ok"
+            @editMode
+            return
+
         @frames         = []
         @frameNumber    = 0
         @numCallsToLine = 0
@@ -314,7 +318,7 @@ class Visualizer
         @nextFrame()
 
     # ------------------ widget control methods ---------------------- #
-
+    
     tellWidgets: (event, options...) ->
         for widget in @widgets
             widget.event(event, options...)
@@ -324,6 +328,13 @@ class Visualizer
         @tellWidgets("displayStop") if @mode is "display"
         @mode = "edit"
         @tellWidgets("editStart")
+
+    checkErrors: ->
+        errors = @tellWidgets("checkErrors", @).filter (x) -> x?
+        if errors.length
+            alert("Vamonos Errors:\n" + errors.join("\n"))
+        else
+            return "ok"
 
     nextFrame: ->
         @goToFrame(@frameNumber + 1, "next")

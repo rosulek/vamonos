@@ -1,0 +1,211 @@
+<html><head>
+
+    <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <style type="text/css">
+        .vertex {
+            width: 40;
+            height: 30;
+        }
+
+        .vertex-contents {
+            font-size: .8em;
+        }
+
+        .vertex-ne-label, .vertex-nw-label {
+            font-weight: bold;
+        }
+
+        .vertex-sw-label {
+            font-style: italic;
+        }
+
+        body {
+            text-align: center;
+        }
+    </style>
+
+</head><body>
+
+    <h1>Ford-Fulkerson Max Flow algorithm demo using Vamonos</h1>
+
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
+
+            <div id="controls"></div>
+
+            <div class="pseudocode-procedures">
+
+                <div id="pseudocode-main" title="Ford-Fulkerson(G,s,t):">
+                    for each edge (u,v) &in; G.E
+                        (u,v).f = 0
+                    while p = AugmentingPath(G,s,t)
+                        c<sub><i>f</i></sub>(p) = min { c<sub><i>f</i></sub>(u,v) : (u,v) &in; p }
+                        for each edge (u,v) in p
+                            if (u,v) &in; E
+                                (u,v).f = (u,v).f + c<sub><i>f</i></sub>(p)
+                            else 
+                            (v,u).f = (v,u).f - c<sub><i>f</i></sub>(p)
+                </div>
+
+                <div id="pseudocode-augmenting-path" title="AugmentingPath(G,s,t):">
+                    // Fill this in
+                </div>
+
+            </div>
+
+        </td><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="g-var"></div></td>
+                    <td><div id="graph-g"></div></td>
+                </tr>
+                <tr><td><div id="gf-var"></div></td>
+                    <td><div id="graph-gf"></div></td>
+                </tr>
+            </table>
+
+        </td></tr>
+
+    </table>
+
+
+</body>
+<script type="text/javascript">
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+        new Vamonos.Widget.Controls("controls"),
+
+        new Vamonos.Widget.Pseudocode("pseudocode-main"),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-augmenting-path",
+            procedureName: "augmenting-path",
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "g-var",
+            varName: "G",
+            inputVar: true,
+        }),
+
+        new Vamonos.Widget.Graph({
+            varName: "G",
+            container: "graph-g",
+            inputVars: {
+                s: "v6",
+                t: "v5",
+            },
+            vertexLabels: {
+                inner : { 
+                    edit: function(vtx){return vtx.name}, 
+                    display: function(vtx){return vtx.d} 
+                },
+                sw    : { 
+                    edit: function(vtx){return ""}, 
+                    display: function(vtx){return vtx.name} 
+                },
+                ne    : ["u", "v"],
+                nw    : ["s", "t"],
+            },
+            edgeLabel: [ "w", 1 ],
+            colorEdges: [
+                ["u->v", "#FF7D7D"],
+            ],
+            defaultGraph: new Vamonos.DataStructure.Graph({
+                directed: true,
+                vertices: [
+                    {id: 'v0', x:85, y:15 },
+                    {id: 'v1', x:200, y:15 },
+                    {id: 'v2', x:200, y:90 },
+                    {id: 'v4', x:85, y:90 },
+                    {id: 'v5', x:300, y:90 },
+                    {id: 'v6', x:0, y:90 },
+                    {id: 'v7', x:85, y:160 },
+                    {id: 'v8', x:200, y:160 },
+                ],
+                edges: [
+                    {source: 'v0',target: 'v2', w:'1'},
+                    {source: 'v0',target: 'v1', w:'1'},
+                    {source: 'v1',target: 'v7', w:'1'},
+                    {source: 'v1',target: 'v5', w:'1'},
+                    {source: 'v4',target: 'v8', w:'10'},
+                    {source: 'v6',target: 'v7', w:'3'},
+                    {source: 'v6',target: 'v0', w:'1'},
+                    {source: 'v6',target: 'v4', w:'1'},
+                    {source: 'v7',target: 'v8', w:'2'},
+                    {source: 'v8',target: 'v5', w:'1'},
+                    {source: 'v2',target: 'v5', w:'1'},
+                ]
+            }),
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "gf-var",
+            varName: "Gf",
+        }),
+
+        new Vamonos.Widget.Graph({
+            varName: "Gf",
+            container: "graph-gf",
+        }),
+
+        new Vamonos.Widget.Error({
+            conditions: [
+                function(viz){ 
+                    var s = viz.getVariable("s");
+                    var t = viz.getVariable("t");
+                    if (s.id === t.id) {
+                        return "Ford-Fulkerson: <i>s</i> and <i>t</i> must be different!";
+                    }
+                }
+            ]
+        })
+
+    ],
+
+    algorithm: {
+
+        main: function(_){
+            with (this) {
+                G.eachVertex(function(vtx){
+_(1);               u = vtx;
+_(2);               u.d = Infinity;
+_(3);               u.pred = undefined;
+_(4);               u.done = false;
+                });
+
+_(5);           s.d = 0;
+_(6);           global.Q = new Vamonos.DataStructure.Queue({
+                    initialArray: G.getVertices(),
+                    comparator: function(a,b){ return a.d - b.d },
+                });
+
+                while (_(7), !global.Q.isEmpty()) {
+_(8);               u = global.Q.extractMin();
+_(9);               u.done = true;
+                    G.eachNeighbor(u, function(vtx){
+_(10);                  v = vtx;
+_(11);                  relax({u:u,v:v,G:G});
+                    });
+                    v = undefined;
+                }
+                u = undefined;
+            }
+        },
+
+        relax: function(_){
+            with (this) {
+                if (_(1), u.d + G.edge(u,v).w < v.d) {
+_(2);               v.d = u.d + G.edge(u,v).w; global.Q.sort();
+_(3);               v.pred = u;
+                }
+            }
+        }
+    }
+});
+
+</script></html> 

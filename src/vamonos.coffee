@@ -61,7 +61,6 @@
 
     formatObject: (object, attributes = [], prevObj) ->
         if prevObj? and object.name? and object.name isnt prevObj.name
-            console.log "GOT HERE4 formatObject #{object.name}"
             addClass = "class='changed'"
         else
             addClass = ""

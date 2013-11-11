@@ -62,6 +62,9 @@ class Graph
         when "editStop"
             @stopEditing()
 
+        when "checkErrors"
+            @verifyInputVarsSet()
+
     # ----------------- EDITING MODE ------------------------ #
     
     setDefaultToolTips: ->
@@ -108,8 +111,10 @@ class Graph
         for k, v of @inputVars
             if v?
                 @viz.setVariable(k, graph.vertex(v.id), true)
-            else
-                console.log "GRAPH WIDGET: please set #{k}!"
+
+    verifyInputVarsSet: () ->
+        s = ("#{ @varName }: please set #{k}!" for k, v of @inputVars when not v?).join('\n')
+        return s if s.length
 
     # adds a vertex to the graph being edited and redraws the graph.
     addVertex: (vertex = {}, autoSelect = true) ->
