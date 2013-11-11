@@ -269,10 +269,6 @@ class Visualizer
     runAlgorithm: ->
         return if @mode is "display"
 
-        unless @checkErrors() is "ok"
-            @editMode
-            return
-
         @frames         = []
         @frameNumber    = 0
         @numCallsToLine = 0
@@ -280,6 +276,12 @@ class Visualizer
 
         @initializeStash()
         @tellWidgets("editStop") if @mode is "edit"
+
+        @mode = "running"
+
+        unless @checkErrors() is "ok"
+            @editMode()
+            return
 
         mainArgs = {}
         for k, v of @stash.inputScope
@@ -332,7 +334,7 @@ class Visualizer
     checkErrors: ->
         errors = @tellWidgets("checkErrors", @).filter (x) -> x?
         if errors.length
-            alert("Vamonos Errors:\n" + errors.join("\n"))
+            alert(errors.join("\n"))
         else
             return "ok"
 

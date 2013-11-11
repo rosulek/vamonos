@@ -86,7 +86,6 @@ class Graph
         @displayWidget.$inner.children(".graph-label").removeAttr("title")
 
     startEditing: ->
-        @displayWidget.clearDisplay()
         @displayWidget.mode = "edit"
         @displayWidget.fitGraph(@theGraph)
         @displayWidget.draw(@theGraph, @inputVars)
@@ -100,7 +99,6 @@ class Graph
         @unsetConnectionEditBindings()
         @unsetContainerEditBindings()
         @updateVariables()
-        @displayWidget.clearDisplay()
 
     registerVariables: ->
         @viz.registerVariable(key, true) for key of @inputVars
@@ -113,7 +111,7 @@ class Graph
                 @viz.setVariable(k, graph.vertex(v.id), true)
 
     verifyInputVarsSet: () ->
-        s = ("#{ @varName }: please set #{k}!" for k, v of @inputVars when not v?).join('\n')
+        s = ("#{ @varName } says: please set #{k}!" for k, v of @inputVars when not v?).join('\n')
         return s if s.length
 
     # adds a vertex to the graph being edited and redraws the graph.
