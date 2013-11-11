@@ -20,6 +20,11 @@ class Graph
                 "a mapping of variable names to vertex ids of the form 
                 `{ var1: 'node1' }` for displaying variables that contain 
                 vertices."
+        editable:
+            type: "Boolean"
+            defaultValue: true
+            description:
+                "whether the graph allows user input"
 
     constructor: (args) ->
 
@@ -33,7 +38,7 @@ class Graph
         @theGraph      = @defaultGraph ? new Vamonos.DataStructure.Graph()
         @inputVars[k]  = @theGraph.vertex(v) for k,v of @inputVars
 
-        delete args[a] for a in ["varName","defaultGraph","inputVars"]
+        delete args[a] for a in ["varName","defaultGraph","inputVars", "editable"]
 
         @displayWidget = new Vamonos.Widget.GraphDisplay(args)
 
@@ -86,19 +91,21 @@ class Graph
         @displayWidget.$inner.children(".graph-label").removeAttr("title")
 
     startEditing: ->
-        @displayWidget.mode = "edit"
+        @displayWidget.mode = "edit" if @editable
         @displayWidget.fitGraph(@theGraph)
         @displayWidget.draw(@theGraph, @inputVars)
-        @setContainerEditBindings()
-        @setConnectionEditBindings()
-        @setDefaultToolTips()
+        if @editable
+            @setContainerEditBindings()
+            @setConnectionEditBindings()
+            @setDefaultToolTips()
 
     stopEditing: ->
-        @deselect()
-        @displayWidget.mode = undefined
-        @unsetConnectionEditBindings()
-        @unsetContainerEditBindings()
-        @updateVariables()
+        if @editable
+            @displayWidget.mode = undefined
+            @deselect()
+            @unsetConnectionEditBindings()
+            @unsetContainerEditBindings()
+            @updateVariables()
 
     registerVariables: ->
         @viz.registerVariable(key, true) for key of @inputVars
