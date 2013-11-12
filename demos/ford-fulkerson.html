@@ -57,7 +57,8 @@
 
                 <div id="pseudocode-augmenting-path" title="AugmentingPath(G,s,t):">
                     G<sub>f</sub> = residual graph of G
-                    return DFS(G<sub>f</sub>, s<sub>f</sub>, t<sub>f</sub>)
+                    p = DFS(G<sub>f</sub>, s<sub>f</sub>, t<sub>f</sub>)
+                    return p
                 </div>
 
             </div>
@@ -70,6 +71,9 @@
                 </tr>
                 <tr><td><div id="gf-var"></div></td>
                     <td><div id="graph-gf"></div></td>
+                </tr>
+                <tr><td><div id="cfp-var"></div></td>
+                    <td><div id="cfp"></div></td>
                 </tr>
             </table>
 
@@ -118,6 +122,10 @@ var myviz = new Vamonos.Visualizer({
             },
             colorEdges: [
                 ["u->v", "#FF7D7D"],
+                [ function(edge){
+                    return (edge.target.augPathPred ? edge.target.augPathPred.id === edge.source.id : false)
+                  }
+                , "#92E894" ],
             ],
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: true,
@@ -150,7 +158,6 @@ var myviz = new Vamonos.Visualizer({
         new Vamonos.Widget.VarName({
             container: "gf-var",
             varName: "Gf",
-            watching: true,
         }),
 
         new Vamonos.Widget.Graph({
@@ -169,9 +176,20 @@ var myviz = new Vamonos.Visualizer({
             colorEdges: [
                 [ function(edge){
                     return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
-                        || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }
+                  }
                 , "#92E894" ],
             ]
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "cfp-var",
+            varName: "cfp",
+            watching: true,
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "cfp",
+            varName: "cfp",
         }),
 
         new Vamonos.Widget.Error({
@@ -198,23 +216,42 @@ _(1);               u = e.source;
                     v = e.target;
 _(2);               e.f = 0;
                 })
+                u = v = undefined;
 
+                var done = false;
                 // augmenting path should return an array of edges
-                while (_(3), p = augmentingPath({ G:G, s:s, t:t })) {
+                while (_(3), p = augmentingPath({ G:G, s:s, t:t }), !done) {
+                    // show p in G
+                    var save = [];
+                    for (var i=0; i < p.length; i++) {
+                        var x = G.vertex(p[i].source.id);
+                        var y = G.vertex(p[i].target.id);
+                        y.augPathPred = x;
+                        save.push(y);
+                    }
+
                     var flows = p.filter(function(e){ return G.edge(e.source, e.target) !== undefined })
-                                 .map(function(e){ return e.cf });
+                                 .map(function(e){ return e.f });
 _(4);               cfp = Math.min.apply(null, flows);
                     
-                    for (var i = 0; i < p.length; i++) {
-_(5);                   u = p[i].source;
-                        v = p[i].target;
-                        if (_(6), (e = G.edge(u,v)) !== undefined) {
-_(7);                       e.f += cfp;
-                        } else {
-_(8);                       e = G.edge(v,u);
-_(9);                       e.f -= cfp;
-                        }
+                    console.log(p.length);
+                    for (i = 0; i < p.length; i++) {
+//                        console.log(p[i]);
+//_(5);                   u = G.vertex(p[i].source.id);
+//                        v = G.vertex(p[i].target.id);
+//                        console.log(u,v);
+//                        if (_(6), (e = G.edge(u,v)) !== undefined) {
+//_(7);                       e.f = e.f + cfp;
+//                        } else {
+//_(8);                       e = G.edge(v,u);
+//_(9);                       e.f = e.f - cfp;
+//                        }
                     }
+
+                    save.map(function(x){
+                        delete x.augPathPred;
+                    });
+                    done = true;
                 }
             }
         },
@@ -224,15 +261,23 @@ _(9);                       e.f -= cfp;
             with (this) {
 
                 var prefix = "gf-";
+                var prefixRe = new RegExp(prefix);
 
-                var toPrefix = function(vtx){
-                    return prefix + vtx.id;
+                var toPrefix = function(vid){
+                    return prefix + vid;
                 }
-                _(1);
+
+                var fromPrefix = function(vid){
+                    if (prefixRe.test(vid)) {
+                        return vid.substr(3);
+                    }
+                }
+
                 Gf = new Vamonos.DataStructure.Graph({ 
                     directed: G.directed,
                     prefix: prefix,
                 });
+                _(1);
 
                 G.eachVertex(function(vtx){
                     Gf.addVertex({
@@ -240,54 +285,65 @@ _(9);                       e.f -= cfp;
                         y: vtx.y,
                         name: vtx.name,
                         oldId: vtx.id,
-                        id: prefix + vtx.id,
+                        id: toPrefix(vtx.id)
                     });
                 });
 
                 // Convert s and t to Gf
-                sf = Gf.vertex( toPrefix(s) );
-                tf = Gf.vertex( toPrefix(t) );
+                sf = Gf.vertex( toPrefix(s.id) );
+                tf = Gf.vertex( toPrefix(t.id) );
 
                 Gf.eachVertex(function(u){
                     Gf.eachVertex(function(v){
                         if (u.id === v.id) { return }
-                        if (_(3), e = G.edge(u.oldId,v.oldId)) {
+                        if (e = G.edge(u.oldId,v.oldId)) {
                             ef = Gf.addEdge(u,v);
                             ef.f = e.c - e.f;
-                        } else if (_(6), (e = G.edge(v.oldId,u.oldId)) && e.f > 0) {
+                        } else if ((e = G.edge(v.oldId,u.oldId)) && e.f > 0) {
                             ef = Gf.addEdge(u,v);
                             ef.f = e.f
                         }
                     });
                 });
+                _(2);
 
                 var DFS = function(x){
-                    if (x == tf) { return [x.id] }
-                    ns = Gf.neighbors(x);
-                    for (var i=0; i < ns.length; i++) {
-                        y = ns[i];
-                        if (!y.visited) {
+                    oes = Gf.outgoingEdges(x);
+                    for (var i=0; i < oes.length; i++) {
+                        var e = oes[i];
+                        var x = Gf.vertex(e.source.id);
+                        var y = Gf.vertex(e.target.id);
+                        if (y == tf) { 
+                            y.pred = x;
+                            return [e]; 
+                        }
+                        else if (!y.visited) {
                             var r = DFS(y);
-                            if (r !== undefined) { 
-                                r.unshift(x.id);
+                            if (r !== undefined && r.length) { 
+                                y.pred = x;
+                                r.unshift(e);
                             }
                             return r;
                         }
+                        y.visited = true;
                     }
                 };
 
                 p = DFS(sf);
-                for (var i = 1; i < (p === undefined ? 0 : p.length); i++) {
-                    x = Gf.vertex(p[i-1]);
-                    y = Gf.vertex(p[i]);
-                    console.log(x.name, "->", y.name);
-                    y.pred = { id: x.id };
+                _(3);
+
+                if (p !== undefined) {
+                    r = p.map(function(e){
+                        return {
+                            source: { id: fromPrefix(e.source.id) },
+                            target: { id: fromPrefix(e.target.id) },
+                            f: e.f,
+                        }
+                    });
                 }
-                _(2);
-                // DFS and conversion from Gf to G go here
-                Gf = undefined;
-                
-                return p;
+
+                Gf = u = v = undefined;
+                return r;
             }
         }
     }
