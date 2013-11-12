@@ -135,6 +135,13 @@
 
     isNumber: (val) ->
         return ! isNaN(parseInt(val))
+
+    removeNamespace: (varName) ->
+        r = varName.split(/::/)
+        if r.length == 2
+            return r[1]
+        else
+            return r[r.length - 1]
     
     funcify: (arg) ->
         return arg if typeof(arg) is "function"

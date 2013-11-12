@@ -38,8 +38,9 @@ class Graph
         else
             @edgeLabel = args.edgeLabel
 
-        @theGraph      = @defaultGraph ? new Vamonos.DataStructure.Graph()
-        @inputVars[k]  = @theGraph.vertex(v) for k,v of @inputVars
+        if @editable
+            @theGraph      = @defaultGraph ? new Vamonos.DataStructure.Graph()
+            @inputVars[k]  = @theGraph.vertex(v) for k,v of @inputVars
 
         delete args[a] for a in ["varName","defaultGraph","inputVars", "editable"]
 
@@ -59,8 +60,11 @@ class Graph
 
         when "render"
             [frame, type] = options
-            @displayWidget.fitGraph(frame[@varName])
-            @displayWidget.draw(frame[@varName], frame)
+            if frame[@varName]?
+                @displayWidget.fitGraph(frame[@varName])
+                @displayWidget.draw(frame[@varName], frame)
+            else
+                @displayWidget.clearDisplay()
 
         when "displayStart"
             @displayWidget.mode = "display"
@@ -70,8 +74,9 @@ class Graph
             @displayWidget.clearDisplay()
 
         when "editStart"
-            @displayWidget.mode = "edit"
-            @startEditing()
+            if @editable
+                @displayWidget.mode = "edit"
+                @startEditing()
 
         when "editStop"
             @stopEditing()

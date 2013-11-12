@@ -281,12 +281,12 @@ class GraphDisplay
                     $node.children("div.vertex-#{type}-label")
             return unless $target?
             $target.html(
-                if typeof style is "function"
+                if style.constructor.name is "Function"
                     Vamonos.rawToTxt(style(vertex))
-                else if style.length
-                    (v for v in style when frame[v]?.id is vertex.id)
+                else if style.constructor.name is "Array"
+                    (Vamonos.removeNamespace(v) for v in style when frame[v]?.id is vertex.id)
                         .join(",")
-                else if typeof style is "object"
+                else if style.constructor.name is "Object"
                     Vamonos.rawToTxt(style[@mode](vertex))
                 else
                     style

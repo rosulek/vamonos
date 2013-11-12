@@ -103,7 +103,6 @@ var myviz = new Vamonos.Visualizer({
             container: "g-var",
             varName: "G",
             inputVar: true,
-            watching: true,
         }),
 
         new Vamonos.Widget.Graph({
@@ -171,7 +170,7 @@ var myviz = new Vamonos.Visualizer({
                 ["u->v", "#FF7D7D"],
             ],
             vertexLabels: {
-                inner: ["s", "t"],
+                inner: ["augmentingPath::sf", "augmentingPath::tf"],
                 sw   : function(vtx){return vtx.name},
                 ne   : ["u", "v"],
             },
@@ -248,8 +247,8 @@ _(1);           Gf = new Vamonos.DataStructure.Graph({
                 });
 
                 // Convert s and t to Gf
-                s = Gf.vertex( toPrefix(s) );
-                t = Gf.vertex( toPrefix(t) );
+                sf = Gf.vertex( toPrefix(s) );
+                tf = Gf.vertex( toPrefix(t) );
 
 _(2);           Gf.eachVertex(function(u){
                     Gf.eachVertex(function(v){
@@ -265,6 +264,7 @@ _(8);                       ef.f = e.f
                 });
 
                 // DFS and conversion from Gf to G go here
+                Gf = undefined;
 
             }
         }
