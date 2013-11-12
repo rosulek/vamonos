@@ -33,7 +33,10 @@ class Graph
             givenArgs      : args
             ignoreExtraArgs: true
 
-        @edgeLabel = args.edgeLabel # for default weights in addEdge
+        if args.edgeLabel?.constructor.name is 'Object' and args.edgeLabel.edit?
+            @edgeLabel = args.edgeLabel.edit # for default weights in addEdge
+        else
+            @edgeLabel = args.edgeLabel
 
         @theGraph      = @defaultGraph ? new Vamonos.DataStructure.Graph()
         @inputVars[k]  = @theGraph.vertex(v) for k,v of @inputVars
@@ -56,18 +59,18 @@ class Graph
 
         when "render"
             [frame, type] = options
-            #@displayWidget.fitGraph(frame[@varName]) unless @fitAlready
-            #@fitAlready = true
             @displayWidget.fitGraph(frame[@varName])
             @displayWidget.draw(frame[@varName], frame)
 
         when "displayStart"
+            @displayWidget.mode = "display"
             @setDisplayToolTips()
 
         when "displayStop"
-            @fitAlready = false
+            @displayWidget.clearDisplay()
 
         when "editStart"
+            @displayWidget.mode = "edit"
             @startEditing()
 
         when "editStop"
@@ -97,7 +100,6 @@ class Graph
         @displayWidget.$inner.children(".graph-label").removeAttr("title")
 
     startEditing: ->
-        @displayWidget.mode = "edit" if @editable
         @displayWidget.fitGraph(@theGraph)
         @displayWidget.draw(@theGraph, @inputVars)
         if @editable
@@ -107,7 +109,6 @@ class Graph
 
     stopEditing: ->
         if @editable
-            @displayWidget.mode = undefined
             @deselect()
             @unsetConnectionEditBindings()
             @unsetContainerEditBindings()
@@ -149,7 +150,8 @@ class Graph
             attrs[@edgeLabel[0]] = @edgeLabel[1]
         @theGraph.addEdge(sourceId, targetId, attrs)
         @displayWidget.draw(@theGraph, @inputVars)
-        @connectionBindings(@displayWidget.connections[sourceId][targetId])
+        #@connectionBindings(@displayWidget.connections[sourceId][targetId])
+        @setConnectionEditBindings()
 
     removeEdge: (sourceId, targetId) ->
         @deselect() if 'edge' is @selected()
@@ -200,7 +202,8 @@ class Graph
             return if c.id is @$selectedConnection?.id
             @displayWidget.resetConnectionStyle(c)
         if @edgeLabel?
-            con.hideOverlay("edgeLabel")
+            con.removeOverlay("editableEdgeLabel")
+            con.removeOverlay("edgeLabel")
             con.addOverlay([
                 "Custom"
                 create: =>

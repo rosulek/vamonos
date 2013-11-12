@@ -90,6 +90,7 @@ var myviz = new Vamonos.Visualizer({
             container: "g-var",
             varName: "G",
             inputVar: true,
+            watching: true,
         }),
 
         new Vamonos.Widget.Graph({
@@ -111,7 +112,14 @@ var myviz = new Vamonos.Visualizer({
                 ne    : ["u", "v"],
                 nw    : ["s", "t"],
             },
-            edgeLabel: [ "w", 1 ],
+            edgeLabel: {
+                edit: [ 'c', 1 ],
+                display: function(e){ 
+                    console.log("hi");
+                    return (e.f !== undefined ? e.f : "-") + "/" 
+                         + (e.c !== undefined ? e.c : "-");
+                },
+            },
             colorEdges: [
                 ["u->v", "#FF7D7D"],
             ],
@@ -128,17 +136,17 @@ var myviz = new Vamonos.Visualizer({
                     {id: 'v8', x:200, y:160 },
                 ],
                 edges: [
-                    {source: 'v0',target: 'v2', w:'1'},
-                    {source: 'v0',target: 'v1', w:'1'},
-                    {source: 'v1',target: 'v7', w:'1'},
-                    {source: 'v1',target: 'v5', w:'1'},
-                    {source: 'v4',target: 'v8', w:'10'},
-                    {source: 'v6',target: 'v7', w:'3'},
-                    {source: 'v6',target: 'v0', w:'1'},
-                    {source: 'v6',target: 'v4', w:'1'},
-                    {source: 'v7',target: 'v8', w:'2'},
-                    {source: 'v8',target: 'v5', w:'1'},
-                    {source: 'v2',target: 'v5', w:'1'},
+                    {source: 'v0',target: 'v2', c:'1'},
+                    {source: 'v0',target: 'v1', c:'1'},
+                    {source: 'v1',target: 'v7', c:'1'},
+                    {source: 'v1',target: 'v5', c:'1'},
+                    {source: 'v4',target: 'v8', c:'10'},
+                    {source: 'v6',target: 'v7', c:'3'},
+                    {source: 'v6',target: 'v0', c:'1'},
+                    {source: 'v6',target: 'v4', c:'1'},
+                    {source: 'v7',target: 'v8', c:'2'},
+                    {source: 'v8',target: 'v5', c:'1'},
+                    {source: 'v2',target: 'v5', c:'1'},
                 ]
             }),
         }),
@@ -203,22 +211,27 @@ _(9);                       e.f -= cfp;
 
         augmentingPath: function(_){
             with (this) {
+
                 Gf = new Vamonos.DataStructure.Graph({ 
                     directed: G.directed,
-                    prefix: "gf",
+                    prefix: "gf-",
                 });
 
                 G.eachVertex(function(vtx){
-                    var newVtx = Vamonos.clone(vtx);
-_(1);               Gf.addVertex(newVtx);
+                    Gf.addVertex({
+                        x: vtx.x,
+                        y: vtx.y,
+                        name: vtx.name,
+                        oldId: vtx.id,
+                    });
                 });
 
                 Gf.eachVertex(function(u){
                     Gf.eachVertex(function(v){
                         if (u.id === v.id) { return }
-                        if ((e = G.edge(u,v)) !== undefined) {
+                        if (e = G.edge(u.oldId,v.oldId)) {
                             Gf.addEdge(u,v,{ cf: e.c - e.f });
-                        } else if ((e = G.edge(v,u)) !== undefined) {
+                        } else if (e = G.edge(v.oldId,u.oldId)) {
                             Gf.addEdge(v,u,{ cf: e.f });
                         }
                         _(2);

@@ -33,13 +33,15 @@ class GraphDisplay
                 "    nw    : ['s'],\n" +
                 "}"
         edgeLabel: 
-            type: "Array"
-            defaultValue: []
+            type: ["Object", "Array","Function"]
+            defaultValue: undefined
             description: 
                 "an array, containing the name of the edge attribute to display" +
-                "and the default value for new edges."
+                "and the default value for new edges or a function taking an edge " +
+                "and returning a string. one can also specify whether to show certain " +
+                "things in edit or display mode by using an object."
             example:
-                "edgeLabel: [ 'w', 1 ]"
+                "edgeLabel: { display: [ 'w', 1 ], edit: function(e){ return e.w } }"
         colorEdges:
             type: "Array"
             defaultValue: []
@@ -107,6 +109,9 @@ class GraphDisplay
         @$outer            = Vamonos.jqueryify(@container)
         @$inner            = $("<div>", {class: "graph-inner-container"})
         @graphDrawn        = no
+
+        if @edgeLabel?.constructor.name isnt 'Object'
+            @edgeLabel = { edit: @edgeLabel, display: @edgeLabel }
 
         @$outer.append(@$inner)
         @$outer.disableSelection()
@@ -338,6 +343,7 @@ class GraphDisplay
         return unless @colorEdges?
         @eachConnection (sourceId, targetId, con) =>
             @resetConnectionStyle(con)
+            @setLabel(con, graph.edge(sourceId, targetId))
         for style in @colorEdges
             if typeof style[0] is 'string'
                 [source, target] = style[0].split(/->/).map((v)->frame[v])
@@ -356,8 +362,8 @@ class GraphDisplay
                         con = @connections[edge.source.id]?[edge.target.id]
                         con.setPaintStyle(@customStyle(style[1]))
 
-    resetConnectionStyle: (c) =>
-        c?.setPaintStyle(@normalPaintStyle)
+    resetConnectionStyle: (con) ->
+        con.setPaintStyle(@normalPaintStyle)
 
     setOverlays: (connection, edge) ->
         connection.removeAllOverlays()
@@ -365,14 +371,30 @@ class GraphDisplay
             "PlainArrow"
             {location:-4, width:12, length:8}
         ]) if @directed
-        connection.addOverlay([
-            "Custom"
-            create: => @createEdgeLabel(edge)
-            id: "edgeLabel"
-        ]) if @edgeLabel?[0]? and edge?
+        @setLabel(connection, edge)
 
-    createEdgeLabel: (edge) =>
-        val = Vamonos.rawToTxt(edge[@edgeLabel[0]] ? "")
+    setLabel: (connection, edge) ->
+        return unless @edgeLabel[@mode]?
+
+        connection.removeOverlay("edgeLabel")
+
+        console.log @mode, @edgeLabel
+
+        if @edgeLabel[@mode].constructor.name is 'Function'
+            val = @edgeLabel[@mode](edge)
+        else if @edgeLabel[@mode].constructor.name is 'Array'
+            attr = @edgeLabel[@mode][0]
+            val = Vamonos.rawToTxt(edge[attr] ? "")
+        else
+            return
+
+        connection.addOverlay([
+            "Custom",
+            create: => @createEdgeLabel( val ),
+            id: "edgeLabel",
+        ]) 
+
+    createEdgeLabel: (val) =>
         $label = $("<div class='graph-label'>#{val}</div>")
         return $("<div>").append($label)
 
