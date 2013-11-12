@@ -378,8 +378,6 @@ class GraphDisplay
 
         connection.removeOverlay("edgeLabel")
 
-        console.log @mode, @edgeLabel
-
         if @edgeLabel[@mode].constructor.name is 'Function'
             val = @edgeLabel[@mode](edge)
         else if @edgeLabel[@mode].constructor.name is 'Array'

@@ -23,6 +23,10 @@
             font-style: italic;
         }
 
+        .vertex-contents {
+            font-weight: bold;
+        }
+
         body {
             text-align: center;
         }
@@ -52,7 +56,16 @@
                 </div>
 
                 <div id="pseudocode-augmenting-path" title="AugmentingPath(G,s,t):">
-                    // Fill this in
+                    G<sub>f</sub> = vertices of G
+
+                    for each (u,v) &in; G.V
+                        if e = (u,v) &in; G.E
+                            e<sub>f</sub> = G<sub>f</sub>.addEdge(u,v)
+                            e<sub>f</sub>.f = e.c - e.f
+                        else if e = (v,u) &in; G.E
+                            e<sub>f</sub> = G<sub>f</sub>.addEdge(v,u)
+                            e<sub>f</sub>.f = e.f
+                    return DFS(G<sub>f</sub>,s,t)
                 </div>
 
             </div>
@@ -101,21 +114,13 @@ var myviz = new Vamonos.Visualizer({
                 t: "v5",
             },
             vertexLabels: {
-                inner : { 
-                    edit: function(vtx){return vtx.name}, 
-                    display: function(vtx){return vtx.d} 
-                },
-                sw    : { 
-                    edit: function(vtx){return ""}, 
-                    display: function(vtx){return vtx.name} 
-                },
-                ne    : ["u", "v"],
-                nw    : ["s", "t"],
+                inner: ["s", "t"],
+                sw   : function(vtx){return vtx.name},
+                ne   : ["u", "v"],
             },
             edgeLabel: {
                 edit: [ 'c', 1 ],
                 display: function(e){ 
-                    console.log("hi");
                     return (e.f !== undefined ? e.f : "-") + "/" 
                          + (e.c !== undefined ? e.c : "-");
                 },
@@ -161,6 +166,15 @@ var myviz = new Vamonos.Visualizer({
             varName: "augmentingPath::Gf",
             container: "graph-gf",
             editable: false,
+            edgeLabel: ['f', 0],
+            colorEdges: [
+                ["u->v", "#FF7D7D"],
+            ],
+            vertexLabels: {
+                inner: ["s", "t"],
+                sw   : function(vtx){return vtx.name},
+                ne   : ["u", "v"],
+            },
         }),
 
         new Vamonos.Widget.Error({
@@ -212,9 +226,15 @@ _(9);                       e.f -= cfp;
         augmentingPath: function(_){
             with (this) {
 
-                Gf = new Vamonos.DataStructure.Graph({ 
+                var prefix = "gf-";
+
+                var toPrefix = function(vtx){
+                    return prefix + vtx.id;
+                }
+
+_(1);           Gf = new Vamonos.DataStructure.Graph({ 
                     directed: G.directed,
-                    prefix: "gf-",
+                    prefix: prefix,
                 });
 
                 G.eachVertex(function(vtx){
@@ -223,20 +243,28 @@ _(9);                       e.f -= cfp;
                         y: vtx.y,
                         name: vtx.name,
                         oldId: vtx.id,
+                        id: prefix + vtx.id,
                     });
                 });
 
-                Gf.eachVertex(function(u){
+                // Convert s and t to Gf
+                s = Gf.vertex( toPrefix(s) );
+                t = Gf.vertex( toPrefix(t) );
+
+_(2);           Gf.eachVertex(function(u){
                     Gf.eachVertex(function(v){
                         if (u.id === v.id) { return }
-                        if (e = G.edge(u.oldId,v.oldId)) {
-                            Gf.addEdge(u,v,{ cf: e.c - e.f });
-                        } else if (e = G.edge(v.oldId,u.oldId)) {
-                            Gf.addEdge(v,u,{ cf: e.f });
+                        if (_(3), e = G.edge(u.oldId,v.oldId)) {
+_(4);                       ef = Gf.addEdge(u,v);
+_(5);                       ef.f = e.c - e.f;
+                        } else if (_(6), (e = G.edge(v.oldId,u.oldId)) && e.f > 0) {
+_(7);                       ef = Gf.addEdge(u,v);
+_(8);                       ef.f = e.f
                         }
-                        _(2);
                     });
                 });
+
+                // DFS and conversion from Gf to G go here
 
             }
         }

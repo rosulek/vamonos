@@ -156,6 +156,8 @@ class Graph
         (@edges[sourceId] ?= {})[targetId] = edge
         (@edges[targetId] ?= {})[sourceId] = edge unless @directed
 
+        return edge
+
 
     @interface.removeEdge =
         args: [
