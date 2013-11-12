@@ -56,16 +56,8 @@
                 </div>
 
                 <div id="pseudocode-augmenting-path" title="AugmentingPath(G,s,t):">
-                    G<sub>f</sub> = vertices of G
-
-                    for each (u,v) &in; G.V
-                        if e = (u,v) &in; G.E
-                            e<sub>f</sub> = G<sub>f</sub>.addEdge(u,v)
-                            e<sub>f</sub>.f = e.c - e.f
-                        else if e = (v,u) &in; G.E
-                            e<sub>f</sub> = G<sub>f</sub>.addEdge(v,u)
-                            e<sub>f</sub>.f = e.f
-                    return DFS(G<sub>f</sub>,s,t)
+                    G<sub>f</sub> = residual graph of G
+                    return DFS(G<sub>f</sub>, s<sub>f</sub>, t<sub>f</sub>)
                 </div>
 
             </div>
@@ -236,8 +228,8 @@ _(9);                       e.f -= cfp;
                 var toPrefix = function(vtx){
                     return prefix + vtx.id;
                 }
-
-_(1);           Gf = new Vamonos.DataStructure.Graph({ 
+                _(1);
+                Gf = new Vamonos.DataStructure.Graph({ 
                     directed: G.directed,
                     prefix: prefix,
                 });
@@ -256,28 +248,28 @@ _(1);           Gf = new Vamonos.DataStructure.Graph({
                 sf = Gf.vertex( toPrefix(s) );
                 tf = Gf.vertex( toPrefix(t) );
 
-_(2);           Gf.eachVertex(function(u){
+                Gf.eachVertex(function(u){
                     Gf.eachVertex(function(v){
                         if (u.id === v.id) { return }
                         if (_(3), e = G.edge(u.oldId,v.oldId)) {
-_(4);                       ef = Gf.addEdge(u,v);
-_(5);                       ef.f = e.c - e.f;
+                            ef = Gf.addEdge(u,v);
+                            ef.f = e.c - e.f;
                         } else if (_(6), (e = G.edge(v.oldId,u.oldId)) && e.f > 0) {
-_(7);                       ef = Gf.addEdge(u,v);
-_(8);                       ef.f = e.f
+                            ef = Gf.addEdge(u,v);
+                            ef.f = e.f
                         }
                     });
                 });
 
                 var DFS = function(x){
-                    if (x == tf) { return [x] }
+                    if (x == tf) { return [x.id] }
                     ns = Gf.neighbors(x);
                     for (var i=0; i < ns.length; i++) {
                         y = ns[i];
                         if (!y.visited) {
                             var r = DFS(y);
-                            if (r.length !== undefined) { 
-                                r.unshift(x);
+                            if (r !== undefined) { 
+                                r.unshift(x.id);
                             }
                             return r;
                         }
@@ -285,15 +277,17 @@ _(8);                       ef.f = e.f
                 };
 
                 p = DFS(sf);
-                for (var i = 1; i < p.length; i++) {
+                for (var i = 1; i < (p === undefined ? 0 : p.length); i++) {
                     x = Gf.vertex(p[i-1]);
                     y = Gf.vertex(p[i]);
                     console.log(x.name, "->", y.name);
                     y.pred = { id: x.id };
                 }
-_(9);
+                _(2);
                 // DFS and conversion from Gf to G go here
                 Gf = undefined;
+                
+                return p;
             }
         }
     }
