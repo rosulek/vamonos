@@ -174,6 +174,12 @@ var myviz = new Vamonos.Visualizer({
                 sw   : function(vtx){return vtx.name},
                 ne   : ["u", "v"],
             },
+            colorEdges: [
+                [ function(edge){
+                    return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
+                        || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }
+                , "#92E894" ],
+            ]
         }),
 
         new Vamonos.Widget.Error({
@@ -263,9 +269,31 @@ _(8);                       ef.f = e.f
                     });
                 });
 
+                var DFS = function(x){
+                    if (x == tf) { return [x] }
+                    ns = Gf.neighbors(x);
+                    for (var i=0; i < ns.length; i++) {
+                        y = ns[i];
+                        if (!y.visited) {
+                            var r = DFS(y);
+                            if (r.length !== undefined) { 
+                                r.unshift(x);
+                            }
+                            return r;
+                        }
+                    }
+                };
+
+                p = DFS(sf);
+                for (var i = 1; i < p.length; i++) {
+                    x = Gf.vertex(p[i-1]);
+                    y = Gf.vertex(p[i]);
+                    console.log(x.name, "->", y.name);
+                    y.pred = { id: x.id };
+                }
+_(9);
                 // DFS and conversion from Gf to G go here
                 Gf = undefined;
-
             }
         }
     }
