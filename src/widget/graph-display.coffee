@@ -176,20 +176,24 @@ class GraphDisplay
     # ---------------------------------------------------------- #
 
     fitGraph: (graph, animate = false) ->
-        # Add a test node, but don't show it, in order to get the width and
-        # height of vertices when a graph is not drawn.
-        @addNode({id:"TEST-VERTEX"}, false) unless @graphDrawn
-        nodes = $("div.vertex-contents")
-        width  = nodes.width()
-        height = nodes.height()
-        @removeNode("TEST-VERTEX") unless @graphDrawn
-        xVals = []
-        yVals = []
-        for vertex in graph.getVertices()
-            xVals.push(vertex.x + width  + @containerMargin)
-            yVals.push(vertex.y + height + @containerMargin)
-        max_x = Math.max(xVals..., @minX)
-        max_y = Math.max(yVals..., @minY) + if @$drawer? then @$drawer.height() else 0
+        if graph?
+            # Add a test node, but don't show it, in order to get the width and
+            # height of vertices when a graph is not drawn.
+            @addNode({id:"TEST-VERTEX"}, false) unless @graphDrawn
+            nodes = $("div.vertex-contents")
+            width  = nodes.width()
+            height = nodes.height()
+            @removeNode("TEST-VERTEX") unless @graphDrawn
+            xVals = []
+            yVals = []
+            for vertex in graph.getVertices()
+                xVals.push(vertex.x + width  + @containerMargin)
+                yVals.push(vertex.y + height + @containerMargin)
+            max_x = Math.max(xVals..., @minX)
+            max_y = Math.max(yVals..., @minY) + if @$drawer? then @$drawer.height() else 0
+        else
+            max_x = 0
+            max_y = 0
         if animate
             @$outer.animate({width: max_x, height: max_y}, 500)
         else
@@ -358,7 +362,7 @@ class GraphDisplay
                         target: graph.vertex(edge.target)
                     for attr, val of edge when not attr in ["source", "target"]
                         edgeHack[attr] = val
-                    if style[0](edgeHack)
+                    if style[0](edge) or style[0](edgeHack)
                         con = @connections[edge.source.id]?[edge.target.id]
                         con.setPaintStyle(@customStyle(style[1]))
 

@@ -65,6 +65,7 @@ class Graph
                 @displayWidget.draw(frame[@varName], frame)
             else
                 @displayWidget.clearDisplay()
+                @displayWidget.fitGraph(frame[@varName])
 
         when "displayStart"
             @displayWidget.mode = "display"
@@ -225,7 +226,6 @@ class Graph
             con.unbind("mouseenter")
             con.unbind("mouseexit")
             con.removeOverlay("editableEdgeLabel")
-            con.showOverlay("edgeLabel")
 
     selected: ->
         return 'vertex' if @$selectedNode?
