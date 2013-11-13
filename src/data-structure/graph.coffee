@@ -80,7 +80,7 @@ class Graph
         vtx = @vertex(v)
         return unless vtx?
         @returnVertexName(vtx.name)
-        affectedEdges = @incomingEdges(vtx.id).concat @outgoingEdges(vtx.id)
+        affectedEdges = @incomingEdges(vtx.id).concat(@outgoingEdges(vtx.id))
         @removeEdge(e.source.id, e.target.id) for e in affectedEdges
         delete @vertices[vtx.id]
 
@@ -217,9 +217,12 @@ class Graph
         description: "returns all incoming edges of `v`"
     incomingEdges: (v) ->
         vid = @idify(v)
-        uglyArray = (for source, outgoingEdges of @edges
-            edge for target, edge of outgoingEdges when target.id is vid)
-        [].concat(uglyArray...) # flatten array
+        result = []
+        for source, outgoingEdges of @edges
+            for target, edge of outgoingEdges
+                if target is vid
+                    result.push(edge)
+        [].concat(result...) # flatten array
 
     # ------------ utility ----------- #
 

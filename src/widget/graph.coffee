@@ -141,7 +141,7 @@ class Graph
         @displayWidget.draw(@theGraph, @inputVars)
         node = @displayWidget.nodes[newv.id]
         @selectNode(node) if autoSelect
-        node
+        return node
 
     removeVertex: (vid) ->
         @deselect()
@@ -156,7 +156,7 @@ class Graph
             attrs[@edgeLabel[0]] = @edgeLabel[1]
         @theGraph.addEdge(sourceId, targetId, attrs)
         @displayWidget.draw(@theGraph, @inputVars)
-        #@connectionBindings(@displayWidget.connections[sourceId][targetId])
+        @connectionBindings(@displayWidget.connections[sourceId][targetId])
         @setConnectionEditBindings()
 
     removeEdge: (sourceId, targetId) ->

@@ -338,7 +338,8 @@ class GraphDisplay
         return con
 
     removeConnection: (sourceId, targetId) ->
-        return unless (connection = @connections[sourceId]?[targetId])
+        connection = @connections[sourceId]?[targetId]
+        return unless connection?
         @jsPlumbInstance.detach(connection)
         delete @connections[sourceId][targetId]
         delete @connections[targetId][sourceId] unless @directed
