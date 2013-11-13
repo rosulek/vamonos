@@ -72,9 +72,6 @@
                 <tr><td><div id="gf-var"></div></td>
                     <td><div id="graph-gf"></div></td>
                 </tr>
-                <tr><td><div id="cfp-var"></div></td>
-                    <td><div id="cfp"></div></td>
-                </tr>
             </table>
 
         </td></tr>
@@ -93,13 +90,13 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-main",
-            breakpoints: [3,4,5,6,7,8,9],
+            breakpoints: [3],
         }),
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-augmenting-path",
             procedureName: "augmentingPath",
-            breakpoints: [1,2,3],
+            breakpoints: [3],
         }),
 
         new Vamonos.Widget.VarName({
@@ -147,17 +144,17 @@ var myviz = new Vamonos.Visualizer({
                     {id: 'v8', x:200, y:160 },
                 ],
                 edges: [
-                    {source: 'v0',target: 'v2', c:'1'},
-                    {source: 'v0',target: 'v1', c:'1'},
-                    {source: 'v1',target: 'v7', c:'1'},
-                    {source: 'v1',target: 'v5', c:'1'},
-                    {source: 'v4',target: 'v8', c:'10'},
-                    {source: 'v6',target: 'v7', c:'3'},
-                    {source: 'v6',target: 'v0', c:'1'},
-                    {source: 'v6',target: 'v4', c:'1'},
-                    {source: 'v7',target: 'v8', c:'2'},
-                    {source: 'v8',target: 'v5', c:'1'},
-                    {source: 'v2',target: 'v5', c:'1'},
+                    {source: 'v0',target: 'v2', c:1},
+                    {source: 'v0',target: 'v1', c:1},
+                    {source: 'v1',target: 'v5', c:1},
+                    {source: 'v4',target: 'v8', c:1},
+                    {source: 'v6',target: 'v7', c:1},
+                    {source: 'v6',target: 'v0', c:1},
+                    {source: 'v6',target: 'v4', c:1},
+                    {source: 'v7',target: 'v8', c:1},
+                    {source: 'v7',target: 'v1', c:1},
+                    {source: 'v8',target: 'v5', c:1},
+                    {source: 'v2',target: 'v5', c:1},
                 ]
             }),
         }),
@@ -183,17 +180,6 @@ var myviz = new Vamonos.Visualizer({
                   }
                 , "#92E894" ],
             ]
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "cfp-var",
-            varName: "cfp",
-            watching: true,
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "cfp",
-            varName: "cfp",
         }),
 
         new Vamonos.Widget.Error({
