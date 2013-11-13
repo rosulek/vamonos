@@ -376,13 +376,10 @@ class GraphDisplay
             "PlainArrow"
             {location:-4, width:12, length:8}
         ]) if @directed
-        @setLabel(connection, edge)
 
     setLabel: (connection, edge) ->
         return unless @edgeLabel[@mode]?
-
         connection.removeOverlay("edgeLabel")
-
         if @edgeLabel[@mode].constructor.name is 'Function'
             val = @edgeLabel[@mode](edge)
         else if @edgeLabel[@mode].constructor.name is 'Array'
@@ -390,7 +387,6 @@ class GraphDisplay
             val = Vamonos.rawToTxt(edge[attr] ? "")
         else
             return
-
         connection.addOverlay([
             "Custom",
             create: => @createEdgeLabel( val ),
