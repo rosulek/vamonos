@@ -241,11 +241,21 @@ class Graph
         s  = """
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: #{ @directed },
+                prefix: "#{ @idPrefix }",
                 vertices: [\n
             """
 
         @eachVertex (vtx) ->
-            s += "\t\t{id: '#{ vtx.id }', x:#{ vtx.x }, y:#{ vtx.y } },\n"
+            attrs = []
+            for attr,value of vtx
+                continue if attr in ["type"]
+                if value.type is 'Vertex'
+                    attrs.push("#{ attr }: '#{ value.id }'")
+                else if value.constructor.name is 'String'
+                    attrs.push("#{ attr }: '#{ value }'")
+                else
+                    attrs.push("#{ attr }: #{ value }")
+            s += "\t\t{ #{ attrs.join(", ") } },\n"
 
         s += """
             \t],
@@ -253,7 +263,17 @@ class Graph
             """
 
         for e in @getEdges()
-            s += "\t\t{source: '#{ e.source.id }',target: '#{ e.target.id }', w:'#{ e.w }'},\n"
+            attrs = []
+            for attr, value of e
+                continue if attr in ["type"]
+                if value.type is 'Vertex'
+                    attrs.push("#{ attr }: '#{ value.id }'")
+                else if value.constructor.name is 'String'
+                    attrs.push("#{ attr }: '#{ value }'")
+                else
+                    attrs.push("#{ attr }: #{ value }")
+
+            s += "\t\t{ #{ attrs.join(", ") } },\n"
 
         s += """
                 ]
