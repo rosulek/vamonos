@@ -304,7 +304,6 @@ class Graph
                 do (v, vtx, buttons, inputVars = @inputVars, displayWidget = @displayWidget, theGraph = @theGraph) ->
                     $b = $("<button>", { text: "#{v}", title: "Set #{v}=#{vtx.name}" })
                     $b.on "click.vamonos-graph", (e) =>
-                        console.log "setting #{v}=#{vtx.name}"
                         inputVars[v] = vtx
                         displayWidget.draw(theGraph, inputVars)
                     buttons.push($b)
