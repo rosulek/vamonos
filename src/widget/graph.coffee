@@ -33,23 +33,19 @@ class Graph
             givenArgs      : args
             ignoreExtraArgs: true
 
-        if args.edgeLabel?.constructor.name is 'Object' and args.edgeLabel.edit?
-            @edgeLabel = args.edgeLabel.edit # for default weights in addEdge
-        else
-            @edgeLabel = args.edgeLabel
-
-        if @editable
-            @theGraph      = @defaultGraph ? new Vamonos.DataStructure.Graph()
-            @inputVars[k]  = @theGraph.vertex(v) for k,v of @inputVars
-
         delete args[a] for a in ["varName","defaultGraph","inputVars", "editable"]
 
-        unless @editable
-            args.minX = 0
-            args.minY = 0
-            args.resizable = false
+
+        if @editable
+            @theGraph = @defaultGraph ? new Vamonos.DataStructure.Graph()
+            @inputVars[k] = @theGraph.vertex(v) for k,v of @inputVars
+        else
+            args.minX      ?= 0
+            args.minY      ?= 0
+            args.resizable ?= false
 
         @displayWidget = new Vamonos.Widget.GraphDisplay(args)
+        @edgeLabel     = args.edgeLabel?.edit ? args.edgelabel
 
     event: (event, options...) -> switch event
         when "setup"
@@ -71,19 +67,18 @@ class Graph
             @displayWidget.mode = "display"
             @setDisplayToolTips()
 
-        when "displayStop"
-            @displayWidget.clearDisplay()
-
         when "editStart"
             if @editable
                 @displayWidget.mode = "edit"
                 @startEditing()
 
         when "editStop"
-            @stopEditing()
+            if @editable
+                @stopEditing()
 
         when "checkErrors"
-            @verifyInputVarsSet()
+            if @editable
+                @verifyInputVarsSet()
 
     # ----------------- EDITING MODE ------------------------ #
     
@@ -106,8 +101,8 @@ class Graph
         @displayWidget.$inner.children(".graph-label").removeAttr("title")
 
     startEditing: ->
-        @displayWidget.fitGraph(@theGraph)
         @displayWidget.draw(@theGraph, @inputVars)
+        @displayWidget.fitGraph(@theGraph)
         if @editable
             @setContainerEditBindings()
             @setConnectionEditBindings()
@@ -121,8 +116,8 @@ class Graph
             @updateVariables()
 
     registerVariables: ->
-        @viz.registerVariable(@varName, @editable)
-        @viz.registerVariable(key, true) for key of @inputVars
+        @viz.registerVariable(@varName)
+        @viz.registerVariable(key) for key of @inputVars
 
     updateVariables: ->
         graph = Vamonos.clone(@theGraph)
@@ -173,7 +168,10 @@ class Graph
                 if $target.is(@displayWidget.$inner)
                     x = e.offsetX ? e.pageX - @displayWidget.$outer.offset().left
                     y = e.offsetY ? e.pageY - @displayWidget.$outer.offset().top
-                    @addVertex({x: x - 12, y: y - 12})
+                    #@addVertex({x: x - 12, y: y - 12})
+                    width  = @displayWidget._vertexWidth  ? 24
+                    height = @displayWidget._vertexHeight ? 24
+                    @addVertex({x: x - (width / 2), y: y - (height / 2)})
             else
                 if $target.is("div.vertex-contents") and 'vertex' is @selected()
                     sourceId = @$selectedNode.attr("id")

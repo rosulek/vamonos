@@ -179,16 +179,19 @@ class GraphDisplay
         if graph?
             # Add a test node, but don't show it, in order to get the width and
             # height of vertices when a graph is not drawn.
-            @addNode({id:"TEST-VERTEX"}, false) unless @graphDrawn
-            nodes = $("div.vertex-contents")
-            width  = nodes.width()
-            height = nodes.height()
-            @removeNode("TEST-VERTEX") unless @graphDrawn
+            unless @_vertexWidth? and @_vertexHeight?
+                nodes = $("div.vertex-contents")
+                unless nodes.size()
+                    @addNode({id:"TEST-VERTEX"}, false)
+                    clearMe = true
+                @_vertexWidth  = nodes.width()
+                @_vertexHeight = nodes.height()
+                @removeNode("TEST-VERTEX") if clearMe
             xVals = []
             yVals = []
             for vertex in graph.getVertices()
-                xVals.push(vertex.x + width  + @containerMargin)
-                yVals.push(vertex.y + height + @containerMargin)
+                xVals.push(vertex.x + @_vertexWidth  + @containerMargin)
+                yVals.push(vertex.y + @_vertexHeight + @containerMargin)
             max_x = Math.max(xVals..., @minX)
             max_y = Math.max(yVals..., @minY) + if @$drawer? then @$drawer.height() else 0
         else
