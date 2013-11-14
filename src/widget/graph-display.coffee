@@ -373,7 +373,7 @@ class GraphDisplay
     resetConnectionStyle: (con) ->
         con.setPaintStyle(@normalPaintStyle)
 
-    setOverlays: (connection, edge) ->
+    setOverlays: (connection) ->
         connection.removeAllOverlays()
         connection.addOverlay([
             "PlainArrow"
@@ -425,13 +425,14 @@ class GraphDisplay
     @lineWidth        = 4
 
     normalPaintStyle:
+        dashstyle   : "0"
         lineWidth   : @lineWidth
         strokeStyle : @lightEdgeColor
 
     potentialEdgePaintStyle:
         dashstyle   : "1 1"
         strokeStyle : @editColor
-        lineWidth   : @lineWidth
+        lineWidth   : @lineWidth + 1
 
     selectedPaintStyle:
         lineWidth   : @lineWidth

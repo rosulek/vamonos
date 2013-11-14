@@ -44,8 +44,8 @@ class Graph
             args.minY      ?= 0
             args.resizable ?= false
 
+        @edgeLabel = args.edgeLabel?.edit ? args.edgeLabel
         @displayWidget = new Vamonos.Widget.GraphDisplay(args)
-        @edgeLabel     = args.edgeLabel?.edit ? args.edgelabel
 
     event: (event, options...) -> switch event
         when "setup"
@@ -130,12 +130,11 @@ class Graph
         s = ("#{ @varName } says: please set #{k}!" for k, v of @inputVars when not v?).join('\n')
         return s if s.length
 
-    # adds a vertex to the graph being edited and redraws the graph.
-    addVertex: (vertex = {}, autoSelect = true) ->
+    addVertex: (vertex = {}) ->
         newv = @theGraph.addVertex(vertex)
         @displayWidget.draw(@theGraph, @inputVars)
         node = @displayWidget.nodes[newv.id]
-        @selectNode(node) if autoSelect
+        @selectNode(node)
         return node
 
     removeVertex: (vid) ->
@@ -148,10 +147,10 @@ class Graph
     addEdge: (sourceId, targetId) ->
         attrs = {}
         if @edgeLabel?.length
-            attrs[@edgeLabel[0]] = @edgeLabel[1]
+            # set edgeLabel default value
+            attrs[@edgeLabel[0]] = @edgeLabel[1] 
         @theGraph.addEdge(sourceId, targetId, attrs)
         @displayWidget.draw(@theGraph, @inputVars)
-        @connectionBindings(@displayWidget.connections[sourceId][targetId])
         @setConnectionEditBindings()
 
     removeEdge: (sourceId, targetId) ->
@@ -168,7 +167,6 @@ class Graph
                 if $target.is(@displayWidget.$inner)
                     x = e.offsetX ? e.pageX - @displayWidget.$outer.offset().left
                     y = e.offsetY ? e.pageY - @displayWidget.$outer.offset().top
-                    #@addVertex({x: x - 12, y: y - 12})
                     width  = @displayWidget._vertexWidth  ? 24
                     height = @displayWidget._vertexHeight ? 24
                     @addVertex({x: x - (width / 2), y: y - (height / 2)})
@@ -237,12 +235,12 @@ class Graph
         @$selectedNode = node
         @$selectedNode.addClass("selected")
         @$selectedNode.removeClass('hovering')
-        @others = @$selectedNode
+        @$others = @$selectedNode
             .siblings("div.vertex")
             .children("div.vertex-contents")
-        @others.on "mouseenter.vamonos-graph", (e) =>
+        @$others.on "mouseenter.vamonos-graph", (e) =>
             @potentialEdgeTo($(e.target).parent())
-        @others.on "mouseleave.vamonos-graph", @removePotentialEdge
+        @$others.on "mouseleave.vamonos-graph", @removePotentialEdge
         @openDrawer()
         @setNodeSelectionToolTips()
 
@@ -263,7 +261,7 @@ class Graph
     deselectNode: ->
         return unless @$selectedNode?
         @displayWidget.jsPlumbInstance.detach(@possibleEdge) if @possibleEdge?
-        @others.off("mouseenter.vamonos-graph mouseleave.vamonos-graph")
+        @$others.off("mouseenter.vamonos-graph mouseleave.vamonos-graph")
         @$selectedNode.removeClass("selected")
         @$selectedNode = undefined
 
@@ -278,16 +276,29 @@ class Graph
         targetId = node.attr("id")
         return if @displayWidget.connections[sourceId]?[targetId]?
 
-        @potentialEdge = @displayWidget.jsPlumbInstance.connect
-            source     : sourceId
-            target     : targetId
-            paintStyle : @displayWidget.potentialEdgePaintStyle
-
-        @displayWidget.setOverlays(@potentialEdge)
+        if @theGraph.directed and @displayWidget.connections[targetId]?[sourceId]?
+            @potentialEdge = @displayWidget.connections[targetId][sourceId]
+            @potentialEdge.addOverlay([ 
+                "PlainArrow"
+                { id:"parrow", location: 4, direction: -1, width: 12, length: 8 } 
+            ])
+            @potentialEdge.setPaintStyle(@displayWidget.potentialEdgePaintStyle)
+            @potentialEdgeIsBidirectional = true
+        else
+            @potentialEdge = @displayWidget.jsPlumbInstance.connect
+                source     : sourceId
+                target     : targetId
+                paintStyle : @displayWidget.potentialEdgePaintStyle
+            @displayWidget.setOverlays(@potentialEdge)
 
     removePotentialEdge: =>
         return unless @potentialEdge?
-        @displayWidget.jsPlumbInstance.detach(@potentialEdge)
+        if @potentialEdgeIsBidirectional
+            @potentialEdge.removeOverlay("parrow")
+            @potentialEdge.setPaintStyle( @displayWidget.normalPaintStyle )
+            @potentialEdgeIsBidirectional = undefined
+        else
+            @displayWidget.jsPlumbInstance.detach(@potentialEdge)
         @potentialEdge = undefined
 
     openDrawer: ->
