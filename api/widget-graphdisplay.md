@@ -39,13 +39,13 @@ GraphDisplay provides display functionality to widgets that need not use graph d
 
 
 
- * **edgeLabel** :: *Array* -- default Value: `[]`
+ * **edgeLabel** :: *Object* | *Array* | *Function* -- optional
 
-    an array, containing the name of the edge attribute to displayand the default value for new edges.
+    an array, containing the name of the edge attribute to displayand the default value for new edges or a function taking an edge and returning a string. one can also specify whether to show certain things in edit or display mode by using an object.
 
     Example:
 
->     edgeLabel: [ 'w', 1 ]
+>     edgeLabel: { display: [ 'w', 1 ], edit: function(e){ return e.w } }
 
 
 

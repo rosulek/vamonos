@@ -74,12 +74,13 @@ We have developed pre-made visualizations of many common algorithms. Click any o
    * [Depth-first search](demos/dfs.html)
    * [Dijkstra's SSSP algorithm](demos/dijkstra.html)
    * [Prim's MST algorithm](demos/prims.html)
+   * [Ford-Fulkerson Max Flow](demos/ford-fulkerson.html)
 
 # Download: <span class="construction"></span>
-The latest version of Vamonos is v1.0.0.
+The latest version of Vamonos is v1.1.0.
 
-* [Vamonos and dependencies](https://github.com/rosulek/vamonos/releases/download/v1.0.0/vamonos.zip)
-* [Library of pre-made standalone visualizations](https://github.com/rosulek/vamonos/releases/download/v1.0.0/vamonos-demos.zip)
+* [Vamonos and dependencies](https://github.com/rosulek/vamonos/releases/download/v1.0.1/vamonos.zip)
+* [Library of pre-made standalone visualizations](https://github.com/rosulek/vamonos/releases/download/v1.0.1/vamonos-demos.zip)
 
 Past releases, source code, and everything else is available on
 our [github project page](https://github.com/rosulek/vamonos).

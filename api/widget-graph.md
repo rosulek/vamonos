@@ -44,6 +44,18 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
 
 
 
+ * **editable** :: *Boolean* -- default Value: `true`
+
+    whether the graph allows user input
+
+
+
+ * **tooltips** :: *Boolean* -- default Value: `true`
+
+    whether to display tooltips
+
+
+
  * **vertexLabels** :: *Object* -- default Value: `{}`
 
     an object containing a mapping of label positions (inner, nw, sw, ne, se) to labels. Labels can display simple variable names (corresponding to inputVars). This must be provided in the form: `{ label: ['var1', 'var2'] }`. It can be more complicated, as a function that takes a vertex and returns some html. if we give a label an object, we can control what is shown in edit/display mode in the form: `{ label : { edit: function{}, display: function{} } }`
@@ -62,13 +74,13 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
 
 
 
- * **edgeLabel** :: *Array* -- default Value: `[]`
+ * **edgeLabel** :: *Object* | *Array* | *Function* -- optional
 
-    an array, containing the name of the edge attribute to displayand the default value for new edges.
+    an array, containing the name of the edge attribute to displayand the default value for new edges or a function taking an edge and returning a string. one can also specify whether to show certain things in edit or display mode by using an object.
 
     Example:
 
->     edgeLabel: [ 'w', 1 ]
+>     edgeLabel: { display: [ 'w', 1 ], edit: function(e){ return e.w } }
 
 
 

@@ -112,7 +112,14 @@ var myviz = new Vamonos.Visualizer({
             container: "queue",
             varName: "Q",
             showLabel: false,
-            displayOnly: true
+            displayOnly: true,
+            cellFormat: function (v) { 
+                if (v) {
+                    var key = (v.key == Infinity ? "\u221E" : v.key);
+                    return v.name + " : " + key;
+                }
+                else return "";
+            }
         }),
 
         new Vamonos.Widget.VarName({

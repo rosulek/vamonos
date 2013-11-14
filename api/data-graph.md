@@ -119,6 +119,11 @@ removes the edge from `source` to `target`. understands directedness.
 ## **getEdges**()
 returns an array of all edges in the graph
 
+## **eachEdge**(`f`)
+ * `f`: a function taking an edge
+
+applies `f` to each edge
+
 ## **neighbors**(`v`)
  * `v`: a vertex object containing an id field, or an id
 
@@ -140,4 +145,7 @@ returns all outgoing edges of `v`
  * `v`: a vertex object containing an id field, or an id
 
 returns all incoming edges of `v`
+
+## **toString**()
+returns a javascripty string you could use to initialize a graph with.
 

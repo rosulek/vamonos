@@ -34,6 +34,8 @@ Widgets
 
  * [Controls](widget-controls.html)
 
+ * [Error](widget-error.html)
+
  * [GraphDisplay](widget-graphdisplay.html)
 
  * [Graph](widget-graph.html)
