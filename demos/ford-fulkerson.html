@@ -106,6 +106,7 @@ var myviz = new Vamonos.Visualizer({
         }),
 
         new Vamonos.Widget.Graph({
+            tooltips: false,
             varName: "G",
             container: "graph-g",
             inputVars: {
@@ -126,7 +127,6 @@ var myviz = new Vamonos.Visualizer({
             },
             colorEdges: [
                 ["u->v", "#FF7D7D"],
-                ["v->u", "#FF7D7D"],
                 [ function(e){ 
                     return (e.f !== undefined ? (e.f > 0) : false);
                 }, "#0000FF" ],
@@ -145,6 +145,7 @@ var myviz = new Vamonos.Visualizer({
                 ],
                 edges: [
                     {source: 'v0',target: 'v2', c:1},
+                    {source: 'v2',target: 'v0', c:1},
                     {source: 'v0',target: 'v1', c:1},
                     {source: 'v1',target: 'v5', c:1},
                     {source: 'v4',target: 'v8', c:1},

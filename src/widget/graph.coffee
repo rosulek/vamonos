@@ -23,8 +23,11 @@ class Graph
         editable:
             type: "Boolean"
             defaultValue: true
-            description:
-                "whether the graph allows user input"
+            description: "whether the graph allows user input"
+        tooltips:
+            type: "Boolean"
+            defaultValue: true
+            description: "whether to display tooltips"
 
     constructor: (args) ->
 
@@ -33,7 +36,7 @@ class Graph
             givenArgs      : args
             ignoreExtraArgs: true
 
-        delete args[a] for a in ["varName","defaultGraph","inputVars", "editable"]
+        delete args[a] for a in ["tooltips", "varName","defaultGraph","inputVars", "editable"]
 
 
         if @editable
@@ -65,7 +68,7 @@ class Graph
 
         when "displayStart"
             @displayWidget.mode = "display"
-            @setDisplayToolTips()
+            @setDisplayToolTips() if @tooltips
 
         when "editStart"
             if @editable
@@ -106,7 +109,7 @@ class Graph
         if @editable
             @setContainerEditBindings()
             @setConnectionEditBindings()
-            @setDefaultToolTips()
+            @setDefaultToolTips() if @tooltips
 
     stopEditing: ->
         if @editable
@@ -205,7 +208,15 @@ class Graph
             @displayWidget.resetConnectionStyle(c)
         if @edgeLabel?
             con.removeOverlay("editableEdgeLabel")
+            con.removeOverlay("editableEdgeLabel")
             con.removeOverlay("edgeLabel")
+
+            if @theGraph.directed and @theGraph.edge(con.targetId, con.sourceId)
+                loc = 0.75
+                backLoc = 0.25
+            else
+                loc = 0.5
+
             con.addOverlay([
                 "Custom"
                 create: =>
@@ -213,14 +224,25 @@ class Graph
                     @createEditableEdgeLabel(edge, con)
                 id: "editableEdgeLabel"
                 cssClass: "graph-label"
+                location: loc
             ])
 
+            con.addOverlay([
+                "Custom"
+                create: =>
+                    backEdge = @theGraph.edge(con.targetId, con.sourceId)
+                    @createEditableEdgeLabel(backEdge, con)
+                id: "editableEdgeLabel"
+                cssClass: "graph-label"
+                location: backLoc
+            ]) if backLoc?
 
     unsetConnectionEditBindings: ->
         @displayWidget.eachConnection (sourceId, targetId, con) =>
             con.unbind("click")
             con.unbind("mouseenter")
             con.unbind("mouseexit")
+            con.removeOverlay("editableEdgeLabel")
             con.removeOverlay("editableEdgeLabel")
 
     selected: ->
@@ -242,7 +264,7 @@ class Graph
             @potentialEdgeTo($(e.target).parent())
         @$others.on "mouseleave.vamonos-graph", @removePotentialEdge
         @openDrawer()
-        @setNodeSelectionToolTips()
+        @setNodeSelectionToolTips() if @tooltips
 
     selectConnection: (con) ->
         @deselectNode()       if 'vertex' is @selected()
@@ -250,13 +272,13 @@ class Graph
         @$selectedConnection = con
         @$selectedConnection.setPaintStyle(@displayWidget.selectedPaintStyle)
         @openDrawer()
-        @setConnectionSelectionToolTips()
+        @setConnectionSelectionToolTips() if @tooltips
 
     deselect: ->
         @deselectNode()
         @deselectConnection()
         @closeDrawer()
-        @setDefaultToolTips()
+        @setDefaultToolTips() if @tooltips
 
     deselectNode: ->
         return unless @$selectedNode?
@@ -324,13 +346,17 @@ class Graph
             sourceId = @$selectedConnection.sourceId
             targetId = @$selectedConnection.targetId
             edge     = @theGraph.edge(sourceId, targetId)
-            nametag  = edge.source.name + "&nbsp;" +
-                (if @theGraph.directed then "&rarr;" else "-") +
-                "&nbsp;" + edge.target.name
+            if @theGraph.directed and not @theGraph.edge(targetId,sourceId)
+                arr = "&rarr;" 
+            else 
+                arr = "-" 
+            nametag  = edge.source.name + "&nbsp;" + arr + "&nbsp;" + edge.target.name
             label = "edge&nbsp;&nbsp;#{nametag}&nbsp;&nbsp;"
             buttons = [
                 $("<button>", {text: "del", title: "Delete #{edge.source.name}->#{edge.target.name}"})
                     .on "click.vamonos-graph", (e) =>
+                        if @theGraph.directed and @theGraph.edge(targetId, sourceId)
+                            @removeEdge(edge.target.id, edge.source.id)
                         @removeEdge(edge.source.id, edge.target.id)
             ]
         else

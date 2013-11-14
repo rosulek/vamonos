@@ -161,10 +161,10 @@ class GraphDisplay
                 @connections[edge.target.id]?[edge.source.id]? and
                 not @directed
             )
-            @addConnection(edge)
+            @addConnection(edge, graph)
         @eachConnection (sourceId, targetId) =>
             unless graph.edge(sourceId, targetId)
-                @removeConnection(sourceId, targetId)
+                @removeConnection(sourceId, targetId, graph)
         @eachNode (vid, node) =>
             if graph.vertex(vid)
                 @updateNode(node, graph.vertex(vid), frame)
@@ -330,28 +330,52 @@ class GraphDisplay
 
     # --------- Display mode connection functions ---------- #
 
-    addConnection: (edge) ->
-        return if @connections[edge.source.id]?[edge.target.id]
-        con = @jsPlumbInstance.connect
-            source: edge.source.id
-            target: edge.target.id
-        @setOverlays(con, edge)
+    addConnection: (edge, graph) ->
+        return if @connections[edge.source.id]?[edge.target.id]?
+        if @directed and @connections[edge.target.id]?[edge.source.id]?
+            con = @connections[edge.target.id][edge.source.id]
+            con.addOverlay([
+                "PlainArrow"
+                { id: "backArrow", location: 4, direction: -1, width: 12, length: 8 }
+            ])
+            @setLabel(con, graph) if @mode is 'display'
+            ((@backEdges ?= {})[edge.source.id] ?= {})[edge.target.id] = con
+        else
+            con = @jsPlumbInstance.connect
+                source: edge.source.id
+                target: edge.target.id
+            @setOverlays(con, edge)
         (@connections[edge.source.id] ?= {})[edge.target.id] = con
         (@connections[edge.target.id] ?= {})[edge.source.id] = con unless @directed
         return con
 
-    removeConnection: (sourceId, targetId) ->
-        connection = @connections[sourceId]?[targetId]
-        return unless connection?
-        @jsPlumbInstance.detach(connection)
-        delete @connections[sourceId][targetId]
-        delete @connections[targetId][sourceId] unless @directed
+    removeConnection: (sourceId, targetId, graph) ->
+        if @backEdges?[sourceId]?[targetId]?
+            con = @backEdges[sourceId][targetId]
+            con.removeOverlay("backArrow") 
+            @setLabel(con, graph) if @mode is 'display'
+            delete @backEdges[sourceId][targetId]
+            delete @connections[sourceId][targetId]
+
+        else if @backEdges?[targetId]?[sourceId]?
+            con = @backEdges[targetId][sourceId]
+            @jsPlumbInstance.detach(con)
+            delete @backEdges[targetId][sourceId]
+            delete @connections[sourceId][targetId]
+            @addConnection(graph.edge(targetId,sourceId), graph)
+
+        else
+            con = @connections[sourceId]?[targetId]
+            return unless con?
+            @jsPlumbInstance.detach(con)
+            delete @connections[sourceId][targetId]
+            delete @connections[targetId][sourceId] unless @directed
 
     updateConnections: (graph, frame) ->
         return unless @colorEdges?
         @eachConnection (sourceId, targetId, con) =>
             @resetConnectionStyle(con)
-            @setLabel(con, graph.edge(sourceId, targetId))
+            @setLabel(con, graph) if @mode is 'display'
         for style in @colorEdges
             if typeof style[0] is 'string'
                 [source, target] = style[0].split(/->/).map((v)->frame[v])
@@ -380,25 +404,48 @@ class GraphDisplay
             {location:-4, width:12, length:8}
         ]) if @directed
 
-    setLabel: (connection, edge) ->
+    setLabel: (con, graph) ->
         return unless @edgeLabel[@mode]?
-        connection.removeOverlay("edgeLabel")
+        con.removeOverlay("edgeLabel")
+        con.removeOverlay("edgeLabel")
+
+        if graph.directed and graph.edge(con.targetId, con.sourceId)
+            backEdge = graph.edge(con.targetId, con.sourceId)
+            loc = 0.75
+            backLoc = 0.25
+
+        edge = graph.edge(con.sourceId, con.targetId)
+
         if @edgeLabel[@mode].constructor.name is 'Function'
             val = @edgeLabel[@mode](edge)
+            backVal = @edgeLabel[@mode](backEdge) if backEdge?
+
         else if @edgeLabel[@mode].constructor.name is 'Array'
             attr = @edgeLabel[@mode][0]
             val = Vamonos.rawToTxt(edge[attr] ? "")
+            backVal = Vamonos.rawToTxt(backEdge[attr] ? "") if backEdge?
+
         else
             return
-        connection.addOverlay([
+
+        con.addOverlay([
             "Custom",
-            create: => @createEdgeLabel( val ),
+            create: =>
+                $label = $("<div class='graph-label'>#{val}</div>")
+                return $("<div>").append($label)
             id: "edgeLabel",
+            location: loc ? 0.5
         ]) 
 
-    createEdgeLabel: (val) =>
-        $label = $("<div class='graph-label'>#{val}</div>")
-        return $("<div>").append($label)
+        con.addOverlay([
+            "Custom",
+            create: =>
+                $label = $("<div class='graph-label'>#{backVal}</div>")
+                return $("<div>").append($label)
+            id: "edgeLabel",
+            location: backLoc
+        ]) if backEdge?
+
 
     # ----------------- drawer --------------- # 
     
