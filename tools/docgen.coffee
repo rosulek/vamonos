@@ -151,15 +151,17 @@ index = (fileTypes) ->
 
 writeApiFile = (fileName, nameSpace, objectItself) ->
     fs.writeFileSync(
-        buildDir + targetDirName + fileName + ".md",
+        targetDirName + fileName + ".md",
         docs(nameSpace, objectItself)
     )
     return { name: objectItself.name, fileName: fileName + finalSuffix }
 
 #####################################################################
 
-unless fs.existsSync(buildDir + targetDirName) 
-    fs.mkdir(buildDir + targetDirName)
+if fs.existsSync(targetDirName) 
+    fs.rmdirSync(targetDirName)
+
+fs.mkdirSync(targetDirName)
 
 viz =  writeApiFile("visualizer", "", Vamonos.Visualizer)
 ds = (writeApiFile("data-" + name.toLowerCase(), "DataStructure", d) for name, d of Vamonos.DataStructure)
@@ -167,7 +169,7 @@ ws = (writeApiFile("widget-" + name.toLowerCase(), "Widget", w) for name, w of V
 
 # create the index file
 fs.writeFileSync(
-    buildDir + targetDirName + "index.md",
+    targetDirName + "index.md",
     index([
         ["", [viz]]
         ["Data Structures", ds]
