@@ -1,0 +1,330 @@
+<html><head>
+
+    <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="../css/vamonos-web.css">
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+    <script type="text/javascript" src="keyboard.js"></script>
+
+    <style type="text/css">
+        .vertex {
+            width: 40;
+            height: 30;
+        }
+
+        .vertex-contents {
+            font-size: .8em;
+        }
+
+        .vertex-ne-label, .vertex-nw-label {
+            font-weight: bold;
+        }
+
+        .vertex-sw-label {
+            font-style: italic;
+        }
+
+        .vertex-contents {
+            font-weight: bold;
+        }
+
+        body {
+            text-align: center;
+        }
+    </style>
+
+</head><body>
+
+    <h1>Ford-Fulkerson Max Flow</h1>
+
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
+
+            <div id="controls"></div>
+
+            <div class="pseudocode-procedures">
+
+                <div id="pseudocode-main" title="Ford-Fulkerson(G,s,t):">
+                    for each edge (u,v) &in; G.E
+                        (u,v).f = 0
+                    while p = AugmentingPath(G,s,t)
+                        c<sub><i>f</i></sub>(p) = min { c<sub><i>f</i></sub>(u,v) : (u,v) &in; p }
+                        for each edge (u,v) in p
+                            if (u,v) &in; E
+                                (u,v).f = (u,v).f + c<sub><i>f</i></sub>(p)
+                            else 
+                                (v,u).f = (v,u).f - c<sub><i>f</i></sub>(p)
+                </div>
+
+                <div id="pseudocode-augmenting-path" title="AugmentingPath(G,s,t):">
+                    G<sub>f</sub> = residual graph of G
+                    p = DFS(G<sub>f</sub>, s<sub>f</sub>, t<sub>f</sub>)
+                    return p
+                </div>
+
+            </div>
+
+        </td><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="g-var"></div></td>
+                    <td><div id="graph-g"></div></td>
+                </tr>
+                <tr><td><div id="gf-var"></div></td>
+                    <td><div id="graph-gf"></div></td>
+                </tr>
+            </table>
+
+        </td></tr>
+
+    </table>
+
+
+</body>
+<script type="text/javascript">
+
+var i = 0;
+
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+        new Vamonos.Widget.Controls("controls"),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-main",
+            breakpoints: [3],
+        }),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-augmenting-path",
+            procedureName: "augmentingPath",
+            breakpoints: [3],
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "g-var",
+            varName: "G",
+            inputVar: true,
+        }),
+
+        new Vamonos.Widget.Graph({
+            tooltips: false,
+            varName: "G",
+            container: "graph-g",
+            inputVars: {
+                s: "v6",
+                t: "v5",
+            },
+            vertexLabels: {
+                inner: ["s", "t"],
+                sw   : function(vtx){return vtx.name},
+                ne   : ["u", "v"],
+            },
+            edgeLabel: {
+                edit: [ 'c', 1 ],
+                display: function(e){ 
+                    return (e.f !== undefined ? e.f : "-") + "/" 
+                         + (e.c !== undefined ? e.c : "-");
+                },
+            },
+            colorEdges: [
+                ["u->v", "#FF7D7D"],
+                [ function(e){ 
+                    return (e.f !== undefined ? (e.f > 0) : false);
+                }, "#0000FF" ],
+            ],
+            defaultGraph: new Vamonos.DataStructure.Graph({
+                directed: true,
+                vertices: [
+                    {id: 'v0', x:85, y:15 },
+                    {id: 'v1', x:200, y:15 },
+                    {id: 'v2', x:200, y:90 },
+                    {id: 'v4', x:85, y:90 },
+                    {id: 'v5', x:300, y:90 },
+                    {id: 'v6', x:0, y:90 },
+                    {id: 'v7', x:85, y:160 },
+                    {id: 'v8', x:200, y:160 },
+                ],
+                edges: [
+                    {source: 'v0',target: 'v2', c:1},
+                    {source: 'v2',target: 'v0', c:1},
+                    {source: 'v0',target: 'v1', c:1},
+                    {source: 'v1',target: 'v5', c:1},
+                    {source: 'v4',target: 'v8', c:1},
+                    {source: 'v6',target: 'v7', c:1},
+                    {source: 'v6',target: 'v0', c:1},
+                    {source: 'v6',target: 'v4', c:1},
+                    {source: 'v7',target: 'v8', c:1},
+                    {source: 'v7',target: 'v1', c:1},
+                    {source: 'v8',target: 'v5', c:1},
+                    {source: 'v2',target: 'v5', c:1},
+                ]
+            }),
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "gf-var",
+            varName: "Gf",
+        }),
+
+        new Vamonos.Widget.Graph({
+            varName: "augmentingPath::Gf",
+            container: "graph-gf",
+            editable: false,
+            edgeLabel: ['f', 0],
+            vertexLabels: {
+                inner: ["augmentingPath::sf", "augmentingPath::tf"],
+                sw   : function(vtx){return vtx.name},
+                ne   : ["u", "v"],
+            },
+            colorEdges: [
+                [ function(edge){
+                    return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
+                  }
+                , "#92E894" ],
+            ]
+        }),
+
+        new Vamonos.Widget.Error({
+            conditions: [
+                function(viz){ 
+                    var s = viz.getVariable("s");
+                    var t = viz.getVariable("t");
+                    if (s.id === t.id) {
+                        return "Ford-Fulkerson says: s and t must be different!";
+                    }
+                }
+            ]
+        })
+
+    ],
+
+    algorithm: {
+
+        main: function(_){
+            with (this) {
+
+                G.eachEdge(function(e){
+_(1);               u = e.source;
+                    v = e.target;
+_(2);               e.f = 0;
+                })
+                u = v = undefined;
+
+                var done = false;
+                i = 0;
+                // augmenting path should return an array of edges
+                while (_(3), !done) {
+                    p = augmentingPath({ G:G, s:s, t:t });
+
+                    if (!p.length) { 
+                        done = true;
+                        break;
+                    }
+
+                    // cfp = min value for f in p
+_(4);               cfp = Math.min.apply(null, 
+                            p.filter(function(e){ return G.edge(e.source.oldId, e.target.oldId) !== undefined })
+                             .map(function(e){ return e.f }));
+                    
+                    p.map(function(pEdge){
+_(5);                   u = G.vertex(pEdge.source.oldId);
+                        v = G.vertex(pEdge.target.oldId);
+                        e = G.edge(u,v);
+                        if (_(6), e) {
+_(7);                       e.f = e.f + cfp;
+                        } else {
+_(8);                       e = G.edge(v,u);
+_(9);                       e.f = e.f - cfp;
+                        }
+                    });
+                    u = v = undefined;
+                    i++;
+                }
+            }
+        },
+
+
+        augmentingPath: function(_){
+            with (this) {
+
+                var prefix = "gf-";
+
+                Gf = new Vamonos.DataStructure.Graph({ 
+                    directed: true,
+                    prefix: prefix,
+                });
+                _(1);
+
+                G.eachVertex(function(vtx){
+                    Gf.addVertex({
+                        x: vtx.x,
+                        y: vtx.y,
+                        name: vtx.name,
+                        oldId: vtx.id,
+                        id: prefix + vtx.id
+                    });
+                });
+
+                // Convert s and t to Gf
+                sf = Gf.vertex( prefix + s.id );
+                tf = Gf.vertex( prefix + t.id );
+
+                Gf.eachVertex(function(u){
+                    Gf.eachVertex(function(v){
+                        if (u.id === v.id) { return }
+                        if (e = G.edge(u.oldId,v.oldId)) {
+                            var val = e.c - e.f;
+                            if (val > 0) { 
+                                ef = Gf.addEdge(u,v);
+                                ef.f = val;
+                            }
+                        } else if (e = G.edge(v.oldId,u.oldId)) {
+                            if (e.f > 0) {
+                                ef = Gf.addEdge(u,v);
+                                ef.f = e.f;
+                            }
+                        }
+                    });
+                });
+                _(2);
+
+                var BFS = function(x){
+
+                };
+
+                var DFS = function(x){
+                    var oes = Gf.outgoingEdges(x);
+                    x.visited = true;
+                    for (var i=0; i < oes.length; i++) {
+                        var e = oes[i];
+                        var y = Gf.vertex(e.target.id);
+
+                        if (y == tf) { 
+                            y.visited = true;
+                            y.pred = x;
+                            return [e];
+                        } else if (!y.visited) {
+                            var r = DFS(y);
+                            if (r.length) { 
+                                r.unshift(e);
+                                y.visited = true;
+                                y.pred = x;
+                                return r;
+                            }
+                        } 
+                    }
+                    return [];
+                };
+
+                p = DFS(sf);
+                _(3);
+
+                u = v = undefined;
+                return p;
+            }
+        }
+    }
+});
+
+</script></html> 
