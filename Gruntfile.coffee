@@ -15,9 +15,10 @@ module.exports = (grunt) ->
                 join: true
 
         less:
-            files:
-                src: ['src/**/*.less']
-                dest: 'lib/<%= pkg.name %>.css'
+            vamonos: 
+                files: 
+                    'lib/<%= pkg.name %>-demos.css' : 'src/less/vamonos-demos.less' 
+                    'lib/<%= pkg.name %>.css' : 'src/less/vamonos.less'
 
         watch:
             files: ['src/**/*']

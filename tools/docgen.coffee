@@ -158,10 +158,8 @@ writeApiFile = (fileName, nameSpace, objectItself) ->
 
 #####################################################################
 
-if fs.existsSync(targetDirName) 
-    fs.rmdirSync(targetDirName)
-
-fs.mkdirSync(targetDirName)
+unless fs.existsSync(targetDirName) 
+    fs.mkdirSync(targetDirName)
 
 viz =  writeApiFile("visualizer", "", Vamonos.Visualizer)
 ds = (writeApiFile("data-" + name.toLowerCase(), "DataStructure", d) for name, d of Vamonos.DataStructure)
