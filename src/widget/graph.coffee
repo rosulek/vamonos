@@ -69,6 +69,11 @@ class Graph
         when "displayStart"
             @displayWidget.mode = "display"
             @setDisplayToolTips() if @tooltips
+        
+        when "displayStop"
+            unless @editable
+                @displayWidget.clearDisplay()
+                @displayWidget.fitGraph()
 
         when "editStart"
             if @editable
