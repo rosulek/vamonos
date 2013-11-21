@@ -1,6 +1,7 @@
 <html><head>
 
     <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
     <style type="text/css">
@@ -28,7 +29,7 @@
 
 </head><body>
 
-    <h1>Prim's MST using Vamonos</h1>
+    <h1>Prim's Minimum Spanning Tree</h1>
 
     <table class="vamonos">
 
@@ -132,7 +133,7 @@ var myviz = new Vamonos.Visualizer({
         new Vamonos.Widget.Graph({
             container: "graph",
             varName: "G",
-            inputVars: { r: "v3" },
+            inputVars: { r: "v1" },
             vertexLabels: {
                 inner: {
                     edit: function(vtx){ return vtx.name },
@@ -151,30 +152,55 @@ var myviz = new Vamonos.Visualizer({
                 [ function(edge){
                     return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
                         || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }
-                , "#92E894" ],
+                , "#276CFF" ],
             ],
             defaultGraph: new Vamonos.DataStructure.Graph({
-                vertices: [ 
-                    {id: "v0", x: 17,  y: 10},
-                    {id: "v1", x: 98,  y: 10},
-                    {id: "v2", x: 176, y: 13},
-                    {id: "v3", x: 15,  y: 78},
-                    {id: "v4", x: 100, y: 80},
-                    {id: "v5", x: 182, y: 80},
-                    {id: "v6", x: 15,  y: 138},
-                    {id: "v7", x: 100, y: 140},
-                    {id: "v8", x: 182, y: 140},
+                directed: false,
+                prefix: "",
+                vertices: [
+                    { id: 'v0', x: 10, y: 187, name: 'a' },
+                    { id: 'v1', x: 4, y: 13, name: 'b' },
+                    { x: 87, y: 156, name: 'c', id: '-vertex-4' },
+                    { x: 94, y: 87, name: 'd', id: '-vertex-5' },
+                    { x: 207, y: 195, name: 'e', id: '-vertex-6' },
+                    { x: 160, y: 124, name: 'f', id: '-vertex-7' },
+                    { x: 223, y: 26, name: 'g', id: '-vertex-8' },
+                    { x: 151, y: 53, name: 'h', id: '-vertex-9' },
+                    { x: 104, y: 0, name: 'i', id: '-vertex-10' },
                 ],
                 edges: [
-                    {source: 'v0',target: 'v4', w:1},
-                    {source: 'v1',target: 'v2', w:2},
-                    {source: 'v1',target: 'v4', w:5},
-                    {source: 'v3',target: 'v4', w:3},
-                    {source: 'v3',target: 'v6', w:1},
-                    {source: 'v4',target: 'v8', w:10},
-                    {source: 'v5',target: 'v8', w:2},
-                    {source: 'v6',target: 'v7', w:3},
-                    {source: 'v7',target: 'v8', w:2},
+                    { source: 'v1', target: 'v0', w: 6 },
+                    { source: 'v0', target: '-vertex-6', w: 9 },
+                    { source: 'v0', target: '-vertex-4', w: 3 },
+                    { source: 'v1', target: 'v0', w: 6 },
+                    { source: '-vertex-4', target: 'v1', w: 4 },
+                    { source: '-vertex-5', target: 'v1', w: 2 },
+                    { source: '-vertex-9', target: 'v1', w: 5 },
+                    { source: '-vertex-10', target: 'v1', w: 4 },
+                    { source: 'v0', target: '-vertex-6', w: 9 },
+                    { source: '-vertex-7', target: '-vertex-6', w: 8 },
+                    { source: '-vertex-6', target: '-vertex-4', w: 9 },
+                    { source: '-vertex-6', target: '-vertex-8', w: 18 },
+                    { source: 'v0', target: '-vertex-4', w: 3 },
+                    { source: '-vertex-4', target: 'v1', w: 4 },
+                    { source: '-vertex-4', target: '-vertex-5', w: 2 },
+                    { source: '-vertex-6', target: '-vertex-4', w: 9 },
+                    { source: '-vertex-4', target: '-vertex-5', w: 2 },
+                    { source: '-vertex-5', target: 'v1', w: 2 },
+                    { source: '-vertex-5', target: '-vertex-7', w: 8 },
+                    { source: '-vertex-5', target: '-vertex-7', w: 8 },
+                    { source: '-vertex-7', target: '-vertex-6', w: 8 },
+                    { source: '-vertex-8', target: '-vertex-7', w: 10 },
+                    { source: '-vertex-7', target: '-vertex-9', w: 9 },
+                    { source: '-vertex-6', target: '-vertex-8', w: 18 },
+                    { source: '-vertex-8', target: '-vertex-7', w: 10 },
+                    { source: '-vertex-8', target: '-vertex-9', w: 3 },
+                    { source: '-vertex-8', target: '-vertex-10', w: 4 },
+                    { source: '-vertex-7', target: '-vertex-9', w: 9 },
+                    { source: '-vertex-8', target: '-vertex-9', w: 3 },
+                    { source: '-vertex-9', target: 'v1', w: 5 },
+                    { source: '-vertex-8', target: '-vertex-10', w: 4 },
+                    { source: '-vertex-10', target: 'v1', w: 4 },
                 ]
             }),
         })

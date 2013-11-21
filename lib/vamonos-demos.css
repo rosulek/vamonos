@@ -1,0 +1,16 @@
+@import url(http://fonts.googleapis.com/css?family=Roboto:300|Fjalla+One);
+body {
+  font-family: "Roboto";
+  margin: 0;
+  background: #eee;
+  background: linear-gradient(to bottom, #f8f8f8 0%, #dddddd 100%);
+  /* W3C */
+
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+h1 {
+  font-family: "Fjalla One";
+  font-size: 24px;
+  margin: 36px 0 4px 0;
+}
