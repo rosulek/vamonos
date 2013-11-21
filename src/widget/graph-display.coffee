@@ -193,15 +193,17 @@ class GraphDisplay
                 xVals.push(vertex.x + @_vertexWidth  + @containerMargin)
                 yVals.push(vertex.y + @_vertexHeight + @containerMargin)
             max_x = Math.max(xVals..., @minX)
-            max_y = Math.max(yVals..., @minY) + if @$drawer? then @$drawer.height() else 0
+            max_y = Math.max(yVals..., @minY)
         else
             max_x = 0
             max_y = 0
+
         if animate
             @$outer.animate({width: max_x, height: max_y}, 500)
         else
             @$outer.width(max_x)
             @$outer.height(max_y)
+
         if @resizable
             @$outer.resizable("option", "minWidth", max_x)
             @$outer.resizable("option", "minHeight", max_y)
