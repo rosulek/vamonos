@@ -21,9 +21,8 @@ class Array
             ignoreExtraArgs : true
 
         @$container = Vamonos.jqueryify(options.container)
-        delete options.container
-        options.tableContainer = $("<table>", {class: "array"})
-        @$container.append(options.tableContainer)
+        options.container = $("<table>", {class: "array"})
+        @$container.append(options.container)
         @guts = new Vamonos.Widget.ArrayGuts(options)
 
     event: (args...) -> 

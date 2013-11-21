@@ -3,7 +3,7 @@ class ArrayGuts
     @description: "ArrayGuts is where array input and display happen."
 
     @spec =
-        tableContainer: 
+        container: 
             type:  "jQuery Selector"
             description: "a selector of the dom element the guts should go in"
         varName:
@@ -103,7 +103,7 @@ class ArrayGuts
 
         @$rowIndices.hide() if @showCellNumber
 
-        @tableContainer.append( @$rowIndices, @$rowCells, @$rowAnnotations )
+        @container.append( @$rowIndices, @$rowCells, @$rowAnnotations )
 
         # interestingly, "if blah" and "if blah is true" are different
         @showLabel = @varName + ":" if @showLabel is true
