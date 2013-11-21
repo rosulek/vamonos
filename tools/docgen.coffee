@@ -41,22 +41,27 @@ docs = (nameSpace, widget) ->
     p "[Back](index.html)"
     p widget.description if widget.description?
 
+    specObj = {}
+
     if widget.dependencies?.length
         h3 "Arguments are shared with inner objects:"
         # dependencies come in as "Vamonos.Namespace.Widget"
+
         for dep in widget.dependencies
             if /\./.test dep
                 [_,nameSpace, name] = dep.split(/\./)
                 b "[#{ formattedName(nameSpace, name: name) }]" +
                   "(#{ nameSpace.toLowerCase() }-#{ name.toLowerCase() }.html)"
                 depObj = Vamonos[nameSpace][name]
-                Vamonos.mixin(widget.spec, depObj.spec)
+                Vamonos.mixin(specObj, depObj.spec)
             else
                 b "[#{ name }](#{ name.toLowerCase() }.html)"
 
-    if (1 for x,y of widget.spec).length # if the spec object has any attributes
+    Vamonos.mixin(specObj, widget.spec) # make sure overlapping args come from THIS widget
+
+    if (1 for x,y of specObj).length # if the spec object has any attributes
         h3 "Constructor Arguments"
-        pr makeArgSpec(widget.spec, widget.name)
+        pr makeArgSpec(specObj, widget.name)
 
     if (1 for x,y of widget.interface).length # if the interface object has attributes
         h1 "Public Interface"
@@ -64,11 +69,16 @@ docs = (nameSpace, widget) ->
 
     return ret.val
 
+sortedByKey = (obj) ->
+    arr = ([k,v] for k,v of obj)
+    arr.sort((a,b) -> if a[0] < b[0] then -1 else if b[0] < a[0] then 1 else 0)
+    return arr
+
 makeInterface = (interObj, name) ->
     ret = {val: ""}
     { pr,p,b,i,h1,h2,h3,code } = make_printers(ret)
 
-    for funcName, funcObj of interObj
+    for [funcName, funcObj] in sortedByKey(interObj)
         pr "## **#{funcName}**("
         if funcObj.args?
             pr ("`#{argName}`" for [argName, _] in funcObj.args).join(", ") 
@@ -86,20 +96,20 @@ makeArgSpec = (spec, name) ->
     ret = {val: ""}
     { pr,p,b,i,h1,h2,h3,code } = make_printers(ret)
 
-    requiredArgs = []
-    otherArgs = []
+    requiredArgs = {}
+    otherArgs = {}
 
     for argName, specs of spec
         # Do not publish private constructor arguments
         continue if /^_/.test argName 
         [required, doc] = argSpec(argName, specs)
         if required
-            requiredArgs.push doc
+            requiredArgs[argName] = doc
         else
-            otherArgs.push doc
+            otherArgs[argName] = doc
 
-    p d for d in requiredArgs
-    p d for d in otherArgs
+    p d for [_,d] in sortedByKey(requiredArgs)
+    p d for [_,d] in sortedByKey(otherArgs)
 
     return ret.val
 
