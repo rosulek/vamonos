@@ -26,12 +26,6 @@ Displays a two dimensional array.
 
 
 
- * **tableContainer** :: *jQuery Selector* -- **required**
-
-    a selector of the dom element the guts should go in
-
-
-
  * **varName** :: *String* -- **required**
 
     the name of variable that this widget represents

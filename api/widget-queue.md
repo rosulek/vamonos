@@ -18,9 +18,9 @@ Vamonos.Widget.Queue
 
 ### Constructor Arguments
 
- * **tableContainer** :: *jQuery Selector* -- **required**
+ * **container** :: *String* | *jQuery Selector* -- **required**
 
-    a selector of the dom element the guts should go in
+    The id or a jQuery selector of the div in which this widget should draw itself.
 
 
 
