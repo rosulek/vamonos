@@ -21,15 +21,15 @@ Display a string that changes depending upon which mode the visualizer is in.
 
 
 
- * **editModeText** :: *String* -- **required**
-
-    message ModeLine displays in editMode
-
-
-
  * **displayModeText** :: *String* -- **required**
 
     message ModeLine displays in displayMode
+
+
+
+ * **editModeText** :: *String* -- **required**
+
+    message ModeLine displays in editMode
 
 
 

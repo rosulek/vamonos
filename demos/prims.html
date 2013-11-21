@@ -228,6 +228,7 @@ _(8);               v = vtx;
 _(9);               if (Q.contains(v) && G.edge(u,v).w < v.key) {
 _(10);                  v.pred = u;
 _(11);                  v.key = G.edge(u,v).w;
+                        Q.sort();
                     }
                 })
                 

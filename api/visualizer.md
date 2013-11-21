@@ -17,15 +17,15 @@ namespaces and variables, and runs the simulation itself.
 
 ### Constructor Arguments
 
- * **widgets** :: *Array* -- default Value: `[]`
-
-    a list of widgets for use in the visualization
-
-
-
  * **algorithm** :: *Function* | *Object* -- default Value: `undefined`
 
     as a function, the 'main' procedure. as an object, an association of procedure names to functions.
+
+
+
+ * **autoStart** :: *Boolean* -- default Value: `false`
+
+    whether to skip edit mode at load time
 
 
 
@@ -35,9 +35,9 @@ namespaces and variables, and runs the simulation itself.
 
 
 
- * **autoStart** :: *Boolean* -- default Value: `false`
+ * **widgets** :: *Array* -- default Value: `[]`
 
-    whether to skip edit mode at load time
+    a list of widgets for use in the visualization
 
 
 

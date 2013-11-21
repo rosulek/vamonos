@@ -27,27 +27,15 @@ ArrayGuts is where array input and display happen.
 
 
 
- * **defaultInput** :: *Array* -- default Value: `[]`
+ * **cellFormat** :: *Function* -- optional
 
-    the initial value for this array
-
-
-
- * **ignoreIndexZero** :: *Boolean* -- default Value: `false`
-
-    whether the array should appear to be 1-indexed
+    A function that takes the raw contents of each entry and returns the html to be displayed.
 
 
 
- * **displayOnly** :: *Boolean* -- default Value: `false`
+ * **cellParse** :: *Function* -- optional
 
-    whether the array is editable
-
-
-
- * **showChanges** :: *String* | *Array* -- default Value: `"next"`
-
-    type of frame shifts to highlight changes at, can be multiple types with an array of strings
+    A function that parses the text input from an editable cell to an internal representation.
 
 
 
@@ -64,6 +52,42 @@ ArrayGuts is where array input and display happen.
 
 
 
+ * **defaultInput** :: *Array* -- default Value: `[]`
+
+    the initial value for this array
+
+
+
+ * **displayOnly** :: *Boolean* -- default Value: `false`
+
+    whether the array is editable
+
+
+
+ * **ignoreIndexZero** :: *Boolean* -- default Value: `false`
+
+    whether the array should appear to be 1-indexed
+
+
+
+ * **persistent** :: *Boolean* -- default Value: `false`
+
+    whether to save the result of running the algorithm and to use it as the initial value upon returning to edit mode.
+
+
+
+ * **showCellNumber** :: *Boolean* -- default Value: `true`
+
+    Whether to show a number above each cell.
+
+
+
+ * **showChanges** :: *String* | *Array* -- default Value: `"next"`
+
+    type of frame shifts to highlight changes at, can be multiple types with an array of strings
+
+
+
  * **showIndices** :: *Array* -- default Value: `[]`
 
     an array of index-variable-exprs of the form that show the text of the index-variable-exprs on the indices they correspond to.
@@ -73,24 +97,6 @@ ArrayGuts is where array input and display happen.
  * **showLabel** :: *Boolean* -- default Value: `false`
 
     whether to show the varName before the array
-
-
-
- * **cellFormat** :: *Function* -- optional
-
-    A function that takes the raw contents of each entry and returns the html to be displayed.
-
-
-
- * **cellParse** :: *Function* -- optional
-
-    A function that parses the text input from an editable cell to an internal representation.
-
-
-
- * **persistent** :: *Boolean* -- default Value: `false`
-
-    whether to save the result of running the algorithm and to use it as the initial value upon returning to edit mode.
 
 
 

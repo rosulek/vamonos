@@ -13,12 +13,6 @@ Vamonos.Widget.UserQuiz
 
 ### Constructor Arguments
 
- * **question** :: *String* | *Function* -- **required**
-
-    either a string or a function that takes a frame and returns a string
-
-
-
  * **answer** :: *String* | *Function* -- **required**
 
     either a string or a function that takes a frame and returns a string
@@ -28,6 +22,12 @@ Vamonos.Widget.UserQuiz
  * **condition** :: *Function* -- **required**
 
     a function taking the current frame, returning a boolean, used to determine when to ask a question
+
+
+
+ * **question** :: *String* | *Function* -- **required**
+
+    either a string or a function that takes a frame and returns a string
 
 
 

@@ -18,34 +18,6 @@ objects of the same form.
 Public Interface
 ================
 
-## **eachNodeInOrder**(`f`)
- * `f`: a function that takes a node
-
-applies `f` to each node using an in-order traversal
-
-## **eachNodePreOrder**(`f`)
- * `f`: a function that takes a node
-
-applies `f` to each node using a pre-order traversal
-
-## **eachNodePostOrder**(`f`)
- * `f`: a function that takes a node
-
-applies `f` to each node using a post-order traversal
-
-## **asGraph**()
-returns an equivalent `Vamonos.DataStructure.Graph`
-
-## **rotateRight**(`id`)
- * `id`: a node id
-
-rotates the tree right at the node matching id
-
-## **rotateLeft**(`id`)
- * `id`: a node id
-
-rotates the tree left at the node matching id
-
 ## **addNode**(`targetId`, `direction`, `newNode`)
  * `targetId`: a node id
 
@@ -55,10 +27,8 @@ rotates the tree left at the node matching id
 
 adds `newNode` as the `direction` child of the node matching `targetId`
 
-## **deleteNode**(`targetId`)
- * `targetId`: a node id
-
-deletes the node matching `targetId`, preforming rotations as necessary
+## **asGraph**()
+returns an equivalent `Vamonos.DataStructure.Graph`
 
 ## **changeVal**(`targetId`, `newVal`)
  * `targetId`: a node id
@@ -66,4 +36,34 @@ deletes the node matching `targetId`, preforming rotations as necessary
  * `newVal`: an arbitrary value
 
 changes the val field of the node matching `targetId` to `newVal`
+
+## **deleteNode**(`targetId`)
+ * `targetId`: a node id
+
+deletes the node matching `targetId`, preforming rotations as necessary
+
+## **eachNodeInOrder**(`f`)
+ * `f`: a function that takes a node
+
+applies `f` to each node using an in-order traversal
+
+## **eachNodePostOrder**(`f`)
+ * `f`: a function that takes a node
+
+applies `f` to each node using a post-order traversal
+
+## **eachNodePreOrder**(`f`)
+ * `f`: a function that takes a node
+
+applies `f` to each node using a pre-order traversal
+
+## **rotateLeft**(`id`)
+ * `id`: a node id
+
+rotates the tree left at the node matching id
+
+## **rotateRight**(`id`)
+ * `id`: a node id
+
+rotates the tree right at the node matching id
 

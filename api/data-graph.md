@@ -22,6 +22,19 @@ to Vamonos.
 
 
 
+ * **edges** :: *Object* | *Array* -- optional
+
+    A single edge or an array of edges to create the graph with.
+
+    Example:
+
+>     edges: [
+>         {source: 'v0',target: 'v4'},
+>         {source: 'v1',target: 'v2'},
+>     ]
+
+
+
  * **prefix** :: *String* -- default Value: `""`
 
     A string prepended to each new vertex id.
@@ -42,63 +55,9 @@ to Vamonos.
 
 
 
- * **edges** :: *Object* | *Array* -- optional
-
-    A single edge or an array of edges to create the graph with.
-
-    Example:
-
->     edges: [
->         {source: 'v0',target: 'v4'},
->         {source: 'v1',target: 'v2'},
->     ]
-
-
-
 
 Public Interface
 ================
-
-## **vertex**(`vid`)
- * `vid`: a vertex object containing an id field, or an id
-
-returns the vertex object matching `vid`
-
-## **addVertex**(`vtx`)
- * `vtx`: a vertex object
-
-adds `vtx` to the graph
-
-## **removeVertex**(`v`)
- * `v`: a vertex object containing an id field, or an id
-
-removes the vertex matching `v` and all related edges from the graph
-
-## **getVertices**()
-returns an array of all vertices
-
-## **eachVertex**(`f`)
- * `f`: a function taking a vertex as an argument
-
-applies `f` to each vertex in the graph
-
-## **nextVertexId**()
-returns an unused vertex id
-
-## **returnVertexName**(`n`)
- * `n`: string
-
-adds `n` to the list of available vertex names
-
-## **nextVertexName**()
-returns the next available vertex name
-
-## **edge**(`source`, `target`)
- * `source`: a vertex object containing an id field, or an id
-
- * `target`: a vertex object containing an id field, or an id
-
-if there is an edge from `source` to `target`, returns it. understands undirected graphs.
 
 ## **addEdge**(`source`, `target`, `attrs`)
  * `source`: a vertex object containing an id field, or an id
@@ -109,25 +68,15 @@ if there is an edge from `source` to `target`, returns it. understands undirecte
 
 adds an edge from `source` to `target` with attributes copied from `attrs`
 
-## **removeEdge**(`source`, `target`)
- * `source`: a vertex object containing an id field, or an id
+## **addVertex**(`vtx`)
+ * `vtx`: a vertex object
 
- * `target`: a vertex object containing an id field, or an id
-
-removes the edge from `source` to `target`. understands directedness.
-
-## **getEdges**()
-returns an array of all edges in the graph
+adds `vtx` to the graph
 
 ## **eachEdge**(`f`)
  * `f`: a function taking an edge
 
 applies `f` to each edge
-
-## **neighbors**(`v`)
- * `v`: a vertex object containing an id field, or an id
-
-returns all neighbors of `v`
 
 ## **eachNeighbor**(`v`, `f`)
  * `v`: a vertex object containing an id field, or an id
@@ -136,16 +85,67 @@ returns all neighbors of `v`
 
 applies `f` to each neighbor of `v`
 
-## **outgoingEdges**(`v`)
- * `v`: a vertex object containing an id field, or an id
+## **eachVertex**(`f`)
+ * `f`: a function taking a vertex as an argument
 
-returns all outgoing edges of `v`
+applies `f` to each vertex in the graph
+
+## **edge**(`source`, `target`)
+ * `source`: a vertex object containing an id field, or an id
+
+ * `target`: a vertex object containing an id field, or an id
+
+if there is an edge from `source` to `target`, returns it. understands undirected graphs.
+
+## **getEdges**()
+returns an array of all edges in the graph
+
+## **getVertices**()
+returns an array of all vertices
 
 ## **incomingEdges**(`v`)
  * `v`: a vertex object containing an id field, or an id
 
 returns all incoming edges of `v`
 
+## **neighbors**(`v`)
+ * `v`: a vertex object containing an id field, or an id
+
+returns all neighbors of `v`
+
+## **nextVertexId**()
+returns an unused vertex id
+
+## **nextVertexName**()
+returns the next available vertex name
+
+## **outgoingEdges**(`v`)
+ * `v`: a vertex object containing an id field, or an id
+
+returns all outgoing edges of `v`
+
+## **removeEdge**(`source`, `target`)
+ * `source`: a vertex object containing an id field, or an id
+
+ * `target`: a vertex object containing an id field, or an id
+
+removes the edge from `source` to `target`. understands directedness.
+
+## **removeVertex**(`v`)
+ * `v`: a vertex object containing an id field, or an id
+
+removes the vertex matching `v` and all related edges from the graph
+
+## **returnVertexName**(`n`)
+ * `n`: string
+
+adds `n` to the list of available vertex names
+
 ## **toString**()
 returns a javascripty string you could use to initialize a graph with.
+
+## **vertex**(`vid`)
+ * `vid`: a vertex object containing an id field, or an id
+
+returns the vertex object matching `vid`
 

@@ -20,67 +20,15 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
 
 ### Constructor Arguments
 
- * **varName** :: *String* -- **required**
-
-    the name of variable that this widget represents
-
-
-
  * **container** :: *String* | *jQuery Selector* -- **required**
 
     The id or a jQuery selector of the div in which this widget should draw itself.
 
 
 
- * **defaultGraph** :: *Graph* -- optional
+ * **varName** :: *String* -- **required**
 
-    the initial graph, as a Vamonos.DataStructure.Graph
-
-
-
- * **inputVars** :: *Object* -- default Value: `{}`
-
-    a mapping of variable names to vertex ids of the form                 `{ var1: 'node1' }` for displaying variables that contain                 vertices.
-
-
-
- * **editable** :: *Boolean* -- default Value: `true`
-
-    whether the graph allows user input
-
-
-
- * **tooltips** :: *Boolean* -- default Value: `true`
-
-    whether to display tooltips
-
-
-
- * **vertexLabels** :: *Object* -- default Value: `{}`
-
-    an object containing a mapping of label positions (inner, nw, sw, ne, se) to labels. Labels can display simple variable names (corresponding to inputVars). This must be provided in the form: `{ label: ['var1', 'var2'] }`. It can be more complicated, as a function that takes a vertex and returns some html. if we give a label an object, we can control what is shown in edit/display mode in the form: `{ label : { edit: function{}, display: function{} } }`
-
-    Example:
-
->     vertexLabels: {
->         inner : {
->             edit: function(vtx){return vtx.name}, 
->             display: function(vtx){return vtx.d} 
->         },
->         sw    : function(vtx){return vtx.name}, 
->         ne    : ['u', 'v'],
->         nw    : ['s'],
->     }
-
-
-
- * **edgeLabel** :: *Object* | *Array* | *Function* -- optional
-
-    an array, containing the name of the edge attribute to displayand the default value for new edges or a function taking an edge and returning a string. one can also specify whether to show certain things in edit or display mode by using an object.
-
-    Example:
-
->     edgeLabel: { display: [ 'w', 1 ], edit: function(e){ return e.w } }
+    the name of variable that this widget represents
 
 
 
@@ -100,20 +48,49 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
 
 
 
- * **vertexCssAttributes** :: *Object* -- default Value: `{}`
-
-    provides a way to change CSS classes of vertices based on vertex attributes. takes an object of the form `{ attribute: value | [list of values] }`. in the case of a single value,  the vertex will simply get a class with the same name as the attribute. in the case of a list of values, the css class will be of the form 'attribute-value' when its value matches.
-
-    Example:
-
->     vertexCssAttributes: { done: true }
->     vertexCssAttributes: { color: ['white', 'gray', 'black'] }
-
-
-
  * **containerMargin** :: *Number* -- default Value: `30`
 
     how close nodes can get to the container edge
+
+
+
+ * **defaultGraph** :: *Graph* -- optional
+
+    the initial graph, as a Vamonos.DataStructure.Graph
+
+
+
+ * **draggable** :: *Boolean* -- default Value: `true`
+
+    whether nodes can be moved
+
+
+
+ * **edgeLabel** :: *Object* | *Array* | *Function* -- optional
+
+    an array, containing the name of the edge attribute to displayand the default value for new edges or a function taking an edge and returning a string. one can also specify whether to show certain things in edit or display mode by using an object.
+
+    Example:
+
+>     edgeLabel: { display: [ 'w', 1 ], edit: function(e){ return e.w } }
+
+
+
+ * **editable** :: *Boolean* -- default Value: `true`
+
+    whether the graph allows user input
+
+
+
+ * **highlightChanges** :: *Boolean* -- default Value: `true`
+
+    whether nodes will get the css class 'changed' when they are modified
+
+
+
+ * **inputVars** :: *Object* -- default Value: `{}`
+
+    a mapping of variable names to vertex ids of the form                 `{ var1: 'node1' }` for displaying variables that contain                 vertices.
 
 
 
@@ -135,15 +112,38 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
 
 
 
- * **draggable** :: *Boolean* -- default Value: `true`
+ * **tooltips** :: *Boolean* -- default Value: `true`
 
-    whether nodes can be moved
+    whether to display tooltips
 
 
 
- * **highlightChanges** :: *Boolean* -- default Value: `true`
+ * **vertexCssAttributes** :: *Object* -- default Value: `{}`
 
-    whether nodes will get the css class 'changed' when they are modified
+    provides a way to change CSS classes of vertices based on vertex attributes. takes an object of the form `{ attribute: value | [list of values] }`. in the case of a single value,  the vertex will simply get a class with the same name as the attribute. in the case of a list of values, the css class will be of the form 'attribute-value' when its value matches.
+
+    Example:
+
+>     vertexCssAttributes: { done: true }
+>     vertexCssAttributes: { color: ['white', 'gray', 'black'] }
+
+
+
+ * **vertexLabels** :: *Object* -- default Value: `{}`
+
+    an object containing a mapping of label positions (inner, nw, sw, ne, se) to labels. Labels can display simple variable names (corresponding to inputVars). This must be provided in the form: `{ label: ['var1', 'var2'] }`. It can be more complicated, as a function that takes a vertex and returns some html. if we give a label an object, we can control what is shown in edit/display mode in the form: `{ label : { edit: function{}, display: function{} } }`
+
+    Example:
+
+>     vertexLabels: {
+>         inner : {
+>             edit: function(vtx){return vtx.name}, 
+>             display: function(vtx){return vtx.d} 
+>         },
+>         sw    : function(vtx){return vtx.name}, 
+>         ne    : ['u', 'v'],
+>         nw    : ['s'],
+>     }
 
 
 

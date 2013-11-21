@@ -38,55 +38,6 @@ Display multiple arrays, all lined up nice.
 
 
 
- * **defaultInput** :: *Array* -- default Value: `[]`
-
-    the initial value for this array
-
-
-
- * **ignoreIndexZero** :: *Boolean* -- default Value: `false`
-
-    whether the array should appear to be 1-indexed
-
-
-
- * **displayOnly** :: *Boolean* -- default Value: `false`
-
-    whether the array is editable
-
-
-
- * **showChanges** :: *String* | *Array* -- default Value: `"next"`
-
-    type of frame shifts to highlight changes at, can be multiple types with an array of strings
-
-
-
- * **cssRules** :: *Array* -- default Value: `[]`
-
-    an array of triples of the form `[comparison, index-variable-expr, css-class]` where every index in the array that matches the comparason against the given index-variable-expr receives the given css class.
-
-    Example:
-
->     cssRules: [
->         ['>', 'k', 'shaded'],
->         ['=', 'k+i', 'green'],
->     ]
-
-
-
- * **showIndices** :: *Array* -- default Value: `[]`
-
-    an array of index-variable-exprs of the form that show the text of the index-variable-exprs on the indices they correspond to.
-
-
-
- * **showLabel** :: *Boolean* -- default Value: `false`
-
-    whether to show the varName before the array
-
-
-
  * **cellFormat** :: *Function* -- optional
 
     A function that takes the raw contents of each entry and returns the html to be displayed.
@@ -99,9 +50,64 @@ Display multiple arrays, all lined up nice.
 
 
 
+ * **cssRules** :: *Array* -- default Value: `[]`
+
+    an array of quadruples of the form [row/column, comparison, index-variable-expr, css-class] where every row/column in the matrix that matches the comparason against the given index-variable-expr receives the given css class.
+
+    Example:
+
+>     cssRules: [
+>         ['>', 'k', 'shaded'],
+>         ['=', 'k+i', 'green'],
+>     ]
+
+
+
+ * **defaultInput** :: *Array* -- default Value: `[]`
+
+    the initial value for this array
+
+
+
+ * **displayOnly** :: *Boolean* -- default Value: `false`
+
+    whether the array is editable
+
+
+
+ * **ignoreIndexZero** :: *Boolean* -- default Value: `false`
+
+    whether the array should appear to be 1-indexed
+
+
+
  * **persistent** :: *Boolean* -- default Value: `false`
 
     whether to save the result of running the algorithm and to use it as the initial value upon returning to edit mode.
+
+
+
+ * **showCellNumber** :: *Boolean* -- default Value: `true`
+
+    Whether to show a number above each cell.
+
+
+
+ * **showChanges** :: *String* | *Array* -- default Value: `"next"`
+
+    type of frame shifts to highlight changes at, can be multiple types with an array of strings
+
+
+
+ * **showIndices** :: *Array* -- default Value: `[]`
+
+    an array of doubles of the form [row/column, index-variable-expr] that show the text of the index-variable-expr on the row/column it corresponds to.
+
+
+
+ * **showLabel** :: *Boolean* -- default Value: `false`
+
+    whether to show the varName before the array
 
 
 

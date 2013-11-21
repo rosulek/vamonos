@@ -27,21 +27,15 @@ The Controls widget controls the Visualizer - switching modes and frames.
 
 
 
- * **fullscreen** :: *Boolean* -- default Value: `false`
-
-    whether the visualization is in fullscreen mode
-
-
-
  * **buttons** :: *Boolean* -- default Value: `true`
 
     whether to show the buttons
 
 
 
- * **slider** :: *Boolean* -- default Value: `true`
+ * **expandWidth** :: *Boolean* -- default Value: `false`
 
-    whether to show the slider
+    whether to expand the controls to fill its parent
 
 
 
@@ -51,9 +45,9 @@ The Controls widget controls the Visualizer - switching modes and frames.
 
 
 
- * **showWhileSliding** :: *Boolean* -- default Value: `true`
+ * **fullscreen** :: *Boolean* -- default Value: `false`
 
-    whether to update visualization when sliding
+    whether the visualization is in fullscreen mode
 
 
 
@@ -69,9 +63,15 @@ The Controls widget controls the Visualizer - switching modes and frames.
 
 
 
- * **expandWidth** :: *Boolean* -- default Value: `false`
+ * **showWhileSliding** :: *Boolean* -- default Value: `true`
 
-    whether to expand the controls to fill its parent
+    whether to update visualization when sliding
+
+
+
+ * **slider** :: *Boolean* -- default Value: `true`
+
+    whether to show the slider
 
 
 

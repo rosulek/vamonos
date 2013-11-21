@@ -27,86 +27,46 @@
                 <div id="pseudocode" title="MatrixChainMult(dim):">
                     for i = 1 to dim.length - 1
                         opt[i,i] = 0
-                        sol[i,i] = "M i"
                     for l = 2 to dim.length
                         for i = 1 to dim.length - l
                             k = i + l - 1
                             opt[i,k] = &infin;
                             for j = i to k-1
-                                if opt[i,k] &gt; dim[i-1]*dim[j]*dim[k] + best[i,j] + best[j+1,k]
-                                    opt[i,k] = dim[i-1]*dim[j]*dim[k] + best[i,j] + best[j+1,k]
-                                    sol[i,k] = "(sol[i][j] sol[j+1][k])"
+                                prev = best[i,j] + best[j+1,k]
+                                val = dim[i-1]*dim[j]*dim[k] + prev
+                                if opt[i,k] &gt; val
+                                    opt[i,k] = val
                 </div>
             </div>
-        </td><td class="variable-widgets">
+        </td>
+        <td class="variable-widgets">
             <table class="variable-widgets">
-                <tr><td><div id="i-var"></div></td>
-                    <td><div id="i"></div></td>
-                </tr>
-                <tr><td><div id="j-var"></div></td>
-                    <td><div id="j"></div></td>
-                </tr>
-                <tr><td><div id="k-var"></div></td>
-                    <td><div id="k"></div></td>
-                </tr>
-                <tr><td><div id="l-var"></div></td>
-                    <td><div id="l"></div></td>
-                </tr>
                 <tr><td><div id="dim-var"></div></td>
                     <td><div id="dim"></div></td>
                 </tr>
                 <tr><td><div id="opt-var"></div></td>
                     <td><div id="opt"></div></td>
                 </tr>
-                <tr><td><div id="sol-var"></div></td>
-                    <td><div id="sol"></div></td>
+                <tr><td><div id="val-var"></div></td>
+                    <td><div id="val"></div></td>
                 </tr>
             </table>
         </td></tr>
-    </div>
+    </table>
+    <br>
 </body>
 
 <script type="text/javascript">
 var myviz = new Vamonos.Visualizer({
     widgets: [
         new Vamonos.Widget.VarName({
-            container: "i-var",
-            varName: "i",
+            container: "val-var",
+            varName: "val",
         }),
 
         new Vamonos.Widget.VarDisplay({
-            container: "i",
-            varName: "i",
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "j-var",
-            varName: "j",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "j",
-            varName: "j",
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "k-var",
-            varName: "k",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "k",
-            varName: "k",
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "l-var",
-            varName: "l",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "l",
-            varName: "l",
+            container: "val",
+            varName: "val",
         }),
 
         new Vamonos.Widget.VarName({
@@ -118,7 +78,6 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Array({
             container: "dim",
-            showLabel: true,
             varName: "dim",
             defaultInput: [4, 3, 5, 1, 2, 7],
             showIndices: ["i-1", "j", "k"],
@@ -175,7 +134,7 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode",
-            breakpoints: [7,9],
+            breakpoints: [7,10],
         }),
 
         new Vamonos.Widget.Controls({
@@ -193,23 +152,19 @@ var myviz = new Vamonos.Visualizer({
             for (var _i = 1; _i < dim.length; _i++) {
 _(1);               i = _i;
 _(2);               global.opt[i] = {}; global.opt[i][i] = 0;
-_(3);               global.sol[i] = {}; global.sol[i][i] = "M" + i;
             }
             i = null;
-            for (l = 2; l < dim.length; _(4), l++) {
-_(4);           for (var _i = 1; _i < dim.length - l + 1; _i++) {
-_(5);               i = _i;
-_(6);               k = i + l - 1;
-_(7);               global.opt[i][k] = Infinity;
+            for (l = 2; l < dim.length; _(3), l++) {
+_(3);           for (var _i = 1; _i < dim.length - l + 1; _i++) {
+_(4);               i = _i;
+_(5);               k = i + l - 1;
+_(6);               global.opt[i][k] = Infinity;
                     for (var _j = i; _j < k; _j++) {
-_(8);                   j = _j;
-_(9);                   if (global.opt[i][k] > dim[i-1]*dim[j]*dim[k] + 
-                                                    global.opt[i][j] + 
-                                                    global.opt[j+1][k]) {
-_(10);                      global.opt[i][k] = dim[i-1]*dim[j]*dim[k] + 
-                                global.opt[i][j] + global.opt[j+1][k];
-_(11);                      global.sol[i][k] = 
-                                "(" + global.sol[i][j] + " " + global.sol[j+1][k] + ")";
+_(7);                   j = _j;
+_(8);                   prev = global.opt[i][j] + global.opt[j+1][k];
+_(9);                   val = dim[i-1]*dim[j]*dim[k] + prev;
+_(10);                  if (global.opt[i][k] > val) {
+_(11);                      global.opt[i][k] = val;
                         }
                     }
                     j = null;
