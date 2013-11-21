@@ -172,7 +172,11 @@ class Graph
                     y = e.offsetY ? e.pageY - @displayWidget.$outer.offset().top
                     width  = @displayWidget._vertexWidth  ? 24
                     height = @displayWidget._vertexHeight ? 24
-                    @addVertex({x: x - (width / 2), y: y - (height / 2)})
+                    dwH = @displayWidget.$inner.height()
+                    dwW = @displayWidget.$inner.width()
+                    if (y - (height / 2) > 0) and (y + (height / 2) < dwH) and
+                       (x - (width / 2) > 0)  and (x + (width / 2) < dwW) 
+                        @addVertex({x: x - (width / 2), y: y - (height / 2)})
             else
                 if $target.is("div.vertex-contents") and 'vertex' is @selected()
                     sourceId = @$selectedNode.attr("id")
