@@ -50,7 +50,7 @@
                     while p = AugmentingPath(G,s,t)
                         c<sub><i>f</i></sub>(p) = min { c<sub><i>f</i></sub>(u,v) : (u,v) &in; p }
                         for each edge (u,v) in p
-                            if (u,v) &in; E
+                            if (u,v) &in; G.E
                                 (u,v).f = (u,v).f + c<sub><i>f</i></sub>(p)
                             else 
                                 (v,u).f = (v,u).f - c<sub><i>f</i></sub>(p)

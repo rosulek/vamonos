@@ -37,12 +37,6 @@
 
         </td><td class="variable-widgets">
             <table class="variable-widgets">
-                <tr><td><div id="i-var"></div></td>
-                    <td><div id="i"></div></td>
-                </tr>
-                <tr><td><div id="k-var"></div></td>
-                    <td><div id="k"></div></td>
-                </tr>
                 <tr><td><div id="A-var"></div></td>
                     <td><div id="A"></div></td>
                 </tr>
@@ -110,26 +104,6 @@ var myviz = new Vamonos.Visualizer({
             ],
             showIndices: ["i", "k", "best"],
             cellFormat: function(x) { return x ? "["+x.join(",")+"]" : "" }
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "i-var",
-            varName: "i",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "i",
-            varName: "i",
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "k-var",
-            varName: "k",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "k",
-            varName: "k",
         }),
 
         new Vamonos.Widget.VarName({

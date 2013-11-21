@@ -47,6 +47,10 @@ class ArrayGuts
                 "text of the index-variable-exprs on the indices they " +
                 "correspond to."
             defaultValue: []
+        showCellNumber:
+            type: "Boolean"
+            defaultValue: true
+            description: "Whether to show a number above each cell."
         showLabel:
             type: "Boolean"
             defaultValue: false
@@ -96,6 +100,8 @@ class ArrayGuts
 
         @$cells        = []
         @$annotations  = []
+
+        @$rowIndices.hide() if @showCellNumber
 
         @tableContainer.append( @$rowIndices, @$rowCells, @$rowAnnotations )
 
@@ -163,7 +169,9 @@ class ArrayGuts
             #    is not displaying anything
 
             if @displayOnly
-                row.show() for row in [@$rowIndices, @$rowCells, @$rowAnnotations]
+                row.show() for row in [@$rowCells, @$rowAnnotations]
+
+                @$rowIndices.show() if @showCellNumber
 
                 # if this array is display-only, then @theArray (in the stash) would
                 # have gotten reset to null. however, it's not so important that

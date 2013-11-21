@@ -6,6 +6,10 @@ class Queue
         varName:
             type: "String"
             description: "the name of variable that this widget represents"
+        showCellNumber:
+            type: "Boolean"
+            description: "whether to show numbers above queue elements"
+            defaultValue: false
 
     constructor: (args) ->
 
@@ -13,6 +17,8 @@ class Queue
             widgetObject    : this
             givenArgs       : args
             ignoreExtraArgs : true
+
+        args.showCellNumber = @showCellNumber
 
         @arrayWidget = new Vamonos.Widget.Array(args)
 

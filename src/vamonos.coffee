@@ -177,4 +177,3 @@
 
         return $.extend(true, [], obj) if obj instanceof Array
         return $.extend(true, {}, obj)
-
