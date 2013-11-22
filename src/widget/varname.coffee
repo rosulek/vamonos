@@ -15,7 +15,7 @@ class VarName
             description: "the name of variable that this widget represents"
         displayName:
             type: "String"
-            description: "alternate varname to display - defaults to varName"
+            description: "alternate varname to display - defaults to `varName`"
             defaultValue: undefined
         inputVar:
             type: "Boolean"

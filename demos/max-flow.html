@@ -51,6 +51,7 @@
                                 (u,v).f = (u,v).f + c<sub><i>f</i></sub>(p)
                             else
                                 (v,u).f = (v,u).f - c<sub><i>f</i></sub>(p)
+                    max-flow = &Sigma;<sub>(s,u)&in;G.E</sub> (s,u).f
                 </div>
 
             </div>
@@ -63,6 +64,9 @@
                 </tr>
                 <tr><td><div id="gf-var"></div></td>
                     <td><div id="graph-gf"></div></td>
+                </tr>
+                <tr><td><div id="max-flow-var"></div></td>
+                    <td><div id="max-flow"></div></td>
                 </tr>
             </table>
 
@@ -82,7 +86,6 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-main",
-            //breakpoints: [3],
             breakpoints: [3,4,5,6,7,8,9,10],
         }),
 
@@ -139,6 +142,17 @@ var myviz = new Vamonos.Visualizer({
                     { source: 'v2', target: 'v5', c: 3 },
                 ]
             }),
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "max-flow-var",
+            varName: "global::maxflow",
+            displayName: "max-flow",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "max-flow",
+            varName: "global::maxflow",
         }),
 
         new Vamonos.Widget.VarName({
@@ -257,6 +271,11 @@ _(10);                      e.f = e.f - cfp;
                     u = v = undefined;
                     i++;
                 }
+_(11);          global.maxflow = 0;
+                G.eachNeighbor(s, function(u){ 
+                    e = G.edge(s,u);
+                    global.maxflow += e.f;
+                })
             }
         },
     }
