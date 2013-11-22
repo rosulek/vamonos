@@ -155,16 +155,13 @@ class GraphDisplay
         for vertex in graph.getVertices()
             continue if @nodes[vertex.id]?
             @addNode(vertex)
-        for edge in graph.getEdges()
-            continue if @connections[edge.source.id]?[edge.target.id]?
-            continue if (
-                @connections[edge.target.id]?[edge.source.id]? and
-                not @directed
-            )
-            @addConnection(edge, graph)
         @eachConnection (sourceId, targetId) =>
             unless graph.edge(sourceId, targetId)
                 @removeConnection(sourceId, targetId, graph)
+        for edge in graph.getEdges()
+            continue if @connections[edge.source.id]?[edge.target.id]?
+            continue if not @directed and @connections[edge.target.id]?[edge.source.id]?
+            @addConnection(edge, graph)
         @eachNode (vid, node) =>
             if graph.vertex(vid)
                 @updateNode(node, graph.vertex(vid), frame)
@@ -352,18 +349,21 @@ class GraphDisplay
         return con
 
     removeConnection: (sourceId, targetId, graph) ->
-        if @backEdges?[sourceId]?[targetId]?
+        # if the edge is a back edge in a directed graph
+        if @directed and @backEdges?[sourceId]?[targetId]?
             con = @backEdges[sourceId][targetId]
             con.removeOverlay("backArrow") 
             @setLabel(con, graph) if @mode is 'display'
             delete @backEdges[sourceId][targetId]
             delete @connections[sourceId][targetId]
 
-        else if @backEdges?[targetId]?[sourceId]?
+        # if the edge has a back edge and is in a directed graph
+        else if @directed and @backEdges?[targetId]?[sourceId]?
             con = @backEdges[targetId][sourceId]
             @jsPlumbInstance.detach(con)
             delete @backEdges[targetId][sourceId]
             delete @connections[sourceId][targetId]
+            delete @connections[targetId][sourceId]
             @addConnection(graph.edge(targetId,sourceId), graph)
 
         else

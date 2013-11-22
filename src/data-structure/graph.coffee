@@ -41,7 +41,7 @@ class Graph
     constructor: (args = {}) ->
         
         @directed = args.directed ? no
-        @idPrefix = args.prefix   ? ""
+        @prefix = args.prefix   ? ""
 
         @type     = 'Graph'
         @edges    = {}
@@ -101,7 +101,7 @@ class Graph
     @interface.nextVertexId = description: "returns an unused vertex id"
     nextVertexId: () ->
         @_customVertexNum ?= 0
-        "#{@idPrefix ? "custom"}-vertex-#{@_customVertexNum++}"
+        "#{@prefix ? "custom"}-vertex-#{@_customVertexNum++}"
 
 
     @interface.returnVertexName = 
@@ -241,7 +241,7 @@ class Graph
         s  = """
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: #{ @directed },
-                prefix: "#{ @idPrefix }",
+                prefix: "#{ @prefix }",
                 vertices: [\n
             """
 
