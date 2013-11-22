@@ -220,11 +220,13 @@ class Graph
             con.removeOverlay("editableEdgeLabel")
             con.removeOverlay("edgeLabel")
 
-            if @theGraph.directed and @theGraph.edge(con.targetId, con.sourceId)
-                loc = 0.75
-                backLoc = 0.25
+            if @theGraph.directed 
+                loc = 0.70
             else
                 loc = 0.5
+
+            if @theGraph.directed and @theGraph.edge(con.targetId, con.sourceId)
+                backLoc = 0.30
 
             con.addOverlay([
                 "Custom"

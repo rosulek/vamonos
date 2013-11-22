@@ -411,10 +411,12 @@ class GraphDisplay
         con.removeOverlay("edgeLabel")
         con.removeOverlay("edgeLabel")
 
+        if graph.directed
+            loc = 0.70
+
         if graph.directed and graph.edge(con.targetId, con.sourceId)
             backEdge = graph.edge(con.targetId, con.sourceId)
-            loc = 0.75
-            backLoc = 0.25
+            backLoc = 0.30
 
         edge = graph.edge(con.sourceId, con.targetId)
 
