@@ -296,7 +296,7 @@ div.graph-label {
   font-family: sans-serif;
   font-size: .8em;
   cursor: default;
-  background: aliceblue;
+  background: #F3F3F3;
   padding: 0 1px 0 1px;
 }
 div.graph-drawer {

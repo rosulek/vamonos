@@ -16,6 +16,10 @@
             font-size: .8em;
         }
 
+        .vertex-sw-label {
+            font-style: italic;
+        }
+
         .vertex-ne-label, .vertex-nw-label {
             font-weight: bold;
         }
@@ -47,11 +51,11 @@
                     while p = AugmentingPath(G,s,t)
                         for each edge (u,v) in p
                             if (u,v) &in; G.E
-                                (u,v).f = True
+                                (u,v).f = 1
                             else
-                                (v,u).f = False
+                                (v,u).f = 0
+                    num-matches = &Sigma;<sub>(s,u)&in;G.E</sub> (s,u).f
                 </div>
-
             </div>
 
         </td><td class="variable-widgets">
@@ -62,6 +66,9 @@
                 </tr>
                 <tr><td><div id="gf-var"></div></td>
                     <td><div id="graph-gf"></div></td>
+                </tr>
+                <tr><td><div id="num-matches-var"></div></td>
+                    <td><div id="num-matches"></div></td>
                 </tr>
             </table>
 
@@ -81,8 +88,18 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-main",
-            //breakpoints: [3],
-            breakpoints: [3,4,5,6,7,8,9,10],
+            breakpoints: [3,4,5,6,7,8,9],
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "num-matches-var",
+            varName: "global::matches",
+            displayName: "num-matches",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "num-matches",
+            varName: "global::matches",
         }),
 
         new Vamonos.Widget.VarName({
@@ -101,8 +118,9 @@ var myviz = new Vamonos.Visualizer({
             },
             vertexLabels: {
                 inner: function(vtx){return vtx.name},
-                nw   : ["s", "t"],
-                ne   : ["u", "v"],
+                nw   : ["s"],
+                ne   : ["t"],
+                sw   : ["u", "v"],
             },
             colorEdges: [
                 ["u->v", "#92E894"],
@@ -245,7 +263,7 @@ _(3);           Gf = ResidualGraph(G);
                 var done = false;
                 i = 0;
                 while (_(4), !done) {
-                    p = DFS(Gf,sf,tf);
+                    p = BFS(Gf,sf,tf);
                     if (!p.length) { done = true }
                     // get the flow for each edge on the path
                     var flows = p.map(function(e){ return e.f });
@@ -271,6 +289,11 @@ _(9);                       e.f = e.f - cfp;
                     u = v = undefined;
                     i++;
                 }
+_(10);          global.matches = 0;
+                G.eachNeighbor(s, function(u){ 
+                    e = G.edge(s,u);
+                    global.matches += e.f;
+                })
             }
         },
     }
@@ -312,35 +335,43 @@ var ResidualGraph = function(G){
     return newG;
 };
 
-var DFS = function(G,s,t){
-
-    var DFS_helper = function(x) {
-        var oes = G.outgoingEdges(x);
-        x.visited = true;
-        for (var i=0; i < oes.length; i++) {
-            var e = oes[i];
-            var y = G.vertex(e.target.id);
-            if (y == t) {
-                y.visited = true;
-                y.pred = x;
-                return [e];
-            } else if (!y.visited) {
-                var r = DFS_helper(y);
-                if (r.length) {
-                    r.unshift(e);
-                    y.visited = true;
-                    y.pred = x;
-                    return r;
-                }
+var BFS = function(G,s,t){
+    var Q = [];
+    G.eachNeighbor(s, function(u){ 
+        u.pred = s;
+        Q.push(u);
+    });
+    s.pred = false;
+    var done = false;
+    while (!done && Q.length) {
+        var u = Q.shift();
+        var neighbors = G.neighbors(u);
+        for (var i = 0; i < neighbors.length; i++) {
+            var v = neighbors[i];
+            if (v.pred !== undefined) continue;
+            v.pred = u;
+            if (v == t) {
+                done = true;
+                break;
             }
+            Q.push(v);
         }
-        return [];
-    };
-
-    G.eachVertex(function(v){ delete v.visited });
-
-    var ret = DFS_helper(s);
-    return ret
+    }
+    var path = [];
+    var inPath = {};
+    var u = t;
+    while (u) {
+        var e = G.edge(u.pred, u);
+        if (e) {
+            path.unshift(e);
+            inPath[u.id] = true;
+        }
+        u = u.pred;
+    }
+    G.eachVertex(function(v){
+        if (!inPath[v.id]) delete v.pred;
+    });
+    return path;
 };
 
 </script></html>
