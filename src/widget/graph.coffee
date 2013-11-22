@@ -217,7 +217,7 @@ class Graph
             @displayWidget.resetConnectionStyle(c)
         if @edgeLabel?
             con.removeOverlay("editableEdgeLabel")
-            con.removeOverlay("editableEdgeLabel")
+            con.removeOverlay("editableEdgeLabel-back")
             con.removeOverlay("edgeLabel")
 
             if @theGraph.directed 
@@ -243,7 +243,7 @@ class Graph
                 create: =>
                     backEdge = @theGraph.edge(con.targetId, con.sourceId)
                     @createEditableEdgeLabel(backEdge, con)
-                id: "editableEdgeLabel"
+                id: "editableEdgeLabel-back"
                 cssClass: "graph-label"
                 location: backLoc
             ]) if backLoc?
@@ -254,7 +254,7 @@ class Graph
             con.unbind("mouseenter")
             con.unbind("mouseexit")
             con.removeOverlay("editableEdgeLabel")
-            con.removeOverlay("editableEdgeLabel")
+            con.removeOverlay("editableEdgeLabel-back")
 
     selected: ->
         return 'vertex' if @$selectedNode?

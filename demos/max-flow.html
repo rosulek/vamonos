@@ -16,6 +16,10 @@
             font-size: .8em;
         }
 
+        .vertex-sw-label {
+            font-style: italic;
+        }
+
         .vertex-ne-label, .vertex-nw-label {
             font-weight: bold;
         }
@@ -105,8 +109,9 @@ var myviz = new Vamonos.Visualizer({
             },
             vertexLabels: {
                 inner: function(vtx){return vtx.name},
-                nw   : ["s", "t"],
-                ne   : ["u", "v"],
+                nw   : ["s"],
+                ne   : ["t"],
+                sw   : ["u", "v"],
             },
             edgeLabel: {
                 edit: [ 'c', 1 ],
@@ -326,7 +331,7 @@ var BFS = function(G,s,t){
     s.pred = false;
     var done = false;
     while (!done && Q.length) {
-        var u = Q.pop();
+        var u = Q.shift();
         var neighbors = G.neighbors(u);
         for (var i = 0; i < neighbors.length; i++) {
             var v = neighbors[i];
