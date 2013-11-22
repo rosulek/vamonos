@@ -245,7 +245,7 @@ _(3);           Gf = ResidualGraph(G);
                 var done = false;
                 i = 0;
                 while (_(4), !done) {
-                    p = DFS(Gf,sf,tf);
+                    p = BFS(Gf,sf,tf);
                     if (!p.length) { done = true }
 _(5);               // get the flow for each edge on the path
                     var flows = p.map(function(e){ return e.f });
@@ -317,35 +317,43 @@ var ResidualGraph = function(G){
     return newG;
 };
 
-var DFS = function(G,s,t){
-
-    var DFS_helper = function(x) {
-        var oes = G.outgoingEdges(x);
-        x.visited = true;
-        for (var i=0; i < oes.length; i++) {
-            var e = oes[i];
-            var y = G.vertex(e.target.id);
-            if (y == t) {
-                y.visited = true;
-                y.pred = x;
-                return [e];
-            } else if (!y.visited) {
-                var r = DFS_helper(y);
-                if (r.length) {
-                    r.unshift(e);
-                    y.visited = true;
-                    y.pred = x;
-                    return r;
-                }
+var BFS = function(G,s,t){
+    var Q = [];
+    G.eachNeighbor(s, function(u){ 
+        u.pred = s;
+        Q.push(u);
+    });
+    s.pred = false;
+    var done = false;
+    while (!done && Q.length) {
+        var u = Q.pop();
+        var neighbors = G.neighbors(u);
+        for (var i = 0; i < neighbors.length; i++) {
+            var v = neighbors[i];
+            if (v.pred !== undefined) continue;
+            v.pred = u;
+            if (v == t) {
+                done = true;
+                break;
             }
+            Q.push(v);
         }
-        return [];
-    };
-
-    G.eachVertex(function(v){ delete v.visited });
-
-    var ret = DFS_helper(s);
-    return ret
+    }
+    var path = [];
+    var inPath = {};
+    var u = t;
+    while (u) {
+        var e = G.edge(u.pred, u);
+        if (e) {
+            path.unshift(e);
+            inPath[u.id] = true;
+        }
+        u = u.pred;
+    }
+    G.eachVertex(function(v){
+        if (!inPath[v.id]) delete v.pred;
+    });
+    return path;
 };
 
 </script></html>
