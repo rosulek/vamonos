@@ -74,7 +74,8 @@ We have developed pre-made visualizations of many common algorithms. Click any o
    * [Depth-first search](demos/dfs.html)
    * [Dijkstra's SSSP algorithm](demos/dijkstra.html)
    * [Prim's MST algorithm](demos/prims.html)
-   * [Ford-Fulkerson Max Flow](demos/ford-fulkerson.html)
+   * [Ford-Fulkerson Max Flow](demos/max-flow.html)
+   * [Ford-Fulkerson Bipartite Matching](demos/bipartite-matching.html)
 
 # Download: <span class="construction"></span>
 The latest version of Vamonos is v1.1.0.
