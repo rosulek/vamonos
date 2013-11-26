@@ -22,16 +22,17 @@ class GraphDisplay
                 "an object, we can control what is shown in edit/display " +
                 "mode in the form: " +
                 "`{ label : { edit: function{}, display: function{} } }`"
-            example: 
-                "vertexLabels: {\n" +
-                "    inner : {\n" +
-                "        edit: function(vtx){return vtx.name}, \n" +
-                "        display: function(vtx){return vtx.d} \n" +
-                "    },\n" +
-                "    sw    : function(vtx){return vtx.name}, \n" +
-                "    ne    : ['u', 'v'],\n" +
-                "    nw    : ['s'],\n" +
-                "}"
+            example: """
+                vertexLabels: {
+                    inner : {
+                        edit: function(vtx){return vtx.name}, 
+                        display: function(vtx){return vtx.d} 
+                    },
+                    sw    : function(vtx){return vtx.name}, 
+                    ne    : ['u', 'v'],
+                    nw    : ['s'],
+                }
+                """
         edgeLabel: 
             type: ["Object", "Array","Function"]
             defaultValue: undefined
@@ -40,25 +41,32 @@ class GraphDisplay
                 "and the default value for new edges or a function taking an edge " +
                 "and returning a string. one can also specify whether to show certain " +
                 "things in edit or display mode by using an object."
-            example:
-                "edgeLabel: { display: [ 'w', 1 ], edit: function(e){ return e.w } }"
+            example: """
+                edgeLabel: { display: [ 'w', 1 ], edit: function(e){ return e.w } }
+                """
         colorEdges:
             type: "Array"
             defaultValue: []
             description:
                 "provides a way to set edge coloring based on vertex variables " +
                 "or edge properties. takes an array of doubles of the form  " +
-                "`[ edge-predicate, color ]`, where color is a hex color and edge-" +
+                "`[ edge-predicate, color, [optional weight] ]`, where color is a hex color and edge-" +
                 "predicate is either a string of the form `'vertex1->vertex2'` or " +
-                "a function that takes an edge and returns a boolean"
-            example:
-                "colorEdges: [\n" +
-                "    ['u->v', '#FF7D7D'],\n" +
-                "    [ function(edge){\n" +
-                "        return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)\n" +
-                "            || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }\n" +
-                "    , '#92E894' ],\n" +
-                "]"
+                "a function that takes an edge and returns a boolean. Also for added " +
+                "complexity and enjoyment, the color string can also be a function taking " +
+                "an edge and returning a color string or a color string and a width (if " +
+                "it returns an array)."
+            example: """
+                colorEdges: [
+                    ['u->v', '#FF7D7D'],
+                    [ function(edge){
+                        return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
+                            || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }
+                    , '#92E894' ],
+                    [ 'w->t', function(e){ if (e.f > 10) return "blue"; } ],
+                    [ 'w->x', function(e){ if (e.f < 10) return ["blue",10]; } ],
+                ]
+                """
         vertexCssAttributes:
             type: "Object"
             defaultValue: {}
@@ -70,9 +78,10 @@ class GraphDisplay
                 "the attribute. in the case of a list of values, the css " +
                 "class will be of the form 'attribute-value' when its value " +
                 "matches."
-            example:
-                "vertexCssAttributes: { done: true }\n" +
-                "vertexCssAttributes: { color: ['white', 'gray', 'black'] }"
+            example: """
+                vertexCssAttributes: { done: true }
+                vertexCssAttributes: { color: ['white', 'gray', 'black'] }
+                """
         containerMargin:
             type: "Number"
             defaultValue: 30
@@ -104,11 +113,11 @@ class GraphDisplay
             widgetObject : this
             givenArgs    : args
 
-        @connections       = {}
-        @nodes             = {}
-        @$outer            = Vamonos.jqueryify(@container)
-        @$inner            = $("<div>", {class: "graph-inner-container"})
-        @graphDrawn        = no
+        @connections = {}
+        @nodes       = {}
+        @$outer      = Vamonos.jqueryify(@container)
+        @$inner      = $("<div>", {class: "graph-inner-container"})
+        @graphDrawn  = no
 
         if @edgeLabel?.constructor.name isnt 'Object'
             @edgeLabel = { edit: @edgeLabel, display: @edgeLabel }
@@ -375,20 +384,38 @@ class GraphDisplay
             delete @connections[sourceId][targetId]
             delete @connections[targetId][sourceId] unless @directed
 
+    setStyle: (con, edge, color, width) ->
+        if color.constructor.name is 'String'
+            con.setPaintStyle(@customStyle(color, width))
+
+        else if color.constructor.name is 'Function'
+            res = color(edge)
+            if res.constructor.name is 'String'
+                con.setPaintStyle(@customStyle(res))
+            else if res.constructor.name is 'Array'
+                con.setPaintStyle(@customStyle(res[0],res[1]))
+
     updateConnections: (graph, frame) ->
         return unless @colorEdges?
+
         @eachConnection (sourceId, targetId, con) =>
             @resetConnectionStyle(con)
             @setLabel(con, graph) if @mode is 'display'
+
         for style in @colorEdges
+            # the first elem of style is a string from one vertex var to another "u->v"
             if typeof style[0] is 'string'
                 [source, target] = style[0].split(/->/).map((v)->frame[v])
                 continue unless source? and target?
                 con = @connections[source.id]?[target.id]
-                continue unless con?
-                con.setPaintStyle(@customStyle(style[1]))
+                edge = graph.edge(source.id, target.id)
+                continue unless con? and edge?
+                @setStyle(con, edge, style[1], style[2])
+
+            # the first elem of style is a function taking an edge and returning a bool
             else if typeof style[0] is 'function'
                 for edge in graph.getEdges()
+                    # this gets around some funkiness having to do with references
                     edgeHack =
                         source: graph.vertex(edge.source)
                         target: graph.vertex(edge.target)
@@ -396,7 +423,7 @@ class GraphDisplay
                         edgeHack[attr] = val
                     if style[0](edge) or style[0](edgeHack)
                         con = @connections[edge.source.id]?[edge.target.id]
-                        con.setPaintStyle(@customStyle(style[1]))
+                        @setStyle(con, edge, style[1], style[2])
 
     resetConnectionStyle: (con) ->
         con.setPaintStyle(@normalPaintStyle)
@@ -495,8 +522,8 @@ class GraphDisplay
         lineWidth   : @lineWidth
         strokeStyle : @darkEdgeColor
 
-    customStyle: (color) ->
-        lineWidth   : GraphDisplay.lineWidth
+    customStyle: (color, width) ->
+        lineWidth   : width ? GraphDisplay.lineWidth
         strokeStyle : color
 
 @Vamonos.export { Widget: { GraphDisplay } }

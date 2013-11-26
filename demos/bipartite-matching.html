@@ -49,7 +49,8 @@
                     for each edge (u,v) &in; G.E
                         (u,v).f = 0
                     G<sub>f</sub> = ResidualGraph(G)
-                    while p = AugmentingPath(G,s,t)
+                    while there is an augmenting path in G
+                        p = AugmentingPath(G,s,t)
                         for each edge (u,v) in p
                             if (u,v) &in; G.E
                                 (u,v).f = 1
@@ -89,7 +90,7 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-main",
-            breakpoints: [3,4,5,6,7,8,9],
+            breakpoints: [4,5],
         }),
 
         new Vamonos.Widget.VarName({
@@ -267,23 +268,23 @@ _(3);           G_f = ResidualGraph(G);
                 i = 0;
                 while (_(4), !done) {
                     p = BFS(G_f,s_f,t_f);
-                    if (!p.length) { done = true }
+_(5);               if (!p.length) { done = true }
                     // get the flow for each edge on the path
                     var flows = p.map(function(e){ return e.f });
                     // cfp is the min flow for each edge on the path
                     cfp = Math.min.apply(null, flows);
                     // augment the flow in G along each edge of the path
                     p.map(function(pEdge){
-_(5);                   u = G.vertex(pEdge.source.oldId);
+_(6);                   u = G.vertex(pEdge.source.oldId);
                         v = G.vertex(pEdge.target.oldId);
                         uf = ResidualVtx(u);
                         vf = ResidualVtx(v);
                         e = G.edge(u,v);
-                        if (_(6), e) {
-_(7);                       e.f = e.f + cfp;
+                        if (_(7), e) {
+_(8);                       e.f = e.f + cfp;
                         } else {
-_(8);                       e = G.edge(v,u);
-_(9);                       e.f = e.f - cfp;
+_(9);                       e = G.edge(v,u);
+_(10);                      e.f = e.f - cfp;
                         }
                         // update the residual graph
                         UpdateResidualEdge(e);
@@ -292,7 +293,7 @@ _(9);                       e.f = e.f - cfp;
                     u = v = undefined;
                     i++;
                 }
-_(10);          global.matches = 0;
+_(11);          global.matches = 0;
                 G.eachNeighbor(s, function(u){ 
                     e = G.edge(s,u);
                     global.matches += e.f;
