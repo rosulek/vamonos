@@ -34,7 +34,7 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
 
  * **colorEdges** :: *Array* -- default Value: `[]`
 
-    provides a way to set edge coloring based on vertex variables or edge properties. takes an array of doubles of the form  `[ edge-predicate, color ]`, where color is a hex color and edge-predicate is either a string of the form `'vertex1->vertex2'` or a function that takes an edge and returns a boolean
+    provides a way to set edge coloring based on vertex variables or edge properties. takes an array of doubles of the form  `[ edge-predicate, color, [optional weight] ]`, where color is a hex color and edge-predicate is either a string of the form `'vertex1->vertex2'` or a function that takes an edge and returns a boolean. Also for added complexity and enjoyment, the color string can also be a function taking an edge and returning a color string or a color string and a width (if it returns an array).
 
     Example:
 
@@ -44,6 +44,8 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
 >             return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
 >                 || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }
 >         , '#92E894' ],
+>         [ 'w->t', function(e){ if (e.f > 10) return "blue"; } ],
+>         [ 'w->x', function(e){ if (e.f < 10) return ["blue",10]; } ],
 >     ]
 
 
@@ -109,6 +111,12 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
  * **resizable** :: *Boolean* -- default Value: `true`
 
     whether the graph widget is resizable
+
+
+
+ * **showChanges** :: *String* | *Array* -- default Value: `"next"`
+
+    type of frame shifts to highlight changes at, can be multiple types with an array of strings
 
 
 

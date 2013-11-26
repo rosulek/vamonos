@@ -29,7 +29,11 @@ VarName shows the variable name and provides a buton to set the variable as a wa
 
  * **displayName** :: *String* -- optional
 
-    alternate varname to display - defaults to `varName`
+    alternate varname to display - defaults to `varName`. subscript can be displayed as everything following an underscore.
+
+    Example:
+
+>     displayName: "G_f"
 
 
 
