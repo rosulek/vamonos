@@ -332,7 +332,7 @@ class GraphDisplay
                 return true if oldv[k]?.id isnt v.id
             else
                 return true if oldv[k] isnt v
-        for k,v of newv
+        for k,v of oldv
             if v.type is "Vertex"
                 return true if newv[k]?.id isnt v.id
             else

@@ -24,6 +24,11 @@ class Graph
             type: "Boolean"
             defaultValue: true
             description: "whether the graph allows user input"
+        showChanges:
+            type: ["String", "Array"]
+            description: "type of frame shifts to highlight changes at, " +
+                        "can be multiple types with an array of strings"
+            defaultValue: "next"
         tooltips:
             type: "Boolean"
             defaultValue: true
@@ -35,6 +40,8 @@ class Graph
             widgetObject   : this
             givenArgs      : args
             ignoreExtraArgs: true
+
+        @showChanges = Vamonos.arrayify(@showChanges)
 
         delete args[a] for a in ["tooltips", "varName","defaultGraph","inputVars", "editable"]
 
@@ -59,6 +66,11 @@ class Graph
 
         when "render"
             [frame, type] = options
+            if type in @showChanges
+                @displayWidget.highlightChanges = true
+            else
+                @displayWidget.highlightChanges = false
+
             if frame[@varName]?
                 @displayWidget.fitGraph(frame[@varName])
                 @displayWidget.draw(frame[@varName], frame)
