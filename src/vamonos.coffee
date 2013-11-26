@@ -59,6 +59,12 @@
     warn: (objName, str) ->
         console.log("### WARNING ### #{objName}: #{str}")
 
+    resolveSubscript: (name) ->
+        nameMatches = name.match(/(.+)_(.+)/)
+        return name unless nameMatches?
+        [_,lname,subscript] = nameMatches
+        return "#{ lname }<sub>#{ subscript }</sub> "
+
     formatObject: (object, attributes = [], prevObj) ->
         if prevObj? and object.name? and object.name isnt prevObj.name
             addClass = "class='changed'"

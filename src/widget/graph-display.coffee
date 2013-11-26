@@ -290,13 +290,15 @@ class GraphDisplay
                 if style.constructor.name is "Function"
                     Vamonos.rawToTxt(style(vertex))
                 else if style.constructor.name is "Array"
-                    (Vamonos.removeNamespace(v) for v in style when frame[v]?.id is vertex.id)
-                        .join(",")
+                    res = []
+                    for v in style when frame[v]?.id is vertex.id
+                        res.push(Vamonos.resolveSubscript(Vamonos.removeNamespace(v)))
+                    res.join(",")
                 else if style.constructor.name is "Object"
                     Vamonos.rawToTxt(style[@mode](vertex))
                 else
-                    style
-            )
+                    style)
+
 
     updateNodeClasses: ($node, vertex) ->
         if @highlightChanges and @mode is 'display' and @vertexChanged(vertex)

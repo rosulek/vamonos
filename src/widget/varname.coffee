@@ -15,8 +15,11 @@ class VarName
             description: "the name of variable that this widget represents"
         displayName:
             type: "String"
-            description: "alternate varname to display - defaults to `varName`"
+            description: 
+                "alternate varname to display - defaults to `varName`. " +
+                "subscript can be displayed as everything following an underscore."
             defaultValue: undefined
+            example: "displayName: \"G_f\""
         inputVar:
             type: "Boolean"
             description: "whether to accept input for this variable in edit mode"
@@ -37,6 +40,7 @@ class VarName
             givenArgs    : args
 
         @displayName ?= @varName
+        @displayName = Vamonos.resolveSubscript(@displayName)
 
         @$container = Vamonos.jqueryify(@container)
         @watching &&= @watchable
@@ -54,7 +58,7 @@ class VarName
         when "setup"
             [@viz] = options
             @viz.registerVariable(@varName) 
-            @viz.setWatchVar(@varName)                    if @watching
+            @viz.setWatchVar(@varName) if @watching
 
         when "editStart"
             @setWatchStatus()

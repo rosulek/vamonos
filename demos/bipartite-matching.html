@@ -22,6 +22,7 @@
 
         .vertex-ne-label, .vertex-nw-label {
             font-weight: bold;
+            font-style: italic;
         }
 
         .vertex-contents {
@@ -176,15 +177,17 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.VarName({
             container: "gf-var",
-            varName: "Gf",
+            varName: "G_f",
         }),
 
         new Vamonos.Widget.Graph({
-            varName: "Gf",
+            varName: "G_f",
             container: "graph-gf",
             editable: false,
             vertexLabels: {
                 inner: function(vtx){return vtx.name},
+                nw   : ["s_f"],
+                ne   : ["t_f"],
             },
             colorEdges: [
                 [ function(edge){
@@ -216,7 +219,7 @@ var myviz = new Vamonos.Visualizer({
                 // ResidualVtx :: Helper function that gets the equivalent 
                 // vtx from the residual graph
                 var ResidualVtx = function(vtx) {
-                    return Gf.vertex( Gf.prefix + vtx.id );
+                    return G_f.vertex( G_f.prefix + vtx.id );
                 }
 
                 // UpdateResidualEdge :: helper function that updates the 
@@ -224,27 +227,27 @@ var myviz = new Vamonos.Visualizer({
                 var UpdateResidualEdge = function(e){
                     var uf = ResidualVtx(e.source);
                     var vf = ResidualVtx(e.target);
-                    var ef = Gf.edge(uf,vf);
-                    var bf = Gf.edge(vf,uf);
+                    var ef = G_f.edge(uf,vf);
+                    var bf = G_f.edge(vf,uf);
                     // forward edge
                     var val = e.c - e.f;
                     if (val > 0) {
                         if (ef)
                             ef.f = val
                         else
-                            Gf.addEdge(uf,vf,{f:val});
+                            G_f.addEdge(uf,vf,{f:val});
                     } else {
                         if (ef) 
-                            Gf.removeEdge(uf,vf);
+                            G_f.removeEdge(uf,vf);
                     }
                     // back edge
                     if (e.f > 0) {
                         if (bf)
                             bf.f = e.f
                         else
-                            Gf.addEdge(vf,uf,{f:e.f});
+                            G_f.addEdge(vf,uf,{f:e.f});
                     } else {
-                        if (bf) Gf.removeEdge(vf,uf);
+                        if (bf) G_f.removeEdge(vf,uf);
                     }
                 };
 
@@ -256,14 +259,14 @@ _(2);               e.f = 0;
                 })
                 u = v = undefined;
 
-_(3);           Gf = ResidualGraph(G);
-                sf = ResidualVtx(s);
-                tf = ResidualVtx(t);
+_(3);           G_f = ResidualGraph(G);
+                s_f = ResidualVtx(s);
+                t_f = ResidualVtx(t);
 
                 var done = false;
                 i = 0;
                 while (_(4), !done) {
-                    p = BFS(Gf,sf,tf);
+                    p = BFS(G_f,s_f,t_f);
                     if (!p.length) { done = true }
                     // get the flow for each edge on the path
                     var flows = p.map(function(e){ return e.f });

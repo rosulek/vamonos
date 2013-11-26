@@ -344,7 +344,8 @@ class Graph
                 # we have to close over v in this loop. otherwise multiple variables will be all set to the
                 # final variable in the click handler.
                 do (v, vtx, buttons, inputVars = @inputVars, displayWidget = @displayWidget, theGraph = @theGraph) ->
-                    $b = $("<button>", { text: "#{v}", title: "Set #{v}=#{vtx.name}" })
+                    vName = Vamonos.resolveSubscript(v)
+                    $b = $("<button>", { text: "#{vName}", title: "Set #{vName}=#{vtx.name}" })
                     $b.on "click.vamonos-graph", (e) =>
                         inputVars[v] = vtx
                         displayWidget.draw(theGraph, inputVars)
