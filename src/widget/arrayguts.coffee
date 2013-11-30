@@ -185,8 +185,11 @@ class ArrayGuts
 
 
     render: (frame, type) ->
-        newArray = frame[@varName] ? []
+        newArray = frame[@varName]
 
+        unless newArray?
+            newArray = if @ignoreIndexZero then [Infinity] else []
+    
         row.find("td").removeClass() for row in [@$rowIndices, @$rowCells, @$rowAnnotations]
 
         # equalize the lengths
@@ -209,9 +212,10 @@ class ArrayGuts
                 $selector.addClass(className)
 
         # apply the "changed" class after applying the other css rules
-        showChange = type in @showChanges
-        for i in [@firstIndex...newArray.length]
-            @arraySetFromRaw(i, newArray[i], showChange)
+        if newArray.length
+            showChange = type in @showChanges
+            for i in [@firstIndex...newArray.length]
+                @arraySetFromRaw(i, newArray[i], showChange)
 
         indices = {}
         for i in @showIndices
@@ -361,7 +365,7 @@ class ArrayGuts
 
     arrayPushRaw: (val, showChanges) ->
         newindex = @theArray.length
-        @theArray.push(val);
+        @theArray.push(val)
 
         $newCell = $("<td>", {text: @cellFormat(val)})
         $newAnnotation = $("<td>")
@@ -376,9 +380,9 @@ class ArrayGuts
         @markChanged(newindex) if showChanges
 
     arrayChopLast: ->
-        @theArray.length--;
-        @$cells.length--;
-        @$annotations.length--;
+        @theArray.length--
+        @$cells.length--
+        @$annotations.length--
 
         row.find("td:last-child").remove() for row in [@$rowIndices, @$rowCells, @$rowAnnotations]
     
