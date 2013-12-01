@@ -55,6 +55,7 @@ We have developed pre-made visualizations of many common algorithms. Click any o
 
    * [Insertion sort](demos/insertion_sort.html)
    * [Selection sort](demos/selection_sort.html)
+   * [Mergesort](demos/mergesort.html)
    * [Quicksort](demos/quicksort.html)
 
 * Recursion:
