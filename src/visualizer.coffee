@@ -222,7 +222,8 @@ class Visualizer
             @procedures[procName] = @wrapProcedure(procName, procedure)
 
     wrapProcedure: (procName, procedure) ->
-        return (args = {}) =>
+        return (args = {}, locals) =>
+
             newScope =
                 _procName    : procName
                 _args        : args
@@ -262,7 +263,6 @@ class Visualizer
             unless args._tailCall
                 @stash.callStack.shift()
                 @stash.currentScope = @stash.callStack[0]
-
 
             return ret
 

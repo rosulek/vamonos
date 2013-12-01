@@ -140,6 +140,8 @@ class ArrayGuts
             else
                 @$rowCells.on("click.arrayguts", "td", {}, (e) => @tdClick(e) )
                 @$rowCells.prop("title", "Click in any cell to edit this array")
+
+            @adjustHeight()
         
         when "editStop"
             if ! @displayOnly
@@ -230,6 +232,16 @@ class ArrayGuts
         for i in [@firstIndex...newArray.length]
             @$annotations[i].html( indices[i].join(", ") ) if indices[i]?
 
+        @adjustHeight()
+
+    # maintains consistent height of array
+    adjustHeight: () ->
+        if @container.height() > (@maxHeight ? 0)
+            @maxHeight = @container.height() 
+        else
+            @container.height(@maxHeight)
+
+
     virtualIndex: (frame, indexStr) ->
         return null unless indexStr.match(/^([a-zA-Z_]+|\d+)((-|\+)([a-zA-Z_]+|\d+))*$/g)
         tokens = indexStr.match(/[a-zA-Z_]+|-|\+|\d+/g)
@@ -253,8 +265,6 @@ class ArrayGuts
             /^((?:[\w\d_]+::)?[a-zA-Z_]+|\d+)((-|\+)((?:[\w\d_]+::)?[a-zA-Z_]+|\d+))*$/g
         )
         return indexStr.match(/((?:[\w\d_]+::)?[a-zA-Z_]+)/g)
-
-
 
     tdClick: (event) ->
         # ignore clicks on existing inputbox

@@ -82,5 +82,4 @@ class VarDisplay
         @dontShowChange = undefined
         @oldval = frame[@varName] ? { dummyObj: true } 
 
-
 @Vamonos.export { Widget: { VarDisplay } }

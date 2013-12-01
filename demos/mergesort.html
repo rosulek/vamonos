@@ -1,0 +1,233 @@
+<html><head>
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="../lib/vamonos-demos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <style type="text/css">
+
+        td.gt-i, td.gt-j, td.gt-r, td.lt-p {
+            background-color: #999 !important;
+        }
+
+        td.eq-k {
+            background-color: #FCFBBB !important;
+        }
+
+        body {
+            text-align: center;
+        }
+    </style>
+
+</head>
+<body>
+
+<h1>Mergesort</h1>
+
+<table class="vamonos">
+    <tr><td class="pseudocode-and-controls">
+        <div id="controls"> </div>
+
+        <div class="pseudocode-procedures">
+            <div id="mergesort" title="MergeSort(A,p,r):">
+                if p &lt; r
+                    q = &lfloor; (p+r)/2 &rfloor;
+                    MergeSort(A,p,q)
+                    MergeSort(A,q+1,r)
+                    Merge(A,p,q,r)
+            </div>
+            <div id="merge" title="Merge(A,p,q,r):">
+                n<sub>1</sub> = q - p + 1
+                n<sub>2</sub> = r - q
+                let L, R be new arrays
+                for i = 1 to n<sub>1</sub>
+                    L[i] = A[p+i-1]
+                for j = 1 to n<sub>2</sub>
+                    R[j] = A[q+j]
+                L[n<sub>1</sub>+1] = &infin;
+                R[n<sub>2</sub>+1] = &infin;
+                i = 1
+                j = 1
+                for k = p to r
+                    if L[i] &leq; R[j]
+                        A[k] = L[i]
+                        i = i + 1
+                    else 
+                        A[k] = R[j]
+                        j = j + 1
+            </div>
+        </div>
+
+
+    </td><td class="variable-widgets">
+
+            <table class="variable-widgets">
+
+                <tr><td><div id="array-a-var"></div></td>
+                    <td><div id="array-a"></div></td></tr>
+
+                <tr><td><div id="array-l-var"></div></td>
+                    <td><div id="array-l"></div></td></tr>
+
+                <tr><td><div id="array-r-var"></div></td>
+                    <td><div id="array-r"></div></td></tr>
+
+                <tr><td><div id="callstack-var"></div></td>
+                    <td><div id="callstack"></div></td></tr>
+
+            </table>
+    </td></tr>
+</table>
+
+</body>
+<script type="text/javascript">
+
+var qs = new Vamonos.Visualizer({
+    widgets: [
+
+        new Vamonos.Widget.Controls({
+            container: "controls"
+        }),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "mergesort",
+            procedureName: "mergeSort",
+        }),
+    
+        new Vamonos.Widget.Pseudocode({
+            container: "merge",
+            procedureName: "merge",
+        }),
+    
+        new Vamonos.Widget.VarName({
+            container: "callstack-var",
+            varName: "_callstack",
+            displayName: "Call Stack",
+        }),
+
+        new Vamonos.Widget.CallStack({
+            container: "callstack",
+            procedureNames: {
+                mergeSort: "MergeSort",
+                marge: "Merge",
+            },
+            ignoreMain: true,
+            ignoreArgumentValues: ["A"],
+        }),
+    
+        new Vamonos.Widget.VarName({
+            container: "array-a-var",
+            varName: "A",
+            watching:true,
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "array-a",
+            varName: "A",
+            defaultInput: [0,2,8,7,1,3,5,6,4],
+            ignoreIndexZero: true,
+            showIndices: ["merge::k","p","q","r"],
+            cssRules: [
+                ['=', 'k', 'eq-k'],
+                ['<', 'p', 'lt-p'],
+                ['>','r','gt-r'],
+            ],
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "array-l-var",
+            varName: "L",
+            watching:true,
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "array-l",
+            varName: "merge::L",
+            showIndices: ["merge::i"],
+            ignoreIndexZero: true,
+            displayOnly: true,
+            cssRules: [
+                ['>', 'i', 'gt-i']
+            ]
+        }),
+    
+        new Vamonos.Widget.VarName({
+            container: "array-r-var",
+            varName: "R",
+            watching:true,
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "array-r",
+            varName: "merge::R",
+            showIndices: ["merge::j"],
+            ignoreIndexZero: true,
+            displayOnly: true,
+            cssRules: [
+                ['>', 'j', 'gt-j']
+            ]
+        }),
+    
+    ],
+
+    algorithm: {
+        main: function(_){
+            with(this){
+                mergeSort({ A:A, p:1, r:A.length-1 })
+            }
+        },
+
+        mergeSort: function(_){
+            // q needs to be localized somehow otherwise 
+            // recursions will overwrite it
+            with(this){
+                if (_(1), p < r) {
+_(2);                q = Math.floor( (p+r)/ 2 );
+                     var qSave = q;
+_(3);                mergeSort({ A:A, p:p,   r:q});
+                     q = qSave;
+_(4);                mergeSort({ A:A, p:q+1, r:r});
+                     q = qSave;
+_(5);                merge({ A:A, p:p, q:q, r:r });
+                }
+            }
+        },
+
+        merge: function(_){
+            with(this){
+_(1);           n_1 = q - p + 1;
+_(2);           n_2 = r - q;
+_(3);           L = [Infinity];
+                R = [Infinity];
+_(4);           i = 1;
+                while (i <= n_1) {
+_(5);               L[i] = A[p+i-1];
+_(4);               i++;
+                }
+_(6);           j = 1;
+                while (j <= n_2) {
+_(7);               R[j] = A[q+j];
+_(6);               j++;
+                }
+_(8);           L[n_1+1] = Infinity;
+_(9);           R[n_2+1] = Infinity;
+_(10);          i = 1;
+_(11);          j = 1;
+                for (k = p; _(12), k <= r; k++) {
+                    if (_(13), L[i] <= R[j]) {
+_(14);                  A[k] = L[i];
+_(15);                  i = i + 1;
+                    } else {
+_(16); _(17);           A[k] = R[j];
+_(18);                  j = j + 1;
+                    }
+                }
+            }
+        },
+
+    }
+
+});
+
+</script>
+</html>
