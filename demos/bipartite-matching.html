@@ -130,6 +130,9 @@ var myviz = new Vamonos.Visualizer({
                     return (e.f !== undefined ? (e.f > 0) : false);
                 }, "#0000FF" ],
             ],
+            defaultEdgeAttrs: {
+                c: 1,
+            },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: true,
                 prefix: "",

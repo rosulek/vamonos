@@ -34,15 +34,17 @@ class GraphDisplay
                 }
                 """
         edgeLabel: 
-            type: ["Object", "Array","Function"]
+            type: ["String", "Function","Object"]
             defaultValue: undefined
             description: 
-                "an array, containing the name of the edge attribute to display" +
-                "and the default value for new edges or a function taking an edge " +
-                "and returning a string. one can also specify whether to show certain " +
-                "things in edit or display mode by using an object."
+                "a string, containing the name of the edge attribute to display" +
+                "or a function taking an edge and returning a string to display. " +
+                "one can also specify whether to show certain things in edit or " +
+                "display mode by using an object."
             example: """
-                edgeLabel: { display: [ 'w', 1 ], edit: function(e){ return e.w } }
+                edgeLabel: { display: 'w', edit: function(e){ return e.w } },
+                edgeLabel: 'w',
+                edgeLabel: function(e){ return e.w + "!" },
                 """
         colorEdges:
             type: "Array"
@@ -453,8 +455,8 @@ class GraphDisplay
             val = @edgeLabel[@mode](edge)
             backVal = @edgeLabel[@mode](backEdge) if backEdge?
 
-        else if @edgeLabel[@mode].constructor.name is 'Array'
-            attr = @edgeLabel[@mode][0]
+        else if @edgeLabel[@mode].constructor.name is 'String'
+            attr = @edgeLabel[@mode]
             val = Vamonos.rawToTxt(edge[attr] ? "")
             backVal = Vamonos.rawToTxt(backEdge[attr] ? "") if backEdge?
 

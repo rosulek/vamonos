@@ -33,6 +33,11 @@ class Graph
             type: "Boolean"
             defaultValue: true
             description: "whether to display tooltips"
+        defaultEdgeAttrs:
+            type: "Object"
+            defaultValue: undefined
+            description: "A mapping of attribute names to default values for " +
+                "new edges created in edit mode."
 
     constructor: (args) ->
 
@@ -43,8 +48,15 @@ class Graph
 
         @showChanges = Vamonos.arrayify(@showChanges)
 
-        delete args[a] for a in ["tooltips", "varName","defaultGraph","inputVars", "editable"]
-
+        delete args[a] for a in [
+            "defaultEdgeAttrs"
+            "showChanges"
+            "tooltips"
+            "varName"
+            "defaultGraph"
+            "inputVars"
+            "editable"
+        ]
 
         if @editable
             @theGraph = @defaultGraph ? new Vamonos.DataStructure.Graph()
@@ -166,9 +178,9 @@ class Graph
 
     addEdge: (sourceId, targetId) ->
         attrs = {}
-        if @edgeLabel?.length
-            # set edgeLabel default value
-            attrs[@edgeLabel[0]] = @edgeLabel[1] 
+        if @defaultEdgeAttrs?
+            # set edgeLabel default values
+            attrs[k] = v for k,v of @defaultEdgeAttrs
         @theGraph.addEdge(sourceId, targetId, attrs)
         @displayWidget.draw(@theGraph, @inputVars)
         @setConnectionEditBindings()
@@ -391,7 +403,8 @@ class Graph
         @displayWidget.closeDrawer()
 
     createEditableEdgeLabel: (edge, con) =>
-        val    = Vamonos.rawToTxt(edge[@edgeLabel[0]] ? "")
+        return unless @edgeLabel.constructor.name is 'String'
+        val    = Vamonos.rawToTxt(edge[@edgeLabel] ? "")
         $label = $("<div>#{val}</div>")
             .on "click", =>
                 @selectConnection(con)
@@ -399,10 +412,10 @@ class Graph
 
     editAttribute: ($label, edge) =>
         valFunc = () =>
-            edge[@edgeLabel[0]] ? ""
+            edge[@edgeLabel] ? ""
         returnFunc = (newVal) =>
             val = Vamonos.txtToRaw(newVal)
-            edge[@edgeLabel[0]] = val if val?
+            edge[@edgeLabel] = val if val?
             Vamonos.rawToTxt(val)
         Vamonos.editableValue($label, valFunc, returnFunc)
 
