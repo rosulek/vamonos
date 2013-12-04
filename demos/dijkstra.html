@@ -183,7 +183,8 @@ var myviz = new Vamonos.Visualizer({
             vertexCssAttributes: {
                 done: true,
             },
-            edgeLabel: [ "w", 1 ],
+            edgeLabel: "w",
+            defaultEdgeAttrs: { w: 1 },
             colorEdges: [
                 ["u->v", "#FF7D7D"],
                 [ function(edge){

@@ -115,12 +115,13 @@ var myviz = new Vamonos.Visualizer({
                 sw   : ["u", "v"],
             },
             edgeLabel: {
-                edit: [ 'c', 1 ],
+                edit: 'c',
                 display: function(e){
                     return (e.f !== undefined ? e.f : "-") + "/"
                          + (e.c !== undefined ? e.c : "-");
                 },
             },
+            defaultEdgeAttrs: { c: 1 },
             colorEdges: [
                 ["u->v", "#92E894"],
                 [ function(e){ if (e.f !== undefined && (e.f > 0)) return true; }, 
@@ -176,7 +177,7 @@ var myviz = new Vamonos.Visualizer({
             varName: "G_f",
             container: "graph-gf",
             editable: false,
-            edgeLabel: ['f', 0],
+            edgeLabel: 'f',
             showChanges: [],
             vertexLabels: {
                 inner: function(vtx){return vtx.name},
