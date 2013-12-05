@@ -186,7 +186,7 @@ $(function() {
                     ne: ['u','v'],
                     nw: ['r'],
                 },
-                edgeLabel: [ "w", 1 ],
+                edgeLabel: "w",
                 colorEdges: [
                     ["u->v", "#FF7D7D"],
                     [ function(edge){

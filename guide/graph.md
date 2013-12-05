@@ -154,12 +154,12 @@ explained by example:
 >     },
 
 * `edgeLabel` - lets you tell `Vamonos` to display an arbitrary edge attribute.
-The second element in the argument array is the default value of that attribute
-for new edges created in edit mode.
+It has a few options, but the simplest is to just give it the name of the
+attribute you want to see.
 
 > Javascript:
 >
->     edgeLabel: [ "w", 1 ],
+>     edgeLabel: "w",
 
 
 * `colorEdges` - is a little trickier. You can apply a color when two 

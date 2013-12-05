@@ -49,34 +49,7 @@ Here is a Vamonos visualization of the *selection sort* algorithm. Feel free to 
 
 # Pre-made Visualizations: <span class="construction"></span>
 
-We have developed pre-made visualizations of many common algorithms. Click any one to see it live in action:
-
-* Sorting:
-
-   * [Insertion sort](demos/insertion_sort.html)
-   * [Selection sort](demos/selection_sort.html)
-   * [Mergesort](demos/mergesort.html)
-   * [Quicksort](demos/quicksort.html)
-
-* Recursion:
-
-   * [Three versions of factorial](demos/factorial.html)
-
-* Dynamic programming:
-
-   * [Rod-cutting](demos/rod_cutting.html) ([with quiz](demos/rod_cutting-quiz.html))
-   * [Matrix-chain multiplication](demos/matrix-chain.html)
-   * [Longest increasing subsequence](demos/lis.html)
-
-* Graphs:
-
-   * [Breadth-first search](demos/bfs.html)
-   * [Detecting bipartiteness](demos/bfs-bipartite.html) (2-colorability)
-   * [Depth-first search](demos/dfs.html)
-   * [Dijkstra's SSSP algorithm](demos/dijkstra.html)
-   * [Prim's MST algorithm](demos/prims.html)
-   * [Ford-Fulkerson Max Flow](demos/max-flow.html)
-   * [Ford-Fulkerson Bipartite Matching](demos/bipartite-matching.html)
+We have developed pre-made visualizations of many common algorithms. See our [demo collection](demos/index.html).
 
 # Download: <span class="construction"></span>
 The latest version of Vamonos is v1.1.0.
