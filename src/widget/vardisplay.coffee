@@ -31,8 +31,8 @@ class VarDisplay
             widgetObject : this
             givenArgs    : args
 
-        @$container  = Vamonos.jqueryify(@container)
-        @$container.addClass("var-display")
+        @container  = Vamonos.jqueryify(@container)
+        @container.addClass("var-display")
         @showChanges = Vamonos.arrayify(@showChanges)
 
     event: (event, options...) -> switch event
@@ -42,10 +42,14 @@ class VarDisplay
             @viz.registerVariable(@varName)
         
         when "editStart"
-            @$container.empty()
+            @container.empty()
 
         when "render"
             @showVars(options...)
+            @adjustHeight()
+
+        when "displayStop"
+            @resetHeight()
 
     showVars: (frame, type) ->
         if not frame[@varName]?
@@ -59,27 +63,38 @@ class VarDisplay
         else
             newstr = Vamonos.rawToTxt(frame[@varName])
 
-        oldstr = @$container.html()
+        oldstr = @container.html()
 
         if newstr isnt oldstr 
             if type in @showChanges
                 if @dontShowChange
-                    @$container.removeClass("changed")
+                    @container.removeClass("changed")
                 else
-                    @$container.addClass("changed") 
-                @$container.html(newstr)
-                dup = @$container.clone()
-                @$container.replaceWith( dup )
-                @$container = dup
+                    @container.addClass("changed") 
+                @container.html(newstr)
+                dup = @container.clone()
+                @container.replaceWith( dup )
+                @container = dup
             else
-                @$container.html(newstr)
-                @$container.removeClass("changed")
-                @$container.children().removeClass("changed")
+                @container.html(newstr)
+                @container.removeClass("changed")
+                @container.children().removeClass("changed")
         else
-            @$container.removeClass("changed")
-            @$container.children().removeClass("changed")
+            @container.removeClass("changed")
+            @container.children().removeClass("changed")
 
         @dontShowChange = undefined
         @oldval = frame[@varName] ? { dummyObj: true } 
+
+    # maintains consistent size
+    adjustHeight: () ->
+        if @container.height() > (@maxHeight ? 0)
+            @maxHeight = @container.height() 
+        else
+            @container.css("min-height",@maxHeight)
+
+    resetHeight: () ->
+        @maxHeight = 0
+        @container.css("min-height","")
 
 @Vamonos.export { Widget: { VarDisplay } }

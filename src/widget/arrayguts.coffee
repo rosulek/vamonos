@@ -234,13 +234,20 @@ class ArrayGuts
 
         @adjustHeight()
 
-    # maintains consistent height of array
+    # maintains consistent size
     adjustHeight: () ->
         if @container.height() > (@maxHeight ? 0)
             @maxHeight = @container.height() 
         else
-            @container.height(@maxHeight)
+            @container.css("min-height",@maxHeight)
 
+    resetHeight: () ->
+        @maxHeight = 0
+        @container.css("min-height","")
+
+    resetHeight: () ->
+        @maxHeight = 0
+        @container.css("height","")
 
     virtualIndex: (frame, indexStr) ->
         return null unless indexStr.match(/^([a-zA-Z_]+|\d+)((-|\+)([a-zA-Z_]+|\d+))*$/g)

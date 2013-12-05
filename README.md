@@ -6,7 +6,7 @@ algorithms & data structures.
 
 Information and documentation are available at the project website:
 
-> http://rosulek.github.io/vamonos/
+* http://rosulek.github.io/vamonos/
 
 # Compiling
 
@@ -28,7 +28,7 @@ Now download all the necessary node tools for Vamonos.
 We use two main `grunt` tasks: 
 
 * `grunt` will compile Vamonos into a new folder called 'lib' and create API
-  markdown files in 'lib/api'.
+  markdown files in 'api'.
 
 * `grunt release` will create two zip files to a folder called 'dist': one zip
   of compiled Vamonos, the other containing all of our premade demos as
@@ -37,4 +37,5 @@ We use two main `grunt` tasks:
 # Licence
 
 Vamonos is licenced under MIT
+
 * http://www.opensource.org/licenses/mit-license.php
