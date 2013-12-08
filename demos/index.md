@@ -36,5 +36,3 @@ subheader: Dynamic algorithm visualization in the browser
 
 
 All demos use the [**Vamonos**](../index.html) algorithm visualization library ([github](https://github.com/rosulek/vamonos)).
-
-[back](../index.html)
