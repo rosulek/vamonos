@@ -170,16 +170,18 @@ class GraphDisplay
             continue if @nodes[vertex.id]?
             @addNode(vertex)
 
+        # add new edges - this needs to happen before edge removal so that edges in 
+        # directed graphs can have their arrows flipped instead of being deleted and
+        # recreated going in the opposite direction
+        for edge in graph.getEdges()
+            continue if @connections[edge.source.id]?[edge.target.id]?
+            continue if not @directed and @connections[edge.target.id]?[edge.source.id]?
+            @addConnection(edge.source.id, edge.target.id, graph)
+
         # remove unneeded edges
         @eachConnection (sourceId, targetId) =>
             unless graph.edge(sourceId, targetId)
                 @removeConnection(sourceId, targetId, graph)
-
-        # add new edges
-        for edge in graph.getEdges()
-            continue if @connections[edge.source.id]?[edge.target.id]?
-            continue if not @directed and @connections[edge.target.id]?[edge.source.id]?
-            @addConnection(edge, graph)
 
         # remove unneeded vertices and update needed ones
         @eachNode (vid, node) =>
@@ -352,49 +354,81 @@ class GraphDisplay
 
     # --------- Display mode connection functions ---------- #
 
-    addConnection: (edge, graph) ->
-        return if @connections[edge.source.id]?[edge.target.id]?
-        if @directed and @connections[edge.target.id]?[edge.source.id]?
-            con = @connections[edge.target.id][edge.source.id]
-            con.addOverlay([
-                "PlainArrow"
-                { id: "backArrow", location: 4, direction: -1, width: 12, length: 8 }
-            ])
-            @setLabel(con, graph) if @mode is 'display'
-            ((@backEdges ?= {})[edge.source.id] ?= {})[edge.target.id] = con
-        else
-            con = @jsPlumbInstance.connect
-                source: edge.source.id
-                target: edge.target.id
-            @setOverlays(con, edge)
-        (@connections[edge.source.id] ?= {})[edge.target.id] = con
-        (@connections[edge.target.id] ?= {})[edge.source.id] = con unless @directed
+    addConnection: (sourceId, targetId, graph) ->
+        # stop if the connection is there already
+        return if @connections[sourceId]?[targetId]?
+        # if there is a back edge and the graph is directed
+        if @directed and @connections[targetId]?[sourceId]?
+            con = @connections[targetId][sourceId]
+            @addBackArrow(con)
+            con.backEdgeSource = sourceId
+        else # the forward connection does not exist
+            con = @jsPlumbInstance.connect({
+                source: sourceId
+                target: targetId
+            })
+            @addForwardArrow(con)
+            con.forwardEdgeSource = sourceId
+        (@connections[sourceId] ?= {})[targetId] = con
+        # edges go into @connections both ways in undirected graphs
+        (@connections[targetId] ?= {})[sourceId] = con unless @directed
         return con
 
     removeConnection: (sourceId, targetId, graph) ->
-        # if the edge is a back edge in a directed graph
-        if @directed and @backEdges?[sourceId]?[targetId]?
-            con = @backEdges[sourceId][targetId]
-            con.removeOverlay("backArrow")
-            @setLabel(con, graph) if @mode is 'display'
-            delete @backEdges[sourceId][targetId]
-            delete @connections[sourceId][targetId]
-
-        # if the edge has a back edge and is in a directed graph
-        else if @directed and @backEdges?[targetId]?[sourceId]?
-            con = @backEdges[targetId][sourceId]
-            @jsPlumbInstance.detach(con)
-            delete @backEdges[targetId][sourceId]
+        con = @connections[sourceId]?[targetId]
+        return unless con?
+        # it's pretty simple when the graph is undirected
+        if not @directed
+            console.log "DETACHING"
+            @jsPlumbInstance.detach(con) # this is a costly operation, AVOID IT
+            # delete both forward and back entries in connections table
             delete @connections[sourceId][targetId]
             delete @connections[targetId][sourceId]
-            @addConnection(graph.edge(targetId,sourceId), graph)
+            # we'll return here, so as to simplify up the directed mess to follow
+            return 
 
-        else
-            con = @connections[sourceId]?[targetId]
-            return unless con?
+        ## otherwise the graph is directed 
+
+        # if the edge is a forward edge with a back edge, delete forward arrow
+        if con.forwardEdgeSource is sourceId and con.backEdgeSource is targetId
+            @removeForwardArrow(con)
+            delete con.forwardEdgeSource
+
+        # if the edge is a forward edge with no back edge, delete connection
+        if con.forwardEdgeSource is sourceId and not con.backEdgeSource?
+            console.log "DETACHING"
             @jsPlumbInstance.detach(con)
-            delete @connections[sourceId][targetId]
-            delete @connections[targetId][sourceId] unless @directed
+
+        # if the edge is a back edge with a forward edge, delete back arrow
+        if con.forwardEdgeSource is targetId and con.backEdgeSource is sourceId
+            @removeBackArrow(con)
+            delete con.backEdgeSource
+
+        # if the edge is a back edge with no forward edge, delete connection
+        if not con.forwardEdgeSource? and con.backEdgeSource is sourceId
+            console.log "DETACHING"
+            @jsPlumbInstance.detach(con)
+
+        # we're always going to be wanting to do this
+        delete @connections[sourceId][targetId]
+
+    addForwardArrow: (con) ->
+        con.addOverlay([
+            "PlainArrow"
+            {id: "forwardArrow", location:-4, width:12, length:8}
+        ])
+
+    removeForwardArrow: (con) ->
+        con.removeOverlay("forwardArrow")
+
+    addBackArrow: (con) ->
+        con.addOverlay([
+            "PlainArrow"
+            { id: "backArrow", location: 4, direction: -1, width: 12, length: 8 }
+        ])
+
+    removeBackArrow: (con) ->
+        con.removeOverlay("backArrow")
 
     setStyle: (con, edge, color, width) ->
         if color.constructor.name is 'String'
@@ -443,22 +477,15 @@ class GraphDisplay
     resetConnectionStyle: (con) ->
         con.setPaintStyle(@normalPaintStyle)
 
-    setOverlays: (connection) ->
-        connection.removeAllOverlays()
-        connection.addOverlay([
-            "PlainArrow"
-            {location:-4, width:12, length:8}
-        ]) if @directed
-
     setLabel: (con, graph) ->
         return unless @edgeLabel[@mode]?
         con.removeOverlay("edgeLabel")
         con.removeOverlay("edgeLabel")
 
-        if graph.directed
+        if @directed
             loc = 0.70
 
-        if graph.directed and graph.edge(con.targetId, con.sourceId)
+        if @directed and graph.edge(con.targetId, con.sourceId)
             backEdge = graph.edge(con.targetId, con.sourceId)
             backLoc = 0.30
 
