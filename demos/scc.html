@@ -1,0 +1,121 @@
+<html><head>
+
+    <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="../lib/vamonos-demos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <style type="text/css">
+        .vertex {
+            width: 40;
+            height: 30;
+        }
+
+        .vertex-contents {
+            font-size: .8em;
+        }
+
+        .vertex-sw-label {
+            font-style: italic;
+        }
+
+        .vertex-ne-label, .vertex-nw-label {
+            font-weight: bold;
+        }
+
+        .vertex-contents {
+            font-weight: bold;
+        }
+
+        body {
+            text-align: center;
+        }
+    </style>
+
+</head><body>
+
+    <h1>Strongly-Connected-Components</h1>
+
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
+
+            <div id="controls"></div>
+
+            <div class="pseudocode-procedures">
+
+                <div id="pseudocode-main" title="SCC(G):">
+                    call DFS(G) to compute finishing times u.f for each vertex u
+                    compute G<sup>T</sup>
+                    call DFS(G<sup>T</sup>), but in the main loop of DFS, consider the vertices in order of decreasing u.f (as computed in line 1)
+                    output the vertices of each tree in the depth-first forest formed in line 3 as a seperate strongly connected component
+                </div>
+
+            </div>
+
+        </td><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="g-var"></div></td>
+                    <td><div id="graph-g"></div></td>
+                </tr>
+                <tr><td><div id="gt-var"></div></td>
+                    <td><div id="graph-gt"></div></td>
+                </tr>
+            </table>
+
+        </td></tr>
+
+    </table>
+
+
+</body>
+<script type="text/javascript">
+
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+        new Vamonos.Widget.Controls("controls"),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-main",
+            breakpoints: "all",
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "g-var",
+            varName: "G",
+            inputVar: true,
+        }),
+
+        new Vamonos.Widget.Graph({
+            tooltips: false,
+            varName: "G",
+            container: "graph-g",
+            vertexLabels: {
+                inner: function(vtx){return vtx.f},
+            },
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "gt-var",
+            varName: "G_t",
+        }),
+
+        new Vamonos.Widget.Graph({
+            varName: "G_t",
+            container: "graph-gt",
+            editable: false,
+        }),
+
+    ],
+
+    algorithm: {
+
+        main: function(_){
+            with (this) {
+            }
+        }
+    }
+});
+
+</script></html>

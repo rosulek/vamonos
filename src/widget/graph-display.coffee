@@ -176,12 +176,12 @@ class GraphDisplay
         for edge in graph.getEdges()
             continue if @connections[edge.source.id]?[edge.target.id]?
             continue if not @directed and @connections[edge.target.id]?[edge.source.id]?
-            @addConnection(edge.source.id, edge.target.id, graph)
+            @addConnection(edge.source.id, edge.target.id)
 
         # remove unneeded edges
         @eachConnection (sourceId, targetId) =>
             unless graph.edge(sourceId, targetId)
-                @removeConnection(sourceId, targetId, graph)
+                @removeConnection(sourceId, targetId)
 
         # remove unneeded vertices and update needed ones
         @eachNode (vid, node) =>
@@ -195,17 +195,9 @@ class GraphDisplay
 
     fitGraph: (graph, animate = false) ->
         if graph?
-            # Add a test node, but don't show it, in order to get the width and
-            # height of vertices when a graph is not drawn.
-            unless @_vertexWidth? and @_vertexHeight?
-                nodes = $("div.vertex-contents")
-                unless nodes.size()
-                    @addNode({id:"TEST-VERTEX"}, false)
-                    nodes = $("div.vertex-contents")
-                    clearMe = true
-                @_vertexWidth  = nodes.width()
-                @_vertexHeight = nodes.height()
-                @removeNode("TEST-VERTEX") if clearMe
+            nodes = $("div.vertex-contents")
+            @_vertexWidth  = nodes.width()  ? 20
+            @_vertexHeight = nodes.height() ? 20
             xVals = []
             yVals = []
             for vertex in graph.getVertices()
@@ -354,7 +346,7 @@ class GraphDisplay
 
     # --------- Display mode connection functions ---------- #
 
-    addConnection: (sourceId, targetId, graph) ->
+    addConnection: (sourceId, targetId) ->
         # stop if the connection is there already
         return if @connections[sourceId]?[targetId]?
         # if there is a back edge and the graph is directed
@@ -367,25 +359,25 @@ class GraphDisplay
                 source: sourceId
                 target: targetId
             })
-            @addForwardArrow(con)
-            con.forwardEdgeSource = sourceId
+            if @directed 
+                @addForwardArrow(con)
+                con.forwardEdgeSource = sourceId
         (@connections[sourceId] ?= {})[targetId] = con
         # edges go into @connections both ways in undirected graphs
         (@connections[targetId] ?= {})[sourceId] = con unless @directed
         return con
 
-    removeConnection: (sourceId, targetId, graph) ->
+    removeConnection: (sourceId, targetId) ->
         con = @connections[sourceId]?[targetId]
         return unless con?
         # it's pretty simple when the graph is undirected
         if not @directed
-            console.log "DETACHING"
             @jsPlumbInstance.detach(con) # this is a costly operation, AVOID IT
             # delete both forward and back entries in connections table
             delete @connections[sourceId][targetId]
             delete @connections[targetId][sourceId]
             # we'll return here, so as to simplify up the directed mess to follow
-            return 
+            return
 
         ## otherwise the graph is directed 
 
@@ -396,7 +388,6 @@ class GraphDisplay
 
         # if the edge is a forward edge with no back edge, delete connection
         if con.forwardEdgeSource is sourceId and not con.backEdgeSource?
-            console.log "DETACHING"
             @jsPlumbInstance.detach(con)
 
         # if the edge is a back edge with a forward edge, delete back arrow
@@ -406,11 +397,11 @@ class GraphDisplay
 
         # if the edge is a back edge with no forward edge, delete connection
         if not con.forwardEdgeSource? and con.backEdgeSource is sourceId
-            console.log "DETACHING"
             @jsPlumbInstance.detach(con)
 
         # we're always going to be wanting to do this
         delete @connections[sourceId][targetId]
+        return con
 
     addForwardArrow: (con) ->
         con.addOverlay([

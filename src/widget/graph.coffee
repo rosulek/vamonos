@@ -66,7 +66,7 @@ class Graph
             args.minY      ?= 0
             args.resizable ?= false
 
-        @edgeLabel = args.edgeLabel?.edit ? args.edgeLabel
+        @edgeLabel     = args.edgeLabel?.edit ? args.edgeLabel
         @displayWidget = new Vamonos.Widget.GraphDisplay(args)
 
     event: (event, options...) -> switch event
@@ -114,7 +114,7 @@ class Graph
 
     # ----------------- EDITING MODE ------------------------ #
     
-    setDefaultToolTips: ->
+    setEditToolTips: ->
         @displayWidget.$inner.prop("title", "Click on whitespace to add vertices, edges to modify them.")
         @displayWidget.$inner.children(".vertex").prop("title", "Click a vertex to modify vertex attributes and edges.")
         @displayWidget.$inner.children(".graph-label").prop("title","Click an edge attribute to modify it.")
@@ -133,12 +133,15 @@ class Graph
         @displayWidget.$inner.children(".graph-label").removeAttr("title")
 
     startEditing: ->
-        @displayWidget.draw(@theGraph, @inputVars)
+        # fitGraph needs to come before draw so as to prevent strange bug wherein the
+        # first potential edge causing a new edge would make all the endpoints on the
+        # source vertex flip 180 degrees. weird.
         @displayWidget.fitGraph(@theGraph)
+        @displayWidget.draw(@theGraph, @inputVars)
         if @editable
             @setContainerEditBindings()
             @setConnectionEditBindings()
-            @setDefaultToolTips() if @tooltips
+            @setEditToolTips() if @tooltips
 
     stopEditing: ->
         if @editable
@@ -313,11 +316,10 @@ class Graph
         @deselectNode()
         @deselectConnection()
         @closeDrawer()
-        @setDefaultToolTips() if @tooltips
+        @setEditToolTips() if @tooltips
 
     deselectNode: ->
         return unless @$selectedNode?
-        @displayWidget.jsPlumbInstance.detach(@possibleEdge) if @possibleEdge?
         @$others.off("mouseenter.vamonos-graph mouseleave.vamonos-graph")
         @$selectedNode.removeClass("selected")
         @$selectedNode = undefined
@@ -333,30 +335,19 @@ class Graph
         targetId = node.attr("id")
         return if @displayWidget.connections[sourceId]?[targetId]?
 
-        if @theGraph.directed and @displayWidget.connections[targetId]?[sourceId]?
-            @potentialEdge = @displayWidget.connections[targetId][sourceId]
-            @potentialEdge.addOverlay([ 
-                "PlainArrow"
-                { id:"parrow", location: 4, direction: -1, width: 12, length: 8 } 
-            ])
-            @potentialEdge.setPaintStyle(@displayWidget.potentialEdgePaintStyle)
-            @potentialEdgeIsBidirectional = true
-        else
-            @potentialEdge = @displayWidget.jsPlumbInstance.connect
-                source     : sourceId
-                target     : targetId
-                paintStyle : @displayWidget.potentialEdgePaintStyle
-            @displayWidget.addForwardArrow(@potentialEdge)
+        potentialEdge = @displayWidget.addConnection(sourceId, targetId)
+        potentialEdge.setPaintStyle(@displayWidget.potentialEdgePaintStyle)
+        @potentialEdge = { sourceId, targetId }
 
     removePotentialEdge: =>
         return unless @potentialEdge?
-        if @potentialEdgeIsBidirectional
-            @potentialEdge.removeOverlay("parrow")
-            @potentialEdge.setPaintStyle( @displayWidget.normalPaintStyle )
-            @potentialEdgeIsBidirectional = undefined
+        { sourceId, targetId } = @potentialEdge
+        edge = @theGraph.edge(sourceId, targetId)
+        if edge
+            con = @displayWidget.connections[sourceId][targetId]
         else
-            @displayWidget.jsPlumbInstance.detach(@potentialEdge)
-        @potentialEdge = undefined
+            con = @displayWidget.removeConnection(sourceId, targetId)
+        @displayWidget.resetConnectionStyle(con) if con?
 
     openDrawer: ->
         type = @selected()
