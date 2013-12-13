@@ -88,7 +88,7 @@ class Graph
                 @displayWidget.draw(frame[@varName], frame)
             else
                 @displayWidget.clearDisplay()
-                @displayWidget.fitGraph(frame[@varName])
+                @displayWidget.fitGraph()
 
         when "displayStart"
             @displayWidget.mode = "display"

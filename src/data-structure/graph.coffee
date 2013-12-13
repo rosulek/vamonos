@@ -108,6 +108,7 @@ class Graph
         args: [["n", "string"]]
         description: "adds `n` to the list of available vertex names"
     returnVertexName: (n) ->
+        @_initAvailableNames()
         @availableNames.unshift(n)
         @availableNames.sort()
 
@@ -115,8 +116,11 @@ class Graph
     @interface.nextVertexName =
         description: "returns the next available vertex name"
     nextVertexName: () ->
-        @availableNames ?= "abcdefghijklmnopqrstuvwxyz".split("")
+        @_initAvailableNames()
         @availableNames.shift()
+
+    _initAvailableNames: () ->
+        @availableNames ?= "abcdefghijklmnopqrstuvwxyz".split("")
 
     # ---------- edge functions ----------- #
 

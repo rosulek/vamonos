@@ -1,7 +1,8 @@
 class GraphDisplay
 
-    @description = "GraphDisplay provides display functionality to " +
-        "widgets that need not use graph data structures."
+    @description =
+        "GraphDisplay provides display functionality to " +
+        "widgets that might not need to use graph data structures."
 
     @spec =
         container:
@@ -25,18 +26,18 @@ class GraphDisplay
             example: """
                 vertexLabels: {
                     inner : {
-                        edit: function(vtx){return vtx.name}, 
-                        display: function(vtx){return vtx.d} 
+                        edit: function(vtx){return vtx.name},
+                        display: function(vtx){return vtx.d}
                     },
-                    sw    : function(vtx){return vtx.name}, 
+                    sw    : function(vtx){return vtx.name},
                     ne    : ['u', 'v'],
                     nw    : ['s'],
                 }
                 """
-        edgeLabel: 
+        edgeLabel:
             type: ["String", "Function","Object"]
             defaultValue: undefined
-            description: 
+            description:
                 "a string, containing the name of the edge attribute to display" +
                 "or a function taking an edge and returning a string to display. " +
                 "one can also specify whether to show certain things in edit or " +
@@ -119,7 +120,6 @@ class GraphDisplay
         @nodes       = {}
         @$outer      = Vamonos.jqueryify(@container)
         @$inner      = $("<div>", {class: "graph-inner-container"})
-        @graphDrawn  = no
 
         if @edgeLabel?.constructor.name isnt 'Object'
             @edgeLabel = { edit: @edgeLabel, display: @edgeLabel }
@@ -131,7 +131,7 @@ class GraphDisplay
             @$outer.resizable(
                 handles: "se"
                 minWidth: @minX
-                minHeight: @minY               
+                minHeight: @minY
             )
 
         @jsPlumbInstance = jsPlumb.getInstance
@@ -140,6 +140,10 @@ class GraphDisplay
             Endpoint: "Blank"
             Anchor: [ "Perimeter", { shape: "Circle" } ]
 
+    # ------------ PUBLIC INTERACTION METHODS ------------- #
+
+    # A widget that uses GraphDisplay will need to pass along the setup event
+    # in order to register vars from vertexLabels and colorEdges
     event: (event, options...) -> switch event
         when "setup"
             [@viz] = options
@@ -149,39 +153,43 @@ class GraphDisplay
                 for v in values when typeof v is 'string'
                     @viz.registerVariable(v)
 
-    # ------------ PUBLIC INTERACTION METHODS ------------- #
-
     # draw is the main display function for the graphDisplay widget. It draws
     # only as much of the graph that wasn't there before and removes nodes
-    # and edges that have become obsolete. it is also used by edit mode
-    # methods.
+    # and edges that have become obsolete. it doesn't rely on events, so that
+    # the graph can be updated in various host widget's edit mode.
     draw: (graph, frame = {}) ->
         # if we're in edit mode, @mode will be set already. otherwise, we need
         # to set it to "display" so things like updateNodeLabels uses the
         # intended mode.
         @mode ?= "display"
         @directed = graph.directed
-        @graphDrawn = true
         @$outer.find(".changed").removeClass("changed")
+
+        # add new vertices
         for vertex in graph.getVertices()
             continue if @nodes[vertex.id]?
             @addNode(vertex)
+
+        # remove unneeded edges
         @eachConnection (sourceId, targetId) =>
             unless graph.edge(sourceId, targetId)
                 @removeConnection(sourceId, targetId, graph)
+
+        # add new edges
         for edge in graph.getEdges()
             continue if @connections[edge.source.id]?[edge.target.id]?
             continue if not @directed and @connections[edge.target.id]?[edge.source.id]?
             @addConnection(edge, graph)
+
+        # remove unneeded vertices and update needed ones
         @eachNode (vid, node) =>
             if graph.vertex(vid)
                 @updateNode(node, graph.vertex(vid), frame)
             else
                 @removeNode(vid)
+
         @updateConnections(graph, frame)
         @previousGraph = graph
-
-    # ---------------------------------------------------------- #
 
     fitGraph: (graph, animate = false) ->
         if graph?
@@ -191,6 +199,7 @@ class GraphDisplay
                 nodes = $("div.vertex-contents")
                 unless nodes.size()
                     @addNode({id:"TEST-VERTEX"}, false)
+                    nodes = $("div.vertex-contents")
                     clearMe = true
                 @_vertexWidth  = nodes.width()
                 @_vertexHeight = nodes.height()
@@ -219,10 +228,11 @@ class GraphDisplay
     clearDisplay: ->
         @jsPlumbInstance.reset()
         @$inner.html("")
-        @graphDrawn    = no
         @connections   = {}
         @nodes         = {}
         @previousGraph = undefined
+
+    # ---------------------------------------------------------- #
 
     eachNode: (f) ->
         f(vid, node) for vid, node of @nodes
@@ -242,11 +252,12 @@ class GraphDisplay
     # ----------- display mode node functions ---------- #
 
     addNode: (vertex, show = true) ->
-        $v = $("<div>", {class: 'vertex', id: vertex.id})
-        $v.hide()
-        $v.css("left", vertex.x)
-        $v.css("top",  vertex.y)
-        $v.css("position", "absolute")
+        $v = $("<div>", {class: 'vertex', id: vertex.id, type: "hidden"})
+        $v.css({
+            left: vertex.x
+            top: vertex.y
+            position: "absolute"
+        })
         $contents = $("<div>", class: "vertex-contents")
         for type, style of @vertexLabels
             if type in ["ne","nw","se","sw"]
@@ -266,12 +277,12 @@ class GraphDisplay
         $v.append($contents)
         @$inner.append($v)
         $v.fadeIn(100) if show
-        return @nodes[vertex.id] = $v
+        @nodes[vertex.id] = $v
 
     removeNode: (vid) ->
         node = @nodes[vid]
-        @jsPlumbInstance.removeAllEndpoints(node)
         delete @nodes[vid]
+        @jsPlumbInstance.removeAllEndpoints(node)
         node.fadeOut(100, -> node.remove())
 
     updateNode: ($node = @nodes[vid], vertex, frame) ->
@@ -309,7 +320,6 @@ class GraphDisplay
                     Vamonos.rawToTxt(style[@mode](vertex))
                 else
                     style)
-
 
     updateNodeClasses: ($node, vertex) ->
         if @highlightChanges and @mode is 'display' and @vertexChanged(vertex)
@@ -365,7 +375,7 @@ class GraphDisplay
         # if the edge is a back edge in a directed graph
         if @directed and @backEdges?[sourceId]?[targetId]?
             con = @backEdges[sourceId][targetId]
-            con.removeOverlay("backArrow") 
+            con.removeOverlay("backArrow")
             @setLabel(con, graph) if @mode is 'display'
             delete @backEdges[sourceId][targetId]
             delete @connections[sourceId][targetId]
@@ -398,12 +408,15 @@ class GraphDisplay
                 con.setPaintStyle(@customStyle(res[0],res[1]))
 
     updateConnections: (graph, frame) ->
-        return unless @colorEdges?
-
         @eachConnection (sourceId, targetId, con) =>
+            # clear coloring
             @resetConnectionStyle(con)
+            # update label in display mode. in edit mode the host widget will
+            # want to be in charge of labeling.
             @setLabel(con, graph) if @mode is 'display'
 
+        # connection coloring
+        return unless @colorEdges?
         for style in @colorEdges
             # the first elem of style is a string from one vertex var to another "u->v"
             if typeof style[0] is 'string'
@@ -470,7 +483,7 @@ class GraphDisplay
                 return $("<div>").append($label)
             id: "edgeLabel",
             location: loc ? 0.5
-        ]) 
+        ])
 
         con.addOverlay([
             "Custom",
@@ -482,8 +495,8 @@ class GraphDisplay
         ]) if backEdge?
 
 
-    # ----------------- drawer --------------- # 
-    
+    # ----------------- drawer --------------- #
+
     openDrawer: ({buttons, label}) ->
         if @$drawer?
             @$drawer.html("<div class='graph-drawer'></div>")
