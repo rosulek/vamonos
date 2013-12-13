@@ -346,7 +346,7 @@ class Graph
                 source     : sourceId
                 target     : targetId
                 paintStyle : @displayWidget.potentialEdgePaintStyle
-            @displayWidget.setOverlays(@potentialEdge)
+            @displayWidget.addForwardArrow(@potentialEdge)
 
     removePotentialEdge: =>
         return unless @potentialEdge?
