@@ -158,6 +158,8 @@ class GraphDisplay
     # and edges that have become obsolete. it doesn't rely on events, so that
     # the graph can be updated in various host widget's edit mode.
     draw: (graph, frame = {}) ->
+        # if there is a hidden graph, show it
+        @showGraph() if @graphHidden
         # if we're in edit mode, @mode will be set already. otherwise, we need
         # to set it to "display" so things like updateNodeLabels uses the
         # intended mode.
@@ -218,6 +220,14 @@ class GraphDisplay
         if @resizable
             @$outer.resizable("option", "minWidth", max_x)
             @$outer.resizable("option", "minHeight", max_y)
+
+    hideGraph: () ->
+        @$outer.hide()
+        @graphHidden = true
+
+    showGraph: () ->
+        @$outer.show()
+        @graphHidden = false
 
     clearDisplay: ->
         @jsPlumbInstance.reset()

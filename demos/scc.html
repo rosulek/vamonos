@@ -93,7 +93,38 @@ var myviz = new Vamonos.Visualizer({
             container: "graph-g",
             vertexLabels: {
                 inner: function(vtx){return vtx.f},
+                sw: function(vtx){ return vtx.name },
+                se: function(vtx){ return vtx.d },
             },
+            defaultGraph: new Vamonos.DataStructure.Graph({
+                directed: true,
+                vertices: [
+                    { x: 30,  y: 30,  name: 'a', id: 'v0' },
+                    { x: 130, y: 30,  name: 'b', id: 'v1' },
+                    { x: 230, y: 30,  name: 'c', id: 'v2' },
+                    { x: 330, y: 30,  name: 'd', id: 'v3' },
+                    { x: 30,  y: 130, name: 'e', id: 'v4' },
+                    { x: 130, y: 130, name: 'f', id: 'v5' },
+                    { x: 230, y: 130, name: 'g', id: 'v6' },
+                    { x: 330, y: 130, name: 'h', id: 'v7' },
+                ],
+                edges: [
+                    { source: 'v0', target: 'v1' },
+                    { source: 'v1', target: 'v4' },
+                    { source: 'v1', target: 'v5' },
+                    { source: 'v1', target: 'v2' },
+                    { source: 'v4', target: 'v0' },
+                    { source: 'v4', target: 'v5' },
+                    { source: 'v5', target: 'v6' },
+                    { source: 'v6', target: 'v5' },
+                    { source: 'v2', target: 'v3' },
+                    { source: 'v2', target: 'v6' },
+                    { source: 'v3', target: 'v2' },
+                    { source: 'v3', target: 'v7' },
+                    { source: 'v7', target: 'v3' },
+                    { source: 'v7', target: 'v6' },
+                ],
+            }),
         }),
 
         new Vamonos.Widget.VarName({
@@ -113,9 +144,46 @@ var myviz = new Vamonos.Visualizer({
 
         main: function(_){
             with (this) {
+_(1);           DFS(G);
+_(2);           G_t = transpose(G);
+_(3);
             }
         }
     }
 });
+
+var DFS = function(G){
+    var time = 0;
+    var dfs = function(u){
+        u.visited = true;
+        u.d = ++time;
+        G.eachNeighbor(u,function(v){
+            if (!v.visited) dfs(v);
+        });
+        u.f = ++time;
+    };
+    // run dfs on every vertex
+    G.eachVertex(function(u){ 
+        if (!u.visited) dfs(u);
+    });
+    // clean up
+    G.eachVertex(function(u){ delete u.visited });
+};
+
+// builds a new graph with all the edges reversed
+var transpose = function(G){
+    var prefix = "transpose";
+    var newG = new Vamonos.DataStructure.Graph({
+        directed: G.directed,
+        prefix: prefix,
+    });
+    G.eachVertex(function(u){
+        newG.addVertex({ id: prefix + u.id, f: u.f, x: u.x, y: u.y });
+    });
+    G.eachEdge(function(e){
+        newG.addEdge( prefix + e.target.id, prefix + e.source.id );
+    });
+    return newG;
+};
 
 </script></html>
