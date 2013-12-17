@@ -31,6 +31,17 @@
         body {
             text-align: center;
         }
+
+        div.pseudocode-procedures {
+            max-width: 400px;
+        }
+
+        .group-0 { background: magenta }
+        .group-1 { background: yellow }
+        .group-2 { background: red }
+        .group-3 { background: green }
+        .group-4 { background: blue }
+
     </style>
 
 </head><body>
@@ -96,6 +107,9 @@ var myviz = new Vamonos.Visualizer({
                 sw: function(vtx){ return vtx.name },
                 se: function(vtx){ return vtx.d },
             },
+            vertexCssAttributes: {
+                group: [0,1,2,3,4,5],
+            },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: true,
                 vertices: [
@@ -136,6 +150,11 @@ var myviz = new Vamonos.Visualizer({
             varName: "G_t",
             container: "graph-gt",
             editable: false,
+            vertexLabels: {
+                inner: function(vtx){return vtx.g},
+                sw: function(vtx){ return vtx.name },
+                nw: function(vtx){ return vtx.t },
+            },
         }),
 
     ],
@@ -146,7 +165,12 @@ var myviz = new Vamonos.Visualizer({
             with (this) {
 _(1);           DFS(G);
 _(2);           G_t = transpose(G);
-_(3);
+_(3);           DFS2(G_t);
+_(4);           G_t.eachVertex(function(u){
+                    var vid = u.id.replace("transpose-","");
+                    var v = G.vertex(vid);
+                    v.group = u.g;
+                });
             }
         }
     }
@@ -172,18 +196,53 @@ var DFS = function(G){
 
 // builds a new graph with all the edges reversed
 var transpose = function(G){
-    var prefix = "transpose";
+    var prefix = "transpose-";
     var newG = new Vamonos.DataStructure.Graph({
         directed: G.directed,
         prefix: prefix,
     });
     G.eachVertex(function(u){
-        newG.addVertex({ id: prefix + u.id, f: u.f, x: u.x, y: u.y });
+        var newV = Vamonos.clone(u);
+        newV.id = prefix + newV.id;
+        newG.addVertex(newV);
     });
     G.eachEdge(function(e){
-        newG.addEdge( prefix + e.target.id, prefix + e.source.id );
+        var newE = Vamonos.clone(e);
+        newG.addEdge( prefix + e.target.id, prefix + e.source.id, newE );
     });
     return newG;
+};
+
+var DFS2 = function(G){
+    var group = 0;
+    var time = 0;
+    var dfs = function(u){
+        u.visited = true;
+        u.g = group;
+        u.t = ++time;
+        var Q = new Vamonos.DataStructure.Queue({
+            initialArray: G.neighbors(u),
+            comparator: function(a,b){ return b.f - a.f },
+        });
+        while (!Q.isEmpty()) {
+            var v = Q.extractMin();
+            if (!v.visited) dfs(v);
+        }
+    };
+    // run dfs on every vertex
+    var Q = new Vamonos.DataStructure.Queue({
+        initialArray: G.getVertices(),
+        comparator: function(a,b){ return b.f - a.f },
+    });
+    while (!Q.isEmpty()) {
+        var u = Q.extractMin();
+        if (!u.visited) { 
+            dfs(u); 
+            ++group;
+        }
+    }
+    // clean up
+    G.eachVertex(function(u){ delete u.visited });
 };
 
 </script></html>

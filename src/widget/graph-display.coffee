@@ -82,8 +82,8 @@ class GraphDisplay
                 "class will be of the form 'attribute-value' when its value " +
                 "matches."
             example: """
-                vertexCssAttributes: { done: true }
-                vertexCssAttributes: { color: ['white', 'gray', 'black'] }
+                vertexCssAttributes: { done: true },
+                vertexCssAttributes: { color: ['white', 'gray', 'black'] },
                 """
         containerMargin:
             type: "Number"
