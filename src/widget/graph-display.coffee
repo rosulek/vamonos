@@ -198,8 +198,7 @@ class GraphDisplay
     fitGraph: (graph, animate = false) ->
         if graph?
             nodes = $("div.vertex-contents")
-            @_vertexWidth  = nodes.width()  ? 20
-            @_vertexHeight = nodes.height() ? 20
+            @getVertexDimensions(nodes) unless @_vertexWidth? and @_vertexHeight?
             xVals = []
             yVals = []
             for vertex in graph.getVertices()
@@ -220,6 +219,15 @@ class GraphDisplay
         if @resizable
             @$outer.resizable("option", "minWidth", max_x)
             @$outer.resizable("option", "minHeight", max_y)
+
+    getVertexDimensions: (nodes) ->
+        unless nodes.length
+            fakeNode = @addNode({id:"FAKER"}, false)
+            nodes = fakeNode
+        @_vertexHeight = nodes.height()
+        @_vertexWidth  = nodes.width()
+        if fakeNode?
+            @removeNode("FAKER")
 
     hideGraph: () ->
         @$outer.hide()
