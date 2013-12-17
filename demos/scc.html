@@ -36,12 +36,6 @@
             max-width: 400px;
         }
 
-        .group-0 { background: magenta }
-        .group-1 { background: yellow }
-        .group-2 { background: red }
-        .group-3 { background: green }
-        .group-4 { background: blue }
-
     </style>
 
 </head><body>
@@ -108,7 +102,7 @@ var myviz = new Vamonos.Visualizer({
                 se: function(vtx){ return vtx.d },
             },
             vertexCssAttributes: {
-                group: [0,1,2,3,4,5],
+                group: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: true,
@@ -165,12 +159,13 @@ var myviz = new Vamonos.Visualizer({
             with (this) {
 _(1);           DFS(G);
 _(2);           G_t = transpose(G);
-_(3);           DFS2(G_t);
+_(3);           var nGroups = DFS2(G_t);
 _(4);           G_t.eachVertex(function(u){
                     var vid = u.id.replace("transpose-","");
                     var v = G.vertex(vid);
                     v.group = u.g;
                 });
+                createGroupStyles(nGroups);
             }
         }
     }
@@ -237,12 +232,26 @@ var DFS2 = function(G){
     while (!Q.isEmpty()) {
         var u = Q.extractMin();
         if (!u.visited) { 
-            dfs(u); 
             ++group;
+            dfs(u); 
         }
     }
     // clean up
     G.eachVertex(function(u){ delete u.visited });
+    return group;
+};
+
+// Divides the color wheel by the number of strongly connected components in 
+// the graph, and creates a new class for each of them.
+var createGroupStyles = function(nGroups){
+    var cs = function(n){
+        var inc = Math.floor(360 / nGroups);
+        return "hsl(" + (inc * n) + ", 60%, 70%)";
+    };
+    for (var i = 1; i <= nGroups; i++) {
+        $('<style>.group-' + i + ' { background: ' + cs(i) + '; }</style>')
+            .appendTo($('html > head'));
+    }
 };
 
 </script></html>
