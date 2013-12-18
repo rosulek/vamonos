@@ -50,11 +50,28 @@
             <div class="pseudocode-procedures">
 
                 <div id="pseudocode-main" title="SCC(G):">
-                    call DFS(G) to compute finishing times u.f for each vertex u
-                    compute G<sup>T</sup>
-                    call DFS(G<sup>T</sup>), but in the main loop of DFS, consider the vertices in order of decreasing u.f (as computed in line 1)
-                    output the vertices of each tree in the depth-first forest formed in line 3 as a seperate strongly connected component
+                    compute finishing times for all vertices of G
+                    group = 0
+                    for each vertex u &in; G<sup>T</sup> sorted by finishing time from largest to smallest
+                        unless u has been visited
+                            group = group + 1
+                            DFS(G<sup>T</sup>,u)
                 </div>
+
+                <div id="pseudocode-dfs" title="DFS(G,u):">
+                    u.visited = true
+                    u.g = group
+                    for each neighbor v of u sorted by finishing time from largest to smallest
+                        unless v has been visited
+                            DFS(G,v)
+                </div>
+
+                <!--<div id="pseudocode-main" title="SCC(G):">-->
+                    <!--call DFS(G) to compute finishing times u.f for each vertex u-->
+                    <!--compute G<sup>T</sup>-->
+                    <!--call DFS(G<sup>T</sup>), but in the main loop of DFS, consider the vertices in order of decreasing u.f (as computed in line 1)-->
+                    <!--output the vertices of each tree in the depth-first forest formed in line 3 as a seperate strongly connected component-->
+                <!--</div>-->
 
             </div>
 
@@ -64,8 +81,11 @@
                 <tr><td><div id="g-var"></div></td>
                     <td><div id="graph-g"></div></td>
                 </tr>
-                <tr><td><div id="gt-var"></div></td>
-                    <td><div id="graph-gt"></div></td>
+                <tr><td><div id="stack-var"></div></td>
+                    <td><div id="stack"></div></td>
+                </tr>
+                <tr><td><div id="group-var"></div></td>
+                    <td><div id="group"></div></td>
                 </tr>
             </table>
 
@@ -83,13 +103,45 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-main",
-            breakpoints: "all",
+        }),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-dfs",
+            procedureName: "dfs",
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "stack-var",
+            varName: "_callstack",
+            displayName: "Call Stack",
+        }),
+
+        new Vamonos.Widget.CallStack({
+            container: "stack",
+            procedureNames: {
+                main: "SCC",
+                dfs: "DFS",
+            },
+            animate: ["next", "prev"],
+            ignoreArgumentValues: ["G", "G_t"]
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "group-var",
+            varName: "global::group",
+            displayName: "group",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "group",
+            varName: "global::group",
         }),
 
         new Vamonos.Widget.VarName({
             container: "g-var",
             varName: "G",
             inputVar: true,
+            watching: true,
         }),
 
         new Vamonos.Widget.Graph({
@@ -97,10 +149,13 @@ var myviz = new Vamonos.Visualizer({
             varName: "G",
             container: "graph-g",
             vertexLabels: {
-                inner: function(vtx){return vtx.f},
+                inner: function(vtx){ return vtx.f },
                 sw: function(vtx){ return vtx.name },
-                se: function(vtx){ return vtx.d },
+                ne: ["u", "dfs::v"],
             },
+            colorEdges: [ 
+                ["dfs::v->u", "#FF7D7D"],
+            ],
             vertexCssAttributes: {
                 group: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
             },
@@ -135,43 +190,60 @@ var myviz = new Vamonos.Visualizer({
             }),
         }),
 
-        new Vamonos.Widget.VarName({
-            container: "gt-var",
-            varName: "G_t",
-        }),
-
-        new Vamonos.Widget.Graph({
-            varName: "G_t",
-            container: "graph-gt",
-            editable: false,
-            vertexLabels: {
-                inner: function(vtx){return vtx.g},
-                sw: function(vtx){ return vtx.name },
-                nw: function(vtx){ return vtx.t },
-            },
-        }),
-
     ],
 
     algorithm: {
 
         main: function(_){
             with (this) {
-_(1);           DFS(G);
-_(2);           G_t = transpose(G);
-_(3);           var nGroups = DFS2(G_t);
-_(4);           G_t.eachVertex(function(u){
-                    var vid = u.id.replace("transpose-","");
-                    var v = G.vertex(vid);
-                    v.group = u.g;
+                _(1); DFS1(G);
+                _(2); global.group = 0;
+
+                var Q = new Vamonos.DataStructure.Queue({
+                    initialArray: G.getVertices(),
+                    comparator: function(a,b){ return b.f - a.f },
                 });
-                createGroupStyles(nGroups);
+
+                while (!Q.isEmpty()) {
+                    _(3); var u = Q.extractMin();
+                    if (_(4), !u.visited) {
+                        _(5); global.group += 1;
+                        _(6); dfs({ G:G,u:u });
+                    }
+                }
+                createGroupStyles(global.group);
             }
-        }
+        },
+
+        dfs: function(_){
+            with (this) {
+
+                _(1); u.visited = true;
+                _(2); u.group = global.group;
+                var Q = new Vamonos.DataStructure.Queue({
+                    comparator: function(a,b){ return b.f - a.f },
+                });
+
+                var edges = G.incomingEdges(u);
+                for (var i = 0; i < edges.length; i++) {
+                    v = G.vertex( edges[i].source.id );
+                    Q.enqueue(v);
+                }
+
+                while (!Q.isEmpty()) {
+                    _(3); v = Q.extractMin();
+                    if (_(4), !v.visited) {
+                        _(5); dfs({ G:G, u:v });
+                    }
+                }
+
+            }
+        },
+
     }
 });
 
-var DFS = function(G){
+var DFS1 = function(G){
     var time = 0;
     var dfs = function(u){
         u.visited = true;
@@ -182,66 +254,14 @@ var DFS = function(G){
         u.f = ++time;
     };
     // run dfs on every vertex
-    G.eachVertex(function(u){ 
+    G.eachVertex(function(u){
         if (!u.visited) dfs(u);
     });
     // clean up
     G.eachVertex(function(u){ delete u.visited });
 };
 
-// builds a new graph with all the edges reversed
-var transpose = function(G){
-    var prefix = "transpose-";
-    var newG = new Vamonos.DataStructure.Graph({
-        directed: G.directed,
-        prefix: prefix,
-    });
-    G.eachVertex(function(u){
-        var newV = Vamonos.clone(u);
-        newV.id = prefix + newV.id;
-        newG.addVertex(newV);
-    });
-    G.eachEdge(function(e){
-        var newE = Vamonos.clone(e);
-        newG.addEdge( prefix + e.target.id, prefix + e.source.id, newE );
-    });
-    return newG;
-};
-
-var DFS2 = function(G){
-    var group = 0;
-    var time = 0;
-    var dfs = function(u){
-        u.visited = true;
-        u.g = group;
-        u.t = ++time;
-        var Q = new Vamonos.DataStructure.Queue({
-            initialArray: G.neighbors(u),
-            comparator: function(a,b){ return b.f - a.f },
-        });
-        while (!Q.isEmpty()) {
-            var v = Q.extractMin();
-            if (!v.visited) dfs(v);
-        }
-    };
-    // run dfs on every vertex
-    var Q = new Vamonos.DataStructure.Queue({
-        initialArray: G.getVertices(),
-        comparator: function(a,b){ return b.f - a.f },
-    });
-    while (!Q.isEmpty()) {
-        var u = Q.extractMin();
-        if (!u.visited) { 
-            ++group;
-            dfs(u); 
-        }
-    }
-    // clean up
-    G.eachVertex(function(u){ delete u.visited });
-    return group;
-};
-
-// Divides the color wheel by the number of strongly connected components in 
+// Divides the color wheel by the number of strongly connected components in
 // the graph, and creates a new class for each of them.
 var createGroupStyles = function(nGroups){
     var cs = function(n){
