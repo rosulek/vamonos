@@ -80,10 +80,14 @@ class GraphDisplay
                 "the vertex will simply get a class with the same name as " +
                 "the attribute. in the case of a list of values, the css " +
                 "class will be of the form 'attribute-value' when its value " +
-                "matches."
+                "matches. You can also provide a function that takes a vertex " +
+                "and returns a class to apply to it."
             example: """
-                vertexCssAttributes: { done: true },
-                vertexCssAttributes: { color: ['white', 'gray', 'black'] },
+                vertexCssAttributes: { 
+                    done: true, 
+                    color: ['white', 'gray', 'black'],
+                    magic: function(vtx){ return "class-" + vtx.magicAttr },
+                },
                 """
         containerMargin:
             type: "Number"
@@ -264,7 +268,8 @@ class GraphDisplay
     # ----------- display mode node functions ---------- #
 
     addNode: (vertex, show = true) ->
-        $v = $("<div>", {class: 'vertex', id: vertex.id, type: "hidden"})
+        $v = $("<div>", {class: 'vertex', id: vertex.id})
+              .hide()
         $v.css({
             left: vertex.x
             top: vertex.y
@@ -337,7 +342,10 @@ class GraphDisplay
         if @highlightChanges and @mode is 'display' and @vertexChanged(vertex)
             $node.addClass("changed")
         for attr, val of @vertexCssAttributes
-            if val.length
+            if val.constructor.name is "Function"
+                newClass = val(vertex)
+                $node.addClass(newClass) if newClass?
+            else if val.length
                 $node.removeClass("#{attr}-#{kind}") for kind in val
                 if vertex[attr] in val
                     $node.addClass("#{attr}-#{vertex[attr]}")

@@ -48,7 +48,6 @@
             <div id="controls"></div>
 
             <div class="pseudocode-procedures">
-
                 <div id="pseudocode-main" title="SCC(G):">
                     compute finishing times for all vertices of G
                     group = 0
@@ -57,7 +56,6 @@
                             group = group + 1
                             DFS(G<sup>T</sup>,u)
                 </div>
-
                 <div id="pseudocode-dfs" title="DFS(G,u):">
                     u.visited = true
                     u.g = group
@@ -65,14 +63,6 @@
                         unless v has been visited
                             DFS(G,v)
                 </div>
-
-                <!--<div id="pseudocode-main" title="SCC(G):">-->
-                    <!--call DFS(G) to compute finishing times u.f for each vertex u-->
-                    <!--compute G<sup>T</sup>-->
-                    <!--call DFS(G<sup>T</sup>), but in the main loop of DFS, consider the vertices in order of decreasing u.f (as computed in line 1)-->
-                    <!--output the vertices of each tree in the depth-first forest formed in line 3 as a seperate strongly connected component-->
-                <!--</div>-->
-
             </div>
 
         </td><td class="variable-widgets">
@@ -114,6 +104,7 @@ var myviz = new Vamonos.Visualizer({
             container: "stack-var",
             varName: "_callstack",
             displayName: "Call Stack",
+            watching: true,
         }),
 
         new Vamonos.Widget.CallStack({
@@ -157,7 +148,7 @@ var myviz = new Vamonos.Visualizer({
                 ["dfs::v->u", "#FF7D7D"],
             ],
             vertexCssAttributes: {
-                group: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+                group: function(vtx){ return "group-" + vtx.group },
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: true,
