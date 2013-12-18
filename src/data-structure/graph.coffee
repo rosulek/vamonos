@@ -97,6 +97,15 @@ class Graph
         vs = (v for id, v of @vertices).sort((a,b) -> a.name - b.name)
         f(v) for v in vs when v?
 
+    @interface.eachVertexBy =
+        args: [
+            ["comp", "a comparator"]
+            ["f", "a function taking a vertex as an argument"]
+        ]
+        description: "applies `f` to each vertex in the graph, ordered by `comp`"
+    eachVertexBy: (comp, f) ->
+        vs = (v for id, v of @vertices).sort(comp)
+        f(v) for v in vs when v?
 
     @interface.nextVertexId = description: "returns an unused vertex id"
     nextVertexId: () ->
@@ -188,6 +197,17 @@ class Graph
         args: [["f", "a function taking an edge"]]
         description: "applies `f` to each edge"
     eachEdge: (f) ->
+        f(e) for e in @getEdges() when e?
+
+    @interface.eachEdgeBy = 
+        args: [
+            ["comp", "a comparator"]
+            ["f", "a function taking an edge"]
+        ]
+        description: "applies `f` to each edge, ordered by `comp`"
+    eachEdgeBy: (comp, f) ->
+        es = @getEdges()
+        es.sort(comp)
         f(e) for e in @getEdges() when e?
 
     # ----------- edge and vertex functions ---------- #

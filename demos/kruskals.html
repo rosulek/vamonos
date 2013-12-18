@@ -1,0 +1,214 @@
+<html><head>
+
+    <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="../lib/vamonos-demos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <style type="text/css">
+        .vertex {
+            width: 40;
+            height: 30;
+        }
+
+        .vertex-contents {
+            font-size: .8em;
+        }
+
+        .vertex-ne-label, .vertex-nw-label {
+            font-weight: bold;
+        }
+
+        .vertex-sw-label {
+            font-style: italic;
+        }
+
+        body {
+            text-align: center;
+        }
+    </style>
+
+</head><body>
+
+    <h1>Kruskal's Minimum Spanning Tree</h1>
+
+    <table class="vamonos">
+
+        <tr><td class="pseudocode-and-controls">
+
+            <div id="controls"></div>
+
+            <div class="pseudocode-procedures">
+                <div id="pseudocode" title="MST-Kruskal(G)">
+                    for each v &in; G.V
+                        Make-Set(v)
+                    for each (u,v) ordered by increasing weight
+                        if Find-Set(u) &ne; Find-Set(v)
+                            Union(u,v)
+                </div>
+            </div>
+
+        </td><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="g-var"></div></td>
+                    <td><div id="graph"></div></td> </tr>
+                <tr><td><div id="u-var"></div></td>
+                    <td><div id="u"></div></td> </tr>
+                <tr><td><div id="v-var"></div></td>
+                    <td><div id="v"></div></td>
+                </tr>
+            </table>
+
+        </td></tr>
+    </table>
+
+</body>
+<script type="text/javascript">
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+        new Vamonos.Widget.Controls("controls"),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode",
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "u-var",
+            varName: "u",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "u",
+            varName: "u",
+            attributes: ["name","key","pred"]
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "v-var",
+            varName: "v",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "v",
+            varName: "v",
+            attributes: ["name","key","pred"]
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "g-var",
+            varName: "G",
+            inputVar: true,
+            watching: true,
+        }),
+
+        new Vamonos.Widget.Graph({
+            container: "graph",
+            varName: "G",
+            inputVars: { r: "v1" },
+            vertexLabels: {
+                inner: function(vtx){ return vtx.name },
+                ne: ['u','v'],
+                nw: ['r'],
+            },
+            vertexCssAttributes: {
+                group: function(vtx){ return "group-" + vtx.group },
+            },
+            edgeLabel: "w",
+            defaultEdgeAttrs: { w: 1 },
+            colorEdges: [
+                ["u->v", "#FF7D7D"],
+                [ function(edge){
+                    return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
+                        || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }
+                , "#276CFF" ],
+            ],
+            defaultGraph: new Vamonos.DataStructure.Graph({
+                directed: false,
+                prefix: "",
+                vertices: [
+                    { id: 'v0', x: 10, y: 187, name: 'a' },
+                    { id: 'v1', x: 4, y: 13, name: 'b' },
+                    { x: 87, y: 156, name: 'c', id: 'v4' },
+                    { x: 94, y: 87, name: 'd', id: 'v5' },
+                    { x: 207, y: 195, name: 'e', id: 'v6' },
+                    { x: 160, y: 124, name: 'f', id: 'v7' },
+                    { x: 223, y: 26, name: 'g', id: 'v8' },
+                    { x: 151, y: 53, name: 'h', id: 'v9' },
+                    { x: 104, y: 0, name: 'i', id: 'v10' },
+                ],
+                edges: [
+                    { source: 'v1', target: 'v0', w: 6 },
+                    { source: 'v0', target: 'v6', w: 9 },
+                    { source: 'v0', target: 'v4', w: 3 },
+                    { source: 'v1', target: 'v0', w: 6 },
+                    { source: 'v4', target: 'v1', w: 4 },
+                    { source: 'v5', target: 'v1', w: 2 },
+                    { source: 'v9', target: 'v1', w: 5 },
+                    { source: 'v10', target: 'v1', w: 4 },
+                    { source: 'v0', target: 'v6', w: 9 },
+                    { source: 'v7', target: 'v6', w: 8 },
+                    { source: 'v6', target: 'v4', w: 9 },
+                    { source: 'v6', target: 'v8', w: 18 },
+                    { source: 'v0', target: 'v4', w: 3 },
+                    { source: 'v4', target: 'v1', w: 4 },
+                    { source: 'v4', target: 'v5', w: 2 },
+                    { source: 'v6', target: 'v4', w: 9 },
+                    { source: 'v4', target: 'v5', w: 2 },
+                    { source: 'v5', target: 'v1', w: 2 },
+                    { source: 'v5', target: 'v7', w: 8 },
+                    { source: 'v5', target: 'v7', w: 8 },
+                    { source: 'v7', target: 'v6', w: 8 },
+                    { source: 'v8', target: 'v7', w: 10 },
+                    { source: 'v7', target: 'v9', w: 9 },
+                    { source: 'v6', target: 'v8', w: 18 },
+                    { source: 'v8', target: 'v7', w: 10 },
+                    { source: 'v8', target: 'v9', w: 3 },
+                    { source: 'v8', target: 'v10', w: 4 },
+                    { source: 'v7', target: 'v9', w: 9 },
+                    { source: 'v8', target: 'v9', w: 3 },
+                    { source: 'v9', target: 'v1', w: 5 },
+                    { source: 'v8', target: 'v10', w: 4 },
+                    { source: 'v10', target: 'v1', w: 4 },
+                ]
+            }),
+        })
+    ],
+
+    algorithm: function(_){
+        with (this) {
+            var Set = new Vamonos.DataStructure.DisjointSet({
+                onUpdate: function(vtx){ vtx.group = Set.find(vtx) },
+            });
+            G.eachVertex(function(vtx){
+                _(1); v = vtx;
+                _(2); Set.makeSet(v);
+            });
+            G.eachEdgeBy(function(a,b){ return a.w - b.w }, function(e){
+                _(3); u = e.source; v = e.target;
+                if (_(4), Set.find(u) !== Set.find(v)) {
+                    _(5); Set.union(u,v);
+                }
+            });
+            createGroupStyles(Set.numSets());
+        }
+    },
+});
+
+// Divides the color wheel by the number of strongly connected components in
+// the graph, and creates a new class for each of them.
+var createGroupStyles = function(nGroups){
+    if (nGroups === undefined) return;
+    var cs = function(n){
+        var inc = Math.floor(360 / nGroups);
+        return "hsl(" + (inc * n) + ", 60%, 70%)";
+    };
+    for (var i = 0; i < nGroups; i++) {
+        $('<style>.group-' + i + ' { background: ' + cs(i) + '; }</style>')
+            .appendTo($('html > head'));
+    }
+};
+
+</script>
+</html>

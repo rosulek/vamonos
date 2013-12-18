@@ -255,6 +255,7 @@ var DFS1 = function(G){
 // Divides the color wheel by the number of strongly connected components in
 // the graph, and creates a new class for each of them.
 var createGroupStyles = function(nGroups){
+    if (nGroups === undefined) return;
     var cs = function(n){
         var inc = Math.floor(360 / nGroups);
         return "hsl(" + (inc * n) + ", 60%, 70%)";
