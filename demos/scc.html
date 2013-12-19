@@ -148,7 +148,7 @@ var myviz = new Vamonos.Visualizer({
                 ["dfs::v->u", "#FF7D7D"],
             ],
             vertexCssAttributes: {
-                group: function(vtx){ return "group-" + vtx.group },
+                group: function(vtx){ if (vtx.group !== undefined) return "group-" + vtx.group; },
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: true,
@@ -202,7 +202,7 @@ var myviz = new Vamonos.Visualizer({
                         _(6); dfs({ G:G,u:u });
                     }
                 }
-                createGroupStyles(global.group);
+                Vamonos.createNColorClasses("group-", global.group + 1);
             }
         },
 
@@ -250,20 +250,6 @@ var DFS1 = function(G){
     });
     // clean up
     G.eachVertex(function(u){ delete u.visited });
-};
-
-// Divides the color wheel by the number of strongly connected components in
-// the graph, and creates a new class for each of them.
-var createGroupStyles = function(nGroups){
-    if (nGroups === undefined) return;
-    var cs = function(n){
-        var inc = Math.floor(360 / nGroups);
-        return "hsl(" + (inc * n) + ", 60%, 70%)";
-    };
-    for (var i = 1; i <= nGroups; i++) {
-        $('<style>.group-' + i + ' { background: ' + cs(i) + '; }</style>')
-            .appendTo($('html > head'));
-    }
 };
 
 </script></html>

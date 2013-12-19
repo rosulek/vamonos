@@ -343,12 +343,17 @@ class GraphDisplay
             $node.addClass("changed")
         for attr, val of @vertexCssAttributes
             if val.constructor.name is "Function"
+                (@appliedNodeClasses ?= {})[vertex.id] ?= {}
                 newClass = val(vertex)
-                @appliedNodeClasses ?= {}
+                return if newClass is @appliedNodeClasses[vertex.id][attr]
+                # remove previously applied class for this attr
+                if @appliedNodeClasses[vertex.id][attr]?
+                    $node.removeClass(@appliedNodeClasses[vertex.id][attr])
                 if newClass?
-                    $node.removeClass(@appliedNodeClasses[vertex.id])
                     $node.addClass(newClass) 
-                    @appliedNodeClasses[vertex.id] = newClass
+                    @appliedNodeClasses[vertex.id][attr] = newClass
+                else
+                    delete @appliedNodeClasses[vertex.id][attr]
             else if val.length
                 $node.removeClass("#{attr}-#{kind}") for kind in val
                 if vertex[attr] in val

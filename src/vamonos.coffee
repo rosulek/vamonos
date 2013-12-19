@@ -56,6 +56,17 @@
         unless ignoreExtraArgs
             @warn(widgetName, "unused argument \"#{arg}\"") for arg of givenArgs
 
+    # Divides the color wheel by the number of strongly connected components in
+    # the graph, and creates a new class for each of them.
+    createNColorClasses: (prefix, nGroups) ->
+        return unless prefix? and nGroups?
+        cs = (n) ->
+            inc = Math.floor(360 / nGroups)
+            "hsl(#{ inc * n }, 60%, 70%)"
+        for i in [0..nGroups-1]
+            $('<style>.'+ prefix + i + ' { background: ' + cs(i) + '; }</style>')
+                .appendTo($('html > head'))
+
     warn: (objName, str) ->
         console.log("### WARNING ### #{objName}: #{str}")
 
