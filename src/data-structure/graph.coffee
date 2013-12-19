@@ -207,8 +207,7 @@ class Graph
         description: "applies `f` to each edge, ordered by `comp`"
     eachEdgeBy: (comp, f) ->
         es = @getEdges()
-        es.sort(comp)
-        f(e) for e in @getEdges() when e?
+        f(e) for e in es.sort(comp) when e?
 
     # ----------- edge and vertex functions ---------- #
 

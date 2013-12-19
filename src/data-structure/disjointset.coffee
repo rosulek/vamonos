@@ -37,13 +37,9 @@ class DisjointSet
     union: (e1, e2) ->
         e1Set = @find(e1)
         e2Set = @find(e2)
-        return unless e1Set? and e2Set and e1Set isnt e2Set
-        if e1Set < e2Set
-            @guts[e1Set] = @guts[e1Set].concat(@guts[e2Set])
-            @guts[e2Set] = []
-        else
-            @guts[e2Set] = @guts[e2Set].concat(@guts[e1Set])
-            @guts[e1Set] = []
+        return unless e1Set? and e2Set? and e1Set isnt e2Set
+        @guts[e1Set] = @guts[e1Set].concat(@guts[e2Set])
+        @guts[e2Set] = []
         @update()
 
     @interface.numSets =

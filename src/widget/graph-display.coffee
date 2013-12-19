@@ -344,7 +344,11 @@ class GraphDisplay
         for attr, val of @vertexCssAttributes
             if val.constructor.name is "Function"
                 newClass = val(vertex)
-                $node.addClass(newClass) if newClass?
+                @appliedNodeClasses ?= {}
+                if newClass?
+                    $node.removeClass(@appliedNodeClasses[vertex.id])
+                    $node.addClass(newClass) 
+                    @appliedNodeClasses[vertex.id] = newClass
             else if val.length
                 $node.removeClass("#{attr}-#{kind}") for kind in val
                 if vertex[attr] in val

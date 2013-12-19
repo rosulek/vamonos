@@ -54,11 +54,6 @@
             <table class="variable-widgets">
                 <tr><td><div id="g-var"></div></td>
                     <td><div id="graph"></div></td> </tr>
-                <tr><td><div id="u-var"></div></td>
-                    <td><div id="u"></div></td> </tr>
-                <tr><td><div id="v-var"></div></td>
-                    <td><div id="v"></div></td>
-                </tr>
             </table>
 
         </td></tr>
@@ -75,28 +70,6 @@ var myviz = new Vamonos.Visualizer({
         }),
 
         new Vamonos.Widget.VarName({
-            container: "u-var",
-            varName: "u",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "u",
-            varName: "u",
-            attributes: ["name","key","pred"]
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "v-var",
-            varName: "v",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "v",
-            varName: "v",
-            attributes: ["name","key","pred"]
-        }),
-
-        new Vamonos.Widget.VarName({
             container: "g-var",
             varName: "G",
             inputVar: true,
@@ -106,11 +79,9 @@ var myviz = new Vamonos.Visualizer({
         new Vamonos.Widget.Graph({
             container: "graph",
             varName: "G",
-            inputVars: { r: "v1" },
             vertexLabels: {
                 inner: function(vtx){ return vtx.name },
                 ne: ['u','v'],
-                nw: ['r'],
             },
             vertexCssAttributes: {
                 group: function(vtx){ return "group-" + vtx.group },
@@ -119,24 +90,21 @@ var myviz = new Vamonos.Visualizer({
             defaultEdgeAttrs: { w: 1 },
             colorEdges: [
                 ["u->v", "#FF7D7D"],
-                [ function(edge){
-                    return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
-                        || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }
-                , "#276CFF" ],
+                [ function(edge){ return edge.inMST }, "#276CFF" ],
             ],
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: false,
                 prefix: "",
                 vertices: [
-                    { id: 'v0', x: 10, y: 187, name: 'a' },
-                    { id: 'v1', x: 4, y: 13, name: 'b' },
-                    { x: 87, y: 156, name: 'c', id: 'v4' },
-                    { x: 94, y: 87, name: 'd', id: 'v5' },
-                    { x: 207, y: 195, name: 'e', id: 'v6' },
-                    { x: 160, y: 124, name: 'f', id: 'v7' },
-                    { x: 223, y: 26, name: 'g', id: 'v8' },
-                    { x: 151, y: 53, name: 'h', id: 'v9' },
-                    { x: 104, y: 0, name: 'i', id: 'v10' },
+                    { id: 'v0', x: 10, y: 187 },
+                    { id: 'v1', x: 4, y: 13 },
+                    { x: 87, y: 156, id: 'v4' },
+                    { x: 94, y: 87, id: 'v5' },
+                    { x: 207, y: 195, id: 'v6' },
+                    { x: 160, y: 124, id: 'v7' },
+                    { x: 223, y: 26, id: 'v8' },
+                    { x: 151, y: 53, id: 'v9' },
+                    { x: 104, y: 0, id: 'v10' },
                 ],
                 edges: [
                     { source: 'v1', target: 'v0', w: 6 },
@@ -186,9 +154,12 @@ var myviz = new Vamonos.Visualizer({
                 _(2); Set.makeSet(v);
             });
             G.eachEdgeBy(function(a,b){ return a.w - b.w }, function(e){
-                _(3); u = e.source; v = e.target;
+                _(3); 
+                u = G.vertex(e.source.id); 
+                v = G.vertex(e.target.id);
                 if (_(4), Set.find(u) !== Set.find(v)) {
                     _(5); Set.union(u,v);
+                    e.inMST = true;
                 }
             });
             createGroupStyles(Set.numSets());
