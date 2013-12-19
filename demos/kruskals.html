@@ -46,6 +46,7 @@
                     for each (u,v) ordered by increasing weight
                         if Find-Set(u) &ne; Find-Set(v)
                             Union(u,v)
+                            (u,v).inMST = True
                 </div>
             </div>
 
@@ -159,7 +160,7 @@ var myviz = new Vamonos.Visualizer({
                 v = G.vertex(e.target.id);
                 if (_(4), Set.find(u) !== Set.find(v)) {
                     _(5); Set.union(u,v);
-                    e.inMST = true;
+                    _(6); e.inMST = true;
                 }
             });
             createGroupStyles(Set.numSets());
