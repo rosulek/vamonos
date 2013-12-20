@@ -345,7 +345,7 @@ class GraphDisplay
             if val.constructor.name is "Function"
                 (@appliedNodeClasses ?= {})[vertex.id] ?= {}
                 newClass = val(vertex)
-                return if newClass is @appliedNodeClasses[vertex.id][attr]
+                continue if newClass is @appliedNodeClasses[vertex.id][attr]
                 # remove previously applied class for this attr
                 if @appliedNodeClasses[vertex.id][attr]?
                     $node.removeClass(@appliedNodeClasses[vertex.id][attr])
@@ -354,7 +354,7 @@ class GraphDisplay
                     @appliedNodeClasses[vertex.id][attr] = newClass
                 else
                     delete @appliedNodeClasses[vertex.id][attr]
-            else if val.length
+            else if val.constructor.name is "Array"
                 $node.removeClass("#{attr}-#{kind}") for kind in val
                 if vertex[attr] in val
                     $node.addClass("#{attr}-#{vertex[attr]}")
@@ -368,12 +368,12 @@ class GraphDisplay
         return false unless newv?
         return false unless @previousGraph?
         return false unless oldv = @previousGraph.vertex(newv.id)
-        for k,v of newv
+        for k,v of newv when k[0] isnt "_"
             if v.type is "Vertex"
                 return true if oldv[k]?.id isnt v.id
             else
                 return true if oldv[k] isnt v
-        for k,v of oldv
+        for k,v of oldv when k[0] isnt "_"
             if v.type is "Vertex"
                 return true if newv[k]?.id isnt v.id
             else

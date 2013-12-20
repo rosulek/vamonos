@@ -41,6 +41,7 @@ class DisjointSet
         @guts[e1Set] = @guts[e1Set].concat(@guts[e2Set])
         @guts[e2Set] = []
         @update()
+        return @guts[e1Set]
 
     @interface.numSets =
         description: "returns the max number of sets that have existed"
@@ -52,5 +53,13 @@ class DisjointSet
         for set in @guts
             for elem in set
                 @updateFunc(elem)
+
+    @interface.eachSet =
+        args: [["f", "a function taking an array of elements and optionally an index"]]
+        description: "applies `f` to each set in the DisjointSet, along with its index"
+    eachSet: (f) ->
+        for i in [0..@numSets()-1]
+            continue unless @guts[i].length
+            f(@guts[i],i)
 
 @Vamonos.export { DataStructure: { DisjointSet } }

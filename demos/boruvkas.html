@@ -1,0 +1,205 @@
+<html><head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="../lib/vamonos-demos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <style type="text/css">
+        .vertex {
+            width: 40;
+            height: 30;
+        }
+
+        .vertex-contents {
+            font-size: .8em;
+        }
+
+        .vertex-ne-label, .vertex-nw-label {
+            font-weight: bold;
+        }
+
+        .vertex-sw-label {
+            font-style: italic;
+        }
+
+        body {
+            text-align: center;
+        }
+
+        .vertex._current {
+            box-shadow: 0px 0px 5px 5px yellow;
+        }
+
+    </style>
+
+</head><body>
+
+    <h1>Borůvka's Minimum Spanning Tree</h1>
+
+    <table class="vamonos">
+
+        <tr><td class="pseudocode-and-controls">
+
+            <div id="controls"></div>
+
+            <div class="pseudocode-procedures">
+                <div id="pseudocode" title="MST-Boruvka(G)">
+                    MST = &empty;
+                    for each vertex u &isin; G.V
+                        Make-Set(u)
+                    while |MST| &lt; |G.V| - 1
+                        for each set of vertices S
+                            (u,v) = min-cost { (u,v) | u &isin; S, v &notin; S }
+                            Union(u,v)
+                            MST = MST &cup; {(u,v)}
+                </div>
+            </div>
+
+        </td><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="g-var"></div></td>
+                    <td><div id="graph"></div></td> </tr>
+            </table>
+
+        </td></tr>
+    </table>
+
+</body>
+<script type="text/javascript">
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+        new Vamonos.Widget.Controls("controls"),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode",
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "g-var",
+            varName: "G",
+            inputVar: true,
+            watching: true,
+        }),
+
+        new Vamonos.Widget.Graph({
+            container: "graph",
+            varName: "G",
+            vertexLabels: {
+                inner: function(vtx){ return vtx.name },
+                ne: ['u','v'],
+            },
+            vertexCssAttributes: {
+                group: function(vtx){ return "group-" + vtx.group },
+                _current: true,
+            },
+            edgeLabel: "w",
+            defaultEdgeAttrs: { w: 1 },
+            colorEdges: [
+                ["u->v", "#FF7D7D"],
+                [ function(edge){ return edge.inMST }, "#276CFF" ],
+            ],
+            defaultGraph: new Vamonos.DataStructure.Graph({
+                directed: false,
+                prefix: "",
+                vertices: [
+                    { id: 'v0', x: 10, y: 187 },
+                    { id: 'v1', x: 4, y: 13 },
+                    { x: 87, y: 156, id: 'v4' },
+                    { x: 94, y: 87, id: 'v5' },
+                    { x: 207, y: 195, id: 'v6' },
+                    { x: 160, y: 124, id: 'v7' },
+                    { x: 223, y: 26, id: 'v8' },
+                    { x: 151, y: 53, id: 'v9' },
+                    { x: 104, y: 0, id: 'v10' },
+                ],
+                edges: [
+                    { source: 'v1', target: 'v0', w: 6 },
+                    { source: 'v0', target: 'v6', w: 9 },
+                    { source: 'v0', target: 'v4', w: 3 },
+                    { source: 'v1', target: 'v0', w: 6 },
+                    { source: 'v4', target: 'v1', w: 4 },
+                    { source: 'v5', target: 'v1', w: 2 },
+                    { source: 'v9', target: 'v1', w: 5 },
+                    { source: 'v10', target: 'v1', w: 4 },
+                    { source: 'v0', target: 'v6', w: 9 },
+                    { source: 'v7', target: 'v6', w: 8 },
+                    { source: 'v6', target: 'v4', w: 9 },
+                    { source: 'v6', target: 'v8', w: 18 },
+                    { source: 'v0', target: 'v4', w: 3 },
+                    { source: 'v4', target: 'v1', w: 4 },
+                    { source: 'v4', target: 'v5', w: 2 },
+                    { source: 'v6', target: 'v4', w: 9 },
+                    { source: 'v4', target: 'v5', w: 2 },
+                    { source: 'v5', target: 'v1', w: 2 },
+                    { source: 'v5', target: 'v7', w: 8 },
+                    { source: 'v5', target: 'v7', w: 8 },
+                    { source: 'v7', target: 'v6', w: 8 },
+                    { source: 'v8', target: 'v7', w: 10 },
+                    { source: 'v7', target: 'v9', w: 9 },
+                    { source: 'v6', target: 'v8', w: 18 },
+                    { source: 'v8', target: 'v7', w: 10 },
+                    { source: 'v8', target: 'v9', w: 3 },
+                    { source: 'v8', target: 'v10', w: 4 },
+                    { source: 'v7', target: 'v9', w: 9 },
+                    { source: 'v8', target: 'v9', w: 3 },
+                    { source: 'v9', target: 'v1', w: 5 },
+                    { source: 'v8', target: 'v10', w: 4 },
+                    { source: 'v10', target: 'v1', w: 4 },
+                ]
+            }),
+        })
+    ],
+
+    algorithm: function(_){
+        with (this) {
+            _(1);
+            var numEdgesInMST = 0;
+            var numVertices = G.getVertices().length;
+            var Set = new Vamonos.DataStructure.DisjointSet({
+                onUpdate: function(vtx){ vtx.group = Set.find(vtx) },
+            });
+            G.eachVertex(function(vtx){
+                _(2); u = vtx;
+                _(3); Set.makeSet(u);
+            });
+            while (_(4), numEdgesInMST < numVertices - 1) {
+                var oldS = [];
+                Set.eachSet(function(S,i){
+                    _(5); 
+                    oldS.map(function(u){ delete u._current });
+                    S.map(function(u){ u._current = true });
+                    var minEdge = { nada: true, w: Infinity };
+                    S.map(function(u){
+                        G.eachNeighbor(u, function(v){
+                            if (Set.find(v) !== i) {
+                                var e = G.edge(u,v)
+                                if (e.w < minEdge.w) {
+                                    minEdge = e;
+                                }
+                            }
+                        });
+                    });
+                    u = v = undefined;
+
+                    _(6);
+                    u = G.vertex(minEdge.source);
+                    v = G.vertex(minEdge.target);
+
+                    _(7); oldS = Set.union(u,v);
+                    oldS.map(function(u){ u._current = true });
+                    _(8); minEdge.inMST = true;
+                    numEdgesInMST += 1;
+                });
+                oldS.map(function(u){ delete u._current });
+            }
+            Vamonos.createNColorClasses("group-", Set.numSets());
+        }
+    },
+});
+
+</script>
+</html>
