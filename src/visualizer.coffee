@@ -18,7 +18,7 @@ class Visualizer
                 "association of procedure names to functions."
             defaultValue: (->)
         maxFrames: 
-            type: "Integer"
+            type: "Number"
             defaultValue: 250
             description: "the maximum number of snapshots"
         autoStart:

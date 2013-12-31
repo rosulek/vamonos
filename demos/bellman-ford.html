@@ -152,9 +152,9 @@ var myviz = new Vamonos.Visualizer({
             edgeLabel: "w",
             defaultEdgeAttrs: { w: 1 },
             colorEdges: [
-                ["u->v", "#FF7D7D"],
                 [ function(edge){ return (edge.target.pred === edge.source.id) } , "#92E894" ],
-                [ function(e){ return e.error }, "red" ]
+                [ function(e){ return e.error }, "red" ],
+                ["u->v", "blue"],
             ],
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: true,
@@ -207,6 +207,8 @@ var myviz = new Vamonos.Visualizer({
         }),
     ],
 
+    maxFrames: 500,
+
     algorithm: {
 
         main: function(_){
@@ -230,16 +232,17 @@ var myviz = new Vamonos.Visualizer({
                         }
                     });
                 }
-                G.eachEdge(function(e){
+                var edges = G.getEdges();
+                for (var i = 0; i < edges.length; i++) {
                     _(10);
-                    u = e.source;
-                    v = e.target;
+                    e = edges[i];
+                    u = G.vertex(e.source);
+                    v = G.vertex(e.target);
                     if (_(11), u.d + e.w < v.d) {
-                        // error
-                        e.error = true;
+                        _(12); e.error = true;
                         return;
                     }
-                });
+                }
             }
         }
     }
