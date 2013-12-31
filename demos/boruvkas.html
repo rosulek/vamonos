@@ -33,6 +33,10 @@
             box-shadow: 0px 0px 5px 5px yellow;
         }
 
+        .vertex._error {
+            box-shadow: 0px 0px 5px 5px red;
+        }
+
     </style>
 
 </head><body>
@@ -53,6 +57,8 @@
                     while |MST| &lt; |G.V| - 1
                         for each set of vertices S
                             (u,v) = min-cost { (u,v) | u &isin; S, v &notin; S }
+                            if (u,v) = null 
+                                error "disconnected graph"
                             Union(u,v)
                             MST = MST &cup; {(u,v)}
                 </div>
@@ -95,6 +101,7 @@ var myviz = new Vamonos.Visualizer({
             vertexCssAttributes: {
                 group: function(vtx){ return "group-" + vtx.group },
                 _current: true,
+                _error: true,
             },
             edgeLabel: "w",
             defaultEdgeAttrs: { w: 1 },
@@ -166,35 +173,52 @@ var myviz = new Vamonos.Visualizer({
                 _(2); u = vtx;
                 _(3); Set.makeSet(u);
             });
-            while (_(4), numEdgesInMST < numVertices - 1) {
-                var oldS = [];
-                Set.eachSet(function(S,i){
-                    _(5); 
-                    oldS.map(function(u){ delete u._current });
-                    S.map(function(u){ u._current = true });
-                    var minEdge = { nada: true, w: Infinity };
-                    S.map(function(u){
-                        G.eachNeighbor(u, function(v){
-                            if (Set.find(v) !== i) {
-                                var e = G.edge(u,v)
-                                if (e.w < minEdge.w) {
-                                    minEdge = e;
+            try {
+                while (_(4), numEdgesInMST < numVertices - 1) {
+                    var oldS = [];
+                    Set.eachSet(function(S,i,control){
+                        _(5); 
+                        oldS.map(function(u){ delete u._current });
+                        S.map(function(u){ u._current = true });
+                        var minEdge = { nada: true, w: Infinity };
+                        S.map(function(u){
+                            G.eachNeighbor(u, function(v){
+                                if (Set.find(v) !== i) {
+                                    var e = G.edge(u,v)
+                                    if (e.w < minEdge.w) {
+                                        minEdge = e;
+                                    }
                                 }
-                            }
+                            });
                         });
+                        u = v = undefined;
+
+                        _(6);
+                        u = G.vertex(minEdge.source);
+                        v = G.vertex(minEdge.target);
+
+                        if (_(7), minEdge.nada) {
+                            _(8);
+                            S.map(function(u){ 
+                                delete u._current;
+                                u._error = true;
+                                throw "disconnected graph"
+                            });
+                        } else {
+                            _(9); 
+                            var unionResults = Set.union(u,v);
+                            oldS = unionResults;
+                            oldS.map(function(u){ u._current = true });
+                            _(10); 
+                            minEdge.inMST = true;
+                            numEdgesInMST += 1;
+                        }
                     });
-                    u = v = undefined;
-
-                    _(6);
-                    u = G.vertex(minEdge.source);
-                    v = G.vertex(minEdge.target);
-
-                    _(7); oldS = Set.union(u,v);
-                    oldS.map(function(u){ u._current = true });
-                    _(8); minEdge.inMST = true;
-                    numEdgesInMST += 1;
-                });
-                oldS.map(function(u){ delete u._current });
+                    oldS.map(function(u){ delete u._current });
+                }
+            }
+            catch (err) {
+                if (err !== "disconnected graph") throw err;
             }
             Vamonos.createNColorClasses("group-", Set.numSets());
         }

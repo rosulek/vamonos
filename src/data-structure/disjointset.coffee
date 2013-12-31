@@ -35,9 +35,10 @@ class DisjointSet
                ["e2", "an element"]]
         description: "joins the set containing `e1` with the one containing `e2`"
     union: (e1, e2) ->
+        return [] unless e1? and e2?
         e1Set = @find(e1)
         e2Set = @find(e2)
-        return unless e1Set? and e2Set? and e1Set isnt e2Set
+        return [] unless e1Set? and e2Set? and e1Set isnt e2Set
         @guts[e1Set] = @guts[e1Set].concat(@guts[e2Set])
         @guts[e2Set] = []
         @update()
@@ -58,8 +59,16 @@ class DisjointSet
         args: [["f", "a function taking an array of elements and optionally an index"]]
         description: "applies `f` to each set in the DisjointSet, along with its index"
     eachSet: (f) ->
+        control = { abort: false }
         for i in [0..@numSets()-1]
             continue unless @guts[i].length
-            f(@guts[i],i)
+            f(@guts[i],i,control)
+
+    @interface.getSets =
+        description: "returns a list of all the sets in the DisjointSet." +
+                     "Sets are represented by lists. " +
+                     "Note that some lists may be empty."
+    getSets: ->
+        return @guts
 
 @Vamonos.export { DataStructure: { DisjointSet } }
