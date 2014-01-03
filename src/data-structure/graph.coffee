@@ -6,7 +6,7 @@ class Graph
         """
 
     @spec:
-        directed: 
+        directed:
             type: "Boolean"
             description: "Whether the graph is directed."
             defaultValue: false
@@ -19,7 +19,7 @@ class Graph
             description: "A single vertex or an array of vertices to create the graph with."
             defaultValue: undefined
             example: """
-                vertices: [ 
+                vertices: [
                     {id: "v0", x: 17,  y: 10},
                     {id: "v1", x: 98,  y: 10},
                     {id: "v3", x: 15,  y: 78},
@@ -39,7 +39,7 @@ class Graph
     @interface = {}
 
     constructor: (args = {}) ->
-        
+
         @directed = args.directed ? no
         @prefix = args.prefix   ? ""
 
@@ -52,7 +52,7 @@ class Graph
 
     # ----------- vertex functions ---------- #
 
-    @interface.vertex = 
+    @interface.vertex =
         args: [["vid", "a vertex object containing an id field, or an id"]]
         description: "returns the vertex object matching `vid`"
     vertex: (vid) ->
@@ -73,7 +73,7 @@ class Graph
 
     @interface.removeVertex =
         args: [["v",  "a vertex object containing an id field, or an id"]]
-        description: 
+        description:
             "removes the vertex matching `v` and all related edges from the " +
             "graph"
     removeVertex: (v) ->
@@ -110,10 +110,10 @@ class Graph
     @interface.nextVertexId = description: "returns an unused vertex id"
     nextVertexId: () ->
         @_customVertexNum ?= 0
-        "#{@prefix ? "custom"}-vertex-#{@_customVertexNum++}"
+        "#{@prefix ? "custom-"}vertex-#{@_customVertexNum++}"
 
 
-    @interface.returnVertexName = 
+    @interface.returnVertexName =
         args: [["n", "string"]]
         description: "adds `n` to the list of available vertex names"
     returnVertexName: (n) ->
@@ -138,10 +138,10 @@ class Graph
             ["source", "a vertex object containing an id field, or an id"]
             ["target", "a vertex object containing an id field, or an id"]
         ]
-        description: 
+        description:
             "if there is an edge from `source` to `target`, returns it. " +
             "understands undirected graphs."
-                
+
     edge: (source, target) ->
         sourceId = @idify(source)
         targetId = @idify(target)
@@ -156,10 +156,11 @@ class Graph
         ]
         description: "adds an edge from `source` to `target` with attributes copied from `attrs`"
     addEdge: (source, target, attrs) ->
+        console.log "addEdge: #{source.name}->#{target.name}"
         sourceId = @idify(source)
         targetId = @idify(target)
         return if @edge(sourceId, targetId)
-        s = @vertex(sourceId) 
+        s = @vertex(sourceId)
         t = @vertex(targetId)
         return unless s? and t?
         edge = { source: s, target: t, type: 'Edge' }
@@ -193,13 +194,13 @@ class Graph
             edge for target, edge of outgoingEdges)
         [].concat(uglyArray...) # flatten array
 
-    @interface.eachEdge = 
+    @interface.eachEdge =
         args: [["f", "a function taking an edge"]]
         description: "applies `f` to each edge"
     eachEdge: (f) ->
         f(e) for e in @getEdges() when e?
 
-    @interface.eachEdgeBy = 
+    @interface.eachEdgeBy =
         args: [
             ["comp", "a comparator"]
             ["f", "a function taking an edge"]
@@ -211,14 +212,14 @@ class Graph
 
     # ----------- edge and vertex functions ---------- #
 
-    @interface.neighbors = 
+    @interface.neighbors =
         args: [["v", "a vertex object containing an id field, or an id"]]
         description: "returns all neighbors of `v`"
     neighbors: (v) ->
         (@vertex(target) for target, edge of @edges[@idify(v)])
             .sort (a,b) -> a.name - b.name
 
-    @interface.eachNeighbor = 
+    @interface.eachNeighbor =
         args: [
             ["v", "a vertex object containing an id field, or an id"]
             ["f", "a function that takes a vertex as input"]
@@ -232,8 +233,12 @@ class Graph
         description: "returns all outgoing edges of `v`"
     outgoingEdges: (v) ->
         vid = @idify(v)
-        (edge for target, edge of @edges[vid])
-            .concat(if @directed then [] else @incomingEdges(vid))
+        result = []
+        for source, outgoingEdges of @edges
+            for target, edge of outgoingEdges
+                if source is vid
+                    result.push(edge)
+        [].concat(result...) # flatten array
 
     @interface.incomingEdges =
         args: [["v", "a vertex object containing an id field, or an id"]]
@@ -247,6 +252,54 @@ class Graph
                     result.push(edge)
         [].concat(result...) # flatten array
 
+    # ------------ edge collapsing and uncollapsing --------- #
+
+    @interface.collapse =
+        args: [["e", "an edge of the graph to collapse"]]
+        description: "collapses `e`, creating a new vertex. By default " +
+            "vertex names are concatenations of the collapsed vertices' " +
+            "names, vertices' positions are averaged, and overlapping " +
+            "edges take the min weight."
+    collapse: (edge) ->
+        v1 = edge.source
+        v2 = edge.target
+        console.log("v1", @outgoingEdges(v1), "v2", @outgoingEdges(v2))
+
+        return unless v1? and v2?
+
+        newVtx = @addVertex
+            name: v1.name + v2.name
+            x: Math.floor((v1.x + v2.x) / 2)
+            y: Math.floor((v1.y + v2.y) / 2)
+
+        minWeightEdge = (a,b) -> if a.w < b.w then a else b
+
+        console.log(@outgoingEdges(v1).concat @outgoingEdges(v2))
+
+        if not @directed
+            for outEdge in @outgoingEdges(v1).concat @outgoingEdges(v2)
+                sid = outEdge.source.id
+                if sid is v1.id or sid is v2.id
+                    existingEdge = @edge(newVtx, outEdge.target)
+                    if not existingEdge? or outEdge.w < existingEdge.w or outEdge.inMST
+                        @addEdge(newVtx, outEdge.target, outEdge)
+                else
+                    existingEdge = @edge(outEdge.source, newVtx)
+                    if not existingEdge? or outEdge.w < existingEdge.w or outEdge.inMST
+                        @addEdge(outEdge.source, newVtx, outEdge)
+
+        @removeVertex(v1)
+        @removeVertex(v2)
+
+    collapseEdgesBy: (attr, func) ->
+        while e = @nextEdgeMatching(attr)
+            func()
+            @collapse(e) 
+
+    nextEdgeMatching: (attr) ->
+        edges = @getEdges()
+        edges.reduce((a,b) -> if a?[attr] then a else if b?[attr] then b) if edges.length
+
     # ------------ utility ----------- #
 
     idify: (v) ->
@@ -258,7 +311,7 @@ class Graph
         Vamonos.mixin(r, this, Vamonos.clone)
 
 
-    @interface.toString = 
+    @interface.toString =
         description: "returns a javascripty string you could use to initialize a graph with."
     toString: () ->
         s  = """

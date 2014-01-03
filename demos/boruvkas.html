@@ -51,16 +51,9 @@
 
             <div class="pseudocode-procedures">
                 <div id="pseudocode" title="MST-Boruvka(G)">
-                    MST = &empty;
-                    for each vertex u &isin; G.V
-                        Make-Set(u)
-                    while |MST| &lt; |G.V| - 1
-                        for each set of vertices S
-                            (u,v) = min-cost { (u,v) | u &isin; S, v &notin; S }
-                            if (u,v) = null 
-                                error "disconnected graph"
-                            Union(u,v)
-                            MST = MST &cup; {(u,v)}
+                    while |G.V| &gt; 1
+                        label min outgoing edge for each vertex
+                        collapse labeled edges
                 </div>
             </div>
 
@@ -97,11 +90,7 @@ var myviz = new Vamonos.Visualizer({
             vertexLabels: {
                 inner: function(vtx){ return vtx.name },
                 ne: ['u','v'],
-            },
-            vertexCssAttributes: {
-                group: function(vtx){ return "group-" + vtx.group },
-                _current: true,
-                _error: true,
+                sw: function(vtx){ return vtx.id },
             },
             edgeLabel: "w",
             defaultEdgeAttrs: { w: 1 },
@@ -164,63 +153,22 @@ var myviz = new Vamonos.Visualizer({
     algorithm: function(_){
         with (this) {
             _(1);
-            var numEdgesInMST = 0;
-            var numVertices = G.getVertices().length;
-            var Set = new Vamonos.DataStructure.DisjointSet({
-                onUpdate: function(vtx){ vtx.group = Set.find(vtx) },
-            });
-            G.eachVertex(function(vtx){
-                _(2); u = vtx;
-                _(3); Set.makeSet(u);
-            });
-            try {
-                while (_(4), numEdgesInMST < numVertices - 1) {
-                    var oldS = [];
-                    Set.eachSet(function(S,i,control){
-                        _(5); 
-                        oldS.map(function(u){ delete u._current });
-                        S.map(function(u){ u._current = true });
-                        var minEdge = { nada: true, w: Infinity };
-                        S.map(function(u){
-                            G.eachNeighbor(u, function(v){
-                                if (Set.find(v) !== i) {
-                                    var e = G.edge(u,v)
-                                    if (e.w < minEdge.w) {
-                                        minEdge = e;
-                                    }
-                                }
-                            });
-                        });
-                        u = v = undefined;
-
-                        _(6);
-                        u = G.vertex(minEdge.source);
-                        v = G.vertex(minEdge.target);
-
-                        if (_(7), minEdge.nada) {
-                            _(8);
-                            S.map(function(u){ 
-                                delete u._current;
-                                u._error = true;
-                                throw "disconnected graph"
-                            });
-                        } else {
-                            _(9); 
-                            var unionResults = Set.union(u,v);
-                            oldS = unionResults;
-                            oldS.map(function(u){ u._current = true });
-                            _(10); 
-                            minEdge.inMST = true;
-                            numEdgesInMST += 1;
+            while (G.getVertices().length > 1) {
+                // label min outgoing edge for each vertex
+                G.eachVertex(function(u){
+                    var minEdge = { w: Infinity, nada: true }
+                    G.outgoingEdges(u).map(function(e){
+                        if (e.w < minEdge.w) {
+                            minEdge = e;
                         }
                     });
-                    oldS.map(function(u){ delete u._current });
-                }
+                    minEdge.inMST = true;
+                });
+
+                G.collapseEdgesBy("inMST", function(){_(3)});
             }
-            catch (err) {
-                if (err !== "disconnected graph") throw err;
-            }
-            Vamonos.createNColorClasses("group-", Set.numSets());
+
+            // uncollapse all edges
         }
     },
 });
