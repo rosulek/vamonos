@@ -56,7 +56,7 @@ class Graph
         args: [["vid", "a vertex object containing an id field, or an id"]]
         description: "returns the vertex object matching `vid`"
     vertex: (vid) ->
-        return @vertices[@idify(vid)]
+        @vertices[@idify(vid)]
 
 
     @interface.addVertex =
@@ -156,7 +156,6 @@ class Graph
         ]
         description: "adds an edge from `source` to `target` with attributes copied from `attrs`"
     addEdge: (source, target, attrs) ->
-        console.log "addEdge: #{source.name}->#{target.name}"
         sourceId = @idify(source)
         targetId = @idify(target)
         return if @edge(sourceId, targetId)
@@ -166,10 +165,8 @@ class Graph
         edge = { source: s, target: t, type: 'Edge' }
         if attrs?
             edge[k] = v for k, v of attrs when k isnt 'source' and k isnt 'target'
-
         (@edges[sourceId] ?= {})[targetId] = edge
         (@edges[targetId] ?= {})[sourceId] = edge unless @directed
-
         return edge
 
 
@@ -189,10 +186,13 @@ class Graph
 
 
     @interface.getEdges = description: "returns an array of all edges in the graph"
-    getEdges: () ->
-        uglyArray = (for source, outgoingEdges of @edges
-            edge for target, edge of outgoingEdges)
-        [].concat(uglyArray...) # flatten array
+    getEdges: ->
+        results = {}
+        for source, outgoingEdges of @edges
+            for target, edge of outgoingEdges
+                name = "#{edge.source.id}->#{edge.target.id}"
+                results[name] = edge
+        edge for name, edge of results
 
     @interface.eachEdge =
         args: [["f", "a function taking an edge"]]
@@ -259,46 +259,65 @@ class Graph
         description: "collapses `e`, creating a new vertex. By default " +
             "vertex names are concatenations of the collapsed vertices' " +
             "names, vertices' positions are averaged, and overlapping " +
-            "edges take the min weight."
+            "edges take the min weight. only works on undirected graphs."
     collapse: (edge) ->
+        throw "collapse called on directed graph" if @directed
+        @collapsedVertices ?= {}
+        @collapsedEdges    ?= {}
         v1 = edge.source
         v2 = edge.target
-        console.log("v1", @outgoingEdges(v1), "v2", @outgoingEdges(v2))
-
         return unless v1? and v2?
-
+        console.log "collapse #{v1.name}-#{v2.name}"
         newVtx = @addVertex
-            name: v1.name + v2.name
+            name: (v1.name + v2.name).split("").sort().join("")
+            id: v1.id + v2.id
             x: Math.floor((v1.x + v2.x) / 2)
             y: Math.floor((v1.y + v2.y) / 2)
-
-        minWeightEdge = (a,b) -> if a.w < b.w then a else b
-
-        console.log(@outgoingEdges(v1).concat @outgoingEdges(v2))
-
-        if not @directed
-            for outEdge in @outgoingEdges(v1).concat @outgoingEdges(v2)
-                sid = outEdge.source.id
-                if sid is v1.id or sid is v2.id
-                    existingEdge = @edge(newVtx, outEdge.target)
-                    if not existingEdge? or outEdge.w < existingEdge.w or outEdge.inMST
-                        @addEdge(newVtx, outEdge.target, outEdge)
-                else
-                    existingEdge = @edge(outEdge.source, newVtx)
-                    if not existingEdge? or outEdge.w < existingEdge.w or outEdge.inMST
-                        @addEdge(outEdge.source, newVtx, outEdge)
-
+        @collapsedVertices[newVtx.id] = [v1,v2]
+        affectedEdges = @outgoingEdges(v1)
+        @outgoingEdges(v2).map (e) -> affectedEdges.push(e) unless e in affectedEdges
         @removeVertex(v1)
         @removeVertex(v2)
+        for outEdge in affectedEdges
+            sid = outEdge.source.id
+            tid = outEdge.target.id
+            if sid is v1.id or sid is v2.id
+                target = tid
+            else
+                target = sid
+            continue unless @vertex(target)
+            existingEdge = @edge(newVtx,target)
+            if not existingEdge?
+                @addEdge(newVtx, target, outEdge)
+            else if outEdge.w < existingEdge.w
+                @removeEdge(newVtx,target)
+                @addEdge(newVtx, target, outEdge)
+        @collapsedEdges[newVtx.id] = affectedEdges
+
 
     collapseEdgesBy: (attr, func) ->
         while e = @nextEdgeMatching(attr)
-            func()
+            func(e)
             @collapse(e) 
 
     nextEdgeMatching: (attr) ->
         edges = @getEdges()
-        edges.reduce((a,b) -> if a?[attr] then a else if b?[attr] then b) if edges.length
+        edges.reduce((a,b) -> if a?[attr] then a else if b[attr] then b) if edges.length
+
+    uncollapse: (vtx) ->
+        return unless @collapsedEdges?[vtx.id]? and @collapsedVertices?[vtx.id]?
+        savedVertices = @collapsedVertices[vtx.id]
+        savedEdges    = @collapsedEdges[vtx.id]
+        console.log savedVertices
+        console.log savedEdges
+        for vtx in savedVertices
+            console.log "adding #{vtx.name}"
+            @addVertex(vtx) 
+        for edge in savedEdges
+            @addEdge(edge.source, edge.target, edge) 
+        @removeVertex(vtx)
+        delete @collapsedVertices[vtx.id]
+        delete @collapsedEdges[vtx.id]
 
     # ------------ utility ----------- #
 

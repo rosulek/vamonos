@@ -54,6 +54,7 @@
                     while |G.V| &gt; 1
                         label min outgoing edge for each vertex
                         collapse labeled edges
+                        morestuff
                 </div>
             </div>
 
@@ -162,13 +163,25 @@ var myviz = new Vamonos.Visualizer({
                             minEdge = e;
                         }
                     });
-                    minEdge.inMST = true;
+                    G.edge(minEdge.source, minEdge.target).inMST = true;
+                    G.edge(minEdge.target, minEdge.source).inMST = true;
                 });
+                _(2);
 
-                G.collapseEdgesBy("inMST", function(){_(3)});
+                G.collapseEdgesBy("inMST", function(e){
+                    _(3);
+                    u = G.vertex(e.source);
+                    v = G.vertex(e.target);
+                    _(4);
+                });
             }
 
             // uncollapse all edges
+            G.eachVertex(function(u){ 
+                _(4); 
+                G.uncollapse(u); 
+            });
+            _(4);
         }
     },
 });
