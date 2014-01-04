@@ -369,12 +369,12 @@ class GraphDisplay
         return false unless @previousGraph?
         return false unless oldv = @previousGraph.vertex(newv.id)
         for k,v of newv when k[0] isnt "_"
-            if v.type is "Vertex"
+            if v?.type is "Vertex"
                 return true if oldv[k]?.id isnt v.id
             else
                 return true if oldv[k] isnt v
         for k,v of oldv when k[0] isnt "_"
-            if v.type is "Vertex"
+            if v?.type is "Vertex"
                 return true if newv[k]?.id isnt v.id
             else
                 return true if newv[k] isnt v
@@ -490,13 +490,7 @@ class GraphDisplay
             # the first elem of style is a function taking an edge and returning a bool
             else if typeof style[0] is 'function'
                 for edge in graph.getEdges()
-                    # this gets around some funkiness having to do with references
-                    edgeHack =
-                        source: graph.vertex(edge.source)
-                        target: graph.vertex(edge.target)
-                    for attr, val of edge when not attr in ["source", "target"]
-                        edgeHack[attr] = val
-                    if style[0](edge) or style[0](edgeHack)
+                    if style[0](edge)
                         con = @connections[edge.source.id]?[edge.target.id]
                         @setStyle(con, edge, style[1], style[2])
 
