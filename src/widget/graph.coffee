@@ -165,7 +165,7 @@ class Graph
         s = ("#{ @varName } says: please set #{k}!" for k, v of @inputVars when not v?).join('\n')
         return s if s.length
 
-    addVertex: (vertex = {}) ->
+    addVertex: (vertex) ->
         newv = @theGraph.addVertex(vertex)
         @displayWidget.draw(@theGraph, @inputVars)
         node = @displayWidget.nodes[newv.id]

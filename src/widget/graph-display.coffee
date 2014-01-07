@@ -295,6 +295,7 @@ class GraphDisplay
         @$inner.append($v)
         $v.fadeIn(100) if show
         @nodes[vertex.id] = $v
+        return $v
 
     removeNode: (vid) ->
         node = @nodes[vid]

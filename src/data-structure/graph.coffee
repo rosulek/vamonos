@@ -68,7 +68,7 @@ class Graph
         newVtx.type = 'Vertex'
         newVtx.name = vtx.name ? @nextVertexName()
         newVtx.id   = vtx.id ? @nextVertexId()
-        @vertices[vtx.id] = newVtx
+        @vertices[newVtx.id] = newVtx
         for k, v of vtx when k not in ['type','name','id']
             if v?.type is 'Vertex'
                 newVtx[k] = @vertex(v)
