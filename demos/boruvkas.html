@@ -89,6 +89,29 @@ var myviz = new Vamonos.Visualizer({
         }),
 
         new Vamonos.Widget.VarName({
+            container: "gc-var",
+            varName: "G_c",
+            watching: true,
+        }),
+
+        new Vamonos.Widget.Graph({
+            container: "gc",
+            varName: "G_c",
+            editable: false,
+            colorEdges: [
+                ["u->v", "#FF7D7D"],
+                [ function(edge){ return edge.inMST }, "#276CFF" ],
+            ],
+            vertexCssAttributes: { _error: true },
+            edgeLabel: "w",
+            vertexLabels: {
+                inner: function(vtx){ return vtx.name },
+                ne: ['u','v'],
+                sw: function(vtx){ return vtx.id },
+            },
+        }),
+
+        new Vamonos.Widget.VarName({
             container: "g-var",
             varName: "G",
             inputVar: true,
@@ -164,22 +187,42 @@ var myviz = new Vamonos.Visualizer({
 
     algorithm: function(_){
         with (this) {
+            G_c = G.clone();
+            G_c = new Vamonos.DataStructure.Graph({
+                prefix: "gc",
+                directed: G.directed,
+            });
+            G.eachVertex(function(vtx){ 
+                var newVtx = {}
+                newVtx.id = G_c.prefix + vtx.id;
+                newVtx.x = vtx.x;
+                newVtx.y = vtx.y;
+                G_c.addVertex(newVtx);
+            });
+            G.eachEdge(function(e){
+                G_c.addEdge(
+                    G_c.prefix + e.source.id,
+                    G_c.prefix + e.target.id,
+                    e
+                );
+            });
             try {
-                while (_(1), G.getVertices().length > 1) {
+                while (_(1), G_c.getVertices().length > 1) {
                     // label min outgoing edge for each vertex
-                    G.eachVertex(function(vtx1){
+                    G_c.eachVertex(function(vtx1){
                         _(2);
                         u = vtx1;
                         _(3);
                         minEdge = { w: Infinity, nada: true }
-                        G.eachNeighbor(u, function(vtx2){
+                        G_c.eachNeighbor(u, function(vtx2){
                             _(4);
                             v = vtx2;
-                            var e = G.edge(u,v);
+                            var e = G_c.edge(u,v);
                             if (_(5), e.w < minEdge.w) {
                                 _(6);
                                 minEdge = e;
                             }
+                            v = undefined;
                         });
                         if (_(7), minEdge.nada) {
                             _(8);
@@ -188,14 +231,16 @@ var myviz = new Vamonos.Visualizer({
                         }
                         _(9);
                         minEdge.inMST = true;
+                        //G.edge(minEdge.source, minEdge.target).inMST = true;
+                        u = undefined;
                     });
-                    G.eachEdge(function(e){
+                    G_c.eachEdge(function(e){
                         _(10);
                         u = G.vertex(e.source);
                         v = G.vertex(e.target);
                         if (_(11), e.inMST) {
                             _(12);
-                            G.collapse(e);
+                            G_c.collapse(e);
                         }
                     });
                 }
