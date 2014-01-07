@@ -151,8 +151,8 @@ var myviz = new Vamonos.Visualizer({
             colorEdges: [
                 ["u->v", "#FF7D7D"],
                 [ function(edge){
-                    return (edge.target.pred === edge.source.id)
-                        || (edge.source.pred === edge.target.id) }
+                    return (edge.target.pred === edge.source.name)
+                        || (edge.source.pred === edge.target.name) }
                 , "#276CFF" ],
             ],
             defaultGraph: new Vamonos.DataStructure.Graph({
@@ -227,7 +227,7 @@ _(7);           u = Q.extractMin();
                 G.eachNeighbor(u, function(vtx){
 _(8);               v = vtx;
 _(9);               if (Q.contains(v) && G.edge(u,v).w < v.key) {
-_(10);                  v.pred = u.id;
+_(10);                  v.pred = u.name;
 _(11);                  v.key = G.edge(u,v).w;
                         Q.sort();
                     }

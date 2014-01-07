@@ -187,8 +187,8 @@ var myviz = new Vamonos.Visualizer({
             defaultEdgeAttrs: { w: 1 },
             colorEdges: [
                 [ function(edge){
-                    return (edge.target.pred === edge.source.id)
-                        || (edge.source.pred === edge.target.id) }
+                    return (edge.target.pred === edge.source.name)
+                        || (edge.source.pred === edge.target.name) }
                 , "#92E894" ],
                 ["u->v", "#FF7D7D"],
             ],
@@ -254,7 +254,7 @@ _(11);                  relax({u:u,v:v,G:G});
             with (this) {
                 if (_(1), u.d + G.edge(u,v).w < v.d) {
 _(2);               v.d = u.d + G.edge(u,v).w; global.Q.sort();
-_(3);               v.pred = u.id;
+_(3);               v.pred = u.name;
                 }
             }
         }

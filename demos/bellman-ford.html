@@ -83,10 +83,6 @@
             <table class="variable-widgets">
                 <tr><td><div id="g-var"></div></td>
                     <td><div id="graph"></div></td></tr>
-                <tr><td><div id="u-var"></div></td>
-                    <td><div id="u"></div></td></tr>
-                <tr><td><div id="v-var"></div></td>
-                    <td><div id="v"></div></td></tr>
             </table>
 
         </td></tr>
@@ -101,28 +97,6 @@ var myviz = new Vamonos.Visualizer({
         new Vamonos.Widget.Controls("controls"),
 
         new Vamonos.Widget.Pseudocode("pseudocode-main"),
-
-        new Vamonos.Widget.VarName({
-            container: "u-var",
-            varName: "u",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "u",
-            varName: "u",
-            attributes: ["done","pred","d"]
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "v-var",
-            varName: "v",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "v",
-            varName: "v",
-            attributes: ["done","pred","d"]
-        }),
 
         new Vamonos.Widget.VarName({
             container: "g-var",
