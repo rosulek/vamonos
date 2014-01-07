@@ -52,9 +52,17 @@
             <div class="pseudocode-procedures">
                 <div id="pseudocode" title="MST-Boruvka(G)">
                     while |G.V| &gt; 1
-                        label min outgoing edge for each vertex
-                        collapse labeled edges
-                        morestuff
+                        for each u &in; G.V
+                            best = null
+                            for each v &in; G.V s.t. (u,v) &in; G.E
+                                if (u,v).w &lt; best.w
+                                    best = (u,v)
+                            if best = null 
+                                error "disconnected graph" 
+                            best.inMST = True
+                        for each (u,v) &in; G.E
+                            if (u,v).inMST
+                                Collapse(u,v)
                 </div>
             </div>
 
@@ -62,7 +70,9 @@
 
             <table class="variable-widgets">
                 <tr><td><div id="g-var"></div></td>
-                    <td><div id="graph"></div></td> </tr>
+                    <td><div id="g"></div></td> </tr>
+                <tr><td><div id="gc-var"></div></td>
+                    <td><div id="gc"></div></td> </tr>
             </table>
 
         </td></tr>
@@ -86,7 +96,7 @@ var myviz = new Vamonos.Visualizer({
         }),
 
         new Vamonos.Widget.Graph({
-            container: "graph",
+            container: "g",
             varName: "G",
             vertexLabels: {
                 inner: function(vtx){ return vtx.name },
@@ -95,6 +105,7 @@ var myviz = new Vamonos.Visualizer({
             },
             edgeLabel: "w",
             defaultEdgeAttrs: { w: 1 },
+            vertexCssAttributes: { _error: true },
             colorEdges: [
                 ["u->v", "#FF7D7D"],
                 [ function(edge){ return edge.inMST }, "#276CFF" ],
@@ -153,35 +164,50 @@ var myviz = new Vamonos.Visualizer({
 
     algorithm: function(_){
         with (this) {
-            _(1);
-            while (G.getVertices().length > 1) {
-                // label min outgoing edge for each vertex
-                G.eachVertex(function(u){
-                    var minEdge = { w: Infinity, nada: true }
-                    G.outgoingEdges(u).map(function(e){
-                        if (e.w < minEdge.w) {
-                            minEdge = e;
+            try {
+                while (_(1), G.getVertices().length > 1) {
+                    // label min outgoing edge for each vertex
+                    G.eachVertex(function(vtx1){
+                        _(2);
+                        u = vtx1;
+                        _(3);
+                        minEdge = { w: Infinity, nada: true }
+                        G.eachNeighbor(u, function(vtx2){
+                            _(4);
+                            v = vtx2;
+                            var e = G.edge(u,v);
+                            if (_(5), e.w < minEdge.w) {
+                                _(6);
+                                minEdge = e;
+                            }
+                        });
+                        if (_(7), minEdge.nada) {
+                            _(8);
+                            u._error = true;
+                            throw "disconnected graph"
+                        }
+                        _(9);
+                        minEdge.inMST = true;
+                    });
+
+                    G.eachEdge(function(e){
+                        _(10);
+                        u = G.vertex(e.source);
+                        v = G.vertex(e.target);
+                        if (_(11), e.inMST) {
+                            _(12);
+                            G.collapse(e);
                         }
                     });
-                    G.edge(minEdge.source, minEdge.target).inMST = true;
-                    G.edge(minEdge.target, minEdge.source).inMST = true;
-                });
-                _(2);
-
-                G.collapseEdgesBy("inMST", function(e){
-                    _(3);
-                    u = G.vertex(e.source);
-                    v = G.vertex(e.target);
-                    _(4);
-                });
+                }
             }
 
-            // uncollapse all edges
-            G.eachVertex(function(u){ 
-                _(4); 
-                G.uncollapse(u); 
-            });
-            _(4);
+            catch (e) {
+                if (e === "disconnected graph") 
+                    return;
+                else
+                    throw e;
+            }
         }
     },
 });

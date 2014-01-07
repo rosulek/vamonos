@@ -310,14 +310,18 @@ class Graph
         savedEdges    = @collapsedEdges[vtx.id]
         console.log savedVertices
         console.log savedEdges
-        for vtx in savedVertices
-            console.log "adding #{vtx.name}"
-            @addVertex(vtx) 
+        restoredVertices = for v in savedVertices
+            console.log "adding #{v.name}"
+            @addVertex(v) 
         for edge in savedEdges
             @addEdge(edge.source, edge.target, edge) 
         @removeVertex(vtx)
         delete @collapsedVertices[vtx.id]
         delete @collapsedEdges[vtx.id]
+        return restoredVertices
+
+    getCollapsedVertices: ->
+        @getVertices().filter((v) => @collapsedVertices?[v.id] and @collapsedEdges?[v.id])
 
     # ------------ utility ----------- #
 
