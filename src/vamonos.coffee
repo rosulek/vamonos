@@ -173,6 +173,12 @@
     jqueryify: (obj) ->
         if typeof obj is 'string' then $("#" + obj) else obj
 
+    stringify: (obj) ->
+        if obj?.type is 'Graph'
+            obj.toString()
+        else
+            JSON.stringify(obj)
+
     export: (obj) ->
         root = module?.exports ? window
         root.Vamonos or= {}
@@ -189,7 +195,7 @@
     clone: (obj) ->
         return unless obj?
         return obj if (typeof obj).match /number|string|boolean/
-        return obj.clone() if obj.type is 'queue'
+        return obj.clone() if obj.type in ['Queue', 'Graph']
         if obj.type is 'stash'
             r = {}
             r[k] = Vamonos.clone(v) for k,v of obj

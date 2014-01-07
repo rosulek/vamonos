@@ -62,13 +62,19 @@ class Graph
     @interface.addVertex =
         args: [["vtx", "a vertex object"]]
         description: "adds `vtx` to the graph"
-    addVertex: (vtx) ->
+    addVertex: (vtx = {}) ->
         return vtx.id if @vertices[vtx.id]?
-        vtx.type  = 'Vertex'
-        vtx.name ?= @nextVertexName()
-        vtx.id   ?= @nextVertexId()
-        @vertices[vtx.id] = vtx
-        vtx
+        newVtx = {}
+        newVtx.type = 'Vertex'
+        newVtx.name = vtx.name ? @nextVertexName()
+        newVtx.id   = vtx.id ? @nextVertexId()
+        @vertices[vtx.id] = newVtx
+        for k, v of vtx when k not in ['type','name','id']
+            if v?.type is 'Vertex'
+                newVtx[k] = @vertex(v)
+            else
+                newVtx[k] = v
+        return newVtx
 
 
     @interface.removeVertex =
@@ -164,7 +170,11 @@ class Graph
         return unless s? and t?
         edge = { source: s, target: t, type: 'Edge' }
         if attrs?
-            edge[k] = v for k, v of attrs when k isnt 'source' and k isnt 'target'
+            for k, v of attrs when k isnt 'source' and k isnt 'target'
+                if v?.type is 'Vertex'
+                    edge[k] = @vertex(v)
+                else
+                    edge[k] = v
         (@edges[sourceId] ?= {})[targetId] = edge
         (@edges[targetId] ?= {})[sourceId] = edge unless @directed
         return edge
@@ -329,10 +339,14 @@ class Graph
         return v if typeof v is 'string' or not v?
         v.id
 
-    clone: () ->
-        r = new Vamonos.DataStructure.Graph()
-        Vamonos.mixin(r, this, Vamonos.clone)
-
+    clone: ->
+        r = new Vamonos.DataStructure.Graph({
+            directed: @directed
+            prefix: @prefix
+        })
+        @eachVertex (v) -> r.addVertex(v)
+        @eachEdge (e) -> r.addEdge(e.source, e.target, e)
+        return r
 
     @interface.toString =
         description: "returns a javascripty string you could use to initialize a graph with."
@@ -346,7 +360,7 @@ class Graph
 
         @eachVertex (vtx) ->
             attrs = []
-            for attr,value of vtx
+            for attr,value of vtx when value?
                 continue if attr in ["type"]
                 if value.type is 'Vertex'
                     attrs.push("#{ attr }: '#{ value.id }'")

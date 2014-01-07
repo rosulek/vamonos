@@ -210,7 +210,7 @@ class Visualizer
         ret = (for v in @watchVars
                 left  = @frames[@frames.length-1]?[v]
                 right = fakeFrame[v]
-                continue if JSON.stringify(left) is JSON.stringify(right)
+                continue if Vamonos.stringify(left) is Vamonos.stringify(right)
                 v)
 
         return if ret.length then ret else null

@@ -185,7 +185,7 @@ var myviz = new Vamonos.Visualizer({
             },
             colorEdges: [
                 [ function(edge){
-                    return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
+                    return (edge.target.pred === edge.source.id)
                   }
                 ,  "#FF7D7D"],
             ]
@@ -335,7 +335,7 @@ var ResidualGraph = function(G){
 var BFS = function(G,s,t){
     var Q = [];
     G.eachNeighbor(s, function(u){ 
-        u.pred = s;
+        u.pred = s.id;
         Q.push(u);
     });
     s.pred = false;
@@ -346,7 +346,7 @@ var BFS = function(G,s,t){
         for (var i = 0; i < neighbors.length; i++) {
             var v = neighbors[i];
             if (v.pred !== undefined) continue;
-            v.pred = u;
+            v.pred = u.id;
             if (v == t) {
                 done = true;
                 break;
@@ -358,12 +358,12 @@ var BFS = function(G,s,t){
     var inPath = {};
     var u = t;
     while (u) {
-        var e = G.edge(u.pred, u);
+        var e = G.edge(u.pred, u.id);
         if (e) {
             path.unshift(e);
             inPath[u.id] = true;
         }
-        u = u.pred;
+        u = G.vertex(u.pred);
     }
     G.eachVertex(function(v){
         if (!inPath[v.id]) delete v.pred;

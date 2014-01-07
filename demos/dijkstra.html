@@ -186,11 +186,11 @@ var myviz = new Vamonos.Visualizer({
             edgeLabel: "w",
             defaultEdgeAttrs: { w: 1 },
             colorEdges: [
-                ["u->v", "#FF7D7D"],
                 [ function(edge){
-                    return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
-                        || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }
+                    return (edge.target.pred === edge.source.id)
+                        || (edge.source.pred === edge.target.id) }
                 , "#92E894" ],
+                ["u->v", "#FF7D7D"],
             ],
             defaultGraph: new Vamonos.DataStructure.Graph({
                 //directed: true,
@@ -254,7 +254,7 @@ _(11);                  relax({u:u,v:v,G:G});
             with (this) {
                 if (_(1), u.d + G.edge(u,v).w < v.d) {
 _(2);               v.d = u.d + G.edge(u,v).w; global.Q.sort();
-_(3);               v.pred = u;
+_(3);               v.pred = u.id;
                 }
             }
         }
