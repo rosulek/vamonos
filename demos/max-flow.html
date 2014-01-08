@@ -101,7 +101,6 @@ var myviz = new Vamonos.Visualizer({
         }),
 
         new Vamonos.Widget.Graph({
-            tooltips: false,
             varName: "G",
             container: "graph-g",
             inputVars: {
@@ -137,12 +136,12 @@ var myviz = new Vamonos.Visualizer({
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: true,
                 vertices: [
-                    { x: 100, y: 10,  name: 'a', id: 'v0' },
-                    { x: 100, y: 110, name: 'b', id: 'v1' },
-                    { x: 210, y: 10,  name: 'c', id: 'v2' },
-                    { x: 210, y: 110, name: 'd', id: 'v3' },
-                    { x: 10,  y: 60,  name: 'e', id: 'v4' },
-                    { x: 300, y: 60,  name: 'f', id: 'v5' },
+                    { x: 100, y: 10,  id: 'v0' },
+                    { x: 100, y: 110, id: 'v1' },
+                    { x: 210, y: 10,  id: 'v2' },
+                    { x: 210, y: 110, id: 'v3' },
+                    { x: 10,  y: 60,  id: 'v4' },
+                    { x: 300, y: 60,  id: 'v5' },
                 ],
                 edges: [
                     { source: 'v4', target: 'v0', c: 4 },
@@ -186,7 +185,7 @@ var myviz = new Vamonos.Visualizer({
             },
             colorEdges: [
                 [ function(edge){
-                    return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
+                    return (edge.target.pred === edge.source.id)
                   }
                 ,  "#FF7D7D"],
             ]
@@ -336,7 +335,7 @@ var ResidualGraph = function(G){
 var BFS = function(G,s,t){
     var Q = [];
     G.eachNeighbor(s, function(u){ 
-        u.pred = s;
+        u.pred = s.id;
         Q.push(u);
     });
     s.pred = false;
@@ -347,7 +346,7 @@ var BFS = function(G,s,t){
         for (var i = 0; i < neighbors.length; i++) {
             var v = neighbors[i];
             if (v.pred !== undefined) continue;
-            v.pred = u;
+            v.pred = u.id;
             if (v == t) {
                 done = true;
                 break;
@@ -359,12 +358,12 @@ var BFS = function(G,s,t){
     var inPath = {};
     var u = t;
     while (u) {
-        var e = G.edge(u.pred, u);
+        var e = G.edge(u.pred, u.id);
         if (e) {
             path.unshift(e);
             inPath[u.id] = true;
         }
-        u = u.pred;
+        u = G.vertex(u.pred);
     }
     G.eachVertex(function(v){
         if (!inPath[v.id]) delete v.pred;

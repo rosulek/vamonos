@@ -1,0 +1,199 @@
+
+<html><head>
+
+    <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="../lib/vamonos-demos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <style type="text/css">
+        .vertex {
+            width: 40;
+            height: 30;
+        }
+
+        .vertex-contents {
+            font-size: .8em;
+        }
+
+        .vertex-ne-label, .vertex-nw-label {
+            font-weight: bold;
+        }
+
+        .vertex-sw-label {
+            font-style: italic;
+        }
+
+        .done {
+            background: #ddd;
+        }
+
+        .color-white { 
+            background: white; 
+        }
+
+        .color-gray {
+            background: #888; 
+        }
+
+        .color-black {
+            background: black;
+        }
+
+        .color-black .vertex-contents, .color-gray .vertex-contents { 
+            color: white; 
+        }
+
+        body {
+            text-align: center;
+        }
+    </style>
+
+</head><body>
+
+    <h1>Bellman-Ford Algorithm</h1>
+
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
+
+            <div id="controls"></div>
+
+            <div class="pseudocode-procedures">
+
+                <div id="pseudocode-main" title="BellmanFord(G,s):">
+                    for each vertex v &in; G.V - {s}
+                        v.d = &infin;
+                        v.pred = null
+                    s.d = 0
+                    for i from 1 to |G.V| - 1
+                        for each edge (u,v) &in; G.E
+                            if u.d + (u,v).w &lt; v.d
+                                v.d = u.d + (u,v).w
+                                v.pred = u
+                    for each edge (u,v) &in; G.E
+                        if u.d + (u,v).w &lt; v.d
+                            error "negative-weight cycle"
+                </div>
+
+            </div>
+
+        </td><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="g-var"></div></td>
+                    <td><div id="graph"></div></td></tr>
+            </table>
+
+        </td></tr>
+
+    </table>
+
+
+</body>
+<script type="text/javascript">
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+        new Vamonos.Widget.Controls("controls"),
+
+        new Vamonos.Widget.Pseudocode("pseudocode-main"),
+
+        new Vamonos.Widget.VarName({
+            container: "g-var",
+            varName: "G",
+            inputVar: true,
+            watching: true,
+        }),
+
+        new Vamonos.Widget.Graph({
+            varName: "G",
+            container: "graph",
+            inputVars: {
+                s: "v0",
+            },
+            vertexLabels: {
+                inner : { 
+                    edit: function(vtx){return vtx.name}, 
+                    display: function(vtx){return vtx.d} 
+                },
+                sw    : { 
+                    edit: function(vtx){return ""}, 
+                    display: function(vtx){return vtx.name} 
+                },
+                ne    : ["u", "v"],
+                nw    : ["s"],
+            },
+            edgeLabel: "w",
+            defaultEdgeAttrs: { w: 1 },
+            colorEdges: [
+                [ function(edge){ return (edge.target.pred === edge.source.id) } , "#92E894" ],
+                [ function(e){ return e.error }, "red" ],
+                ["u->v", "blue"],
+            ],
+            defaultGraph: new Vamonos.DataStructure.Graph({
+                directed: true,
+                vertices: [
+                    { name: 'a', id: 'v0', x: 20,  y: 80,  d: 0 },
+                    { name: 'b', id: 'v1', x: 120, y: 20,  d: 2 },
+                    { name: 'c', id: 'v2', x: 250, y: 20,  d: 4 },
+                    { name: 'd', id: 'v3', x: 120, y: 150, d: 7 },
+                    { name: 'e', id: 'v4', x: 250, y: 150, d: -2},
+                ],
+                edges: [
+                    { source: 'v4', target: 'v0', w: 3  },
+                    { source: 'v4', target: 'v2', w: 7  },
+                    { source: 'v3', target: 'v4', w: 9  },
+                    { source: 'v3', target: 'v2', w: -3 },
+                    { source: 'v2', target: 'v1', w: -2 },
+                    { source: 'v1', target: 'v2', w: 5  },
+                    { source: 'v1', target: 'v4', w: -4 },
+                    { source: 'v1', target: 'v3', w: 8  },
+                    { source: 'v0', target: 'v1', w: 6  },
+                    { source: 'v0', target: 'v3', w: 7  },
+                ],
+            }),
+        }),
+    ],
+
+    maxFrames: 500,
+
+    algorithm: {
+
+        main: function(_){
+            with (this) {
+                G.eachVertex(function(vtx){
+                    if (vtx.id === s.id) return;
+                    _(1); v = vtx;
+                    _(2); v.d = Infinity;
+                    _(3); v.pred = undefined;
+                });
+                _(4); s.d = 0;
+                var stopAt = G.getVertices().length;
+                for (var i = 1; _(5), i < stopAt; i++) {
+                    G.eachEdge(function(e){
+                        _(6); 
+                        u = G.vertex(e.source.id);
+                        v = G.vertex(e.target.id);
+                        if (_(7), u.d + e.w < v.d) {
+                            _(8); v.d = u.d + e.w;
+                            _(9); v.pred = u.id;
+                        }
+                    });
+                }
+                var edges = G.getEdges();
+                for (var i = 0; i < edges.length; i++) {
+                    _(10);
+                    e = edges[i];
+                    u = G.vertex(e.source);
+                    v = G.vertex(e.target);
+                    if (_(11), u.d + e.w < v.d) {
+                        _(12); e.error = true;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+});
+
+</script></html> 

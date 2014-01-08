@@ -172,8 +172,8 @@ var myviz = new Vamonos.Visualizer({
             colorEdges: [ 
                 ["u->v", "#FF7D7D"],
                 [ function(edge){
-                    return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
-                        || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }
+                    return (edge.target.pred ? edge.target.pred === edge.source.name : false)
+                        || (edge.source.pred ? edge.source.pred === edge.target.name : false) }
                 , "#92E894" ],
             ],
             defaultGraph: new Vamonos.DataStructure.Graph({
@@ -225,7 +225,7 @@ _(9);               v = vtx;
 _(10);               if (v.color === "white") {
 _(11);                  v.color = "gray";
 _(12);                  v.d = u.d + 1;
-_(13);                  v.pred = u;
+_(13);                  v.pred = u.name;
 _(14);                  Q.enqueue(v);
                     }
                 });

@@ -13,6 +13,7 @@ subheader: Dynamic algorithm visualization in the browser
    * [Selection sort](selection_sort.html)
    * [Mergesort](mergesort.html)
    * [Quicksort](quicksort.html)
+   * [Stoogesort](stoogesort.html)
 
 * Recursion:
 
@@ -30,7 +31,10 @@ subheader: Dynamic algorithm visualization in the browser
    * [Detecting bipartiteness](bfs-bipartite.html) (2-colorability)
    * [Depth-first search](dfs.html)
    * [Dijkstra's SSSP algorithm](dijkstra.html)
+   * [Bellman-Ford algorithm](bellman-ford.html)
    * [Prim's MST algorithm](prims.html)
+   * [Kruskal's MST algorithm](kruskals.html)
+   * [Strongly Connected Components](scc.html)
    * [Ford-Fulkerson Max Flow](max-flow.html)
    * [Ford-Fulkerson Bipartite Matching](bipartite-matching.html)
 

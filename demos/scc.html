@@ -1,0 +1,255 @@
+<html><head>
+
+    <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="../lib/vamonos-demos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <style type="text/css">
+        .vertex {
+            width: 40;
+            height: 30;
+        }
+
+        .vertex-contents {
+            font-size: .8em;
+        }
+
+        .vertex-sw-label {
+            font-style: italic;
+        }
+
+        .vertex-ne-label, .vertex-nw-label {
+            font-weight: bold;
+        }
+
+        .vertex-contents {
+            font-weight: bold;
+        }
+
+        body {
+            text-align: center;
+        }
+
+        div.pseudocode-procedures {
+            max-width: 400px;
+        }
+
+    </style>
+
+</head><body>
+
+    <h1>Strongly-Connected-Components</h1>
+
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
+
+            <div id="controls"></div>
+
+            <div class="pseudocode-procedures">
+                <div id="pseudocode-main" title="SCC(G):">
+                    compute finishing times for all vertices of G
+                    group = 0
+                    for each vertex u &in; G<sup>T</sup> sorted by finishing time from largest to smallest
+                        unless u has been visited
+                            group = group + 1
+                            DFS(G<sup>T</sup>,u)
+                </div>
+                <div id="pseudocode-dfs" title="DFS(G,u):">
+                    u.visited = true
+                    u.g = group
+                    for each neighbor v of u sorted by finishing time from largest to smallest
+                        unless v has been visited
+                            DFS(G,v)
+                </div>
+            </div>
+
+        </td><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="g-var"></div></td>
+                    <td><div id="graph-g"></div></td>
+                </tr>
+                <tr><td><div id="stack-var"></div></td>
+                    <td><div id="stack"></div></td>
+                </tr>
+                <tr><td><div id="group-var"></div></td>
+                    <td><div id="group"></div></td>
+                </tr>
+            </table>
+
+        </td></tr>
+
+    </table>
+
+
+</body>
+<script type="text/javascript">
+
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+        new Vamonos.Widget.Controls("controls"),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-main",
+        }),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-dfs",
+            procedureName: "dfs",
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "stack-var",
+            varName: "_callstack",
+            displayName: "Call Stack",
+            watching: true,
+        }),
+
+        new Vamonos.Widget.CallStack({
+            container: "stack",
+            procedureNames: {
+                main: "SCC",
+                dfs: "DFS",
+            },
+            animate: ["next", "prev"],
+            ignoreArgumentValues: ["G", "G_t"]
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "group-var",
+            varName: "global::group",
+            displayName: "group",
+        }),
+
+        new Vamonos.Widget.VarDisplay({
+            container: "group",
+            varName: "global::group",
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "g-var",
+            varName: "G",
+            inputVar: true,
+            watching: true,
+        }),
+
+        new Vamonos.Widget.Graph({
+            tooltips: false,
+            varName: "G",
+            container: "graph-g",
+            vertexLabels: {
+                inner: function(vtx){ return vtx.f },
+                sw: function(vtx){ return vtx.name },
+                ne: ["u", "dfs::v"],
+            },
+            colorEdges: [ 
+                ["dfs::v->u", "#FF7D7D"],
+            ],
+            vertexCssAttributes: {
+                group: function(vtx){ if (vtx.group !== undefined) return "group-" + vtx.group; },
+            },
+            defaultGraph: new Vamonos.DataStructure.Graph({
+                directed: true,
+                vertices: [
+                    { x: 30,  y: 30,  id: 'v0' },
+                    { x: 130, y: 30,  id: 'v1' },
+                    { x: 230, y: 30,  id: 'v2' },
+                    { x: 330, y: 30,  id: 'v3' },
+                    { x: 30,  y: 130, id: 'v4' },
+                    { x: 130, y: 130, id: 'v5' },
+                    { x: 230, y: 130, id: 'v6' },
+                    { x: 330, y: 130, id: 'v7' },
+                ],
+                edges: [
+                    { source: 'v0', target: 'v1' },
+                    { source: 'v1', target: 'v4' },
+                    { source: 'v1', target: 'v5' },
+                    { source: 'v1', target: 'v2' },
+                    { source: 'v4', target: 'v0' },
+                    { source: 'v4', target: 'v5' },
+                    { source: 'v5', target: 'v6' },
+                    { source: 'v6', target: 'v5' },
+                    { source: 'v2', target: 'v3' },
+                    { source: 'v2', target: 'v6' },
+                    { source: 'v3', target: 'v2' },
+                    { source: 'v3', target: 'v7' },
+                    { source: 'v7', target: 'v3' },
+                    { source: 'v7', target: 'v6' },
+                ],
+            }),
+        }),
+
+    ],
+
+    algorithm: {
+
+        main: function(_){
+            with (this) {
+                _(1); DFS1(G);
+                _(2); global.group = 0;
+
+                var Q = new Vamonos.DataStructure.Queue({
+                    initialArray: G.getVertices(),
+                    comparator: function(a,b){ return b.f - a.f },
+                });
+
+                while (!Q.isEmpty()) {
+                    _(3); var u = Q.extractMin();
+                    if (_(4), !u.visited) {
+                        _(5); global.group += 1;
+                        _(6); dfs({ G:G,u:u });
+                    }
+                }
+                Vamonos.createNColorClasses("group-", global.group + 1);
+            }
+        },
+
+        dfs: function(_){
+            with (this) {
+
+                _(1); u.visited = true;
+                _(2); u.group = global.group;
+                var Q = new Vamonos.DataStructure.Queue({
+                    comparator: function(a,b){ return b.f - a.f },
+                });
+
+                var edges = G.incomingEdges(u);
+                for (var i = 0; i < edges.length; i++) {
+                    v = G.vertex( edges[i].source.id );
+                    Q.enqueue(v);
+                }
+
+                while (!Q.isEmpty()) {
+                    _(3); v = Q.extractMin();
+                    if (_(4), !v.visited) {
+                        _(5); dfs({ G:G, u:v });
+                    }
+                }
+
+            }
+        },
+
+    }
+});
+
+var DFS1 = function(G){
+    var time = 0;
+    var dfs = function(u){
+        u.visited = true;
+        u.d = ++time;
+        G.eachNeighbor(u,function(v){
+            if (!v.visited) dfs(v);
+        });
+        u.f = ++time;
+    };
+    // run dfs on every vertex
+    G.eachVertex(function(u){
+        if (!u.visited) dfs(u);
+    });
+    // clean up
+    G.eachVertex(function(u){ delete u.visited });
+};
+
+</script></html>
