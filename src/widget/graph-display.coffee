@@ -138,11 +138,12 @@ class GraphDisplay
                 minHeight: @minY
             )
 
-        @jsPlumbInstance = jsPlumb.getInstance
-            Connector: ["Straight"]
-            PaintStyle: @normalPaintStyle
-            Endpoint: "Blank"
-            Anchor: [ "Perimeter", { shape: "Circle" } ]
+        jsPlumb.ready =>
+            @jsPlumbInstance = jsPlumb.getInstance
+                Connector: ["Straight"]
+                PaintStyle: @normalPaintStyle
+                Endpoint: "Blank"
+                Anchor: [ "Perimeter", { shape: "Circle" } ]
 
     # ------------ PUBLIC INTERACTION METHODS ------------- #
 
@@ -394,6 +395,7 @@ class GraphDisplay
             con = @jsPlumbInstance.connect({
                 source: sourceId
                 target: targetId
+                deleteEndpointsOnDetach: false # maybe speedup?
             })
             if @directed 
                 @addForwardArrow(con)

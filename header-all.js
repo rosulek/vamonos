@@ -15,6 +15,6 @@
  *      jQuery          2.0.3
  *      jQuery UI       1.10.3
  *      jQuery.qtip     1.0.0-rc3
- *      jsPlumb         1.4.1
+ *      jsPlumb         1.5.5
  *
  */
