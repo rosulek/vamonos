@@ -12,7 +12,7 @@
  *
  * This file includes dependencies:
  *
- *      jQuery          1.10.1
+ *      jQuery          2.0.3
  *      jQuery UI       1.10.3
  *      jQuery.qtip     1.0.0-rc3
  *      jsPlumb         1.4.1
