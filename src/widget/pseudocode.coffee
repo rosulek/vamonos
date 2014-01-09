@@ -46,8 +46,9 @@ class Pseudocode
 
     event: (event, options...) -> switch event
         when "setup"
-            [@viz] = options
+            [@viz, done] = options
             @viz.setBreakpoint(b, @procedureName) for b in @breakpoints
+            done() if done?
 
         when "editStart"
             @enableBreakpointSelection() if @editableBreakpoints

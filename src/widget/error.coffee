@@ -34,7 +34,10 @@ class Error
             givenArgs      : args
 
     event: (event, options...) -> 
-        if event is 'checkErrors'
+        if event is 'setup'
+            [viz,done] = options
+            done() if done?
+        else if event is 'checkErrors'
             [viz] = options
             s = ""
             s += c(viz) ? "" for c in @conditions

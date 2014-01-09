@@ -70,7 +70,8 @@ class CallStack
 
     event: (event, options...) -> switch event
         when "setup"
-            [@viz] = options
+            [@viz, done] = options
+            done() if done?
 
         when "render"
             [frame, type] = options

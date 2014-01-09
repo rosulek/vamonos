@@ -6,18 +6,18 @@ class Visualizer
         namespaces and variables, and runs the simulation itself.
         """
 
-    @spec = 
-        widgets: 
-            type: "Array" 
+    @spec =
+        widgets:
+            type: "Array"
             description: "a list of widgets for use in the visualization"
             defaultValue: []
-        algorithm: 
+        algorithm:
             type: ["Function", "Object"]
-            description: 
+            description:
                 "as a function, the 'main' procedure. as an object, an " +
                 "association of procedure names to functions."
             defaultValue: (->)
-        maxFrames: 
+        maxFrames:
             type: "Number"
             defaultValue: 250
             description: "the maximum number of snapshots"
@@ -40,13 +40,12 @@ class Visualizer
         @initializeStash()
         @prepareAlgorithm(@algorithm)
 
-        @tellWidgets("setup", @)
-        @tellWidgets("setupEnd")
-
-        if @autoStart
-            @runAlgorithm() 
-        else
-            @editMode() 
+        @setupWidgets =>
+            @tellWidgets("setupEnd")
+            if @autoStart
+                @runAlgorithm()
+            else
+                @editMode()
 
     # --------------- public methods ------------------ #
 
@@ -108,7 +107,7 @@ class Visualizer
         @stash.currentScope     = @stash.inputScope
 
     getFrame: (num = 0, shallow = false) ->
-        r = 
+        r =
             _callStack   : (procName: c._procName, args: c._args for c in @stash.callStack)
             _frameNumber : num
             _prevLine    : @stash.currentScope._prevLine
@@ -133,7 +132,7 @@ class Visualizer
 
     cloneScopeToObj: (obj, procName, scope, bare = false, shallow) ->
         for k, v of scope
-            continue if typeof v is 'function' 
+            continue if typeof v is 'function'
             continue if k is 'global'
             continue if /^_/.test k
 
@@ -152,7 +151,7 @@ class Visualizer
                 (@returnStack ?= []).unshift(relevantScope) unless relevantScope.tailCall
                 @returnedProc  = relevantScope.procName
 
-        if typeof n is 'number' 
+        if typeof n is 'number'
             @stash.currentScope._nextLine = n
 
         reasons = @takeSnapshotReasons(n)
@@ -178,8 +177,8 @@ class Visualizer
         if typeof n is 'number'
             @stash.currentScope._prevLine = n
 
-        # reset the return stack if just in case we didn't take a snapshot 
-        # and reset it already. this prevents the call stack from accumulating 
+        # reset the return stack if just in case we didn't take a snapshot
+        # and reset it already. this prevents the call stack from accumulating
         # endlessly.
         @returnStack = [] if n is "call"
 
@@ -252,7 +251,7 @@ class Visualizer
 
             ret = procedure.call(newScope, (n)=>@line(n))
 
-            returnFrame = 
+            returnFrame =
                 procName    : @stash.currentScope._procName
                 args        : @stash.currentScope._args
                 returnValue : ret
@@ -320,10 +319,22 @@ class Visualizer
         @nextFrame()
 
     # ------------------ widget control methods ---------------------- #
-    
+
     tellWidgets: (event, options...) ->
         for widget in @widgets
             widget.event(event, options...)
+
+    setupWidgets: (stuffToDo) =>
+        numWidgets = @widgets.length
+        counter = 0
+
+        nextF = () =>
+            counter += 1
+            if counter >= numWidgets
+                stuffToDo()
+
+        for widget in @widgets
+            widget.event("setup", @, nextF)
 
     editMode: ->
         return if @mode is "edit"

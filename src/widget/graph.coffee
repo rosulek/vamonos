@@ -39,16 +39,16 @@ class Graph
             description: "A mapping of attribute names to default values for " +
                 "new edges created in edit mode."
 
-    constructor: (args) ->
+    constructor: (@_args) ->
 
         Vamonos.handleArguments
             widgetObject   : this
-            givenArgs      : args
+            givenArgs      : @_args
             ignoreExtraArgs: true
 
         @showChanges = Vamonos.arrayify(@showChanges)
 
-        delete args[a] for a in [
+        delete @_args[a] for a in [
             "defaultEdgeAttrs"
             "showChanges"
             "tooltips"
@@ -62,19 +62,19 @@ class Graph
             @theGraph = @defaultGraph ? new Vamonos.DataStructure.Graph()
             @inputVars[k] = @theGraph.vertex(v) for k,v of @inputVars
         else
-            args.minX      ?= 0
-            args.minY      ?= 0
-            args.resizable ?= false
+            @_args.minX      ?= 0
+            @_args.minY      ?= 0
+            @_args.resizable ?= false
 
-        @edgeLabel     = args.edgeLabel?.edit ? args.edgeLabel
-        @displayWidget = new Vamonos.Widget.GraphDisplay(args)
+        @edgeLabel = @_args.edgeLabel?.edit ? @_args.edgeLabel
+        @displayWidget = new Vamonos.Widget.GraphDisplay(@_args)
 
     event: (event, options...) -> switch event
         when "setup"
-            [@viz] = options
+            [@viz, done] = options
             @registerVariables()
             @updateVariables()
-            @displayWidget.event("setup", options...)
+            @displayWidget.event("setup", @viz, done) # displayWidget calls done()
 
         when "render"
             [frame, type] = options
@@ -347,6 +347,7 @@ class Graph
             con = @displayWidget.connections[sourceId][targetId]
         else
             con = @displayWidget.removeConnection(sourceId, targetId)
+        console.log con
         @displayWidget.resetConnectionStyle(con) if con?
 
     openDrawer: ->

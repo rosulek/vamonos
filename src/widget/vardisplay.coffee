@@ -37,9 +37,9 @@ class VarDisplay
 
     event: (event, options...) -> switch event
         when "setup"
-            [@viz] = options
-
+            [@viz, done] = options
             @viz.registerVariable(@varName)
+            done() if done?
         
         when "editStart"
             @container.empty()

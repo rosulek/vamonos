@@ -24,9 +24,9 @@ class Queue
 
     event: (event, options...) -> switch event
         when "setup"
-            [viz] = options
+            [viz, done] = options
             viz.registerVariable(@varName)
-            @arrayWidget.event(event, options...)
+            @arrayWidget.event(event, viz, done)
 
         when "render"
             [frame, type] = options

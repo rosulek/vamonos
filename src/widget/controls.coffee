@@ -107,6 +107,9 @@ class Controls
         @frameLabel?.event(event, options...)
 
         switch event
+            when "setup"
+                [viz,done] = options
+                done() if done?
             when "setupEnd"
                 @$container.width(@$container.parent().width() + 1) if @expandWidth
             when "displayStart"

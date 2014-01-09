@@ -53,8 +53,9 @@ class UserQuiz
 
     event: (event, options...) -> switch event
         when "setup"
-            [@visualizer] = options
+            [@visualizer, done] = options
             $("body").append(@$dialog)  
+            done() if done?
     
         when "displayStart"
             @currentAnswer = null

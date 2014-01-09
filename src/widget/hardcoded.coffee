@@ -28,7 +28,7 @@ class Hardcoded
 
     event: (event, options...) -> switch event
         when "setup"
-            [@viz] = options
+            [@viz, done] = options
             for name, value of @args
                 if name is "breakpoints"
                     @setBreakpoints(value)
@@ -36,6 +36,7 @@ class Hardcoded
                     @setWatchVars(value)
                 else
                     @viz.setVariable(name, value, true)
+            done() if done?
 
         when "editStop"
             # put things in stash again

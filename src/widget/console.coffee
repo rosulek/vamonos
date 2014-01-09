@@ -13,6 +13,9 @@ class Console
 
 
     event: (event, options...) -> 
+        if event is 'setup'
+            [@viz,done] = options
+            done() if done?
 
         if event is 'render'
             console.log (

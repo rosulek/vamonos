@@ -65,7 +65,7 @@ class Matrix
 
     event: (event, options...) -> switch event
         when "setup"
-            [@viz] = options
+            [@viz, done] = options
 
             @viz.registerVariable(@varName) 
 
@@ -75,6 +75,7 @@ class Matrix
             for [_,i] in @showIndices
                 @viz.registerVariable(v) for v in @virtualIndexDependents(i)
            
+            done() if done?
 
         when "editStart"
             @$container.hide()

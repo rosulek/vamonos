@@ -41,8 +41,6 @@ class QTipTutorial
         @$tipNextLink.on("click.qtiptutorial", => @nextState() )
 
 
-    setup: () ->
-
     doState: (newStateIndex) ->
         @$currTarget.qtip("destroy") if @$currTarget?
         return if newStateIndex < 0
@@ -66,7 +64,11 @@ class QTipTutorial
             content:  @$tipContents
         })
 
-    event: ->
+    event: (event, options...) ->
+        if event is 'setup'
+            [viz, done] = options
+            done() if done?
+
     setup: ->
 
     nextState: ->

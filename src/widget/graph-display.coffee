@@ -138,25 +138,25 @@ class GraphDisplay
                 minHeight: @minY
             )
 
-        jsPlumb.ready =>
-            @jsPlumbInstance = jsPlumb.getInstance
-                Connector: ["Straight"]
-                PaintStyle: @normalPaintStyle
-                Endpoint: "Blank"
-                Anchor: [ "Perimeter", { shape: "Circle" } ]
-
     # ------------ PUBLIC INTERACTION METHODS ------------- #
 
     # A widget that uses GraphDisplay will need to pass along the setup event
     # in order to register vars from vertexLabels and colorEdges
     event: (event, options...) -> switch event
         when "setup"
-            [@viz] = options
+            [@viz, done] = options
             for e in @colorEdges when typeof e[0] is 'string'
                 @viz.registerVariable(v) for v in e[0].split(/<?->?/)
             for label, values of @vertexLabels
                 for v in values when typeof v is 'string'
                     @viz.registerVariable(v)
+            jsPlumb.ready =>
+                @jsPlumbInstance = jsPlumb.getInstance
+                    Connector: ["Straight"]
+                    PaintStyle: @normalPaintStyle
+                    Endpoint: "Blank"
+                    Anchor: [ "Perimeter", { shape: "Circle" } ]
+                done() if done?
 
     # draw is the main display function for the graphDisplay widget. It draws
     # only as much of the graph that wasn't there before and removes nodes
@@ -444,7 +444,7 @@ class GraphDisplay
     addForwardArrow: (con) ->
         con.addOverlay([
             "PlainArrow"
-            {id: "forwardArrow", location:-4, width:12, length:8}
+            {id: "forwardArrow", location:-1.000001, width:12, length:8}
         ])
 
     removeForwardArrow: (con) ->
@@ -453,7 +453,7 @@ class GraphDisplay
     addBackArrow: (con) ->
         con.addOverlay([
             "PlainArrow"
-            { id: "backArrow", location: 4, direction: -1, width: 12, length: 8 }
+            { id: "backArrow", location: 1.000001, direction: -1, width: 12, length: 8 }
         ])
 
     removeBackArrow: (con) ->
@@ -498,6 +498,7 @@ class GraphDisplay
                         @setStyle(con, edge, style[1], style[2])
 
     resetConnectionStyle: (con) ->
+        return unless con?
         con.setPaintStyle(@normalPaintStyle)
 
     setLabel: (con, graph) ->

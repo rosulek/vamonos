@@ -56,9 +56,10 @@ class VarName
 
     event: (event, options...) -> switch event
         when "setup"
-            [@viz] = options
+            [@viz, done] = options
             @viz.registerVariable(@varName) 
             @viz.setWatchVar(@varName) if @watching
+            done() if done?
 
         when "editStart"
             @setWatchStatus()
