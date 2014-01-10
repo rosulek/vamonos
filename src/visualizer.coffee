@@ -329,7 +329,7 @@ class Visualizer
     # widget gets a done() function to tell the vizualizer its time
     # to load the next widget. When all the widgets are loaded, a function
     # is called that does everything the Visualizer is supposed to do next.
-    setupWidgets: (stuffToDo) =>
+    setupWidgets: (stuffToDo) ->
         makeCont = (accumulator, widget) =>
             return => widget.event("setup", @, accumulator)
         # fold over the widgets, creating a function that calls the next
