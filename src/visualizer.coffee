@@ -324,17 +324,19 @@ class Visualizer
         for widget in @widgets
             widget.event(event, options...)
 
+    # jsplumb loads asynchroniously. we need some way to wait for it to 
+    # be ready - but only in cases where we actually use it. So each 
+    # widget gets a done() function to tell the vizualizer its time
+    # to load the next widget. When all the widgets are loaded, a function
+    # is called that does everything the Visualizer is supposed to do next.
     setupWidgets: (stuffToDo) =>
-        numWidgets = @widgets.length
-        counter = 0
-
-        nextF = () =>
-            counter += 1
-            if counter >= numWidgets
-                stuffToDo()
-
-        for widget in @widgets
-            widget.event("setup", @, nextF)
+        makeCont = (accumulator, widget) =>
+            return => widget.event("setup", @, accumulator)
+        # fold over the widgets, creating a function that calls the next
+        # widget's setup event, and at the end, call the function that
+        # triggers the next computation of the Visualizer. Call the first
+        # function in the chain.
+        @widgets.reduceRight(makeCont, stuffToDo)()
 
     editMode: ->
         return if @mode is "edit"

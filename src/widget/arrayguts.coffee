@@ -118,7 +118,7 @@ class ArrayGuts
 
     event: (event, options...) -> switch event
         when "setup"
-            [@viz, done] = options
+            [@viz] = options
 
             @viz.registerVariable(@varName)
 
@@ -130,9 +130,6 @@ class ArrayGuts
                 @viz.registerVariable(v) for v in @virtualIndexDependents(i)
             for i in @showIndices
                 @viz.registerVariable(v) for v in @virtualIndexDependents(i)
-
-            done() if done?
-           
 
         when "editStart"
             @arrayReset(if @persistent then @viz.getVariable(@varName) else @lastInput)

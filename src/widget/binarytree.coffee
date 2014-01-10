@@ -41,8 +41,8 @@ class BinaryTree
 
     event: (event, options...) -> switch event
         when "setup"
-            [@viz, done] = options
-            done() if done?
+            # display widget handles calling done()
+            @graphDisplay.event(event, options...)
         when "render"
             [frame, type] = options
             @draw(frame[@varName])

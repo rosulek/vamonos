@@ -25,7 +25,10 @@ class Array
         @$container.append(options.container)
         @guts = new Vamonos.Widget.ArrayGuts(options)
 
-    event: (args...) -> 
-        @guts.event(args...)
+    event: (event, options...) -> 
+        @guts.event(arguments...)
+        if event is 'setup'
+            [viz, done] = options
+            done() if done?
 
 @Vamonos.export { Widget: { Array } }

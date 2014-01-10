@@ -150,6 +150,10 @@ class GraphDisplay
             for label, values of @vertexLabels
                 for v in values when typeof v is 'string'
                     @viz.registerVariable(v)
+            # the whole point of having this done() business is so that jsPlumb
+            # can load asynchroniously and it won't mess anything up. usually
+            # the outer widget calls done(), but in this case, it needs to be 
+            # done by the inner widget.
             jsPlumb.ready =>
                 @jsPlumbInstance = jsPlumb.getInstance
                     Connector: ["Straight"]
