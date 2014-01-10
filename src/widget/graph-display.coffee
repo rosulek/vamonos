@@ -418,10 +418,8 @@ class GraphDisplay
             # delete both forward and back entries in connections table
             delete @connections[sourceId][targetId]
             delete @connections[targetId][sourceId]
-            # we'll return here, so as to simplify up the directed mess to follow
-            return
-
-        ## otherwise the graph is directed 
+            # we'll return here, so as to simplify the directed mess to follow
+            return con
 
         # if the edge is a forward edge with a back edge, delete forward arrow
         if con.forwardEdgeSource is sourceId and con.backEdgeSource is targetId
@@ -502,7 +500,7 @@ class GraphDisplay
                         @setStyle(con, edge, style[1], style[2])
 
     resetConnectionStyle: (con) ->
-        return unless con?
+        return unless con?.connector?
         con.setPaintStyle(@normalPaintStyle)
 
     setLabel: (con, graph) ->

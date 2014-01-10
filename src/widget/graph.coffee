@@ -347,7 +347,6 @@ class Graph
             con = @displayWidget.connections[sourceId][targetId]
         else
             con = @displayWidget.removeConnection(sourceId, targetId)
-        console.log con
         @displayWidget.resetConnectionStyle(con) if con?
 
     openDrawer: ->
