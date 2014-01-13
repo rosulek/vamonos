@@ -80,7 +80,7 @@ Bug Fixes
     * Removed extra spin through loop in maxflow and bipartite matching
       demos.
     * The setup event sends widgets a callback that they call when they 
-      are done settting up. this is to allow jsPlumb to load 
+      are done setting up. this is to allow jsPlumb to load 
       asynchronously.
     * Fixed: Creating a potential edge that needed a new connection would 
       cause all the endpoints on the source vertex to flip 180 degrees
