@@ -25,6 +25,11 @@ class Visualizer
             type: "Boolean"
             defaultValue: false
             description: "whether to skip edit mode at load time"
+        maxCallStackSnapshotDepth:
+            type: "Number"
+            defaultValue: undefined
+            description: "the maximum depth of the callstack that snapshots " +
+                "will be taken at when it is set as a watchVar."
 
     constructor: (args) ->
 
@@ -190,16 +195,23 @@ class Visualizer
         if typeof n is 'number'
             changes = @watchVarsChanged()
             (reasons ?= {}).watchVarsChanged = changes if changes?
-            (reasons ?= {}).procCalled       = @calledProc if @isWatchVar("_callstack") and @calledProc
-            (reasons ?= {}).procReturned     = @returnedProc if @isWatchVar("_callstack") and @returnedProc
+            (reasons ?= {}).procCalled       = @calledProc if @callStackSnapshotOk() and @calledProc
+            (reasons ?= {}).procReturned     = @returnedProc if @callStackSnapshotOk() and @returnedProc
 
-        if n is 'call' and @returnedProc and @isWatchVar("_callstack")
+        if n is 'call' and @returnedProc and @callStackSnapshotOk()
             (reasons ?= {}).procReturned = @returnedProc if @returnedProc
 
-        if n is "end" #and @isWatchVar("_callstack")
+        if n is "end"
             (reasons ?= {}).procReturned = "main"
 
         return reasons
+
+    # returns whether the callstack has been set as a watchvar, and whether the
+    # stack depth is less than the set limit
+    callStackSnapshotOk: ->
+        return unless @isWatchVar("_callstack")
+        return unless @stash.callStack.length <= (@maxCallStackSnapshotDepth ? Infinity)
+        return true
 
     watchVarsChanged: () ->
         return unless @watchVars.length
