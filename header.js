@@ -7,6 +7,6 @@
  * Licenced under MIT
  * http://www.opensource.org/licenses/mit-license.php
  *
- * Version: 1.2.0
- * Released: 2013-12-12
+ * Version: 1.2.1
+ * Released: 2014-01-13
  */
