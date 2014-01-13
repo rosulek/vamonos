@@ -126,7 +126,10 @@ argSpec = (argName, specs) ->
     if specs.hasOwnProperty("defaultValue")
         # a defaultValue can be 'undefined', in which case the argument is optional
         if defaultValue?
-            r = "default Value: `#{ JSON.stringify(defaultValue) }`"
+            if defaultValue.constructor.name is 'Function'
+                r = 'default value: `[function]`'
+            else
+                r = "default value: `#{ JSON.stringify(defaultValue) }`"
         else
             r = "optional"
     else
