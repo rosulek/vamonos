@@ -59,7 +59,7 @@ New Demos
     * Stoogesort 
     * Bellman-Ford Shortest Path 
     * Krustal's Minimum Spanning Tree 
-    * Stringly Connected Components 
+    * Strongly Connected Components 
 
 New Features
     * Created disjoint set data structure
@@ -75,7 +75,7 @@ Bug Fixes
     * Edges in directed graphs reuse the jsplumb connection when 
       switching direction
     * Added Vamonos.createNColorClasses
-    * API: Show defualt values that are functions as `[function]` instead
+    * API: Show default values that are functions as `[function]` instead
       of `undefined`.
     * Removed extra spin through loop in maxflow and bipartite matching
       demos.
