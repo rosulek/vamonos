@@ -16,7 +16,7 @@ to Vamonos.
 
 ### Constructor Arguments
 
- * **directed** :: *Boolean* -- default Value: `false`
+ * **directed** :: *Boolean* -- default value: `false`
 
     Whether the graph is directed.
 
@@ -35,7 +35,7 @@ to Vamonos.
 
 
 
- * **prefix** :: *String* -- default Value: `""`
+ * **prefix** :: *String* -- default value: `""`
 
     A string prepended to each new vertex id.
 
@@ -47,7 +47,7 @@ to Vamonos.
 
     Example:
 
->     vertices: [ 
+>     vertices: [
 >         {id: "v0", x: 17,  y: 10},
 >         {id: "v1", x: 98,  y: 10},
 >         {id: "v3", x: 15,  y: 78},
@@ -73,10 +73,22 @@ adds an edge from `source` to `target` with attributes copied from `attrs`
 
 adds `vtx` to the graph
 
+## **collapse**(`e`)
+ * `e`: an edge of the graph to collapse
+
+collapses `e`, creating a new vertex. By default vertex names are concatenations of the collapsed vertices' names, vertices' positions are averaged, and overlapping edges take the min weight. only works on undirected graphs.
+
 ## **eachEdge**(`f`)
  * `f`: a function taking an edge
 
 applies `f` to each edge
+
+## **eachEdgeBy**(`comp`, `f`)
+ * `comp`: a comparator
+
+ * `f`: a function taking an edge
+
+applies `f` to each edge, ordered by `comp`
 
 ## **eachNeighbor**(`v`, `f`)
  * `v`: a vertex object containing an id field, or an id
@@ -89,6 +101,13 @@ applies `f` to each neighbor of `v`
  * `f`: a function taking a vertex as an argument
 
 applies `f` to each vertex in the graph
+
+## **eachVertexBy**(`comp`, `f`)
+ * `comp`: a comparator
+
+ * `f`: a function taking a vertex as an argument
+
+applies `f` to each vertex in the graph, ordered by `comp`
 
 ## **edge**(`source`, `target`)
  * `source`: a vertex object containing an id field, or an id

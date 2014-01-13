@@ -14,6 +14,8 @@ Data Structures
 
  * [BinaryTree](data-binarytree.html)
 
+ * [DisjointSet](data-disjointset.html)
+
  * [Graph](data-graph.html)
 
  * [Queue](data-queue.html)

@@ -48,8 +48,7 @@
                     for each edge (u,v) &in; G.E
                         (u,v).f = 0
                     G<sub>f</sub> = ResidualGraph(G)
-                    while there is an augmenting path in G
-                        p = AugmentingPath(G,s,t)
+                    while p = AugmentingPath(G,s,t)
                         c<sub><i>f</i></sub>(p) = min { c<sub><i>f</i></sub>(u,v) : (u,v) &in; p }
                         for each edge (u,v) in p
                             if (u,v) &in; G.E
@@ -259,25 +258,23 @@ _(3);           G_f = ResidualGraph(G);
 
                 var done = false;
                 i = 0;
-                while (_(4), !done) {
-                    p = BFS(G_f,s_f,t_f);
-_(5);               if (!p.length) { done = true }
-_(6);               // get the flow for each edge on the path
+                while (_(4), p = BFS(G_f,s_f,t_f), p.length) {
+_(5);               // get the flow for each edge on the path
                     var flows = p.map(function(e){ return e.f });
                     // cfp is the min flow for each edge on the path
                     cfp = Math.min.apply(null, flows);
                     // augment the flow in G along each edge of the path
                     p.map(function(pEdge){
-_(7);                   u = G.vertex(pEdge.source.oldId);
+_(6);                   u = G.vertex(pEdge.source.oldId);
                         v = G.vertex(pEdge.target.oldId);
                         uf = ResidualVtx(u);
                         vf = ResidualVtx(v);
                         e = G.edge(u,v);
-                        if (_(8), e) {
-_(9);                       e.f = e.f + cfp;
+                        if (_(7), e) {
+_(8);                       e.f = e.f + cfp;
                         } else {
-_(10);                      e = G.edge(v,u);
-_(11);                      e.f = e.f - cfp;
+_(9);                       e = G.edge(v,u);
+_(10);                      e.f = e.f - cfp;
                         }
                         // update the residual graph
                         UpdateResidualEdge(e);
@@ -286,7 +283,7 @@ _(11);                      e.f = e.f - cfp;
                     u = v = undefined;
                     i++;
                 }
-_(12);          global.maxflow = 0;
+_(11);          global.maxflow = 0;
                 G.eachNeighbor(s, function(u){ 
                     e = G.edge(s,u);
                     global.maxflow += e.f;

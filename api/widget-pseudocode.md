@@ -21,19 +21,19 @@ The Pseudocode widget prettily formats the pseudocode in the div you provide it.
 
 
 
- * **breakpoints** :: *Array* | *String* -- default Value: `[]`
+ * **breakpoints** :: *Array* | *String* -- default value: `[]`
 
     initial breakpoints, as an array of line numbers, or `'all'` for all breakpoints
 
 
 
- * **editableBreakpoints** :: *Boolean* -- default Value: `true`
+ * **editableBreakpoints** :: *Boolean* -- default value: `true`
 
     whether breakpoints can be modified with this widget
 
 
 
- * **procedureName** :: *String* -- default Value: `"main"`
+ * **procedureName** :: *String* -- default value: `"main"`
 
     the name of the procedure in the algorithm
 

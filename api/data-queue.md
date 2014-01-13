@@ -21,7 +21,7 @@ A queue data structure for use in algorithms and widgets.
 
 
 
- * **initialArray** :: *Array* -- default Value: `[]`
+ * **initialArray** :: *Array* -- default value: `[]`
 
     The initial value of the queue.
 

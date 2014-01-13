@@ -33,7 +33,7 @@ VarDisplay allows viewing of the contents of variables, and if they are objects,
 
 
 
- * **showChanges** :: *String* | *Array* -- default Value: `"next"`
+ * **showChanges** :: *String* | *Array* -- default value: `"next"`
 
     type of frame shifts to highlight changes at, can be multiple types with an array of strings
 

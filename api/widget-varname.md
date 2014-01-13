@@ -37,19 +37,19 @@ VarName shows the variable name and provides a buton to set the variable as a wa
 
 
 
- * **inputVar** :: *Boolean* -- default Value: `false`
+ * **inputVar** :: *Boolean* -- default value: `false`
 
     whether to accept input for this variable in edit mode
 
 
 
- * **watchable** :: *Boolean* -- default Value: `true`
+ * **watchable** :: *Boolean* -- default value: `true`
 
     whether the variable can be set as a watchVar
 
 
 
- * **watching** :: *Boolean* -- default Value: `false`
+ * **watching** :: *Boolean* -- default value: `false`
 
     whether the variable starts off set as a watchVar
 

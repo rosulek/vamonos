@@ -17,25 +17,31 @@ namespaces and variables, and runs the simulation itself.
 
 ### Constructor Arguments
 
- * **algorithm** :: *Function* | *Object* -- default Value: `undefined`
+ * **algorithm** :: *Function* | *Object* -- default value: `[function]`
 
     as a function, the 'main' procedure. as an object, an association of procedure names to functions.
 
 
 
- * **autoStart** :: *Boolean* -- default Value: `false`
+ * **autoStart** :: *Boolean* -- default value: `false`
 
     whether to skip edit mode at load time
 
 
 
- * **maxFrames** :: *Integer* -- default Value: `250`
+ * **maxCallStackSnapshotDepth** :: *Number* -- optional
+
+    the maximum depth of the callstack that snapshots will be taken at when it is set as a watchVar.
+
+
+
+ * **maxFrames** :: *Number* -- default value: `250`
 
     the maximum number of snapshots
 
 
 
- * **widgets** :: *Array* -- default Value: `[]`
+ * **widgets** :: *Array* -- default value: `[]`
 
     a list of widgets for use in the visualization
 

@@ -21,25 +21,25 @@ CallStack is a representation of the stash's call stack. It also displays the va
 
 
 
- * **animate** :: *Array* -- default Value: `["next"]`
+ * **animate** :: *Array* -- default value: `["next"]`
 
     types of frame changes to show an animation on
 
 
 
- * **ignoreArgumentValues** :: *Array* -- default Value: `[]`
+ * **ignoreArgumentValues** :: *Array* -- default value: `[]`
 
     An array of argument names `['arg1','arg2']` that should only show their name in the Call Stack.
 
 
 
- * **ignoreMain** :: *Boolean* -- default Value: `false`
+ * **ignoreMain** :: *Boolean* -- default value: `false`
 
     CallStack will not display calls to the `main` procedure when set. This is useful when you'd like to use `main` to set variables, or do other useful housekeeping.
 
 
 
- * **procedureNames** :: *Object* -- default Value: `{}`
+ * **procedureNames** :: *Object* -- default value: `{}`
 
     an object mapping procedure names (those in the Visualizer's 'algorithm' argument) to their fully capitalized and formatted display forms.
 
@@ -52,7 +52,7 @@ CallStack is a representation of the stash's call stack. It also displays the va
 
 
 
- * **resizable** :: *Boolean* -- default Value: `true`
+ * **resizable** :: *Boolean* -- default value: `true`
 
     whether the widget should have a resize triangle
 

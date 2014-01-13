@@ -269,11 +269,9 @@ _(3);           G_f = ResidualGraph(G);
 
                 var done = false;
                 i = 0;
-                while (_(4), !done) {
-                    p = BFS(G_f,s_f,t_f);
-_(5);               if (!p.length) { done = true }
+                while (_(4), p = BFS(G_f,s_f,t_f), p.length) {
                     // get the flow for each edge on the path
-                    var flows = p.map(function(e){ return e.f });
+_(5);               var flows = p.map(function(e){ return e.f });
                     // cfp is the min flow for each edge on the path
                     cfp = Math.min.apply(null, flows);
                     // augment the flow in G along each edge of the path

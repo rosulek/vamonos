@@ -32,7 +32,7 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
 
 
 
- * **colorEdges** :: *Array* -- default Value: `[]`
+ * **colorEdges** :: *Array* -- default value: `[]`
 
     provides a way to set edge coloring based on vertex variables or edge properties. takes an array of doubles of the form  `[ edge-predicate, color, [optional weight] ]`, where color is a hex color and edge-predicate is either a string of the form `'vertex1->vertex2'` or a function that takes an edge and returns a boolean. Also for added complexity and enjoyment, the color string can also be a function taking an edge and returning a color string or a color string and a width (if it returns an array).
 
@@ -50,7 +50,7 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
 
 
 
- * **containerMargin** :: *Number* -- default Value: `30`
+ * **containerMargin** :: *Number* -- default value: `30`
 
     how close nodes can get to the container edge
 
@@ -68,7 +68,7 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
 
 
 
- * **draggable** :: *Boolean* -- default Value: `true`
+ * **draggable** :: *Boolean* -- default value: `true`
 
     whether nodes can be moved
 
@@ -86,66 +86,69 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
 
 
 
- * **editable** :: *Boolean* -- default Value: `true`
+ * **editable** :: *Boolean* -- default value: `true`
 
     whether the graph allows user input
 
 
 
- * **highlightChanges** :: *Boolean* -- default Value: `true`
+ * **highlightChanges** :: *Boolean* -- default value: `true`
 
     whether nodes will get the css class 'changed' when they are modified
 
 
 
- * **inputVars** :: *Object* -- default Value: `{}`
+ * **inputVars** :: *Object* -- default value: `{}`
 
     a mapping of variable names to vertex ids of the form                 `{ var1: 'node1' }` for displaying variables that contain                 vertices.
 
 
 
- * **minX** :: *Number* -- default Value: `100`
+ * **minX** :: *Number* -- default value: `100`
 
     minimum width of the graph widget
 
 
 
- * **minY** :: *Number* -- default Value: `100`
+ * **minY** :: *Number* -- default value: `100`
 
     minimum height of the graph widget
 
 
 
- * **resizable** :: *Boolean* -- default Value: `true`
+ * **resizable** :: *Boolean* -- default value: `true`
 
     whether the graph widget is resizable
 
 
 
- * **showChanges** :: *String* | *Array* -- default Value: `"next"`
+ * **showChanges** :: *String* | *Array* -- default value: `"next"`
 
     type of frame shifts to highlight changes at, can be multiple types with an array of strings
 
 
 
- * **tooltips** :: *Boolean* -- default Value: `true`
+ * **tooltips** :: *Boolean* -- default value: `true`
 
     whether to display tooltips
 
 
 
- * **vertexCssAttributes** :: *Object* -- default Value: `{}`
+ * **vertexCssAttributes** :: *Object* -- default value: `{}`
 
-    provides a way to change CSS classes of vertices based on vertex attributes. takes an object of the form `{ attribute: value | [list of values] }`. in the case of a single value,  the vertex will simply get a class with the same name as the attribute. in the case of a list of values, the css class will be of the form 'attribute-value' when its value matches.
+    provides a way to change CSS classes of vertices based on vertex attributes. takes an object of the form `{ attribute: value | [list of values] }`. in the case of a single value,  the vertex will simply get a class with the same name as the attribute. in the case of a list of values, the css class will be of the form 'attribute-value' when its value matches. You can also provide a function that takes a vertex and returns a class to apply to it.
 
     Example:
 
->     vertexCssAttributes: { done: true }
->     vertexCssAttributes: { color: ['white', 'gray', 'black'] }
+>     vertexCssAttributes: { 
+>         done: true, 
+>         color: ['white', 'gray', 'black'],
+>         magic: function(vtx){ return "class-" + vtx.magicAttr },
+>     },
 
 
 
- * **vertexLabels** :: *Object* -- default Value: `{}`
+ * **vertexLabels** :: *Object* -- default value: `{}`
 
     an object containing a mapping of label positions (inner, nw, sw, ne, se) to labels. Labels can display simple variable names (corresponding to inputVars). This must be provided in the form: `{ label: ['var1', 'var2'] }`. It can be more complicated, as a function that takes a vertex and returns some html. if we give a label an object, we can control what is shown in edit/display mode in the form: `{ label : { edit: function{}, display: function{} } }`
 
@@ -153,10 +156,10 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
 
 >     vertexLabels: {
 >         inner : {
->             edit: function(vtx){return vtx.name}, 
->             display: function(vtx){return vtx.d} 
+>             edit: function(vtx){return vtx.name},
+>             display: function(vtx){return vtx.d}
 >         },
->         sw    : function(vtx){return vtx.name}, 
+>         sw    : function(vtx){return vtx.name},
 >         ne    : ['u', 'v'],
 >         nw    : ['s'],
 >     }

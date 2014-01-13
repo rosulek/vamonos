@@ -44,7 +44,7 @@ Display multiple arrays, all lined up nice.
 
 
 
- * **cssRules** :: *Array* -- default Value: `[]`
+ * **cssRules** :: *Array* -- default value: `[]`
 
     an array of quadruples of the form [row/column, comparison, index-variable-expr, css-class] where every row/column in the matrix that matches the comparason against the given index-variable-expr receives the given css class.
 
@@ -57,49 +57,49 @@ Display multiple arrays, all lined up nice.
 
 
 
- * **defaultInput** :: *Array* -- default Value: `[]`
+ * **defaultInput** :: *Array* -- default value: `[]`
 
     the initial value for this array
 
 
 
- * **displayOnly** :: *Boolean* -- default Value: `false`
+ * **displayOnly** :: *Boolean* -- default value: `false`
 
     whether the array is editable
 
 
 
- * **ignoreIndexZero** :: *Boolean* -- default Value: `false`
+ * **ignoreIndexZero** :: *Boolean* -- default value: `false`
 
     whether the array should appear to be 1-indexed
 
 
 
- * **persistent** :: *Boolean* -- default Value: `false`
+ * **persistent** :: *Boolean* -- default value: `false`
 
     whether to save the result of running the algorithm and to use it as the initial value upon returning to edit mode.
 
 
 
- * **showCellNumber** :: *Boolean* -- default Value: `true`
+ * **showCellNumber** :: *Boolean* -- default value: `true`
 
     Whether to show a number above each cell.
 
 
 
- * **showChanges** :: *String* | *Array* -- default Value: `"next"`
+ * **showChanges** :: *String* | *Array* -- default value: `"next"`
 
     type of frame shifts to highlight changes at, can be multiple types with an array of strings
 
 
 
- * **showIndices** :: *Array* -- default Value: `[]`
+ * **showIndices** :: *Array* -- default value: `[]`
 
     an array of doubles of the form [row/column, index-variable-expr] that show the text of the index-variable-expr on the row/column it corresponds to.
 
 
 
- * **showLabel** :: *Boolean* -- default Value: `false`
+ * **showLabel** :: *Boolean* -- default value: `false`
 
     whether to show the varName before the array
 

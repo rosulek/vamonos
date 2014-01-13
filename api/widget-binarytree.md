@@ -33,13 +33,13 @@ A representation of a binary tree.
 
 
 
- * **xscalar** :: *Number* -- default Value: `60`
+ * **xscalar** :: *Number* -- default value: `60`
 
     how far to seperate nodes on the x axis
 
 
 
- * **yscalar** :: *Number* -- default Value: `40`
+ * **yscalar** :: *Number* -- default value: `40`
 
     how far to seperate nodes on the y axis
 
