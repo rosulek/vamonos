@@ -44,6 +44,10 @@ class CallStack
             description:
                 "An array of argument names `\['arg1','arg2'\]` that should only " +
                 "show their name in the Call Stack."
+        formatArgumentValues:
+            type: "Object"
+            defaultValue: {}
+            description: "A mapping of arg-names to functions of arg-values to strings"
 
     constructor: (args) ->
 
@@ -138,6 +142,8 @@ class CallStack
         r = (for k,v of scope.args when not /^_/.test(k)
             if k in @ignoreArgumentValues
                 k
+            else if k of @formatArgumentValues
+                "#{k}=#{ @formatArgumentValues[k](v) }"
             else if v.constructor.name is 'Array'
                 "#{k}=#{k}"
             else
