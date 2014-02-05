@@ -47,7 +47,13 @@ class CallStack
         formatArgumentValues:
             type: "Object"
             defaultValue: {}
-            description: "A mapping of arg-names to functions of arg-values to strings"
+            description: 
+                "A mapping of arg-names to functions of arg-values to strings"
+        formatReturnValue:
+            type: "Object"
+            defaultValue: {}
+            description: "A mapping of proc names to functions from a " +
+                "return-value to a string"
 
     constructor: (args) ->
 
@@ -155,8 +161,12 @@ class CallStack
 
     retStr: (scope) ->
         return "&nbsp;" unless "returnValue" of scope
-        ret = Vamonos.arrayify(scope.returnValue)
-        "<span class='callstack-arrow'>&uarr;</span>" + (Vamonos.rawToTxt(r) for r in ret).join(",")
+        if scope.procName of @formatReturnValue
+            s = @formatReturnValue[scope.procName](scope.returnValue)
+        else
+            ret = Vamonos.arrayify(scope.returnValue)
+            s = (Vamonos.rawToTxt(r) for r in ret).join(",")
+        return "<span class='callstack-arrow'>&uarr;</span>" + s
 
 
 @Vamonos.export { Widget: { CallStack } }
