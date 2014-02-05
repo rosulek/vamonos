@@ -67,11 +67,12 @@ function aton(arr){
     if (result.length) {
         return parseInt(result, 10);
     } else {
-        return "POOPY";
+        return 0;
     }
 }
 
 function ntoa(num){
+    num = parseInt(num, 10);
     if (num < 10) return [num];
     var r = num % 10;
     return ntoa( Math.floor(num / 10) ).concat([r]);
@@ -114,6 +115,7 @@ var myviz = new Vamonos.Visualizer({
             container: "p",
             varName: "p",
             defaultInput: [1,0,1],
+            maxInputLength: 1,
         }),
 
         new Vamonos.Widget.VarName({
@@ -125,14 +127,27 @@ var myviz = new Vamonos.Visualizer({
             container: "q",
             varName: "q",
             defaultInput: [1,0],
+            maxInputLength: 1,
         }),
 
     ],
 
     algorithm: function (_) {
         with (this) {
+            var c = ++window.c
 
-            console.log("main #" + ++window.c + " called! p=" + p + " q=" + q);
+            var m  = Math.max(p.length, q.length);
+
+            while (p.length < m) {
+                console.log("got here1");
+                p.unshift(0);
+            }
+            while (q.length < m) {
+                console.log("got here2");
+                q.unshift(0); 
+            }
+
+            console.log("main #" + c + " called! p=" + p + " q=" + q);
 
             var pnum = aton(p);
             var qnum = aton(q);
@@ -144,22 +159,20 @@ var myviz = new Vamonos.Visualizer({
             }
 
             _(3);
-            var m  = Math.max(p.length, q.length);
-
-            console.log("m=" + m);
-
             _(4);
             var m2 = Math.floor(m / 2);
+
+            console.log("m=" + m);
 
             console.log("m2=" + m2);
 
             _(5);
-            var low1 = p.slice(0, m2);
-            var high1 = p.slice(m2);
+            var low1 = p.slice(m2);
+            var high1 = p.slice(0, m2);
 
             _(6);
-            var low2 = q.slice(0, m2);
-            var high2 = q.slice(m2);
+            var low2 = q.slice(m2);
+            var high2 = q.slice(0, m2);
 
             console.log("p:" + low1 + "/" + high1);
             console.log("q:" + low2 + "/" + high2);
@@ -181,9 +194,9 @@ var myviz = new Vamonos.Visualizer({
             _(10);
             //var res = (z2 * 10^(2 * m2)) + ((z1 - z2 - z0) * 10^(m2)) + (z0);
 
-            var a = (z2 * 10^(2 * m2));
+            var a = (z2 * Math.pow(10, 2 * m2));
 
-            var b = ((z1 - z2 - z0) * 10^(m2));
+            var b = ((z1 - z2 - z0) * Math.pow(10, m2));
 
             var c = z0;
 
@@ -191,7 +204,7 @@ var myviz = new Vamonos.Visualizer({
 
             console.log(a, b, c, res);
 
-            console.log("main #" + window.c + " returning " + res);
+            console.log("main #" + c + " returning " + res);
             return ntoa(res);
         }
     },
