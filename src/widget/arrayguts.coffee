@@ -77,7 +77,10 @@ class ArrayGuts
             type: "Boolean"
             description: ""
             defaultValue: false
-
+        maxInputLength:
+            type: "Number"
+            description: "Limit input to a certain number of characters."
+            defaultValue: undefined
 
     constructor: (args) ->
 
@@ -339,42 +342,38 @@ class ArrayGuts
         when 13 # enter key
             @stopEditingCell(yes)
             return false
-
         when 32 # space
             @startEditingNextCell()
             return false
-
         when 9 # tab
             if event.shiftKey
                 @startEditingPrevCell()
             else
                 @startEditingNextCell()
             return false
-
         when 8 # backspace
             if @$editBox.val() is ""
                 @startEditingPrevCell()
                 return false
-
         when 37 # left-arrow
             elt = @$editBox.get(0)
             if elt.selectionStart == 0 and elt.selectionEnd == 0
                 @startEditingPrevCell()
                 return false
-
         when 39 # right-arrow
-            txt = @$editBox.val();
+            txt = @$editBox.val()
             elt = @$editBox.get(0)
             if elt.selectionStart == txt.length and elt.selectionEnd == txt.length
                 @startEditingNextCell()
                 return false
-
         when 27 # escape
             @stopEditingCell(no)
             return false
-
         else
-            return true
+            if @maxInputLength? and @$editBox.val().length >= @maxInputLength
+                @startEditingNextCell()
+            else
+                return true
 
     # these are the only "approved" ways to edit the array.
     # they affect what is displayed and also the underlying @theArray
