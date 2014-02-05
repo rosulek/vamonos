@@ -102,6 +102,7 @@ var myviz = new Vamonos.Visualizer({
                 p: aton,
                 q: aton,
             },
+            formatReturnValue: { main: aton },
         }),
 
         new Vamonos.Widget.VarName({
@@ -131,14 +132,14 @@ var myviz = new Vamonos.Visualizer({
     algorithm: function (_) {
         with (this) {
 
-            console.log("p=" + p);
-            console.log("q=" + q);
+            console.log("main #" + ++window.c + " called! p=" + p + " q=" + q);
 
             var pnum = aton(p);
             var qnum = aton(q);
 
             if (_(1), pnum < 10 || qnum < 10) {
                 _(2);
+                console.log("main #" + window.c + " returning at base case with " + pnum * qnum);
                 return ntoa(pnum * qnum);
             }
 
@@ -160,8 +161,8 @@ var myviz = new Vamonos.Visualizer({
             var low2 = q.slice(0, m2);
             var high2 = q.slice(m2);
 
-            console.log("1:" + low1.concat(["-"].concat(high1)));
-            console.log("2:" + low2.concat(["-"].concat(high2)));
+            console.log("p:" + low1 + "/" + high1);
+            console.log("q:" + low2 + "/" + high2);
 
             _(7);
             var z0 = aton(main({ p:low1, q:low2 }));
@@ -190,11 +191,14 @@ var myviz = new Vamonos.Visualizer({
 
             console.log(a, b, c, res);
 
+            console.log("main #" + window.c + " returning " + res);
             return ntoa(res);
         }
     },
 
 });
+
+window.c = 0;
 
 </script>
 
