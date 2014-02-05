@@ -1,0 +1,201 @@
+<html><head>
+
+    <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="../lib/vamonos-demos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <style type="text/css">
+        body {
+            text-align: center;
+        }
+    </style>
+
+</head><body>
+
+    <h1>Karatsuba's Multiplication Algorithm</h1>
+
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
+
+            <div class="pseudocode-procedures">
+
+                <div id="pseudocode" title="Karatsuba(p,q):">
+                    if p &lt; 10 or q &lt; 10
+                        return p * q
+                    m = max(length(p), length(q))
+                    m2 = &lfloor; m/2 &rfloor;
+                    low1, high1 = split_at(p, m2)
+                    low2, high2 = split_at(q, m2)
+                    z0 = karatsuba(low1,low2)
+                    z1 = karatsuba((low1+high1),(low2+high2))
+                    z2 = karatsuba(high1,high2)
+                    res = (z2*10^(2*m2))+((z1-z2-z0)*10^m2)+z0
+                    return res
+                </div>
+
+            </div>
+
+        </td></tr><tr><td>
+
+            <div id="controls"></div>
+
+        </td></tr><tr><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="stack-var"></div></td>
+                    <td><div id="stack"></div></td></tr>
+                <tr><td><div id="p-var"></div></td>
+                    <td><div id="p"></div></td></tr>
+                <tr><td><div id="q-var"></div></td>
+                    <td><div id="q"></div></td></tr>
+            </table>
+
+        </td></tr>
+
+    </table>
+</body>
+<script type="text/javascript">
+
+function aton(arr){
+    if (arr === undefined) return;
+    var result = "";
+    for (var i = 0; i < arr.length; i++) {
+        result += arr[i];
+    }
+    if (result.length) {
+        return parseInt(result, 10);
+    } else {
+        return "POOPY";
+    }
+}
+
+function ntoa(num){
+    if (num < 10) return [num];
+    var r = num % 10;
+    return ntoa( Math.floor(num / 10) ).concat([r]);
+}
+
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode",
+        }),
+
+        new Vamonos.Widget.Controls("controls"),
+
+        new Vamonos.Widget.VarName({
+            container: "stack-var",
+            varName: "_callstack",
+            displayName: "Callstack",
+            watching: true,
+        }),
+
+        new Vamonos.Widget.CallStack({
+            container: "stack",
+            procedureNames: {
+                main: "Karatsuba",
+            },
+            formatArgumentValues: {
+                p: aton,
+                q: aton,
+            },
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "p-var",
+            varName: "p",
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "p",
+            varName: "p",
+            defaultInput: [1,0,1],
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "q-var",
+            varName: "q",
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "q",
+            varName: "q",
+            defaultInput: [1,0],
+        }),
+
+    ],
+
+    algorithm: function (_) {
+        with (this) {
+
+            console.log("p=" + p);
+            console.log("q=" + q);
+
+            var pnum = aton(p);
+            var qnum = aton(q);
+
+            if (_(1), pnum < 10 || qnum < 10) {
+                _(2);
+                return ntoa(pnum * qnum);
+            }
+
+            _(3);
+            var m  = Math.max(p.length, q.length);
+
+            console.log("m=" + m);
+
+            _(4);
+            var m2 = Math.floor(m / 2);
+
+            console.log("m2=" + m2);
+
+            _(5);
+            var low1 = p.slice(0, m2);
+            var high1 = p.slice(m2);
+
+            _(6);
+            var low2 = q.slice(0, m2);
+            var high2 = q.slice(m2);
+
+            console.log("1:" + low1.concat(["-"].concat(high1)));
+            console.log("2:" + low2.concat(["-"].concat(high2)));
+
+            _(7);
+            var z0 = aton(main({ p:low1, q:low2 }));
+
+            _(8);
+            var z1 = aton(main({ 
+                p : ntoa(aton(low1) + aton(high1)),
+                q : ntoa(aton(low2) + aton(high2)),
+            }));
+
+            _(9);
+            var z2 = aton(main({ p:high1, q:high2 }));
+
+            console.log(z0, z1, z2, m2);
+
+            _(10);
+            //var res = (z2 * 10^(2 * m2)) + ((z1 - z2 - z0) * 10^(m2)) + (z0);
+
+            var a = (z2 * 10^(2 * m2));
+
+            var b = ((z1 - z2 - z0) * 10^(m2));
+
+            var c = z0;
+
+            var res = a + b + c;
+
+            console.log(a, b, c, res);
+
+            return ntoa(res);
+        }
+    },
+
+});
+
+</script>
+
+</html>
