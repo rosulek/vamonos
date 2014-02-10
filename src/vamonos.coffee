@@ -57,16 +57,22 @@
             @warn(widgetName, "unused argument \"#{arg}\"") for arg of givenArgs
 
     arrayToNum: (array) ->
-        unless array.constructor.name is 'Array'
+        unless array? and array.constructor.name is 'Array'
             console.log "Vamonos.arrayToNum got non-array input", array
-        parseInt( array.join(""), 10 )
+            return 0
+        r = parseInt( array.join(""), 10 )
+        if isNaN(r)
+            return 0
+        else
+            return r
 
     numToArray: (num) ->
-        unless num.constructor.name is 'Number'
+        unless num? and num.constructor.name is 'Number'
             console.log "Vamonos.numToArray got non-num input", num
+            return [0]
         if num < 10 then return [num]
         r = num % 10
-        numToArray( Math.floor( num / 2 ) ).concat([r])
+        @numToArray( Math.floor( num / 10 ) ).concat([r])
         
     # Divides the color wheel by the number of strongly connected components in
     # the graph, and creates a new class for each of them.
