@@ -3,7 +3,7 @@ class ArrayGuts
     @description: "ArrayGuts is where array input and display happen."
 
     @spec =
-        container: 
+        container:
             type:  "jQuery Selector"
             description: "a selector of the dom element the guts should go in"
         varName:
@@ -29,7 +29,7 @@ class ArrayGuts
         cssRules:
             type: "Array"
             defaultValue: []
-            description: 
+            description:
                 "an array of triples of the form `\[comparison, " +
                 "index-variable-expr, css-class\]` where every index in " +
                 "the array that matches the comparason against the given " +
@@ -42,7 +42,7 @@ class ArrayGuts
                 """
         showIndices:
             type: "Array"
-            description: 
+            description:
                 "an array of index-variable-exprs of the form that show the " +
                 "text of the index-variable-exprs on the indices they " +
                 "correspond to."
@@ -58,7 +58,7 @@ class ArrayGuts
         cellFormat:
             type: "Function"
             defaultValue: undefined
-            description: 
+            description:
                 "A function that takes the raw contents of each entry and " +
                 "returns the html to be displayed."
         cellParse:
@@ -70,7 +70,7 @@ class ArrayGuts
         persistent:
             type: "Boolean"
             defaultValue: false
-            description: 
+            description:
                 "whether to save the result of running the algorithm and to " +
                 "use it as the initial value upon returning to edit mode."
         _dummyIndexZero:
@@ -127,7 +127,7 @@ class ArrayGuts
 
             @viz.setVariable(@varName, @lastInput.slice()) unless @displayOnly # shallow copy
             @theArray = []
-            
+
             # ensure array indices exist in the stash
             for [_,i,_] in @cssRules
                 @viz.registerVariable(v) for v in @virtualIndexDependents(i)
@@ -144,7 +144,7 @@ class ArrayGuts
                 @$rowCells.prop("title", "Click in any cell to edit this array")
 
             @adjustHeight()
-        
+
         when "editStop"
             if ! @displayOnly
                 @$rowCells.off("click.arrayguts")
@@ -153,7 +153,7 @@ class ArrayGuts
                 @lastInput = @theArray.slice()
                 @viz.setVariable(@varName, @theArray.slice())
 
-                @stopEditingCell(false)        
+                @stopEditingCell(false)
                 @$rowCells.prop("title", "")
 
 
@@ -193,7 +193,7 @@ class ArrayGuts
 
         unless newArray?
             newArray = if @ignoreIndexZero then [Infinity] else []
-    
+
         row.find("td").removeClass() for row in [@$rowIndices, @$rowCells, @$rowAnnotations]
 
         # equalize the lengths
@@ -207,8 +207,8 @@ class ArrayGuts
             index = @virtualIndex(frame, indexName)
             if Vamonos.isNumber(index) and @firstIndex <= index < newArray.length
                 $cell = @$cells[index]
-                $selector = switch compare 
-                    when "<"        then $cell.prevAll() 
+                $selector = switch compare
+                    when "<"        then $cell.prevAll()
                     when "<="       then $cell.prevAll().add($cell)
                     when "=", "=="  then $cell
                     when ">"        then $cell.nextAll()
@@ -239,7 +239,7 @@ class ArrayGuts
     # maintains consistent size
     adjustHeight: () ->
         if @container.height() > (@maxHeight ? 0)
-            @maxHeight = @container.height() 
+            @maxHeight = @container.height()
         else
             @container.css("min-height",@maxHeight)
 
@@ -267,7 +267,7 @@ class ArrayGuts
                 prevOp = null
             else prevOp = t
         return total
-                    
+
     virtualIndexDependents: (indexStr) ->
         return [] unless indexStr.match(
             # "i+j" or "j+1" or "j" or "partition::j"
@@ -282,7 +282,7 @@ class ArrayGuts
         # .index() is 0-based index among siblings
         i = @$rowCells.find("td").index( $(event.target).closest("td") )
 
-        @startEditingCell( i + @firstIndex ) 
+        @startEditingCell( i + @firstIndex )
 
     startEditingCell: (index) ->
         return if index is @editIndex
@@ -292,11 +292,11 @@ class ArrayGuts
         $cell = @$cells[index]
 
         @editIndex = index
-        @$editBox = $("<input>", {class: "inline-input"})
+        @$editBox = $("<input>", { class: "inline-input", maxlength: @maxInputLength })
         @$editBox.val( @cellFormat(@theArray[index]) )
-        @$editBox.width( $cell.width() );           
+        @$editBox.width( $cell.width() )
         @$editBox.on("blur.arrayguts",    (e) => @stopEditingCell(yes) )
-        @$editBox.on("keydown.arrayguts", (e) => @editKeyDown(e) ) 
+        @$editBox.on("keydown.arrayguts", (e) => @editKeyDown(e) )
 
         $cell.html( @$editBox )
         $cell.addClass("editing")
@@ -305,9 +305,9 @@ class ArrayGuts
 
 
     startEditingNextCell: ->
-        if @editIndex is @theArray.length - 1 
+        if @editIndex is @theArray.length - 1
             return unless @txtValid( @$editBox.val() )
-            @arrayPushRaw(null) 
+            @arrayPushRaw(null)
 
         @startEditingCell(@editIndex + 1)
 
@@ -326,7 +326,7 @@ class ArrayGuts
                ( (save and not @txtValid(txt)) or (not save and not @theArray[@editIndex]?) )
 
         if dead
-            @arrayChopLast()                        
+            @arrayChopLast()
         else if save and @txtValid(txt)
             @arraySetFromTxt(@editIndex, txt)
         else
@@ -337,7 +337,7 @@ class ArrayGuts
         @editIndex = null
         @$editBox = null
 
-        
+
     editKeyDown: (event) -> switch event.keyCode
         when 13 # enter key
             @stopEditingCell(yes)
@@ -370,10 +370,7 @@ class ArrayGuts
             @stopEditingCell(no)
             return false
         else
-            if @maxInputLength? and @$editBox.val().length >= @maxInputLength
-                @startEditingNextCell()
-            else
-                return true
+            return true
 
     # these are the only "approved" ways to edit the array.
     # they affect what is displayed and also the underlying @theArray
@@ -387,7 +384,7 @@ class ArrayGuts
 
         @$cells.push( $newCell )
         @$annotations.push( $newAnnotation )
-    
+
         @$rowIndices.append("<td>" + newindex + "</td>")
         @$rowCells.append( $newCell )
         @$rowAnnotations.append( $newAnnotation )
@@ -400,7 +397,7 @@ class ArrayGuts
         @$annotations.length--
 
         row.find("td:last-child").remove() for row in [@$rowIndices, @$rowCells, @$rowAnnotations]
-    
+
     arraySetFromTxt: (index, txtVal, showChanges) ->
         @arraySetFromRaw(index, @cellParse(txtVal), showChanges)
 
@@ -429,7 +426,7 @@ class ArrayGuts
         @$annotations.length = 0
 
         for [0...@firstIndex]
-            @theArray.push(null) 
+            @theArray.push(null)
             @$cells.push(null)
             @$annotations.push(null)
 
@@ -437,7 +434,7 @@ class ArrayGuts
 
         if newArray?.length > @firstIndex
             @arrayPushRaw(v) for v in newArray[@firstIndex..]
-        else 
+        else
             # can't display an empty array
             @arrayPushRaw(null)
 
