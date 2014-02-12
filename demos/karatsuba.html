@@ -23,18 +23,17 @@
 
             <div class="pseudocode-procedures">
 
-                <div id="pseudocode" title="Karatsuba(p,q):">
-                    if p &lt; 10 or q &lt; 10
-                        return p * q
-                    m = max(length(p), length(q))
-                    m2 = &lfloor; m/2 &rfloor;
-                    low1, high1 = split_at(p, m2)
-                    low2, high2 = split_at(q, m2)
-                    z0 = karatsuba(low1,low2)
-                    z1 = karatsuba((low1+high1),(low2+high2))
-                    z2 = karatsuba(high1,high2)
-                    res = (z2*10^(2*m2))+((z1-z2-z0)*10^m2)+z0
-                    return res
+                <div id="pseudocode" title="Karatsuba(x,y):">
+                    if x &lt; 10 or y &lt; 10
+                        return x * y
+                    deg = &lfloor; max(length(p), length(q)) / 2 &rfloor;
+                    p-high, p-low = split p as a string at deg
+                    q-high, q-low = split q as a string at deg
+                    a = karatsuba(p-high, q-high)
+                    b = karatsuba(p-high + p-low, q-high + q-low)
+                    c = karatsuba(p-low, q-low)
+                    result = c * 10^(2 * deg) + (b - c - a) * 10^deg + a
+                    return result
                 </div>
 
             </div>
@@ -116,75 +115,45 @@ var myviz = new Vamonos.Visualizer({
 
     algorithm: function (_) {
         with (this) {
-            window.c += 1;
-            var counter = window.c;
-
-            var m  = Math.max(p.length, q.length);
-
-            console.log("main #" + c + " called! p=" + p + " q=" + q);
-
             var pnum = Vamonos.arrayToNum(p);
             var qnum = Vamonos.arrayToNum(q);
-
+            
             if (_(1), pnum < 10 || qnum < 10) {
                 _(2);
-                console.log("main #" + counter + " returning at base case with " + pnum * qnum);
                 return Vamonos.numToArray(pnum * qnum);
             }
+            var m   = Math.max(p.length, q.length);
+            var deg = Math.floor(m / 2);
 
-            _(3);
             _(4);
-            var m2 = Math.floor(m / 2);
-
-            console.log("m=" + m);
-
-            console.log("m2=" + m2);
+            var p_low  = p.slice(p.length - deg);
+            var p_high = p.slice(0, p.length - deg);
 
             _(5);
-            var low1 = p.slice(m2);
-            var high1 = p.slice(0, m2);
+            var q_low  = q.slice(q.length - deg);
+            var q_high = q.slice(0, q.length - deg);
 
             _(6);
-            var low2 = q.slice(m2);
-            var high2 = q.slice(0, m2);
-
-            console.log("p:" + high1 + "<->" + low1);
-            console.log("q:" + high2 + "<->" + low2);
+            var a = Vamonos.arrayToNum(main({ p:p_high, q:q_high }));
 
             _(7);
-            var z0 = Vamonos.arrayToNum(main({ p:low1, q:low2 }));
-
-            _(8);
-            var z1 = Vamonos.arrayToNum(main({ 
-                p : Vamonos.numToArray(Vamonos.arrayToNum(low1) + Vamonos.arrayToNum(high1)),
-                q : Vamonos.numToArray(Vamonos.arrayToNum(low2) + Vamonos.arrayToNum(high2)),
+            var b = Vamonos.arrayToNum(main({ 
+                p : Vamonos.numToArray(Vamonos.arrayToNum(p_low) + Vamonos.arrayToNum(p_high)),
+                q : Vamonos.numToArray(Vamonos.arrayToNum(q_low) + Vamonos.arrayToNum(q_high)),
             }));
 
-            _(9);
-            var z2 = Vamonos.arrayToNum(main({ p:high1, q:high2 }));
+            _(8);
+            var c = Vamonos.arrayToNum(main({ p:p_low, q:q_low }));
 
-            console.log(z0, z1, z2);
+            _(9);
+            var res = a * Math.pow(10, 2 * deg) + (b - a - c) * Math.pow(10, deg) + c
 
             _(10);
-
-            var a = (z2 * Math.pow(10, 2 * m2);
-
-            var b = ((z1 - z2 - z0) * Math.pow(10, m2));
-
-            var c = z0;
-
-            var res = a + b + c;
-
-            console.log(a, b, c);
-
-            console.log("main #" + counter + " returning " + res);
             return Vamonos.numToArray(res);
         }
     },
 
 });
-
-window.c = 0;
 
 </script>
 
