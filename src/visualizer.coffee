@@ -47,6 +47,7 @@ class Visualizer
 
         @setupWidgets =>
             @tellWidgets("setupEnd")
+            Vamonos.importViz(@)
             if @autoStart
                 @runAlgorithm()
             else
@@ -57,6 +58,7 @@ class Visualizer
     trigger: (event, options...) -> switch event
         when "runAlgorithm" then @runAlgorithm()
         when "editMode"     then @editMode()
+        when "editStop"     then @tellWidgets("editStop")
         when "nextFrame"    then @nextFrame()
         when "prevFrame"    then @prevFrame()
         when "jumpFrame"    then @jumpFrame(options...)

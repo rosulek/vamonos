@@ -1,10 +1,36 @@
 @Vamonos =
+
+    exportButton: ({ container, viz }) ->
+        unless container? and viz?
+            console.log "Vamonos.exportButton needs a container and a visualizer"
+            return
+        Vamonos.jqueryify(container)
+            .html($("<button/>", {
+                text: "Export",
+                click: => @exportViz(viz)
+            }))
+
+    exportViz: (viz) ->
+        viz.trigger("editStop")
+        state = btoa(JSON.stringify(viz.stash.inputScope))
+        pathn = window.location.pathname
+        $body = $("body").html("")
+            .append("<h1>Saved</h1>")
+            .append("<a href=#{ pathn }?#{ state }>The Link</a>")
+
+    importViz: (viz) ->
+        s = location.search
+        return unless s.length > 1 and s[0] is "?"
+        savedStash = JSON.parse(atob(s.substr(1)))
+        viz.stash.inputScope = savedStash
+
+
     # assigns arguments and default arguments inside widgets. warns when
     # required arguments are not present. warns when unused arguments are
     # present. type-checks arguments.
     handleArguments: ({
         widgetObject,       # "this"/"@" from widget object
-                            
+
         givenArgs,          # the args object passed to widget constructor
 
         ignoreExtraArgs,    # optional argument: whether or not to check for extra args.
@@ -26,7 +52,7 @@
         #
         #    args without a default value are required and will cause an error.
         #    optional arguments can be created by using a defaultValue of
-        #    undefined. 
+        #    undefined.
         #
         #    type can be a string ("String", "Integer", "Function", etc) or an
         #    array when an argument can be one of many types.
@@ -73,7 +99,7 @@
         if num < 10 then return [num]
         r = num % 10
         @numToArray( Math.floor( num / 10 ) ).concat([r])
-        
+
     # Divides the color wheel by the number of strongly connected components in
     # the graph, and creates a new class for each of them.
     createNColorClasses: (prefix, nGroups) ->
@@ -109,7 +135,7 @@
                 addClass = "class='changed'"
             else
                 addClass = ""
-            "<tr #{ addClass } ><td>#{attribute}</td><td>&nbsp=&nbsp" + 
+            "<tr #{ addClass } ><td>#{attribute}</td><td>&nbsp=&nbsp" +
                 str + "</td></tr>")
         tbl += rows.join("") + "</table>"
         tbl
@@ -142,7 +168,7 @@
     moveToTop: ($elem, $container = $("*")) ->
         $elem.css("z-index", @highestZIndex($container) + 1)
 
-    highestZIndex: ($sel) -> 
+    highestZIndex: ($sel) ->
         index_highest = 0
         $sel.each ->
             index_current = parseInt($(this).css("zIndex"), 10)
@@ -167,7 +193,7 @@
         return "graph"        if typeof raw is 'object' and raw.type is 'Graph'
         return "tree"         if typeof raw is 'object' and raw.type is 'BinaryTree'
         return raw.toString() if typeof raw is 'object' and raw.type is 'Queue'
-        return "" + raw        
+        return "" + raw
 
     txtValid: (txt) -> @txtToRaw(txt)?
 
@@ -180,7 +206,7 @@
             return r[1]
         else
             return r[r.length - 1]
-    
+
     funcify: (arg) ->
         return arg if typeof(arg) is "function"
         return -> arg
