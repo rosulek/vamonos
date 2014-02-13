@@ -11,16 +11,24 @@
             }))
 
     exportViz: (viz) ->
+        # ask all widgets to commit their input to the input scope
         viz.trigger("editStop")
+        console.log viz.stash.inputScope
         state = btoa(JSON.stringify(viz.stash.inputScope))
+        console.log atob(state)
         pathn = window.location.pathname
         $body = $("body").html("")
             .append("<h1>Saved</h1>")
             .append("<a href=#{ pathn }?#{ state }>The Link</a>")
 
     import: ->
+        if Vamonos._alreadyImported?
+            console.log "import returning since it's already been called"
+            return
         s = location.search
-        return "nope" unless s.length > 1 and s[0] is "?"
+        return unless s.length > 1 and s[0] is "?"
+        Vamonos._alreadyImported = yes
+        console.log JSON.parse(atob(s.substr(1)))
         return JSON.parse(atob(s.substr(1)))
 
     # assigns arguments and default arguments inside widgets. warns when

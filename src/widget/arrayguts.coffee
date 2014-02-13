@@ -146,7 +146,7 @@ class ArrayGuts
             @adjustHeight()
 
         when "editStop"
-            if ! @displayOnly
+            if not @displayOnly
                 @$rowCells.off("click.arrayguts")
 
                 # shallow copy of @theArray
@@ -187,6 +187,11 @@ class ArrayGuts
         when "render"
             @render(options...)
 
+        when "externalInput"
+            [inp] = options
+            return unless inp[@varName]?.constructor.name is 'Array'
+            console.log "array widget got #{ inp[@varName] }"
+            @lastInput = inp[@varName]
 
     render: (frame, type) ->
         newArray = frame[@varName]
