@@ -47,7 +47,7 @@ class Visualizer
 
         @setupWidgets =>
             @tellWidgets("setupEnd")
-            Vamonos.importViz(@)
+            @tellWidgets("externalInput", Vamonos.import())
             if @autoStart
                 @runAlgorithm()
             else

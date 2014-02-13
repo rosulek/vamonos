@@ -395,5 +395,16 @@ class Graph
 
         return s
 
+    # reconstruct a graph object from an object that only has vertices
+    # and edges but no methods
+    reconstruct: (graph) ->
+        @prefix = graph.prefix if graph.prefix?
+        @directed = graph.directed if graph.directed?
+        if graph.vertices?
+            @vertices = {}
+            @addVertex(vtx) for id, vtx of graph.vertices
+        if graph.edges?
+            for srcId, tObj of graph.edges
+                @addEdge(e.source, e.target, e) for trgId, e of tObj
 
 @Vamonos.export { DataStructure: { Graph } }

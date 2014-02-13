@@ -112,6 +112,13 @@ class Graph
             if @editable
                 @verifyInputVarsSet()
 
+        when "externalInput"
+            [inp] = options
+            return unless inp[@varName]?.type is "Graph"
+            newg = new Vamonos.DataStructure.Graph()
+            newg.reconstruct(inp[@varName])
+            @theGraph = newg
+
     # ----------------- EDITING MODE ------------------------ #
     
     setEditToolTips: ->

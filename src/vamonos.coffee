@@ -18,12 +18,10 @@
             .append("<h1>Saved</h1>")
             .append("<a href=#{ pathn }?#{ state }>The Link</a>")
 
-    importViz: (viz) ->
+    import: ->
         s = location.search
-        return unless s.length > 1 and s[0] is "?"
-        savedStash = JSON.parse(atob(s.substr(1)))
-        viz.stash.inputScope = savedStash
-
+        return "nope" unless s.length > 1 and s[0] is "?"
+        return JSON.parse(atob(s.substr(1)))
 
     # assigns arguments and default arguments inside widgets. warns when
     # required arguments are not present. warns when unused arguments are
