@@ -24,9 +24,9 @@
     import: ->
         if Vamonos._alreadyImported?
             console.log "import returning since it's already been called"
-            return
+            return {}
         s = location.search
-        return unless s.length > 1 and s[0] is "?"
+        return {} unless s.length > 1 and s[0] is "?"
         Vamonos._alreadyImported = yes
         console.log JSON.parse(atob(s.substr(1)))
         return JSON.parse(atob(s.substr(1)))
