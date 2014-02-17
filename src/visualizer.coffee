@@ -68,7 +68,6 @@ class Visualizer
         (@registeredVars[ns] ?= []).push(varName)
 
     setVariable: (name, value) ->
-        console.log "setVariable #{ name }", value
         [ns, varName] = @parseVarName(name)
         @stash.inputScope[name] = value
         return value # for chaining

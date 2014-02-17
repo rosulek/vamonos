@@ -21,16 +21,16 @@
 
             <div class="pseudocode-procedures">
 
-                <div id="pseudocode" title="Karatsuba(p,q):">
+                <div id="pseudocode" title="Karatsuba(x,y):">
                     if x &lt; 10 or y &lt; 10
-                        return x * y
-                    deg = &lfloor; max(length(p), length(q)) / 2 &rfloor;
-                    p-high, p-low = split p as a string at deg
-                    q-high, q-low = split q as a string at deg
-                    a = karatsuba(p-high, q-high)
-                    b = karatsuba(p-high + p-low, q-high + q-low)
-                    c = karatsuba(p-low, q-low)
-                    result = c * 10^(2 * deg) + (b - c - a) * 10^deg + a
+                        return xy
+                    d = &lfloor; max(length(p), length(q)) / 2 &rfloor;
+                    x<sub>high</sub>, x<sub>low</sub> = split x as a string at d
+                    y<sub>high</sub>, y<sub>low</sub> = split y as a string at d
+                    a = karatsuba(x<sub>high</sub>, y<sub>high</sub>)
+                    b = karatsuba(x<sub>high</sub> + x<sub>low</sub>, y<sub>high</sub> + y<sub>low</sub>)
+                    c = karatsuba(x<sub>low</sub>, y<sub>low</sub>)
+                    result = c*10<sup>2d</sup> + (b-c-a)*10<sup>d</sup> + a
                     return result
                 </div>
 
@@ -45,10 +45,10 @@
             <table class="variable-widgets">
                 <tr><td><div id="stack-var"></div></td>
                     <td><div id="stack"></div></td></tr>
-                <tr><td><div id="p-var"></div></td>
-                    <td><div id="p"></div></td></tr>
-                <tr><td><div id="q-var"></div></td>
-                    <td><div id="q"></div></td></tr>
+                <tr><td><div id="x-var"></div></td>
+                    <td><div id="x"></div></td></tr>
+                <tr><td><div id="y-var"></div></td>
+                    <td><div id="y"></div></td></tr>
             </table>
 
         </td></tr>
@@ -60,8 +60,6 @@
 
 var myviz = new Vamonos.Visualizer({
     widgets: [
-
-        new Vamonos.Widget.Console(),
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode",
@@ -82,32 +80,32 @@ var myviz = new Vamonos.Visualizer({
                 main: "Karatsuba",
             },
             formatArgumentValues: {
-                p: Vamonos.arrayToNum,
-                q: Vamonos.arrayToNum,
+                x: Vamonos.arrayToNum,
+                y: Vamonos.arrayToNum,
             },
             formatReturnValue: { main: Vamonos.arrayToNum },
         }),
 
         new Vamonos.Widget.VarName({
-            container: "p-var",
-            varName: "p",
+            container: "x-var",
+            varName: "x",
         }),
 
         new Vamonos.Widget.Array({
-            container: "p",
-            varName: "p",
+            container: "x",
+            varName: "x",
             defaultInput: [1,2,0],
             maxInputLength: 1,
         }),
 
         new Vamonos.Widget.VarName({
-            container: "q-var",
-            varName: "q",
+            container: "y-var",
+            varName: "y",
         }),
 
         new Vamonos.Widget.Array({
-            container: "q",
-            varName: "q",
+            container: "y",
+            varName: "y",
             defaultInput: [1,2],
             maxInputLength: 1,
         }),
@@ -116,35 +114,35 @@ var myviz = new Vamonos.Visualizer({
 
     algorithm: function (_) {
         with (this) {
-            var pnum = Vamonos.arrayToNum(p);
-            var qnum = Vamonos.arrayToNum(q);
+            var pnum = Vamonos.arrayToNum(x);
+            var qnum = Vamonos.arrayToNum(y);
             
             if (_(1), pnum < 10 || qnum < 10) {
                 _(2);
                 return Vamonos.numToArray(pnum * qnum);
             }
-            var m   = Math.max(p.length, q.length);
+            var m   = Math.max(x.length, y.length);
             var deg = Math.floor(m / 2);
 
             _(4);
-            var p_low  = p.slice(p.length - deg);
-            var p_high = p.slice(0, p.length - deg);
+            var x_low  = x.slice(x.length - deg);
+            var x_high = x.slice(0, x.length - deg);
 
             _(5);
-            var q_low  = q.slice(q.length - deg);
-            var q_high = q.slice(0, q.length - deg);
+            var y_low  = y.slice(y.length - deg);
+            var y_high = y.slice(0, y.length - deg);
 
             _(6);
-            var a = Vamonos.arrayToNum(main({ p:p_high, q:q_high }));
+            var a = Vamonos.arrayToNum(main({ x:x_high, y:y_high }));
 
             _(7);
             var b = Vamonos.arrayToNum(main({ 
-                p : Vamonos.numToArray(Vamonos.arrayToNum(p_low) + Vamonos.arrayToNum(p_high)),
-                q : Vamonos.numToArray(Vamonos.arrayToNum(q_low) + Vamonos.arrayToNum(q_high)),
+                x : Vamonos.numToArray(Vamonos.arrayToNum(x_low) + Vamonos.arrayToNum(x_high)),
+                y : Vamonos.numToArray(Vamonos.arrayToNum(y_low) + Vamonos.arrayToNum(y_high)),
             }));
 
             _(8);
-            var c = Vamonos.arrayToNum(main({ p:p_low, q:q_low }));
+            var c = Vamonos.arrayToNum(main({ x:x_low, y:y_low }));
 
             _(9);
             var res = a * Math.pow(10, 2 * deg) + (b - a - c) * Math.pow(10, deg) + c
