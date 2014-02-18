@@ -30,6 +30,11 @@ class Visualizer
             defaultValue: undefined
             description: "the maximum depth of the callstack that snapshots " +
                 "will be taken at when it is set as a watchVar."
+        exportAfterEditMode:
+            type: "Boolean"
+            defaultValue: true
+            description: "whether the visualizer will update the location with " +
+                "the updated input after leaving edit mode every time"
 
     constructor: (args) ->
 
@@ -289,6 +294,7 @@ class Visualizer
 
         @initializeStash()
         @tellWidgets("editStop") if @mode is "edit"
+        @export()
 
         @mode = "running"
 
@@ -387,18 +393,17 @@ class Visualizer
         (@exportableVariables ?= {})[varName] = true
 
     export: ->
-        @tellWidgets("editStop")
         save = {}
         for varName, varObj of @stash.inputScope
             continue unless varName of @exportableVariables
+            # placeholder for the graph datastructure to perform its
+            # own optimized exporting
             if varObj.export? and varObj.export.constructor.name is 'Function'
                 save[varName] = varObj.export()
             else
                 save[varName] = varObj
         res = JSON.stringify(save)
-        console.log "Visualizer.export", res
         window.location.hash = btoa(res)
-        @tellWidgets("editStart")
         return "ok"
 
     import: ->
