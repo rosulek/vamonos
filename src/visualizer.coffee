@@ -47,7 +47,7 @@ class Visualizer
 
         @setupWidgets =>
             @tellWidgets("setupEnd")
-            @tellWidgets("externalInput", Vamonos.import())
+            @tellWidgets("externalInput", @import())
             if @autoStart
                 @runAlgorithm()
             else
@@ -379,5 +379,36 @@ class Visualizer
         @frameNumber = n
         @tellWidgets("render", @frames[@frameNumber-1], type)
 
+    # ----------------- export --------------------- #
+
+    # widgets call the @viz.allowExport(@varName) in order to mark
+    # variables as exportable.
+    allowExport: (varName) ->
+        (@exportableVariables ?= {})[varName] = true
+
+    export: ->
+        @tellWidgets("editStop")
+        save = {}
+        for varName, varObj of @stash.inputScope
+            continue unless varName of @exportableVariables
+            if varObj.export? and varObj.export.constructor.name is 'Function'
+                save[varName] = varObj.export()
+            else
+                save[varName] = varObj
+        res = JSON.stringify(save)
+        console.log "Visualizer.export", res
+        window.location.hash = btoa(res)
+        @tellWidgets("editStart")
+        return "ok"
+
+    import: ->
+        if @_alreadyImported?
+            console.log "import returning since it's already been called"
+            return {}
+        s = window.location.hash
+        return {} unless s.length > 1 and s[0] is "#"
+        @_alreadyImported = yes
+        return JSON.parse(atob(s.substr(1)))
+        
 
 @Vamonos.export { Visualizer }

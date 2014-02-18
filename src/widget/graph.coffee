@@ -167,6 +167,7 @@ class Graph
         for k, v of @inputVars
             if v?
                 @viz.setVariable(k, graph.vertex(v.id), true)
+        @viz.allowExport(@varName)
 
     verifyInputVarsSet: () ->
         s = ("#{ @varName } says: please set #{k}!" for k, v of @inputVars when not v?).join('\n')

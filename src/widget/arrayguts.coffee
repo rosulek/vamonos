@@ -126,6 +126,7 @@ class ArrayGuts
             @viz.registerVariable(@varName)
 
             @viz.setVariable(@varName, @lastInput.slice()) unless @displayOnly # shallow copy
+            @viz.allowExport(@varName) unless @displayOnly
             @theArray = []
 
             # ensure array indices exist in the stash
@@ -190,8 +191,8 @@ class ArrayGuts
         when "externalInput"
             [inp] = options
             return unless inp[@varName]?.constructor.name is 'Array'
-            console.log "array widget got #{ inp[@varName] }"
             @lastInput = inp[@varName]
+
 
     render: (frame, type) ->
         newArray = frame[@varName]
