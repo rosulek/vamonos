@@ -1,0 +1,102 @@
+<html><head>
+
+    <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="../lib/vamonos-demos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <style type="text/css">
+        body {
+            text-align: center;
+        }
+    </style>
+
+</head><body>
+
+    <h1>Longest Increasing Subsequence</h1>
+
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
+            <div id="controls"></div>
+            <div class="pseudocode-procedures">
+                <div id="pseudocode" title="LIS(A):">
+                    L[0] = 0
+                    for k = 1 to A.length
+                        L[k] = 1
+                        for i = 1 to k-1
+                            if A[i] &lt; A[k] and L[k] &lt; L[i] + 1
+                                L[k] = L[i] + 1
+                </div>
+            </div>
+        </td><td class="variable-widgets">
+            <table class="variable-widgets">
+                <tr><td><div id="A-var"></div></td>
+                    <td><div id="A"></div></td>
+                </tr>
+                <tr><td><div id="L-var"></div></td>
+                    <td><div id="L"></div></td></tr>
+                </tr>
+            </table>
+        </td></tr>
+    </table>
+    </div>
+</body>
+<script type="text/javascript">
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+
+        new Vamonos.Widget.VarName({
+            container: "A-var",
+            varName: "A",
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "A",
+            varName: "A",
+            defaultInput: [0, 3,1,4,1,5,9,2,6,5],
+            ignoreIndexZero: true,
+            cssRules: [[">", "k", "shaded"]],
+            showIndices: ["i", "k"],
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "L-var",
+            varName: "global::L",
+            displayName: "L",
+            watching: true,
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "L",
+            varName: "global::L",
+            displayOnly: true,
+            showIndices: ["i", "k"],
+        }),
+
+        new Vamonos.Widget.Pseudocode("pseudocode"),
+
+        new Vamonos.Widget.Controls({
+            container: "controls",
+            expandWidth: true,
+        }),
+    ],
+
+    algorithm: function (_) {
+        with (this) {
+_(1);       global.L = [0]
+_(2);       for (k = 1; k < A.length; _(2), k++) {
+_(3);           global.L[k] = 1;
+_(4);           for (i=1; i<k; _(4), i++) {
+_(5);               if (A[i] < A[k] && global.L[k] < global.L[i] + 1) {
+_(6);                   global.L[k] = global.L[i] + 1;
+                    }
+                }
+                i = undefined;
+            }
+            k = undefined;
+        }
+    }
+});
+</script>
+</html>

@@ -1,0 +1,158 @@
+<html><head>
+
+    <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="../lib/vamonos-demos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <style type="text/css">
+        body {
+            text-align: center;
+        }
+    </style>
+
+</head><body>
+
+    <h1>Karatsuba's Multiplication Algorithm</h1>
+
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
+
+            <div class="pseudocode-procedures">
+
+                <div id="pseudocode" title="Karatsuba(x,y):">
+                    if x &lt; 10 or y &lt; 10
+                        return xy
+                    d = &lfloor; max(length(p), length(q)) / 2 &rfloor;
+                    x<sub>high</sub>, x<sub>low</sub> = split x as a string at d
+                    y<sub>high</sub>, y<sub>low</sub> = split y as a string at d
+                    a = karatsuba(x<sub>high</sub>, y<sub>high</sub>)
+                    b = karatsuba(x<sub>high</sub> + x<sub>low</sub>, y<sub>high</sub> + y<sub>low</sub>)
+                    c = karatsuba(x<sub>low</sub>, y<sub>low</sub>)
+                    result = c*10<sup>2d</sup> + (b-c-a)*10<sup>d</sup> + a
+                    return result
+                </div>
+
+            </div>
+
+        </td></tr><tr><td>
+
+            <div id="controls"></div>
+
+        </td></tr><tr><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="stack-var"></div></td>
+                    <td><div id="stack"></div></td></tr>
+                <tr><td><div id="x-var"></div></td>
+                    <td><div id="x"></div></td></tr>
+                <tr><td><div id="y-var"></div></td>
+                    <td><div id="y"></div></td></tr>
+            </table>
+
+        </td></tr>
+
+    </table>
+</body>
+<script type="text/javascript">
+
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode",
+        }),
+
+        new Vamonos.Widget.Controls("controls"),
+
+        new Vamonos.Widget.VarName({
+            container: "stack-var",
+            varName: "_callstack",
+            displayName: "Callstack",
+            watching: true,
+        }),
+
+        new Vamonos.Widget.CallStack({
+            container: "stack",
+            procedureNames: {
+                main: "Karatsuba",
+            },
+            formatArgumentValues: {
+                x: Vamonos.arrayToNum,
+                y: Vamonos.arrayToNum,
+            },
+            formatReturnValue: { main: Vamonos.arrayToNum },
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "x-var",
+            varName: "x",
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "x",
+            varName: "x",
+            defaultInput: [1,2,0],
+            maxInputLength: 1,
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "y-var",
+            varName: "y",
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "y",
+            varName: "y",
+            defaultInput: [1,2],
+            maxInputLength: 1,
+        }),
+
+    ],
+
+    algorithm: function (_) {
+        with (this) {
+            var pnum = Vamonos.arrayToNum(x);
+            var qnum = Vamonos.arrayToNum(y);
+            
+            if (_(1), pnum < 10 || qnum < 10) {
+                _(2);
+                return Vamonos.numToArray(pnum * qnum);
+            }
+            var m   = Math.max(x.length, y.length);
+            var deg = Math.floor(m / 2);
+
+            _(4);
+            var x_low  = x.slice(x.length - deg);
+            var x_high = x.slice(0, x.length - deg);
+
+            _(5);
+            var y_low  = y.slice(y.length - deg);
+            var y_high = y.slice(0, y.length - deg);
+
+            _(6);
+            var a = Vamonos.arrayToNum(main({ x:x_high, y:y_high }));
+
+            _(7);
+            var b = Vamonos.arrayToNum(main({ 
+                x : Vamonos.numToArray(Vamonos.arrayToNum(x_low) + Vamonos.arrayToNum(x_high)),
+                y : Vamonos.numToArray(Vamonos.arrayToNum(y_low) + Vamonos.arrayToNum(y_high)),
+            }));
+
+            _(8);
+            var c = Vamonos.arrayToNum(main({ x:x_low, y:y_low }));
+
+            _(9);
+            var res = a * Math.pow(10, 2 * deg) + (b - a - c) * Math.pow(10, deg) + c
+
+            _(10);
+            return Vamonos.numToArray(res);
+        }
+    },
+
+});
+
+</script>
+
+</html>

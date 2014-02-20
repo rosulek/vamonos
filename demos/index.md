@@ -18,12 +18,15 @@ subheader: Dynamic algorithm visualization in the browser
 * Recursion:
 
    * [Three versions of factorial](factorial.html)
+   * [Recursive addition](addition.html)
+   * [Karatsuba's multiplication algorithm](karatsuba.html)
 
 * Dynamic programming:
 
    * [Rod-cutting](rod_cutting.html) ([with quiz](rod_cutting-quiz.html))
    * [Matrix-chain multiplication](matrix-chain.html)
    * [Longest increasing subsequence](lis.html)
+   * [Simplified longest increasing subsequence](lis2.html)
 
 * Graphs:
 

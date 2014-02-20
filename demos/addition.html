@@ -1,0 +1,137 @@
+<html><head>
+
+    <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="../lib/vamonos-demos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <style type="text/css">
+     body {
+         text-align: center;
+     }
+    </style>
+
+</head><body>
+
+    <h1>Recursive Addition</h1>
+
+    <table class="vamonos">
+        <tr><td class="pseudocode-and-controls">
+
+            <div class="pseudocode-procedures">
+
+                <div id="pseudocode" title="Add(x,y):">
+                    if x = 0
+                        return y
+                    else
+                        result = 1 + Add(x - 1, y)
+                        return result
+                </div>
+
+            </div>
+
+        </td></tr><tr><td>
+
+            <div id="controls"></div>
+
+        </td></tr><tr><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="stack-var"></div></td>
+                    <td><div id="stack"></div></td></tr>
+                <tr><td><div id="x-var"></div></td>
+                    <td><div id="x"></div></td></tr>
+                <tr><td><div id="y-var"></div></td>
+                    <td><div id="y"></div></td></tr>
+            </table>
+
+        </td></tr>
+
+    </table>
+</body>
+<script type="text/javascript">
+
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode",
+        }),
+
+        new Vamonos.Widget.Controls("controls"),
+
+        new Vamonos.Widget.VarName({
+            container: "stack-var",
+            varName: "_callstack",
+            displayName: "Callstack",
+            watching: true,
+        }),
+
+        new Vamonos.Widget.CallStack({
+            container: "stack",
+            procedureNames: {
+                main: "Add",
+            },
+            formatArgumentValues: {
+                x: Vamonos.arrayToNum,
+                y: Vamonos.arrayToNum,
+            },
+            formatReturnValue: { main: Vamonos.arrayToNum },
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "x-var",
+            varName: "x",
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "x",
+            varName: "x",
+            defaultInput: [6],
+            maxInputLength: 1,
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "y-var",
+            varName: "y",
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "y",
+            varName: "y",
+            defaultInput: [1,0],
+            maxInputLength: 1,
+        }),
+
+    ],
+
+    algorithm: function (_) {
+        with (this) {
+
+            var nx = Vamonos.arrayToNum(x);
+                ny = Vamonos.arrayToNum(y);
+
+            if (_(1), nx === 0) {
+                _(2);
+                return y;
+            }
+            else {
+                _(3);
+                _(4);
+                var r = Vamonos.numToArray(
+                        1 + Vamonos.arrayToNum(
+                                main({ x:Vamonos.numToArray(nx-1), y:y })
+                            )
+                        );
+                _(5);
+                return r;
+            }
+        }
+    },
+
+});
+
+</script>
+
+</html>
