@@ -393,8 +393,9 @@ class Visualizer
         (@exportableVariables ?= {})[varName] = true
 
     export: ->
+        return unless @exportableVariables?
         save = {}
-        for varName, varObj of @stash.inputScope
+        for varName, varObj of @stash.inputScope when varObj?
             continue unless varName of @exportableVariables
             # placeholder for the graph datastructure to perform its
             # own optimized exporting

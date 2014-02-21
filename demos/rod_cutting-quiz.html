@@ -220,7 +220,6 @@ _(4);           global.opt[k] = 0;
 _(5);           global.sol[k] = null;
 _(6);           for (i=1; i<=k; _(6), i++) {
 _(7);               if (global.opt[k] < global.opt[k-i] + price[i]) {
-                        console.log("got here" + i);
 _(8);                   global.opt[k] = global.opt[k-i] + price[i];
 _(9);                   global.sol[k] = global.sol[k-i].concat([i]);
                     }

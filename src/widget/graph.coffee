@@ -114,10 +114,13 @@ class Graph
 
         when "externalInput"
             [inp] = options
-            return unless inp[@varName]?.type is "Graph"
-            newg = new Vamonos.DataStructure.Graph()
-            newg.reconstruct(inp[@varName])
-            @theGraph = newg
+            if inp[@varName]?.type is "Graph"
+                newg = new Vamonos.DataStructure.Graph()
+                newg.reconstruct(inp[@varName])
+                @theGraph = newg
+            for varName, oldVal of @inputVars
+                if inp[varName]?.type is "Vertex"
+                    @inputVars[varName] = @theGraph.vertex( inp[varName] )
 
     # ----------------- EDITING MODE ------------------------ #
     
@@ -167,6 +170,7 @@ class Graph
         for k, v of @inputVars
             if v?
                 @viz.setVariable(k, graph.vertex(v.id), true)
+                @viz.allowExport(k)
         @viz.allowExport(@varName)
 
     verifyInputVarsSet: () ->
