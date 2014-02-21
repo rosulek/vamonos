@@ -33,7 +33,7 @@ subheader: Dynamic algorithm visualization in the browser
    * [Breadth-first search](bfs.html)
    * [Detecting bipartiteness](bfs-bipartite.html) (2-colorability)
    * [Depth-first search](dfs.html)
-   * [Dijkstra's SSSP algorithm](dijkstra.html)
+   * [Dijkstra's SSSP algorithm](dijkstra.html) ([with quiz](dijkstra-quiz.html))
    * [Bellman-Ford algorithm](bellman-ford.html)
    * [Prim's MST algorithm](prims.html)
    * [Kruskal's MST algorithm](kruskals.html)
