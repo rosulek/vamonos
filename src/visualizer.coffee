@@ -403,8 +403,7 @@ class Visualizer
                 save[varName] = varObj.export()
             else
                 save[varName] = varObj
-        res = JSON.stringify(save)
-        window.location.hash = btoa(res)
+        window.location.hash = Vamonos.encode(save)
         return "ok"
 
     import: ->
@@ -414,7 +413,7 @@ class Visualizer
         s = window.location.hash
         return {} unless s.length > 1 and s[0] is "#"
         @_alreadyImported = yes
-        return JSON.parse(atob(s.substr(1)))
+        return Vamonos.decode(s.substr(1))
         
 
 @Vamonos.export { Visualizer }

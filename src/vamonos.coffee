@@ -222,3 +222,65 @@
 
         return $.extend(true, [], obj) if obj instanceof Array
         return $.extend(true, {}, obj)
+
+    # stringify and compress things
+    encode: (thing) ->
+        s = JSON.stringify(thing)
+        c = @lzw_encode(s)
+        h = unescape(encodeURIComponent(c))
+        z = window.btoa(h)
+        return z
+
+    # uncompress and unstringify things
+    decode: (base64str) ->
+        s = window.atob(base64str)
+        c = decodeURIComponent(escape(s))
+        j = @lzw_decode(c)
+        return JSON.parse(j)
+
+    # Decompress an LZW-encoded string
+    lzw_decode: (s) ->
+        dict = {}
+        data = (s + "").split("")
+        currChar = data[0]
+        oldPhrase = currChar
+        out = [currChar]
+        code = 256
+        for i in [1 .. data.length - 1]
+            currCode = data[i].charCodeAt(0)
+            if (currCode < 256)
+                phrase = data[i]
+            else
+               phrase = if dict[currCode] then dict[currCode] else (oldPhrase + currChar)
+            out.push(phrase)
+            currChar = phrase.charAt(0)
+            dict[code] = oldPhrase + currChar
+            code++
+            oldPhrase = phrase
+        return out.join("")
+
+    # LZW-compress a string
+    lzw_encode: (s) -> 
+        dict = {}
+        data = (s + "").split("")
+        out = []
+        phrase = data[0]
+        code = 256
+        for currChar in data[1..]
+            if dict[phrase + currChar]?
+                phrase += currChar
+                continue
+            if phrase.length > 1
+                out.push(dict[phrase])
+            else
+                out.push(phrase.charCodeAt(0))
+            dict[phrase + currChar] = code
+            code++
+            phrase = currChar
+        if phrase.length > 1
+            out.push(dict[phrase])
+        else
+            out.push(phrase.charCodeAt(0))
+        for i in [0 .. out.length - 1]
+            out[i] = String.fromCharCode(out[i])
+        return out.join("")
