@@ -19,6 +19,7 @@ vamonos/
 │                               : import necessary dependencies themselves.
 │
 └── deps/
+    ├── d3.js
     ├── jquery-jsplumb.js
     ├── jquery.min.js
     ├── jquery-qtip.min.js
