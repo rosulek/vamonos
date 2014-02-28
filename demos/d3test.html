@@ -1,0 +1,142 @@
+<html><head>
+
+    <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="../lib/vamonos-demos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <style type="text/css">
+    .vertex {
+        fill: #eee;
+        stroke: #888;
+        stroke-width: 1;
+    }
+
+    .vertex-contents {
+        font-size: .8em;
+        font-weight: bold;
+    }
+
+    .vertex-ne-label, .vertex-nw-label {
+        font-weight: bold;
+    }
+
+    .vertex-sw-label {
+        font-style: italic;
+    }
+
+    .done {
+        background: #ddd;
+    }
+
+    .color-white { 
+        background: white; 
+    }
+
+    .color-gray {
+        background: #888; 
+    }
+
+    .color-black {
+        background: black;
+    }
+
+    .color-black .vertex-contents, .color-gray .vertex-contents { 
+        color: white; 
+    }
+
+    line.edge {
+        stroke: #cccccc;
+        stroke-width: 4;
+    }
+
+    body {
+        text-align: center;
+    }
+    </style>
+
+</head><body>
+
+    <h1>D3 Mockup</h1>
+    
+    <table id='graph'>
+
+        <tr><td>
+            <ol>
+                <li>draw a graph using graph datastructure<br></li>
+                <li>add edge labels</li>
+                <li>draggablilty</li>
+                <li>integrate d3 in graph display</li>
+            </ol>
+        </td></tr>
+
+    </table>
+    
+</body>
+<script type="text/javascript">
+var g = new Vamonos.DataStructure.Graph({
+    vertices: [ 
+        {id: "v0", x: 17,  y: 10},
+        {id: "v1", x: 98,  y: 10},
+        {id: "v2", x: 176, y: 13},
+        {id: "v3", x: 15,  y: 78},
+        {id: "v4", x: 100, y: 80},
+        {id: "v5", x: 182, y: 80},
+        {id: "v6", x: 15,  y: 138},
+        {id: "v7", x: 100, y: 140},
+        {id: "v8", x: 182, y: 140},
+    ],
+    edges: [
+        {source: 'v0',target: 'v4', w:1},
+        {source: 'v1',target: 'v2', w:2},
+        {source: 'v1',target: 'v4', w:5},
+        {source: 'v3',target: 'v4', w:3},
+        {source: 'v3',target: 'v6', w:1},
+        {source: 'v4',target: 'v8', w:10},
+        {source: 'v5',target: 'v8', w:2},
+        {source: 'v6',target: 'v7', w:3},
+        {source: 'v7',target: 'v8', w:2},
+    ]
+});
+
+var width = 20;
+var height = 15;
+
+var cont = d3.selectAll("#graph")
+             .attr("class", "vamonos")
+             .append("tr")
+             .append("td")
+             .append("div")
+             .append("svg")
+             .attr("height", 200)
+             .attr("width", 250);
+
+var line = cont.selectAll(".line")
+    .data(g.getEdges())
+  .enter().append("line")
+    .attr("x1", function(d){ return g.vertex(d.source).x + width })
+    .attr("y1", function(d){ return g.vertex(d.source).y + height })
+    .attr("x2", function(d){ return g.vertex(d.target).x + width  })
+    .attr("y2", function(d){ return g.vertex(d.target).y + height })
+    .attr("class", "edge");
+
+var circle = cont.selectAll("circle")
+    .data(g.getVertices())
+  .enter().append("ellipse")
+    .attr("class", "vertex")
+    .attr("cx", function(d){ return d.x + width })
+    .attr("cy", function(d){ return d.y + height})
+    .attr("rx", width)
+    .attr("ry", height)
+
+var innerlabels = cont.selectAll(".text")
+    .data(g.getVertices())
+  .enter().append("text")
+    .attr("x", function(d){ return d.x + width - 4 })
+    .attr("y", function(d){ return d.y + height + 5})
+    .attr("class", "vertex-contents")
+    .text(function(d){ return d.name })
+
+
+</script></html> 
