@@ -58,16 +58,17 @@
 
 </head><body>
 
-    <h1>D3 Mockup</h1>
+    <h1>D3 Prototype</h1>
     
     <table id='graph'>
 
         <tr><td>
             <ol>
                 <li>draw a graph using graph datastructure<br></li>
-                <li>add edge labels</li>
-                <li>draggablilty</li>
-                <li>integrate d3 in graph display</li>
+                <li>use groups for all node related things? - labels, pop-ups</li>
+                <li>add edge labels - again groups?</li>
+                <li>draggablilty - ticks?</li>
+                <li>integrate d3 in graph display widget</li>
             </ol>
         </td></tr>
 
@@ -103,40 +104,58 @@ var g = new Vamonos.DataStructure.Graph({
 var width = 20;
 var height = 15;
 
-var cont = d3.selectAll("#graph")
-             .attr("class", "vamonos")
-             .append("tr")
-             .append("td")
-             .append("div")
-             .append("svg")
-             .attr("height", 200)
-             .attr("width", 250);
+showGraph({ container: "graph", graph: g });
 
-var line = cont.selectAll(".line")
-    .data(g.getEdges())
-  .enter().append("line")
-    .attr("x1", function(d){ return g.vertex(d.source).x + width })
-    .attr("y1", function(d){ return g.vertex(d.source).y + height })
-    .attr("x2", function(d){ return g.vertex(d.target).x + width  })
-    .attr("y2", function(d){ return g.vertex(d.target).y + height })
-    .attr("class", "edge");
+function showGraph(args){
+    var g = args.graph;
+    var contId = args.container;
+    
+    d3.selectAll("#" + contId)
+      .attr("class", "vamonos")
+      .append("tr")
+      .append("td")
+      .append("div")
+      .append("svg")
+      .attr("height", 200)
+      .attr("width", 250)
+      .call(drawEdges, g)
+      .call(drawVertices, g)
+      .call(drawInnerVertexLabels, g);
+}
 
-var circle = cont.selectAll("circle")
-    .data(g.getVertices())
-  .enter().append("ellipse")
-    .attr("class", "vertex")
-    .attr("cx", function(d){ return d.x + width })
-    .attr("cy", function(d){ return d.y + height})
-    .attr("rx", width)
-    .attr("ry", height)
+function drawEdges(selector, graph){
+    selector.selectAll(".line")
+        .data(g.getEdges())
+      .enter().append("line")
+        .attr("x1", function(d){ return g.vertex(d.source).x + width  })
+        .attr("y1", function(d){ return g.vertex(d.source).y + height })
+        .attr("x2", function(d){ return g.vertex(d.target).x + width  })
+        .attr("y2", function(d){ return g.vertex(d.target).y + height })
+        .attr("class", "edge");
+    return selector;
+}
 
-var innerlabels = cont.selectAll(".text")
-    .data(g.getVertices())
-  .enter().append("text")
-    .attr("x", function(d){ return d.x + width - 4 })
-    .attr("y", function(d){ return d.y + height + 5})
-    .attr("class", "vertex-contents")
-    .text(function(d){ return d.name })
+function drawVertices(selector, graph){
+    selector.selectAll("circle")
+        .data(g.getVertices())
+      .enter().append("ellipse")
+        .attr("class", "vertex")
+        .attr("cx", function(d){ return d.x + width })
+        .attr("cy", function(d){ return d.y + height})
+        .attr("rx", width)
+        .attr("ry", height);
+    return selector;
+}
 
+function drawInnerVertexLabels(selector, graph) {    
+    selector.selectAll(".text")
+        .data(g.getVertices())
+      .enter().append("text")
+        .attr("x", function(d){ return d.x + width - 4 })
+        .attr("y", function(d){ return d.y + height + 5})
+        .attr("class", "vertex-contents")
+        .text(function(d){ return d.name });
+    return selector;
+}
 
 </script></html> 
