@@ -30,20 +30,20 @@
         background: #ddd;
     }
 
-    .color-white { 
-        background: white; 
+    .color-white {
+        background: white;
     }
 
     .color-gray {
-        background: #888; 
+        background: #888;
     }
 
     .color-black {
         background: black;
     }
 
-    .color-black .vertex-contents, .color-gray .vertex-contents { 
-        color: white; 
+    .color-black .vertex-contents, .color-gray .vertex-contents {
+        color: white;
     }
 
     line.edge {
@@ -59,7 +59,7 @@
 </head><body>
 
     <h1>D3 Prototype</h1>
-    
+
     <table id='graph'>
 
         <tr><td>
@@ -73,11 +73,11 @@
         </td></tr>
 
     </table>
-    
+
 </body>
 <script type="text/javascript">
 var g = new Vamonos.DataStructure.Graph({
-    vertices: [ 
+    vertices: [
         {id: "v0", x: 17,  y: 10},
         {id: "v1", x: 98,  y: 10},
         {id: "v2", x: 176, y: 13},
@@ -109,7 +109,7 @@ showGraph({ container: "graph", graph: g });
 function showGraph(args){
     var g = args.graph;
     var contId = args.container;
-    
+
     d3.selectAll("#" + contId)
       .attr("class", "vamonos")
       .append("tr")
@@ -119,43 +119,58 @@ function showGraph(args){
       .attr("height", 200)
       .attr("width", 250)
       .call(drawEdges, g)
-      .call(drawVertices, g)
-      .call(drawInnerVertexLabels, g);
+      .call(drawVertices, g);
 }
 
 function drawEdges(selector, graph){
-    selector.selectAll(".line")
+    var groups = selector.selectAll("g.edge")
         .data(g.getEdges())
-      .enter().append("line")
+        .enter()
+        .append("g")
+        .attr("class", "edge");
+
+    // TODO translate edge groups, put label in correct position
+
+    var edges = groups.append("line")
         .attr("x1", function(d){ return g.vertex(d.source).x + width  })
         .attr("y1", function(d){ return g.vertex(d.source).y + height })
         .attr("x2", function(d){ return g.vertex(d.target).x + width  })
         .attr("y2", function(d){ return g.vertex(d.target).y + height })
         .attr("class", "edge");
+
+    var labels = groups.append("text")
+        .attr("x", 0)
+        .attr("y", 0)
+        .text(function(d){ return d.w });
+
     return selector;
 }
 
 function drawVertices(selector, graph){
-    selector.selectAll("circle")
+    var groups = selector.selectAll("g.vertex")
         .data(g.getVertices())
-      .enter().append("ellipse")
-        .attr("class", "vertex")
-        .attr("cx", function(d){ return d.x + width })
-        .attr("cy", function(d){ return d.y + height})
-        .attr("rx", width)
-        .attr("ry", height);
+        .enter()
+        .append("g");
+
+    function transVertex(vtx){
+        return "translate(" + (vtx.x + width) + "," + (vtx.y + height) + ")";
+    }
+
+    groups.attr("transform", transVertex)
+          .append("ellipse")
+          .attr("class", "vertex")
+          .attr("cx", 0)
+          .attr("cy", 0)
+          .attr("rx", width)
+          .attr("ry", height);
+
+    groups.append("text")
+          .attr("x", -4)
+          .attr("y", 4)
+          .attr("class", "vertex-contents")
+          .text(function(d){ return d.name });
+
     return selector;
 }
 
-function drawInnerVertexLabels(selector, graph) {    
-    selector.selectAll(".text")
-        .data(g.getVertices())
-      .enter().append("text")
-        .attr("x", function(d){ return d.x + width - 4 })
-        .attr("y", function(d){ return d.y + height + 5})
-        .attr("class", "vertex-contents")
-        .text(function(d){ return d.name });
-    return selector;
-}
-
-</script></html> 
+</script></html>
