@@ -51,6 +51,11 @@
         stroke-width: 4;
     }
 
+    text.edge-label-text {
+        font-family: sans-serif;
+        font-size: .8em;
+    }
+
     body {
         text-align: center;
     }
@@ -73,6 +78,13 @@
         </td></tr>
 
     </table>
+
+    <p>
+        Maybe vertices and edges should be represented as closures to
+        be called on drag events and stuff.<br>
+
+        Like, when you call an edge it gets drawn?
+    </p>
 
 </body>
 <script type="text/javascript">
@@ -118,57 +130,62 @@ function showGraph(args){
       .append("svg")
       .attr("height", 200)
       .attr("width", 250)
+      .append("g")
+      .attr("transform", "translate(20,20)") // left and top border padding
       .call(drawEdges, g)
       .call(drawVertices, g);
 }
 
 function drawEdges(selector, graph){
     var groups = selector.selectAll("g.edge")
-        .data(g.getEdges())
+        .data(graph.getEdges())
         .enter()
         .append("g")
         .attr("class", "edge");
 
-    // TODO translate edge groups, put label in correct position
-
     var edges = groups.append("line")
-        .attr("x1", function(d){ return g.vertex(d.source).x + width  })
-        .attr("y1", function(d){ return g.vertex(d.source).y + height })
-        .attr("x2", function(d){ return g.vertex(d.target).x + width  })
-        .attr("y2", function(d){ return g.vertex(d.target).y + height })
+        .attr("x1", function(d){ return graph.vertex(d.source).x })
+        .attr("y1", function(d){ return graph.vertex(d.source).y })
+        .attr("x2", function(d){ return graph.vertex(d.target).x })
+        .attr("y2", function(d){ return graph.vertex(d.target).y })
         .attr("class", "edge");
 
     var labels = groups.append("text")
-        .attr("x", 0)
-        .attr("y", 0)
-        .text(function(d){ return d.w });
+        .attr("x", function(d){
+            return Math.floor((d.source.x + d.target.x) / 2) - 4
+        })
+        .attr("y", function(d){
+            return Math.floor((d.source.y + d.target.y) / 2) + 5
+        })
+        .text(function(d){ return d.w })
+        .attr("class", "edge-label-text")
 
     return selector;
 }
 
 function drawVertices(selector, graph){
     var groups = selector.selectAll("g.vertex")
-        .data(g.getVertices())
+        .data(graph.getVertices())
         .enter()
         .append("g");
 
     function transVertex(vtx){
-        return "translate(" + (vtx.x + width) + "," + (vtx.y + height) + ")";
+        return "translate(" + vtx.x + "," + vtx.y + ")";
     }
 
     groups.attr("transform", transVertex)
-          .append("ellipse")
-          .attr("class", "vertex")
-          .attr("cx", 0)
-          .attr("cy", 0)
-          .attr("rx", width)
-          .attr("ry", height);
+        .append("ellipse")
+        .attr("class", "vertex")
+        .attr("cx", 0)
+        .attr("cy", 0)
+        .attr("rx", width)
+        .attr("ry", height);
 
     groups.append("text")
-          .attr("x", -4)
-          .attr("y", 4)
-          .attr("class", "vertex-contents")
-          .text(function(d){ return d.name });
+        .attr("x", -4)
+        .attr("y", 4)
+        .attr("class", "vertex-contents")
+        .text(function(d){ return d.name });
 
     return selector;
 }
