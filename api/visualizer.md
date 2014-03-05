@@ -29,6 +29,12 @@ namespaces and variables, and runs the simulation itself.
 
 
 
+ * **exportAfterEditMode** :: *Boolean* -- default value: `true`
+
+    whether the visualizer will update the location with the updated input after leaving edit mode every time
+
+
+
  * **maxCallStackSnapshotDepth** :: *Number* -- optional
 
     the maximum depth of the callstack that snapshots will be taken at when it is set as a watchVar.

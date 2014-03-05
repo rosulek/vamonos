@@ -67,9 +67,21 @@ Vamonos.Widget.Queue
 
 
 
+ * **firstCellBlank** :: *Boolean* -- optional
+
+    Leave the first cell blank.
+
+
+
  * **ignoreIndexZero** :: *Boolean* -- default value: `false`
 
     whether the array should appear to be 1-indexed
+
+
+
+ * **maxInputLength** :: *Number* -- optional
+
+    Limit input to a certain number of characters.
 
 
 

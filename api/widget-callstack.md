@@ -27,6 +27,18 @@ CallStack is a representation of the stash's call stack. It also displays the va
 
 
 
+ * **formatArgumentValues** :: *Object* -- default value: `{}`
+
+    A mapping of arg-names to functions of arg-values to strings
+
+
+
+ * **formatReturnValue** :: *Object* -- default value: `{}`
+
+    A mapping of proc names to functions from a return-value to a string
+
+
+
  * **ignoreArgumentValues** :: *Array* -- default value: `[]`
 
     An array of argument names `['arg1','arg2']` that should only show their name in the Call Stack.
