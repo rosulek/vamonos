@@ -79,15 +79,10 @@
 
     </table>
 
-    <p>
-        Maybe vertices and edges should be represented as closures to
-        be called on drag events and stuff.<br>
-
-        Like, when you call an edge it gets drawn?
-    </p>
 
 </body>
 <script type="text/javascript">
+
 var g = new Vamonos.DataStructure.Graph({
     vertices: [
         {id: "v0", x: 17,  y: 10},
@@ -122,67 +117,38 @@ function showGraph(args){
     var g = args.graph;
     var contId = args.container;
 
-    d3.selectAll("#" + contId)
-      .attr("class", "vamonos")
-      .append("tr")
-      .append("td")
-      .append("div")
-      .append("svg")
-      .attr("height", 200)
-      .attr("width", 250)
-      .append("g")
-      .attr("transform", "translate(20,20)") // left and top border padding
-      .call(drawEdges, g)
-      .call(drawVertices, g);
-}
+    var cont = d3.selectAll("#" + contId)
+        .attr("class", "vamonos")
+        .append("tr")
+        .append("td")
+        .append("div")
+        .append("svg")
+        .attr("height", 200)
+        .attr("width", 250)
+        .append("g")
+        .attr("transform", "translate(20,20)"); // left and top border padding
 
-function drawEdges(selector, graph){
-    var groups = selector.selectAll("g.edge")
-        .data(graph.getEdges())
+    var edges = cont.selectAll("g.edge")
+        .data(g.getEdges())
         .enter()
         .append("g")
         .attr("class", "edge");
 
-    var edges = groups.append("line")
-        .attr("x1", function(d){ return graph.vertex(d.source).x })
-        .attr("y1", function(d){ return graph.vertex(d.source).y })
-        .attr("x2", function(d){ return graph.vertex(d.target).x })
-        .attr("y2", function(d){ return graph.vertex(d.target).y })
+    edges.append("line")
+        .call(setEdgePos)
         .attr("class", "edge");
 
-    var labels = groups.append("text")
-        .attr("x", function(d){
-            return Math.floor((d.source.x + d.target.x) / 2) - 4
-        })
-        .attr("y", function(d){
-            return Math.floor((d.source.y + d.target.y) / 2) + 5
-        })
-        .text(function(d){ return d.w })
+    edges.append("text")
+        .call(setEdgeLabelPos)
         .attr("class", "edge-label-text")
+        .text(function(d){ return d.w })
 
-    return selector;
-}
-
-function drawVertices(selector, graph){
-    var groups = selector.selectAll("g.vertex")
-        .data(graph.getVertices())
+    var vertices = cont.selectAll("g.vertex")
+        .data(g.getVertices())
         .enter()
         .append("g");
 
-    function transVertex(vtx){
-        return "translate(" + [ vtx.x, vtx.y ] + ")";
-    }
-
-    var drag = d3.behavior.drag()
-      .on("drag", function(d,i){
-        d.x += d3.event.dx;
-        d.y += d3.event.dy;
-        d3.select(this).attr("transform", function(d,i){
-            return "translate(" + [ d.x, d.y ] + ")"
-        })
-    });
-
-    groups.attr("transform", transVertex)
+    vertices.attr("transform", trans)
         .append("ellipse")
         .attr("class", "vertex")
         .attr("cx", 0)
@@ -190,15 +156,47 @@ function drawVertices(selector, graph){
         .attr("rx", width)
         .attr("ry", height)
 
-    groups.append("text")
+    vertices.append("text")
         .attr("x", -4)
         .attr("y", 4)
         .attr("class", "vertex-contents")
         .text(function(d){ return d.name });
 
-    groups.call(drag);
+    function trans(d){
+        return "translate(" + [ d.x, d.y ] + ")"
+    }
 
-    return selector;
+    function setEdgePos(e){
+        return e.attr("x1", function(d){ return g.vertex(d.source).x })
+                .attr("y1", function(d){ return g.vertex(d.source).y })
+                .attr("x2", function(d){ return g.vertex(d.target).x })
+                .attr("y2", function(d){ return g.vertex(d.target).y })
+    }
+
+    function setEdgeLabelPos(e){
+        return e.attr("x", function(d){
+            return Math.floor((d.source.x + d.target.x) / 2) - 4
+        })
+        .attr("y", function(d){
+            return Math.floor((d.source.y + d.target.y) / 2) + 5
+        })
+    }
+
+    function dragmove(d, i){
+        d.x += d3.event.dx;
+        d.y += d3.event.dy;
+        d3.select(this).attr("transform", trans);
+        edges.selectAll("line.edge")
+             .call(setEdgePos);
+        edges.selectAll("text.edge-label-text")
+             .call(setEdgeLabelPos);
+    }
+
+    var drag = d3.behavior.drag()
+                 .on("drag", dragmove);
+
+    vertices.call(drag);
+
 }
 
 </script></html>
