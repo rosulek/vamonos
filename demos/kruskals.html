@@ -1,4 +1,5 @@
 <html><head>
+    <title>Kruskal's Minimum Spanning Tree</title>
 
     <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
 
@@ -155,8 +156,8 @@ var myviz = new Vamonos.Visualizer({
                 _(2); Set.makeSet(v);
             });
             G.eachEdgeBy(function(a,b){ return a.w - b.w }, function(e){
-                _(3); 
-                u = G.vertex(e.source.id); 
+                _(3);
+                u = G.vertex(e.source.id);
                 v = G.vertex(e.target.id);
                 if (_(4), Set.find(u) !== Set.find(v)) {
                     _(5); Set.union(u,v);

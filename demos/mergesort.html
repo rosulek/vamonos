@@ -1,4 +1,5 @@
 <html><head>
+    <title>Mergesort</title>
 
     <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
 
@@ -54,7 +55,7 @@
                     if L[i] &leq; R[j]
                         A[k] = L[i]
                         i = i + 1
-                    else 
+                    else
                         A[k] = R[j]
                         j = j + 1
             </div>
@@ -95,12 +96,12 @@ var qs = new Vamonos.Visualizer({
             container: "mergesort",
             procedureName: "mergeSort",
         }),
-    
+
         new Vamonos.Widget.Pseudocode({
             container: "merge",
             procedureName: "merge",
         }),
-    
+
         new Vamonos.Widget.VarName({
             container: "callstack-var",
             varName: "_callstack",
@@ -116,7 +117,7 @@ var qs = new Vamonos.Visualizer({
             ignoreMain: true,
             ignoreArgumentValues: ["A"],
         }),
-    
+
         new Vamonos.Widget.VarName({
             container: "array-a-var",
             varName: "A",
@@ -152,7 +153,7 @@ var qs = new Vamonos.Visualizer({
                 ['>', 'i', 'gt-i']
             ]
         }),
-    
+
         new Vamonos.Widget.VarName({
             container: "array-r-var",
             varName: "R",
@@ -169,7 +170,7 @@ var qs = new Vamonos.Visualizer({
                 ['>', 'j', 'gt-j']
             ]
         }),
-    
+
     ],
 
     algorithm: {
@@ -180,7 +181,7 @@ var qs = new Vamonos.Visualizer({
         },
 
         mergeSort: function(_){
-            // q needs to be localized somehow otherwise 
+            // q needs to be localized somehow otherwise
             // recursions will overwrite it
             with(this){
                 if (_(1), p < r) {

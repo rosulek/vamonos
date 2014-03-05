@@ -1,4 +1,5 @@
 <html><head>
+    <title>Quicksort</title>
 
     <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
 
@@ -78,7 +79,7 @@ var qs = new Vamonos.Visualizer({
             container: "quicksort",
             procedureName: "quicksort"
         }),
-    
+
         new Vamonos.Widget.Pseudocode({
             container: "partition",
             procedureName: "partition",
@@ -100,7 +101,7 @@ var qs = new Vamonos.Visualizer({
             ignoreMain: true,
             ignoreArgumentValues: ["A"],
         }),
-    
+
         new Vamonos.Widget.VarName({
             container: "array-var",
             varName: "A",
@@ -120,7 +121,7 @@ var qs = new Vamonos.Visualizer({
                 ['>','r','gt-r'],
             ],
         }),
-    
+
     ],
 
     algorithm: {
@@ -144,7 +145,7 @@ var qs = new Vamonos.Visualizer({
                 _(2);   for (j=p; j<r; _(3), j++) {
                 _(3);       if (A[j] < A[r]) {
                 _(4);           i = i + 1;
-                _(5);           var temp = A[i]; 
+                _(5);           var temp = A[i];
                                 A[i] = A[j];
                                 A[j] = temp;
                             }
