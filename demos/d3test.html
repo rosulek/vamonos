@@ -7,6 +7,10 @@
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
     <style type="text/css">
+    svg {
+        border: 2px solid black;
+    }
+
     .vertex {
         fill: #eee;
         stroke: #888;
@@ -69,10 +73,9 @@
 
         <tr><td>
             <ol>
-                <li>draw a graph using graph datastructure<br></li>
-                <li>use groups for all node related things? - labels, pop-ups</li>
-                <li>add edge labels - again groups?</li>
-                <li>draggablilty - ticks?</li>
+                <li>bring dragged elements to top</li>
+                <li>prevent dragging outside svg</li>
+                <li>maybe tooltips with vertex info</li>
                 <li>integrate d3 in graph display widget</li>
             </ol>
         </td></tr>
@@ -108,8 +111,10 @@ var g = new Vamonos.DataStructure.Graph({
     ]
 });
 
-var width = 20;
-var height = 15;
+var vertexWidth = 20;
+var vertexHeight = 15;
+var contWidth = 250;
+var contHeight = 200;
 
 showGraph({ container: "graph", graph: g });
 
@@ -123,8 +128,8 @@ function showGraph(args){
         .append("td")
         .append("div")
         .append("svg")
-        .attr("height", 200)
-        .attr("width", 250)
+        .attr("height", contHeight)
+        .attr("width", contWidth)
         .append("g")
         .attr("transform", "translate(20,20)"); // left and top border padding
 
@@ -153,8 +158,8 @@ function showGraph(args){
         .attr("class", "vertex")
         .attr("cx", 0)
         .attr("cy", 0)
-        .attr("rx", width)
-        .attr("ry", height)
+        .attr("rx", vertexWidth)
+        .attr("ry", vertexHeight)
 
     vertices.append("text")
         .attr("x", -4)
@@ -167,36 +172,31 @@ function showGraph(args){
     }
 
     function setEdgePos(e){
-        return e.attr("x1", function(d){ return g.vertex(d.source).x })
-                .attr("y1", function(d){ return g.vertex(d.source).y })
-                .attr("x2", function(d){ return g.vertex(d.target).x })
-                .attr("y2", function(d){ return g.vertex(d.target).y })
+        e.attr("x1", function(d){ return g.vertex(d.source).x })
+         .attr("y1", function(d){ return g.vertex(d.source).y })
+         .attr("x2", function(d){ return g.vertex(d.target).x })
+         .attr("y2", function(d){ return g.vertex(d.target).y })
+        return e
     }
 
     function setEdgeLabelPos(e){
-        return e.attr("x", function(d){
-            return Math.floor((d.source.x + d.target.x) / 2) - 4
-        })
-        .attr("y", function(d){
-            return Math.floor((d.source.y + d.target.y) / 2) + 5
-        })
+        e.attr("x", function(d){ return Math.floor((d.source.x + d.target.x) / 2) - 4 })
+         .attr("y", function(d){ return Math.floor((d.source.y + d.target.y) / 2) + 5 })
+        return e
     }
 
     function dragmove(d, i){
-        d.x += d3.event.dx;
-        d.y += d3.event.dy;
+        d.x = d3.event.x;
+        d.y = d3.event.y;
         d3.select(this).attr("transform", trans);
-        edges.selectAll("line.edge")
-             .call(setEdgePos);
-        edges.selectAll("text.edge-label-text")
-             .call(setEdgeLabelPos);
+        edges.selectAll("line.edge").call(setEdgePos);
+        edges.selectAll("text.edge-label-text").call(setEdgeLabelPos);
     }
 
     var drag = d3.behavior.drag()
                  .on("drag", dragmove);
 
     vertices.call(drag);
-
 }
 
 </script></html>

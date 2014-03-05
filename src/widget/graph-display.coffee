@@ -47,6 +47,7 @@ class GraphDisplay
                 edgeLabel: 'w',
                 edgeLabel: function(e){ return e.w + "!" },
                 """
+
         colorEdges:
             type: "Array"
             defaultValue: []
@@ -83,8 +84,8 @@ class GraphDisplay
                 "matches. You can also provide a function that takes a vertex " +
                 "and returns a class to apply to it."
             example: """
-                vertexCssAttributes: { 
-                    done: true, 
+                vertexCssAttributes: {
+                    done: true,
                     color: ['white', 'gray', 'black'],
                     magic: function(vtx){ return "class-" + vtx.magicAttr },
                 },
@@ -152,7 +153,7 @@ class GraphDisplay
                     @viz.registerVariable(v)
             # the whole point of having this done() business is so that jsPlumb
             # can load asynchroniously and it won't mess anything up. usually
-            # the outer widget calls done(), but in this case, it needs to be 
+            # the outer widget calls done(), but in this case, it needs to be
             # done by the inner widget.
             jsPlumb.ready =>
                 @jsPlumbInstance = jsPlumb.getInstance
@@ -181,7 +182,7 @@ class GraphDisplay
             continue if @nodes[vertex.id]?
             @addNode(vertex)
 
-        # add new edges - this needs to happen before edge removal so that edges in 
+        # add new edges - this needs to happen before edge removal so that edges in
         # directed graphs can have their arrows flipped instead of being deleted and
         # recreated going in the opposite direction
         for edge in graph.getEdges()
@@ -356,7 +357,7 @@ class GraphDisplay
                 if @appliedNodeClasses[vertex.id][attr]?
                     $node.removeClass(@appliedNodeClasses[vertex.id][attr])
                 if newClass?
-                    $node.addClass(newClass) 
+                    $node.addClass(newClass)
                     @appliedNodeClasses[vertex.id][attr] = newClass
                 else
                     delete @appliedNodeClasses[vertex.id][attr]
@@ -401,7 +402,7 @@ class GraphDisplay
                 target: targetId
                 deleteEndpointsOnDetach: false # maybe speedup?
             })
-            if @directed 
+            if @directed
                 @addForwardArrow(con)
                 con.forwardEdgeSource = sourceId
         (@connections[sourceId] ?= {})[targetId] = con
