@@ -406,17 +406,20 @@ class Visualizer
         # overwrite the current history entry so as to not create an
         # entry for every different input the user gives
         window.history.replaceState({}, "",
-            window.location.href + "#" + Vamonos.encode(save))
+            window.location.origin +
+            window.location.pathname +
+            "#" + Vamonos.encode(save))
         return "ok"
 
     import: ->
-        if @_alreadyImported?
-            console.log "import returning since it's already been called"
-            return {}
+        return {} if @_alreadyImported?
         s = window.location.hash
         return {} unless s.length > 1 and s[0] is "#"
         @_alreadyImported = yes
-        return Vamonos.decode(s.substr(1))
+        try
+            Vamonos.decode(s.substr(1))
+        catch error
+            {}
 
 
 @Vamonos.export { Visualizer }

@@ -81,6 +81,10 @@ class ArrayGuts
             type: "Number"
             description: "Limit input to a certain number of characters."
             defaultValue: undefined
+        firstCellBlank:
+            type: "Boolean"
+            description: "Leave the first cell blank."
+            defaultValue: undefined
 
     constructor: (args) ->
 
@@ -107,6 +111,7 @@ class ArrayGuts
         @$rowIndices.hide() if @showCellNumber
 
         @container.append( @$rowIndices, @$rowCells, @$rowAnnotations )
+        @container.css("margin-left", 26) if @firstCellBlank
 
         # interestingly, "if blah" and "if blah is true" are different
         @showLabel = @varName + ":" if @showLabel is true

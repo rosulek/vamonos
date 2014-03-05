@@ -90,12 +90,6 @@
             </div>
         </td><td class="variable-widgets">
             <table class="variable-widgets">
-                <tr><td><div id="k-var"></div></td>
-                    <td><div id="k"></div></td>
-                </tr>
-                <tr><td><div id="i-var"></div></td>
-                    <td><div id="i"></div></td>
-                </tr>
                 <tr><td><div id="price-var"></div></td>
                     <td><div id="price"></div></td>
                 </tr>
@@ -129,6 +123,7 @@ var myviz = new Vamonos.Visualizer({
             ignoreIndexZero: true,
             cssRules: [[">", "k", "shaded"]],
             showIndices: ["i", "k"],
+            firstCellBlank: true,
         }),
 
         new Vamonos.Widget.VarName({
@@ -159,27 +154,6 @@ var myviz = new Vamonos.Visualizer({
             displayOnly: true,
             cssRules: [[">", "k", "shaded"]],
             cellFormat: function(x) { return x ? "["+x.join(",")+"]" : "" }
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "i-var",
-            varName: "i",
-            watching: true,
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "i",
-            varName: "i",
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "k-var",
-            varName: "k",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "k",
-            varName: "k",
         }),
 
         new Vamonos.Widget.Pseudocode("pseudocode"),
