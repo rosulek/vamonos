@@ -8,9 +8,14 @@
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
     <style type="text/css">
-        body {
-            text-align: center;
-        }
+    body {
+        text-align: center;
+    }
+
+    p.caption {
+        font-size: 20px;
+        font-family: monospace;
+    }
     </style>
 
 </head><body>
@@ -23,11 +28,11 @@
             <div class="pseudocode-procedures">
                 <div id="pseudocode" title="LIS(A):">
                     L[0] = 0
-                    for k = 1 to A.length
-                        L[k] = 1
-                        for i = 1 to k-1
-                            if A[i] &lt; A[k] and L[k] &lt; L[i] + 1
-                                L[k] = L[i] + 1
+                    for n = 1 to A.length
+                        L[n] = 1
+                        for j = 1 to n-1
+                            if A[j] &lt; A[n] and L[n] &lt; L[j] + 1
+                                L[n] = L[j] + 1
                 </div>
             </div>
         </td><td class="variable-widgets">
@@ -41,7 +46,21 @@
             </table>
         </td></tr>
     </table>
-    </div>
+    <p class='caption' align='center'>
+        <table>
+            <tr><td>
+                L[n] =
+            </td><td>
+                1 + max{ L[j]: for all j such that A[j] < A[n] }<br>
+            </td></tr>
+            <tr><td>
+                L[0] =
+            </td><td>
+                0
+            </td></tr>
+        </table>
+    </p>
+
 </body>
 <script type="text/javascript">
 var myviz = new Vamonos.Visualizer({
@@ -57,8 +76,8 @@ var myviz = new Vamonos.Visualizer({
             varName: "A",
             defaultInput: [0, 3,1,4,1,5,9,2,6,5],
             ignoreIndexZero: true,
-            cssRules: [[">", "k", "shaded"]],
-            showIndices: ["i", "k"],
+            cssRules: [[">", "j", "shaded"]],
+            showIndices: ["n", "j"],
         }),
 
         new Vamonos.Widget.VarName({
@@ -72,7 +91,7 @@ var myviz = new Vamonos.Visualizer({
             container: "L",
             varName: "global::L",
             displayOnly: true,
-            showIndices: ["i", "k"],
+            showIndices: ["n", "j"],
         }),
 
         new Vamonos.Widget.Pseudocode("pseudocode"),
@@ -86,16 +105,16 @@ var myviz = new Vamonos.Visualizer({
     algorithm: function (_) {
         with (this) {
 _(1);       global.L = [0]
-_(2);       for (k = 1; k < A.length; _(2), k++) {
-_(3);           global.L[k] = 1;
-_(4);           for (i=1; i<k; _(4), i++) {
-_(5);               if (A[i] < A[k] && global.L[k] < global.L[i] + 1) {
-_(6);                   global.L[k] = global.L[i] + 1;
-                    }
+_(2);       for (n = 1; n < A.length; _(2), n++) {
+_(3);           global.L[n] = 1;
+_(4);           for (j=1; j<n; _(4), j++) {
+_(5);               if (A[j] < A[n] && global.L[n] < global.L[j] + 1) {
+_(6);                   global.L[n] = global.L[j] + 1;
+                     }
                 }
-                i = undefined;
+                j = undefined;
             }
-            k = undefined;
+            n = undefined;
         }
     }
 });
