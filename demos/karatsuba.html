@@ -1,4 +1,5 @@
 <html><head>
+    <title>Karatsuba Multiplication</title>
 
     <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
 
@@ -115,7 +116,7 @@ var myviz = new Vamonos.Visualizer({
         with (this) {
             var pnum = Vamonos.arrayToNum(x);
             var qnum = Vamonos.arrayToNum(y);
-            
+
             if (_(1), pnum < 10 || qnum < 10) {
                 _(2);
                 return Vamonos.numToArray(pnum * qnum);
@@ -135,7 +136,7 @@ var myviz = new Vamonos.Visualizer({
             var a = Vamonos.arrayToNum(main({ x:x_high, y:y_high }));
 
             _(7);
-            var b = Vamonos.arrayToNum(main({ 
+            var b = Vamonos.arrayToNum(main({
                 x : Vamonos.numToArray(Vamonos.arrayToNum(x_low) + Vamonos.arrayToNum(x_high)),
                 y : Vamonos.numToArray(Vamonos.arrayToNum(y_low) + Vamonos.arrayToNum(y_high)),
             }));

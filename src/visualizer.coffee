@@ -344,8 +344,8 @@ class Visualizer
         for widget in @widgets
             widget.event(event, options...)
 
-    # jsplumb loads asynchronously. we need some way to wait for it to 
-    # be ready - but only in cases where we actually use it. So each 
+    # jsplumb loads asynchronously. we need some way to wait for it to
+    # be ready - but only in cases where we actually use it. So each
     # widget gets a done() function to tell the visualizer its time
     # to load the next widget. When all the widgets are loaded, a function
     # is called that does everything the Visualizer is supposed to do next.
@@ -403,7 +403,10 @@ class Visualizer
                 save[varName] = varObj.export()
             else
                 save[varName] = varObj
-        window.location.hash = Vamonos.encode(save)
+        # overwrite the current history entry so as to not create an
+        # entry for every different input the user gives
+        window.history.replaceState({}, "",
+            window.location.href + "#" + Vamonos.encode(save))
         return "ok"
 
     import: ->
@@ -414,6 +417,6 @@ class Visualizer
         return {} unless s.length > 1 and s[0] is "#"
         @_alreadyImported = yes
         return Vamonos.decode(s.substr(1))
-        
+
 
 @Vamonos.export { Visualizer }

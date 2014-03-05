@@ -1,5 +1,7 @@
 <html><head>
 
+    <title>BFS-Bipartiteness</title>
+
     <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
 
     <link rel="stylesheet" href="../lib/vamonos.css">
@@ -28,16 +30,16 @@
             background: white;
         }
 
-        .color-red { 
-            background: red; 
+        .color-red {
+            background: red;
         }
 
         .color-blue {
-            background: blue; 
+            background: blue;
         }
 
-        .color-blue .vertex-contents, .color-blue .vertex-contents { 
-            color: white; 
+        .color-blue .vertex-contents, .color-blue .vertex-contents {
+            color: white;
         }
 
         body {
@@ -75,7 +77,7 @@
                 </div>
             </div>
 
-        
+
         </td><td class="variable-widgets">
 
             <table class="variable-widgets">
@@ -155,14 +157,14 @@ var myviz = new Vamonos.Visualizer({
                 s: "v0"
             },
             vertexLabels: {
-                inner : function(vtx){return vtx.name}, 
+                inner : function(vtx){return vtx.name},
                 ne    : ["v", "u"],
                 nw    : ["s"],
             },
             vertexCssAttributes: {
                 color: ["white", "blue", "red"],
             },
-            colorEdges: [ 
+            colorEdges: [
                 ["u->v", "#595959"],
                 [ function(edge){
                     return (edge.target.bad && edge.source.bad)
@@ -170,7 +172,7 @@ var myviz = new Vamonos.Visualizer({
                 , "red" ],
             ],
             defaultGraph: new Vamonos.DataStructure.Graph({
-                vertices: [ 
+                vertices: [
                     {id: "v0", x: 17,  y: 10},
                     {id: "v1", x: 98,  y: 10},
                     {id: "v2", x: 176, y: 13},

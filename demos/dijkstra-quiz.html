@@ -1,4 +1,5 @@
 <html><head>
+    <title>Dijkstra's Algorithm Quiz</title>
 
     <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
 
@@ -46,20 +47,20 @@
         font-weight: bold;
     }
 
-    .color-white { 
-        background: white; 
+    .color-white {
+        background: white;
     }
 
     .color-gray {
-        background: #888; 
+        background: #888;
     }
 
     .color-black {
         background: black;
     }
 
-    .color-black .vertex-contents, .color-gray .vertex-contents { 
-        color: white; 
+    .color-black .vertex-contents, .color-gray .vertex-contents {
+        color: white;
     }
 
     body {
@@ -133,7 +134,7 @@ var myviz = new Vamonos.Visualizer({
             varName: "global::Q",
             showLabel: false,
             displayOnly: true,
-            cellFormat: function (v) { 
+            cellFormat: function (v) {
                 if (v) {
                     var d = (v.d == Infinity ? "\u221E" : v.d);
                     return v.name + " : " + d;
@@ -192,8 +193,8 @@ var myviz = new Vamonos.Visualizer({
             },
             vertexLabels: {
                 inner : {
-                    edit: function(vtx){return vtx.name}, 
-                    display: function(vtx){return vtx.d} 
+                    edit: function(vtx){return vtx.name},
+                    display: function(vtx){return vtx.d}
                 },
                 ne    : ["u", "v"],
                 nw    : ["s"],
@@ -221,7 +222,7 @@ var myviz = new Vamonos.Visualizer({
             ],
             defaultGraph: new Vamonos.DataStructure.Graph({
                 //directed: true,
-                vertices: [ 
+                vertices: [
                     {id: "v0", x: 17,  y: 10},
                     {id: "v1", x: 98,  y: 10},
                     {id: "v2", x: 176, y: 13},
@@ -288,14 +289,11 @@ var myviz = new Vamonos.Visualizer({
                 var ok = undefined;
                 var text = "";
                 for (var i = 0; i < vs.length; i++) {
-                    console.log(vs[i]);
                     if (vs[i].timesRelaxed !== undefined && vs[i].timesRelaxed >= 5) {
-                        console.log("got here");
                         ok = vs[i];
                         break;
                     }
                 }
-                console.log(ok);
                 if (ok !== undefined) {
                     text = "<span class='good'>" +
                            "Great job! Vertex " + ok.name +
@@ -325,4 +323,4 @@ var myviz = new Vamonos.Visualizer({
     }
 });
 
-</script></html> 
+</script></html>
