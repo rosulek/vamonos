@@ -1,4 +1,5 @@
 <html><head>
+    <title>Stooge Sort</title>
 
     <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
 
@@ -20,7 +21,7 @@
 </head>
 <body>
 
-<h1>Stooge Sort</h1>
+    <h1>Stooge Sort</h1>
 
 <table class="vamonos">
     <tr><td class="pseudocode-and-controls">
@@ -67,7 +68,7 @@ var qs = new Vamonos.Visualizer({
             container: "stoogeSort",
             procedureName: "stoogeSort",
         }),
-    
+
         new Vamonos.Widget.VarName({
             container: "callstack-var",
             varName: "_callstack",
@@ -82,7 +83,7 @@ var qs = new Vamonos.Visualizer({
             ignoreMain: true,
             ignoreArgumentValues: ["A"],
         }),
-    
+
         new Vamonos.Widget.VarName({
             container: "array-a-var",
             varName: "A",
@@ -113,7 +114,7 @@ var qs = new Vamonos.Visualizer({
         },
 
         stoogeSort: function(_){
-            // q needs to be localized somehow otherwise 
+            // q needs to be localized somehow otherwise
             // recursions will overwrite it
             with(this){
                 if (_(1), A[r] < A[l]) {

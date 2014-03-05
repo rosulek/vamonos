@@ -1,4 +1,5 @@
 <html><head>
+    <title>Bipartite Matching</title>
 
     <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
 
@@ -220,13 +221,13 @@ var myviz = new Vamonos.Visualizer({
         main: function(_){
             with (this) {
 
-                // ResidualVtx :: Helper function that gets the equivalent 
+                // ResidualVtx :: Helper function that gets the equivalent
                 // vtx from the residual graph
                 var ResidualVtx = function(vtx) {
                     return G_f.vertex( G_f.prefix + vtx.id );
                 }
 
-                // UpdateResidualEdge :: helper function that updates the 
+                // UpdateResidualEdge :: helper function that updates the
                 // residual graph from an edge in the main one
                 var UpdateResidualEdge = function(e){
                     var uf = ResidualVtx(e.source);
@@ -241,7 +242,7 @@ var myviz = new Vamonos.Visualizer({
                         else
                             G_f.addEdge(uf,vf,{f:val});
                     } else {
-                        if (ef) 
+                        if (ef)
                             G_f.removeEdge(uf,vf);
                     }
                     // back edge
@@ -295,7 +296,7 @@ _(10);                      e.f = e.f - cfp;
                     i++;
                 }
 _(11);          global.matches = 0;
-                G.eachNeighbor(s, function(u){ 
+                G.eachNeighbor(s, function(u){
                     e = G.edge(s,u);
                     global.matches += e.f;
                 })
@@ -342,7 +343,7 @@ var ResidualGraph = function(G){
 
 var BFS = function(G,s,t){
     var Q = [];
-    G.eachNeighbor(s, function(u){ 
+    G.eachNeighbor(s, function(u){
         u.pred = s.id;
         Q.push(u);
     });

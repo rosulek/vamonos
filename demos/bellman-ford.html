@@ -1,5 +1,6 @@
-
 <html><head>
+
+    <title>Bellman-Ford Algorithm</title>
 
     <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
 
@@ -29,20 +30,20 @@
             background: #ddd;
         }
 
-        .color-white { 
-            background: white; 
+        .color-white {
+            background: white;
         }
 
         .color-gray {
-            background: #888; 
+            background: #888;
         }
 
         .color-black {
             background: black;
         }
 
-        .color-black .vertex-contents, .color-gray .vertex-contents { 
-            color: white; 
+        .color-black .vertex-contents, .color-gray .vertex-contents {
+            color: white;
         }
 
         body {
@@ -112,13 +113,13 @@ var myviz = new Vamonos.Visualizer({
                 s: "v0",
             },
             vertexLabels: {
-                inner : { 
-                    edit: function(vtx){return vtx.name}, 
-                    display: function(vtx){return vtx.d} 
+                inner : {
+                    edit: function(vtx){return vtx.name},
+                    display: function(vtx){return vtx.d}
                 },
-                sw    : { 
-                    edit: function(vtx){return ""}, 
-                    display: function(vtx){return vtx.name} 
+                sw    : {
+                    edit: function(vtx){return ""},
+                    display: function(vtx){return vtx.name}
                 },
                 ne    : ["u", "v"],
                 nw    : ["s"],
@@ -171,7 +172,7 @@ var myviz = new Vamonos.Visualizer({
                 var stopAt = G.getVertices().length;
                 for (var i = 1; _(5), i < stopAt; i++) {
                     G.eachEdge(function(e){
-                        _(6); 
+                        _(6);
                         u = G.vertex(e.source.id);
                         v = G.vertex(e.target.id);
                         if (_(7), u.d + e.w < v.d) {
@@ -196,4 +197,4 @@ var myviz = new Vamonos.Visualizer({
     }
 });
 
-</script></html> 
+</script></html>
