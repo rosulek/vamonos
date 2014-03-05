@@ -73,10 +73,6 @@ More detailed information can be found in our **API reference**:
 
 * [**API Reference**](api/index.html)
 
-# Getting Help:
-
-For now, you can find us on IRC in #vamonos at [freenode.net](http://freenode.net/).
-
 # About the Project:
 
 Vamonos is developed in the EECS department of Oregon State University. It was started while the project leader was in the Computer Science department at the University of Montana.
@@ -93,5 +89,3 @@ The Vamonos project team:
 * Eric Spaulding (graduated)
 
 Vamonos is distributed under the MIT license. For more details, see the [LICENSE.md](https://github.com/rosulek/vamonos/blob/master/LICENSE.md) file in the source code.
-
-
