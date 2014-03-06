@@ -185,6 +185,31 @@ var myviz = new Vamonos.Visualizer({
             watching: true,
         }),
 
+        new Vamonos.Widget.ResultProperty({
+            G: function(G){
+                var vs = G.getVertices();
+                var ok = undefined;
+                var text = "";
+                for (var i = 0; i < vs.length; i++) {
+                    if (vs[i].timesRelaxed !== undefined && vs[i].timesRelaxed >= 5) {
+                        ok = vs[i];
+                        break;
+                    }
+                }
+                if (ok !== undefined) {
+                    text = "<span class='good'>" +
+                           "Great job! Vertex " + ok.name +
+                           " was relaxed " + ok.timesRelaxed + " times." +
+                           "</span>";
+                } else {
+                    text = "<span class='bad'>" +
+                           "No vertex relaxed 5 times. Try again!" +
+                           "</span>";
+                }
+                $("#result").html(text);
+            },
+        }),
+
         new Vamonos.Widget.Graph({
             varName: "G",
             container: "graph",
@@ -284,27 +309,6 @@ var myviz = new Vamonos.Visualizer({
                     v = undefined;
                 }
                 u = undefined;
-
-                var vs = G.getVertices();
-                var ok = undefined;
-                var text = "";
-                for (var i = 0; i < vs.length; i++) {
-                    if (vs[i].timesRelaxed !== undefined && vs[i].timesRelaxed >= 5) {
-                        ok = vs[i];
-                        break;
-                    }
-                }
-                if (ok !== undefined) {
-                    text = "<span class='good'>" +
-                           "Great job! Vertex " + ok.name +
-                           " was relaxed " + ok.timesRelaxed + " times." +
-                           "</span>";
-                } else {
-                    text = "<span class='bad'>" +
-                           "No vertex relaxed 5 times. Try again!" +
-                           "</span>";
-                }
-                $("#result").html(text);
             }
         },
 
