@@ -254,64 +254,10 @@ class GraphDisplay
 
     # ---------------------------------------------------------- #
 
-    eachNode: (f) ->
-        f(vid, node) for vid, node of @nodes
-
     eachConnection: (f) ->
-        # If the graph is undirected, we need to keep track of which
-        # connections have already been processed since the @connections
-        # object will contain two identical references to each connection.
-        seen = [] unless @directed
-        for sourceId, targets of @connections
-            for targetId, con of targets
-                unless @directed
-                    continue if con in seen
-                    seen.push con
-                f(sourceId, targetId, con)
+        return
 
     # ----------- display mode node functions ---------- #
-
-    addNode: (vertex, show = true) ->
-        return
-        $v = $("<div>", {class: 'vertex', id: vertex.id})
-              .hide()
-        $v.css({
-            left: vertex.x
-            top: vertex.y
-            position: "absolute"
-        })
-        $contents = $("<div>", class: "vertex-contents")
-        for type, style of @vertexLabels
-            if type in ["ne","nw","se","sw"]
-                $("<div>", { class:"vertex-#{type}-label" }).appendTo($v)
-
-        @jsPlumbInstance.draggable($v,
-            containment: "parent"
-            start: (event, ui) ->
-                Vamonos.moveToTop($v)
-            stop: (event, ui) =>
-                $v.css("z-index", "auto")
-                if @mode is 'edit'
-                    vertex.x = ui.position.left
-                    vertex.y = ui.position.top
-        ) if @draggable
-
-        $v.append($contents)
-        @$inner.append($v)
-        $v.fadeIn(100) if show
-        @nodes[vertex.id] = $v
-        return $v
-
-    removeNode: (vid) ->
-        node = @nodes[vid]
-        delete @nodes[vid]
-        @jsPlumbInstance.removeAllEndpoints(node)
-        node.fadeOut(100, -> node.remove())
-
-    updateNode: ($node = @nodes[vid], vertex, frame) ->
-        return unless $node? and vertex?
-        @updateNodeLabels($node, vertex, frame)
-        @updateNodeClasses($node, vertex, frame)
 
     setVertexLabels: (vertexGroup, graph, frame) =>
         console.log "setVertexLabels"

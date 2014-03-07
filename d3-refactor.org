@@ -5,6 +5,10 @@
 ** directed edges
 ** back edges and label positions
 ** editable edge attributes
+** dragging
+** selection
+** vertex classes
+** edge classes
 
 * unneeded things currently out of scope
 ** setup continuations waiting for jsPlumb to load
