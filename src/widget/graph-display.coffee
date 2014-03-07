@@ -92,8 +92,8 @@ class GraphDisplay
                 """
         containerMargin:
             type: "Number"
-            defaultValue: 30
-            description: "how close nodes can get to the container edge"
+            defaultValue: 16
+            description: "how close vertices can get to the container edge"
         minX:
             type: "Number"
             defaultValue: 100
@@ -109,11 +109,19 @@ class GraphDisplay
         draggable:
             type: "Boolean"
             defaultValue: true
-            description: "whether nodes can be moved"
+            description: "whether vertices can be moved"
         highlightChanges:
             type: "Boolean"
             defaultValue: true
-            description: "whether nodes will get the css class 'changed' when they are modified"
+            description: "whether vertices will get the css class 'changed' when they are modified"
+        vertexWidth:
+            type: "Number"
+            defaultValue: 40
+            description: "the width of vertices in the graph"
+        vertexHeight:
+            type: "Number"
+            defaultValue: 30
+            description: "the height of vertices in the graph"
 
     constructor: (args) ->
 
@@ -121,9 +129,7 @@ class GraphDisplay
             widgetObject : this
             givenArgs    : args
 
-        @connections = {}
-        @nodes       = {}
-        @$outer      = Vamonos.jqueryify(@container)
+        @$outer = Vamonos.jqueryify(@container)
 
         if @edgeLabel?.constructor.name isnt 'Object'
             @edgeLabel = { edit: @edgeLabel, display: @edgeLabel }
@@ -137,8 +143,12 @@ class GraphDisplay
                 minHeight: @minY
 
         @svg = d3.selectAll("#" + @$outer.attr("id")).append("svg")
-        @svg.append("g")
-              .attr("transform", "translate(" + [@containerMargin, @containerMargin] + ")")
+        @inner = @svg.append("g")
+              .attr("transform",
+                    "translate(" +
+                    [ @containerMargin ,
+                      @containerMargin ] +
+                    ")")
 
     # ------------ PUBLIC INTERACTION METHODS ------------- #
 
@@ -168,40 +178,13 @@ class GraphDisplay
         @directed = graph.directed
         @$outer.find(".changed").removeClass("changed")
 
-        @updateEdges(graph)
+        @updateEdges(graph, frame)
+        @updateVertices(graph, frame)
         return
 
-        # -------- OLD STUFF ---------- #
-        # add new vertices
-        for vertex in graph.getVertices()
-            continue if @nodes[vertex.id]?
-            @addNode(vertex)
-
-        # add new edges - this needs to happen before edge removal so that edges in
-        # directed graphs can have their arrows flipped instead of being deleted and
-        # recreated going in the opposite direction
-        for edge in graph.getEdges()
-            continue if @connections[edge.source.id]?[edge.target.id]?
-            continue if not @directed and @connections[edge.target.id]?[edge.source.id]?
-            @addConnection(edge.source.id, edge.target.id)
-
-        # remove unneeded edges
-        @eachConnection (sourceId, targetId) =>
-            unless graph.edge(sourceId, targetId)
-                @removeConnection(sourceId, targetId)
-
-        # remove unneeded vertices and update needed ones
-        @eachNode (vid, node) =>
-            if graph.vertex(vid)
-                @updateNode(node, graph.vertex(vid), frame)
-            else
-                @removeNode(vid)
-
-        @updateConnections(graph, frame)
-        @previousGraph = graph
-
-    updateEdges: (graph) ->
-        @edgeGroup = @svg.selectAll("g.edge")
+    updateEdges: (graph, frame) ->
+        console.log "updateEdges"
+        @edgeGroup ?= @inner.selectAll("g.edge")
             .data(graph.getEdges())
             .enter()
             .append("g")
@@ -220,38 +203,46 @@ class GraphDisplay
          .attr("y2", (d) -> graph.vertex(d.target).y )
         return e
 
+    updateVertices: (graph, frame) ->
+        console.log "updateVertices"
+        trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
+
+        @vertexGroup ?= @inner.selectAll("g.vertex")
+            .data(graph.getVertices())
+            .enter()
+            .append("g")
+            .attr("transform", trans)
+
+        @vertexGroup.append("ellipse")
+            .attr("class", "vertex")
+            .attr("cx", 0)
+            .attr("cy", 0)
+            .attr("rx", @vertexWidth  / 2)
+            .attr("ry", @vertexHeight / 2)
+
+        @vertexGroup.call(@setVertexLabels, graph, frame)
+
     fitGraph: (graph, animate = false) ->
+        console.log "fitGraph"
         if graph?
-            nodes = $("div.vertex-contents")
-            @getVertexDimensions(nodes) unless @_vertexWidth? and @_vertexHeight?
             xVals = []
             yVals = []
             for vertex in graph.getVertices()
-                xVals.push(vertex.x + @_vertexWidth  + @containerMargin)
-                yVals.push(vertex.y + @_vertexHeight + @containerMargin)
+                xVals.push(vertex.x + (@vertexWidth  / 2) + @containerMargin * 2)
+                yVals.push(vertex.y + (@vertexHeight / 2) + @containerMargin * 2)
             max_x = Math.max(xVals..., @minX)
             max_y = Math.max(yVals..., @minY)
         else
             max_x = 0
             max_y = 0
-
         if animate
             @$outer.animate({width: max_x, height: max_y}, 500)
         else
             @$outer.width(max_x)
             @$outer.height(max_y)
-
         if @resizable
             @$outer.resizable("option", "minWidth", max_x)
             @$outer.resizable("option", "minHeight", max_y)
-
-    getVertexDimensions: (nodes) ->
-        unless nodes.length
-            nodes = $("<div class='vertex'></div>")
-        @_vertexHeight = nodes.height()
-        @_vertexWidth  = nodes.width()
-        if fakeNode?
-            @removeNode("FAKER")
 
     hideGraph: () ->
         @$outer.hide()
@@ -260,13 +251,6 @@ class GraphDisplay
     showGraph: () ->
         @$outer.show()
         @graphHidden = false
-
-    clearDisplay: ->
-        @jsPlumbInstance.reset()
-        @$inner.html("")
-        @connections   = {}
-        @nodes         = {}
-        @previousGraph = undefined
 
     # ---------------------------------------------------------- #
 
@@ -328,37 +312,51 @@ class GraphDisplay
         return unless $node? and vertex?
         @updateNodeLabels($node, vertex, frame)
         @updateNodeClasses($node, vertex, frame)
-        @updateNodePosition($node, vertex, frame)
 
-    updateNodePosition: ($node, vertex) ->
-        pos = $node.position()
-        return if pos.left == vertex.x and pos.top == vertex.y
-        @jsPlumbInstance.animate(
-            vertex.id
-            { left: vertex.x, top: vertex.y }
-            { duration: 500 }
-        )
-
-    updateNodeLabels: ($node, vertex, frame) ->
+    setVertexLabels: (vertexGroup, graph, frame) =>
+        console.log "setVertexLabels"
         for type, style of @vertexLabels
-            $target =
-                if type is "inner"
-                    $node.children("div.vertex-contents")
-                else if type in ["ne","nw","se","sw"]
-                    $node.children("div.vertex-#{type}-label")
-            return unless $target?
-            $target.html(
-                if style.constructor.name is "Function"
-                    Vamonos.rawToTxt(style(vertex))
-                else if style.constructor.name is "Array"
-                    res = []
-                    for v in style when frame[v]?.id is vertex.id
-                        res.push(Vamonos.resolveSubscript(Vamonos.removeNamespace(v)))
-                    res.join(",")
-                else if style.constructor.name is "Object"
-                    Vamonos.rawToTxt(style[@mode](vertex))
+            console.log type
+
+            getLabel = (klass, xPos, yPos) =>
+                vertexGroup.append("text")
+                    .attr("class", klass)
+                    .attr("x", xPos)
+                    .attr("y", yPos)
+
+            x = @vertexWidth  / 2
+            y = @vertexHeight / 2
+
+            switch type
+                when "inner"
+                    target = getLabel("vertex-contents", -4, 4)
+                when "ne"
+                    target = getLabel("vertex-ne-label", x, - y)
+                when "nw"
+                    target = getLabel("vertex-nw-label", - x, - y)
+                when "se"
+                    target = getLabel("vertex-se-label", x, y)
+                when "sw"
+                    target = getLabel("vertex-sw-label", - x, y)
                 else
-                    style)
+                    throw Error "GraphDisplay '#{ @varName }': no vertex label \"#{ type }\""
+
+            target.each((d) -> console.log d)
+
+            if style.constructor.name is "Function"
+                target.text((d) => Vamonos.rawToTxt(style(d)))
+
+            else if style.constructor.name is "Array"
+                target.text (d) =>
+                    res = []
+                    for v in style when frame[v]?.id is d.id
+                        res.push(Vamonos.resolveSubscript(Vamonos.removeNamespace(v)))
+                    return res.join(",")
+
+            else if style.constructor.name is "Object"
+                target.text((d) => Vamonos.rawToTxt(style[@mode](d)))
+            else
+                target.text(style)
 
     updateNodeClasses: ($node, vertex) ->
         if @highlightChanges and @mode is 'display' and @vertexChanged(vertex)
@@ -532,8 +530,8 @@ class GraphDisplay
                 return
 
         labelPos = (edge) =>
-            edge.style("left", (d) -> Math.floor((d.source.x + d.target.x) / 2) - 4 )
-                .style("top",  (d) -> Math.floor((d.source.y + d.target.y) / 2) - 7 )
+            edge.style("left", (d) => Math.floor((d.source.x + d.target.x) / 2) - 4 + @containerMargin )
+                .style("top",  (d) => Math.floor((d.source.y + d.target.y) / 2) - 7 + @containerMargin )
             return edge
 
         edgeGroup.append("foreignObject")

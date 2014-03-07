@@ -1,8 +1,9 @@
 #+TITLE: GraphDisplay D3 refactor notes
 
 * restore:
-** back edges and label positions
 ** tooltips
+** directed edges
+** back edges and label positions
 ** editable edge attributes
 
 * unneeded things currently out of scope
