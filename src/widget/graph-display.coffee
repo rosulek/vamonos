@@ -124,20 +124,21 @@ class GraphDisplay
         @connections = {}
         @nodes       = {}
         @$outer      = Vamonos.jqueryify(@container)
-        @$inner      = $("<div>", {class: "graph-inner-container"})
 
         if @edgeLabel?.constructor.name isnt 'Object'
             @edgeLabel = { edit: @edgeLabel, display: @edgeLabel }
 
-        @$outer.append(@$inner)
         @$outer.disableSelection()
 
         if @resizable
-            @$outer.resizable(
+            @$outer.resizable
                 handles: "se"
                 minWidth: @minX
                 minHeight: @minY
-            )
+
+        @svg = d3.selectAll("#" + @$outer.attr("id")).append("svg")
+        @svg.append("g")
+              .attr("transform", "translate(" + [@containerMargin, @containerMargin] + ")")
 
     # ------------ PUBLIC INTERACTION METHODS ------------- #
 
@@ -151,16 +152,6 @@ class GraphDisplay
             for label, values of @vertexLabels
                 for v in values when typeof v is 'string'
                     @viz.registerVariable(v)
-            # the whole point of having this done() business is so that jsPlumb
-            # can load asynchroniously and it won't mess anything up. usually
-            # the outer widget calls done(), but in this case, it needs to be
-            # done by the inner widget.
-            jsPlumb.ready =>
-                @jsPlumbInstance = jsPlumb.getInstance
-                    Connector: ["Straight"]
-                    PaintStyle: @normalPaintStyle
-                    Endpoint: "Blank"
-                    Anchor: [ "Perimeter", { shape: "Circle" } ]
                 done() if done?
 
     # draw is the main display function for the graphDisplay widget. It draws
@@ -177,6 +168,10 @@ class GraphDisplay
         @directed = graph.directed
         @$outer.find(".changed").removeClass("changed")
 
+        @updateEdges(graph)
+        return
+
+        # -------- OLD STUFF ---------- #
         # add new vertices
         for vertex in graph.getVertices()
             continue if @nodes[vertex.id]?
@@ -205,6 +200,26 @@ class GraphDisplay
         @updateConnections(graph, frame)
         @previousGraph = graph
 
+    updateEdges: (graph) ->
+        @edgeGroup = @svg.selectAll("g.edge")
+            .data(graph.getEdges())
+            .enter()
+            .append("g")
+            .attr("class", "edge")
+
+        @edgeGroup.append("line")
+            .call(@setEdgePos, graph)
+            .attr("class", "edge")
+
+        @edgeGroup.call(@setEdgeLabels, graph)
+
+    setEdgePos: (e, graph) ->
+        e.attr("x1", (d) -> graph.vertex(d.source).x )
+         .attr("y1", (d) -> graph.vertex(d.source).y )
+         .attr("x2", (d) -> graph.vertex(d.target).x )
+         .attr("y2", (d) -> graph.vertex(d.target).y )
+        return e
+
     fitGraph: (graph, animate = false) ->
         if graph?
             nodes = $("div.vertex-contents")
@@ -232,8 +247,7 @@ class GraphDisplay
 
     getVertexDimensions: (nodes) ->
         unless nodes.length
-            fakeNode = @addNode({id:"FAKER"}, false)
-            nodes = fakeNode
+            nodes = $("<div class='vertex'></div>")
         @_vertexHeight = nodes.height()
         @_vertexWidth  = nodes.width()
         if fakeNode?
@@ -274,6 +288,7 @@ class GraphDisplay
     # ----------- display mode node functions ---------- #
 
     addNode: (vertex, show = true) ->
+        return
         $v = $("<div>", {class: 'vertex', id: vertex.id})
               .hide()
         $v.css({
@@ -504,50 +519,29 @@ class GraphDisplay
         return unless con?.connector?
         con.setPaintStyle(@normalPaintStyle)
 
-    setLabel: (con, graph) ->
+    setEdgeLabels: (edgeGroup) =>
         return unless @edgeLabel[@mode]?
-        con.removeOverlay("edgeLabel")
-        con.removeOverlay("edgeLabel")
 
-        if @directed
-            loc = 0.70
+        labelVal = (edge) =>
+            if @edgeLabel[@mode].constructor.name is 'Function'
+                val = @edgeLabel[@mode](edge)
+            else if @edgeLabel[@mode].constructor.name is 'String'
+                attr = @edgeLabel[@mode]
+                val = Vamonos.rawToTxt(edge[attr] ? "")
+            else
+                return
 
-        if @directed and graph.edge(con.targetId, con.sourceId)
-            backEdge = graph.edge(con.targetId, con.sourceId)
-            backLoc = 0.30
+        labelPos = (edge) =>
+            edge.style("left", (d) -> Math.floor((d.source.x + d.target.x) / 2) - 4 )
+                .style("top",  (d) -> Math.floor((d.source.y + d.target.y) / 2) - 7 )
+            return edge
 
-        edge = graph.edge(con.sourceId, con.targetId)
-
-        if @edgeLabel[@mode].constructor.name is 'Function'
-            val = @edgeLabel[@mode](edge)
-            backVal = @edgeLabel[@mode](backEdge) if backEdge?
-
-        else if @edgeLabel[@mode].constructor.name is 'String'
-            attr = @edgeLabel[@mode]
-            val = Vamonos.rawToTxt(edge[attr] ? "")
-            backVal = Vamonos.rawToTxt(backEdge[attr] ? "") if backEdge?
-
-        else
-            return
-
-        con.addOverlay([
-            "Custom",
-            create: =>
-                $label = $("<div class='graph-label'>#{val}</div>")
-                return $("<div>").append($label)
-            id: "edgeLabel",
-            location: loc ? 0.5
-        ])
-
-        con.addOverlay([
-            "Custom",
-            create: =>
-                $label = $("<div class='graph-label'>#{backVal}</div>")
-                return $("<div>").append($label)
-            id: "edgeLabel",
-            location: backLoc
-        ]) if backEdge?
-
+        edgeGroup.append("foreignObject")
+            .append("xhtml:body")
+            .append("div")
+            .call(labelPos)
+            .attr("class", "graph-label")
+            .html(labelVal)
 
     # ----------------- drawer --------------- #
 

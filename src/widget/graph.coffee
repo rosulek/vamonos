@@ -16,9 +16,9 @@ class Graph
         inputVars:
             type: "Object"
             defaultValue: {}
-            description: 
-                "a mapping of variable names to vertex ids of the form 
-                `{ var1: 'node1' }` for displaying variables that contain 
+            description:
+                "a mapping of variable names to vertex ids of the form
+                `{ var1: 'node1' }` for displaying variables that contain
                 vertices."
         editable:
             type: "Boolean"
@@ -93,7 +93,7 @@ class Graph
         when "displayStart"
             @displayWidget.mode = "display"
             @setDisplayToolTips() if @tooltips
-        
+
         when "displayStop"
             unless @editable
                 @displayWidget.clearDisplay()
@@ -123,24 +123,24 @@ class Graph
                     @inputVars[varName] = @theGraph.vertex( inp[varName] )
 
     # ----------------- EDITING MODE ------------------------ #
-    
+
     setEditToolTips: ->
-        @displayWidget.$inner.prop("title", "Click on whitespace to add vertices, edges to modify them.")
-        @displayWidget.$inner.children(".vertex").prop("title", "Click a vertex to modify vertex attributes and edges.")
-        @displayWidget.$inner.children(".graph-label").prop("title","Click an edge attribute to modify it.")
+        @displayWidget.$outer.prop("title", "Click on whitespace to add vertices, edges to modify them.")
+        @displayWidget.$outer.children(".vertex").prop("title", "Click a vertex to modify vertex attributes and edges.")
+        # @displayWidget.svg.selectAll("line").append("svg:title").text("Click an edge attribute to modify it.")
 
     setNodeSelectionToolTips: ->
-        @displayWidget.$inner.prop("title", "Click on white space to deselect.")
-        @displayWidget.$inner.children(".vertex").prop("title", "Click a vertex to add an edge or change selected vertex.")
+        @displayWidget.$outer.prop("title", "Click on white space to deselect.")
+        @displayWidget.$outer.children(".vertex").prop("title", "Click a vertex to add an edge or change selected vertex.")
 
     setConnectionSelectionToolTips: ->
-        @displayWidget.$inner.prop("title", "Click on white space to deselect. Click on another edge to select it.")
-        @displayWidget.$inner.children(".vertex").prop("title", "Click a vertex to select it.")
+        @displayWidget.$outer.prop("title", "Click on white space to deselect. Click on another edge to select it.")
+        @displayWidget.$outer.children(".vertex").prop("title", "Click a vertex to select it.")
 
     setDisplayToolTips: ->
-        @displayWidget.$inner.prop("title", "Drag a vertex to move it.")
-        @displayWidget.$inner.children(".vertex").removeAttr("title")
-        @displayWidget.$inner.children(".graph-label").removeAttr("title")
+        @displayWidget.$outer.prop("title", "Drag a vertex to move it.")
+        @displayWidget.$outer.children(".vertex").removeAttr("title")
+        @displayWidget.$outer.children(".graph-label").removeAttr("title")
 
     startEditing: ->
         # fitGraph needs to come before draw so as to prevent strange bug wherein the
@@ -219,7 +219,7 @@ class Graph
                     dwH = @displayWidget.$inner.height()
                     dwW = @displayWidget.$inner.width()
                     if (y - (height / 2) > 0) and (y + (height / 2) < dwH) and
-                       (x - (width / 2) > 0)  and (x + (width / 2) < dwW) 
+                       (x - (width / 2) > 0)  and (x + (width / 2) < dwW)
                         @addVertex({x: x - (width / 2), y: y - (height / 2)})
             else
                 if $target.is("div.vertex-contents") and 'vertex' is @selected()
@@ -259,7 +259,7 @@ class Graph
             con.removeOverlay("editableEdgeLabel-back")
             con.removeOverlay("edgeLabel")
 
-            if @theGraph.directed 
+            if @theGraph.directed
                 loc = 0.70
             else
                 loc = 0.5
@@ -386,9 +386,9 @@ class Graph
             targetId = @$selectedConnection.targetId
             edge     = @theGraph.edge(sourceId, targetId)
             if @theGraph.directed and not @theGraph.edge(targetId,sourceId)
-                arr = "&rarr;" 
-            else 
-                arr = "-" 
+                arr = "&rarr;"
+            else
+                arr = "-"
             nametag  = edge.source.name + "&nbsp;" + arr + "&nbsp;" + edge.target.name
             label = "edge&nbsp;&nbsp;#{nametag}&nbsp;&nbsp;"
             buttons = [

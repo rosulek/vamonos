@@ -147,7 +147,7 @@ input.inline-input:focus {
     height: 16px;
     cursor: se-resize;
     right: 1px;
-    bottom: 1px;    
+    bottom: 1px;
     position: absolute;
     display: block;
     background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB90HHRMPFPEFI5gAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAUklEQVQ4y6XMyRHAIAzAQMX9t+aanF8GiAEf+q8eM6Oaqpp0MIB0cGkw4vRgxamBh8ODHQ4NTvg6uOHjIIK3gyh2Bxn8G2TxNKjgb1DFANLBAC/YXDl9wbVgpgAAAABJRU5ErkJggg==");
@@ -192,7 +192,7 @@ table.vamonos .controls {
 }
 
 table.variable-widgets {
-    border-spacing: 5px 10px; 
+    border-spacing: 5px 10px;
     border-collapse: collapse;
 }
 table.variable-widgets > tbody > tr > td {
@@ -246,10 +246,10 @@ table.array {
 
     tr.array-cells {
         td, th {
-            height: @array-cell-size;     
+            height: @array-cell-size;
         }
         td {
-            min-width: @array-cell-size;     
+            min-width: @array-cell-size;
         }
 //        th {
 //            min-width: (@array-cell-size - 4);
@@ -268,7 +268,7 @@ table.array {
             height: @array-cell-size;
         }
     }
-    
+
     tr.array-cells td {
         border: 1px solid @border-color;
         background-color: @normal-item-bg-color;
@@ -419,7 +419,7 @@ tr.pseudocode-active {
 // required extra layer to let vertex positions be
 // relative to container
 
-.graph-inner-container {    
+.graph-inner-container {
     position: absolute;
     width: inherit;
     height: inherit;
@@ -435,6 +435,23 @@ div.graph-label {
     cursor: default;
     background: #F3F3F3;
     padding: 0 1px 0 1px;
+    position: absolute;
+}
+
+line.edge {
+    stroke: #cccccc;
+    stroke-width: 4;
+}
+
+line.potential-edge {
+    stroke: @editing-bg-color;
+    stroke-width: 5;
+    stroke-dasharray: "1,1"
+}
+
+line.selected-edge {
+    stroke-width: 4;
+    stroke: @editing-bg-color;
 }
 
 div.graph-drawer {
@@ -506,19 +523,19 @@ div.graph-drawer {
         position: absolute;
     }
 
-    .vertex-nw-label { 
+    .vertex-nw-label {
         right: 85%;
         bottom: 85%;
     }
-    .vertex-ne-label { 
+    .vertex-ne-label {
         left: 85%;
         bottom: 85%;
     }
-    .vertex-sw-label { 
+    .vertex-sw-label {
         right: 85%;
         top: 85%;
     }
-    .vertex-se-label { 
+    .vertex-se-label {
         left: 85%;
         top: 85%;
     }
@@ -643,7 +660,7 @@ div.graph-drawer {
         width: 8px;
         height: 16px;
         top: -5px;
-        margin-left:-5px; 
+        margin-left:-5px;
 
         .ease(background-color, border-color;);
     }
@@ -717,7 +734,7 @@ button.controls-button {
     margin-bottom: 0px !important;
 }
 
-    
+
 
 
 //////////////////////
@@ -759,7 +776,7 @@ span.callstack-arrow {
     font-size: 28px;
     vertical-align: middle;
     font-weight: bold;
-    
+
     td.callstack-args & {
         padding-left: 6px;
     }
@@ -804,7 +821,7 @@ table.matrix {
         text-align: center;
         vertical-align: middle;
 
-        background-color: @normal-item-bg-color; 
+        background-color: @normal-item-bg-color;
         .ease(background-color);
         min-width: @matrix-cell-size;
         min-height: @matrix-cell-size;
@@ -829,7 +846,7 @@ table.matrix {
     }
 
     th.matrix-row-annotation, th.matrix-col-annotation {
-        .variable-name();        
+        .variable-name();
     }
     th.matrix-row-annotation {
         text-align: left;
@@ -898,7 +915,7 @@ span.var-watch.var-watching.var-watch-active {
 
 span.var-editable {
     color: transparent;
-    
+
     &.var-editing {
         color: darken(@editing-bg-color, 30%);
         text-shadow: yellow 0px 0px 20px;

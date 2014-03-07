@@ -1,0 +1,12 @@
+#+TITLE: GraphDisplay D3 refactor notes
+
+* restore:
+** back edges and label positions
+** tooltips
+** editable edge attributes
+
+* unneeded things currently out of scope
+** setup continuations waiting for jsPlumb to load
+
+* notes
+** jQuery used for @$outer, d3 for @inner
