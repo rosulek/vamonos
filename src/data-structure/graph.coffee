@@ -153,6 +153,11 @@ class Graph
         targetId = @idify(target)
         @edges[sourceId]?[targetId] or not @directed and @edges[targetId]?[sourceId]
 
+    @interface.edgeId =
+        args: [["e", "an edge object"]]
+        description: "returns a string identifying `e`"
+    edgeId: (e) ->
+        e.source.id + (if @directed then "->" else "<->") + e.target.id
 
     @interface.addEdge =
         args: [
@@ -308,7 +313,7 @@ class Graph
     collapseEdgesBy: (attr, func) ->
         while e = @nextEdgeMatching(attr)
             func(e)
-            @collapse(e) 
+            @collapse(e)
 
     nextEdgeMatching: (attr) ->
         edges = @getEdges()
@@ -322,9 +327,9 @@ class Graph
         console.log savedEdges
         restoredVertices = for v in savedVertices
             console.log "adding #{v.name}"
-            @addVertex(v) 
+            @addVertex(v)
         for edge in savedEdges
-            @addEdge(edge.source, edge.target, edge) 
+            @addEdge(edge.source, edge.target, edge)
         @removeVertex(vtx)
         delete @collapsedVertices[vtx.id]
         delete @collapsedEdges[vtx.id]

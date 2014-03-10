@@ -1,6 +1,9 @@
 #+TITLE: GraphDisplay D3 refactor notes
 
 * restore:
+** clearing and keeping things updated
+maybe i need an init thing
+
 ** tooltips
 ** directed edges
 ** back edges and label positions

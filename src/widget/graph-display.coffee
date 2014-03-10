@@ -178,15 +178,19 @@ class GraphDisplay
         @directed = graph.directed
         @$outer.find(".changed").removeClass("changed")
 
-        @updateEdges(graph, frame)
-        @updateVertices(graph, frame)
-        return
+        if not @initialized
+            @createEdges(graph, frame)
+            @createVertices(graph, frame)
+        else
+            @updateEdges(graph, frame)
+            @updateVertices(graph, frame)
 
-    updateEdges: (graph, frame) ->
-        console.log "updateEdges"
-        @edgeGroup ?= @inner.selectAll("g.edge")
-            .data(graph.getEdges())
-            .enter()
+    createEdges: (graph, frame) ->
+        console.log "createEdges"
+        @edge ?= @inner.selectAll("g.edge")
+            .data(graph.getEdges(), (d)->graph.edgeId(d))
+
+        @edgeGroup ?= @edge.enter()
             .append("g")
             .attr("class", "edge")
 
@@ -195,6 +199,7 @@ class GraphDisplay
             .attr("class", "edge")
 
         @edgeGroup.call(@setEdgeLabels, graph)
+        @initialized = true
 
     setEdgePos: (e, graph) ->
         e.attr("x1", (d) -> graph.vertex(d.source).x )
@@ -203,8 +208,8 @@ class GraphDisplay
          .attr("y2", (d) -> graph.vertex(d.target).y )
         return e
 
-    updateVertices: (graph, frame) ->
-        console.log "updateVertices"
+    createVertices: (graph, frame) ->
+        console.log "createVertices"
         trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
 
         @vertexGroup ?= @inner.selectAll("g.vertex")
@@ -272,18 +277,20 @@ class GraphDisplay
 
             x = @vertexWidth  / 2
             y = @vertexHeight / 2
+            xOffset = x / 2
+            yOffset = y / 2
 
             switch type
                 when "inner"
-                    target = getLabel("vertex-contents", -4, 4)
+                    target = getLabel("vertex-contents", -3, 5)
                 when "ne"
                     target = getLabel("vertex-ne-label", x, - y)
                 when "nw"
-                    target = getLabel("vertex-nw-label", - x, - y)
+                    target = getLabel("vertex-nw-label", - x - xOffset, - y)
                 when "se"
-                    target = getLabel("vertex-se-label", x, y)
+                    target = getLabel("vertex-se-label", x, y + yOffset)
                 when "sw"
-                    target = getLabel("vertex-sw-label", - x, y)
+                    target = getLabel("vertex-sw-label", - x - xOffset, y + yOffset)
                 else
                     throw Error "GraphDisplay '#{ @varName }': no vertex label \"#{ type }\""
 
