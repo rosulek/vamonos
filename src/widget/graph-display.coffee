@@ -181,51 +181,78 @@ class GraphDisplay
         if not @initialized
             @createEdges(graph, frame)
             @createVertices(graph, frame)
+            @startDragging(graph)
         else
             @updateEdges(graph, frame)
             @updateVertices(graph, frame)
 
+    trans: (d) -> "translate(" + [ d.x, d.y ] + ")"
+
+    startDragging: (graph) ->
+        dragmove = (d) ->
+            lines = dragmove.oldThis.lines
+            setEdgePos = dragmove.oldThis.setEdgePos
+            trans = dragmove.oldThis.trans
+            d.x = d3.event.x
+            d.y = d3.event.y
+            d3.select(this).attr('transform', trans)
+            dragmove.oldThis.updateEdges(graph)
+
+        dragmove.oldThis = @
+
+        drag = d3.behavior.drag()
+            .on("drag", dragmove)
+        @vertices.call(drag)
+
     createEdges: (graph, frame) ->
         console.log "createEdges"
-        @edge ?= @inner.selectAll("g.edge")
-            .data(graph.getEdges(), (d)->graph.edgeId(d))
-
-        @edgeGroup ?= @edge.enter()
+        @edges = @inner.selectAll("g.edge")
+        @edgeGroup = @edges
+            .data(graph.getEdges(), graph.edgeId)
+            .enter()
             .append("g")
             .attr("class", "edge")
-
-        @edgeGroup.append("line")
-            .call(@setEdgePos, graph)
+        @lines = @edgeGroup.append("line")
+            .call(@setEdgePos)
             .attr("class", "edge")
-
-        @edgeGroup.call(@setEdgeLabels, graph)
+        @edgeGroup.call(@createEdgeLabels, graph)
         @initialized = true
 
-    setEdgePos: (e, graph) ->
-        e.attr("x1", (d) -> graph.vertex(d.source).x )
-         .attr("y1", (d) -> graph.vertex(d.source).y )
-         .attr("x2", (d) -> graph.vertex(d.target).x )
-         .attr("y2", (d) -> graph.vertex(d.target).y )
+    updateEdges: (graph) ->
+        console.log "updateEdges"
+        @edges.data(graph.getEdges(), graph.edgeId)
+            .enter()
+            .call(@setEdgePos)
+            .call(@setEdgeLabelPos)
+
+    setEdgePos: (e) ->
+        e.attr("x1", (d) -> d.source.x )
+         .attr("y1", (d) -> d.source.y )
+         .attr("x2", (d) -> d.target.x )
+         .attr("y2", (d) -> d.target.y )
         return e
+
+    # setEdgePos: (e, graph) ->
+    #     e.attr("x1", (d) -> graph.vertex(d.source).x )
+    #      .attr("y1", (d) -> graph.vertex(d.source).y )
+    #      .attr("x2", (d) -> graph.vertex(d.target).x )
+    #      .attr("y2", (d) -> graph.vertex(d.target).y )
+    #     return e
 
     createVertices: (graph, frame) ->
         console.log "createVertices"
-        trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
-
-        @vertexGroup ?= @inner.selectAll("g.vertex")
+        @vertices ?= @inner.selectAll("g.vertex")
             .data(graph.getVertices())
             .enter()
             .append("g")
-            .attr("transform", trans)
-
-        @vertexGroup.append("ellipse")
+            .attr("transform", @trans)
+        @vertices.append("ellipse")
             .attr("class", "vertex")
             .attr("cx", 0)
             .attr("cy", 0)
             .attr("rx", @vertexWidth  / 2)
             .attr("ry", @vertexHeight / 2)
-
-        @vertexGroup.call(@setVertexLabels, graph, frame)
+        @vertices.call(@setVertexLabels, graph, frame)
 
     fitGraph: (graph, animate = false) ->
         console.log "fitGraph"
@@ -310,6 +337,31 @@ class GraphDisplay
                 target.text((d) => Vamonos.rawToTxt(style[@mode](d)))
             else
                 target.text(style)
+
+    createEdgeLabels: (edgeGroup) =>
+        return unless @edgeLabel[@mode]?
+        @edgeLabels = edgeGroup.selectAll("foreignObject")
+            .append("foreignObject")
+            .append("xhtml:body")
+            .append("div")
+            .call(@setEdgeLabelPos)
+            .attr("class", "graph-label")
+            .html(@labelVal)
+
+    setEdgeLabelPos: (edge) =>
+        edge.style("left", (d) => Math.floor((d.source.x + d.target.x) / 2) - 4 + @containerMargin )
+            .style("top",  (d) => Math.floor((d.source.y + d.target.y) / 2) - 7 + @containerMargin )
+        return edge
+
+    labelVal: (edge) =>
+        return unless @edgeLabel[@mode]?
+        if @edgeLabel[@mode].constructor.name is 'Function'
+            val = @edgeLabel[@mode](edge)
+        else if @edgeLabel[@mode].constructor.name is 'String'
+            attr = @edgeLabel[@mode]
+            val = Vamonos.rawToTxt(edge[attr] ? "")
+        else
+            return
 
     updateNodeClasses: ($node, vertex) ->
         if @highlightChanges and @mode is 'display' and @vertexChanged(vertex)
@@ -469,30 +521,6 @@ class GraphDisplay
     resetConnectionStyle: (con) ->
         return unless con?.connector?
         con.setPaintStyle(@normalPaintStyle)
-
-    setEdgeLabels: (edgeGroup) =>
-        return unless @edgeLabel[@mode]?
-
-        labelVal = (edge) =>
-            if @edgeLabel[@mode].constructor.name is 'Function'
-                val = @edgeLabel[@mode](edge)
-            else if @edgeLabel[@mode].constructor.name is 'String'
-                attr = @edgeLabel[@mode]
-                val = Vamonos.rawToTxt(edge[attr] ? "")
-            else
-                return
-
-        labelPos = (edge) =>
-            edge.style("left", (d) => Math.floor((d.source.x + d.target.x) / 2) - 4 + @containerMargin )
-                .style("top",  (d) => Math.floor((d.source.y + d.target.y) / 2) - 7 + @containerMargin )
-            return edge
-
-        edgeGroup.append("foreignObject")
-            .append("xhtml:body")
-            .append("div")
-            .call(labelPos)
-            .attr("class", "graph-label")
-            .html(labelVal)
 
     # ----------------- drawer --------------- #
 
