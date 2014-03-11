@@ -8,7 +8,7 @@ maybe i need an init thing
 ** directed edges
 ** back edges and label positions
 ** editable edge attributes
-** dragging
+** dragging - update TheGraph
 ** selection
 ** vertex classes
 ** edge classes
