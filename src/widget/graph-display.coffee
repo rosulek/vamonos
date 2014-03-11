@@ -189,14 +189,15 @@ class GraphDisplay
     trans: (d) -> "translate(" + [ d.x, d.y ] + ")"
 
     startDragging: (graph) ->
+        ths = @
         dragmove = (d) ->
             lines = dragmove.oldThis.lines
             setEdgePos = dragmove.oldThis.setEdgePos
             trans = dragmove.oldThis.trans
             d.x = d3.event.x
             d.y = d3.event.y
-            d3.select(this).attr('transform', trans)
-            dragmove.oldThis.updateEdges(graph)
+            d3.select(@).attr('transform', trans)
+            ths.updateEdges(graph)
 
         dragmove.oldThis = @
 
@@ -220,10 +221,8 @@ class GraphDisplay
 
     updateEdges: (graph) ->
         console.log "updateEdges"
-        @edges.data(graph.getEdges(), graph.edgeId)
-            .enter()
-            .call(@setEdgePos)
-            .call(@setEdgeLabelPos)
+        @lines.call(@setEdgePos)
+        @edgeLabels.call(@setEdgeLabelPos)
 
     setEdgePos: (e) ->
         e.attr("x1", (d) -> d.source.x )
@@ -231,13 +230,6 @@ class GraphDisplay
          .attr("x2", (d) -> d.target.x )
          .attr("y2", (d) -> d.target.y )
         return e
-
-    # setEdgePos: (e, graph) ->
-    #     e.attr("x1", (d) -> graph.vertex(d.source).x )
-    #      .attr("y1", (d) -> graph.vertex(d.source).y )
-    #      .attr("x2", (d) -> graph.vertex(d.target).x )
-    #      .attr("y2", (d) -> graph.vertex(d.target).y )
-    #     return e
 
     createVertices: (graph, frame) ->
         console.log "createVertices"
@@ -294,8 +286,6 @@ class GraphDisplay
     setVertexLabels: (vertexGroup, graph, frame) =>
         console.log "setVertexLabels"
         for type, style of @vertexLabels
-            console.log type
-
             getLabel = (klass, xPos, yPos) =>
                 vertexGroup.append("text")
                     .attr("class", klass)
@@ -321,8 +311,6 @@ class GraphDisplay
                 else
                     throw Error "GraphDisplay '#{ @varName }': no vertex label \"#{ type }\""
 
-            target.each((d) -> console.log d)
-
             if style.constructor.name is "Function"
                 target.text((d) => Vamonos.rawToTxt(style(d)))
 
@@ -338,10 +326,10 @@ class GraphDisplay
             else
                 target.text(style)
 
-    createEdgeLabels: (edgeGroup) =>
+    createEdgeLabels: (edgeGroups) =>
         return unless @edgeLabel[@mode]?
-        @edgeLabels = edgeGroup.selectAll("foreignObject")
-            .append("foreignObject")
+        console.log "createEdgeLabels", edgeGroups
+        @edgeLabels = edgeGroups.append("foreignObject")
             .append("xhtml:body")
             .append("div")
             .call(@setEdgeLabelPos)
