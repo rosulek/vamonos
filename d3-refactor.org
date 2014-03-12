@@ -3,6 +3,9 @@
 * restore:
 
 ** vertex classes
+
+** edge update/ enter/ exit pattern
+
 ** edge classes
 
 ** fix dragging edges on display mode

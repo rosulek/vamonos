@@ -21,19 +21,19 @@
         }
 
         .done {
-            background: #ddd;
+            fill: #ddd;
         }
 
         .color-white {
-            background: white;
+            fill: white;
         }
 
         .color-gray {
-            background: #888;
+            fill: #888;
         }
 
         .color-black {
-            background: black;
+            fill: black;
         }
 
         .color-black .vertex-contents, .color-gray .vertex-contents {
@@ -168,7 +168,6 @@ var myviz = new Vamonos.Visualizer({
                     display: function(vtx){return vtx.d}
                 },
                 sw    : {
-                    edit: function(vtx){return ""},
                     display: function(vtx){return vtx.name}
                 },
                 ne    : ["u", "v"],

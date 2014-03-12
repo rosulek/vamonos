@@ -938,12 +938,26 @@ span.var-editable {
 // ANIMATIONS
 
 @-webkit-keyframes background-highlight-pulse {
-    0% { background: default; color: default; }
-    20% { background: @highlight-background-color; color: @highlight-text-color; }
-    100% { background: default; color: default; }
+    0% {
+        background: default;
+        color: default;
+       }
+    20% { background: @highlight-background-color;
+          fill: @highlight-background-color;
+          color: @highlight-text-color;
+        }
+    100% { background: default;
+           color: default; }
 }
 @keyframes background-highlight-pulse {
-    0% { background: default; color: default; }
-    20% { background: @highlight-background-color; color: @highlight-text-color; }
-    100% { background: default; color: default; }
+    0% { background: default;
+         color: default;
+       }
+    20% { background: @highlight-background-color;
+          fill: @highlight-background-color;
+          color: @highlight-text-color;
+        }
+    100% { background: default;
+           color: default;
+         }
 }

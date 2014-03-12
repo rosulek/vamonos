@@ -92,7 +92,7 @@ class GraphDisplay
                 """
         containerMargin:
             type: "Number"
-            defaultValue: 16
+            defaultValue: 26
             description: "how close vertices can get to the container edge"
         minX:
             type: "Number"
@@ -180,12 +180,14 @@ class GraphDisplay
 
         if not @initialized
             @createEdges(graph, frame)
-            @createVertices(graph, frame)
+            @updateVertices(graph, frame)
             @startDragging(graph)
             @initialized = true
         else
             @updateEdges(graph, frame)
-            @createVertices(graph, frame)
+            @updateVertices(graph, frame)
+
+        @previousGraph = graph
 
     trans: (d) -> "translate(" + [ d.x, d.y ] + ")"
 
@@ -231,13 +233,14 @@ class GraphDisplay
          .attr("y2", (d) -> d.target.y )
         return e
 
-    createVertices: (graph, frame) ->
+    updateVertices: (graph, frame) ->
         console.log "createVertices"
         id = (vtx) -> return vtx.id
         # update
         vertices = @inner.selectAll("g.vertex")
             .data(graph.getVertices(), id)
             .call(@updateVertexLabels, graph, frame)
+            .call(@updateVertexClasses)
         # enter
         enter = vertices.enter()
             .append("g")
@@ -250,6 +253,7 @@ class GraphDisplay
             .attr("rx", @vertexWidth  / 2)
             .attr("ry", @vertexHeight / 2)
         enter.call(@createVertexLabels, graph, frame)
+            .call(@updateVertexClasses)
         # exit
         vertices.exit()
             .remove()
@@ -331,10 +335,11 @@ class GraphDisplay
                     for v in style when frame[v]?.id is d.id
                         res.push(Vamonos.resolveSubscript(Vamonos.removeNamespace(v)))
                     return res.join(",")
-            else if style.constructor.name is "Object"
+            else if (style.constructor.name is "Object" and
+                     style[@mode]?.constructor.name is "Function")
                 target.text((d) => Vamonos.rawToTxt(style[@mode](d)))
             else
-                target.text(style)
+                target.text("")
         return sel
 
     createEdgeLabels: (edgeGroups) =>
@@ -345,14 +350,14 @@ class GraphDisplay
             .append("div")
             .call(@setEdgeLabelPos)
             .attr("class", "graph-label")
-            .html(@labelVal)
+            .html(@edgeLabelVal)
 
     setEdgeLabelPos: (edge) =>
         edge.style("left", (d) => Math.floor((d.source.x + d.target.x) / 2) - 4 + @containerMargin )
             .style("top",  (d) => Math.floor((d.source.y + d.target.y) / 2) - 7 + @containerMargin )
         return edge
 
-    labelVal: (edge) =>
+    edgeLabelVal: (edge) =>
         return unless @edgeLabel[@mode]?
         if @edgeLabel[@mode].constructor.name is 'Function'
             val = @edgeLabel[@mode](edge)
@@ -362,33 +367,46 @@ class GraphDisplay
         else
             return
 
-    updateNodeClasses: ($node, vertex) ->
-        if @highlightChanges and @mode is 'display' and @vertexChanged(vertex)
-            $node.addClass("changed")
-        for attr, val of @vertexCssAttributes
-            if val.constructor.name is "Function"
-                (@appliedNodeClasses ?= {})[vertex.id] ?= {}
-                newClass = val(vertex)
-                continue if newClass is @appliedNodeClasses[vertex.id][attr]
-                # remove previously applied class for this attr
-                if @appliedNodeClasses[vertex.id][attr]?
-                    $node.removeClass(@appliedNodeClasses[vertex.id][attr])
-                if newClass?
-                    $node.addClass(newClass)
-                    @appliedNodeClasses[vertex.id][attr] = newClass
-                else
-                    delete @appliedNodeClasses[vertex.id][attr]
-            else if val.constructor.name is "Array"
-                $node.removeClass("#{attr}-#{kind}") for kind in val
-                if vertex[attr] in val
-                    $node.addClass("#{attr}-#{vertex[attr]}")
-            else
-                if vertex[attr] == val
-                    $node.addClass(attr)
-                else
-                    $node.removeClass(attr)
+    updateVertexClasses: (vertexGroups) =>
+
+        vertices = vertexGroups.selectAll("ellipse.vertex")
+        vertices.data((d) -> [d])
+        console.log "updateVertexClasses", vertices
+
+        vertices.classed("changed", (vertex) =>
+            console.log vertex, @highlightChanges, @mode
+            r =  @highlightChanges and
+                 @mode is 'display' and
+                 @vertexChanged(vertex)
+            console.log "#{ vertex.name } changed!" if r
+            return r
+        )
+
+        # for attr, val of @vertexCssAttributes
+        #     if val.constructor.name is "Function"
+        #         (@appliedNodeClasses ?= {})[vertex.id] ?= {}
+        #         newClass = val(vertex)
+        #         continue if newClass is @appliedNodeClasses[vertex.id][attr]
+        #         # remove previously applied class for this attr
+        #         if @appliedNodeClasses[vertex.id][attr]?
+        #             node.classed(@appliedNodeClasses[vertex.id][attr], false)
+        #         if newClass?
+        #             node.classed(newClass, true)
+        #             @appliedNodeClasses[vertex.id][attr] = newClass
+        #         else
+        #             delete @appliedNodeClasses[vertex.id][attr]
+        #     else if val.constructor.name is "Array"
+        #         node.classed("#{attr}-#{kind}", false) for kind in val
+        #         if vertex[attr] in val
+        #             node.classed("#{attr}-#{vertex[attr]}", true)
+        #     else
+        #         if vertex[attr] == val
+        #             node.classed(attr, true)
+        #         else
+        #             node.classed(attr, false)
 
     vertexChanged: (newv) ->
+        console.log "previousGraph", @previousGraph
         return false unless newv?
         return false unless @previousGraph?
         return false unless oldv = @previousGraph.vertex(newv.id)
