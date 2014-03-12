@@ -478,15 +478,10 @@ ellipse.vertex {
     stroke-width: 1;
 }
 
-text.vertex-contents {
-    font-size: .8em;
-    font-weight: bold;
-}
 
 .vertex {
     width: @vertex-size;
     height: @vertex-size;
-    text-align: center;
     padding: 0px;
 
     .border-radius(50%);
@@ -502,6 +497,7 @@ text.vertex-contents {
         height: inherit;
         vertical-align: middle;
         font-weight: bolder;
+        text-anchor: middle;
     }
 
     &.selected {
@@ -525,13 +521,14 @@ text.vertex-contents {
     }
 
     &.changed .vertex-nw-label, .vertex-ne-label, .vertex-sw-label, .vertex-se-label {
-            .no-animation;
+        .no-animation;
     }
 
     // LABELS
 
     .vertex-nw-label, .vertex-ne-label, .vertex-sw-label, .vertex-se-label {
         position: absolute;
+        text-anchor: middle;
     }
 
     .vertex-nw-label {

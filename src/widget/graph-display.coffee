@@ -302,7 +302,7 @@ class GraphDisplay
                 .attr("class", klass)
                 .attr("x", xPos)
                 .attr("y", yPos)
-        setLabel("vertex-contents", -3, 5)
+        setLabel("vertex-contents", 0, yOffset / 2)
         setLabel("vertex-ne-label", x, - y)
         setLabel("vertex-nw-label", - x - xOffset, - y)
         setLabel("vertex-se-label", x, y + yOffset)
