@@ -1,17 +1,17 @@
 #+TITLE: GraphDisplay D3 refactor notes
 
 * restore:
-** clearing and keeping things updated
-maybe i need an init thing
+
+** vertex classes
+** edge classes
+
+** fix dragging edges on display mode
 
 ** tooltips
-** directed edges
-** back edges and label positions
+** directed edges - back edges, label positions
 ** editable edge attributes
 ** dragging - update TheGraph
 ** selection
-** vertex classes
-** edge classes
 
 * unneeded things currently out of scope
 ** setup continuations waiting for jsPlumb to load

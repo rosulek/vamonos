@@ -182,9 +182,10 @@ class GraphDisplay
             @createEdges(graph, frame)
             @createVertices(graph, frame)
             @startDragging(graph)
+            @initialized = true
         else
             @updateEdges(graph, frame)
-            @updateVertices(graph, frame)
+            @createVertices(graph, frame)
 
     trans: (d) -> "translate(" + [ d.x, d.y ] + ")"
 
@@ -203,7 +204,7 @@ class GraphDisplay
 
         drag = d3.behavior.drag()
             .on("drag", dragmove)
-        @vertices.call(drag)
+        @inner.selectAll("g.vertex").call(drag)
 
     createEdges: (graph, frame) ->
         console.log "createEdges"
@@ -217,7 +218,6 @@ class GraphDisplay
             .call(@setEdgePos)
             .attr("class", "edge")
         @edgeGroup.call(@createEdgeLabels, graph)
-        @initialized = true
 
     updateEdges: (graph) ->
         console.log "updateEdges"
@@ -233,19 +233,26 @@ class GraphDisplay
 
     createVertices: (graph, frame) ->
         console.log "createVertices"
-        @vertices ?= @inner.selectAll("g.vertex")
-            .data(graph.getVertices())
-            .enter()
+        id = (vtx) -> return vtx.id
+        # update
+        vertices = @inner.selectAll("g.vertex")
+            .data(graph.getVertices(), id)
+            .call(@updateVertexLabels, graph, frame)
+        # enter
+        enter = vertices.enter()
             .append("g")
             .attr("transform", @trans)
-        @vertices.append("ellipse")
+            .attr("class", "vertex")
+        enter.append("ellipse")
             .attr("class", "vertex")
             .attr("cx", 0)
             .attr("cy", 0)
             .attr("rx", @vertexWidth  / 2)
             .attr("ry", @vertexHeight / 2)
-        @vertices.call(@createVertexLabels, graph, frame)
-                 .call(@updateVertexLabels, graph, frame)
+        enter.call(@createVertexLabels, graph, frame)
+        # exit
+        vertices.exit()
+            .remove()
 
     fitGraph: (graph, animate = false) ->
         console.log "fitGraph"
@@ -284,7 +291,7 @@ class GraphDisplay
 
     # ----------- display mode node functions ---------- #
 
-    createVertexLabels: (vertexGroup) =>
+    createVertexLabels: (vertexGroup, graph, frame) =>
         console.log "createVertexLabels"
         x = @vertexWidth  / 2
         y = @vertexHeight / 2
@@ -300,13 +307,13 @@ class GraphDisplay
         setLabel("vertex-nw-label", - x - xOffset, - y)
         setLabel("vertex-se-label", x, y + yOffset)
         setLabel("vertex-sw-label", - x - xOffset, y + yOffset)
+        vertexGroup.call(@updateVertexLabels, graph, frame)
         return vertexGroup
 
-    updateVertexLabels: (vertexGroup, graph, frame) =>
-        console.log "updateVertexLabels"
+    updateVertexLabels: (sel, graph, frame) =>
+        console.log "updateVertexLabels #{ @mode }-mode"
         for type, style of @vertexLabels
-
-            target = vertexGroup.selectAll("text." + switch type
+            target = sel.selectAll("text." + switch type
                 when "inner" then "vertex-contents"
                 when "ne"    then "vertex-ne-label"
                 when "nw"    then "vertex-nw-label"
@@ -315,26 +322,24 @@ class GraphDisplay
                 else
                     throw Error "GraphDisplay '#{ @varName }': no vertex label \"#{ type }\""
             )
-
+            target.data (d) -> [d]
             if style.constructor.name is "Function"
                 target.text((d) => Vamonos.rawToTxt(style(d)))
-
             else if style.constructor.name is "Array"
                 target.text (d) =>
                     res = []
                     for v in style when frame[v]?.id is d.id
                         res.push(Vamonos.resolveSubscript(Vamonos.removeNamespace(v)))
                     return res.join(",")
-
             else if style.constructor.name is "Object"
                 target.text((d) => Vamonos.rawToTxt(style[@mode](d)))
             else
                 target.text(style)
-        return vertexGroup
+        return sel
 
     createEdgeLabels: (edgeGroups) =>
         return unless @edgeLabel[@mode]?
-        console.log "createEdgeLabels", edgeGroups
+        console.log "createEdgeLabels"
         @edgeLabels = edgeGroups.append("foreignObject")
             .append("xhtml:body")
             .append("div")
