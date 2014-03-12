@@ -244,7 +244,8 @@ class GraphDisplay
             .attr("cy", 0)
             .attr("rx", @vertexWidth  / 2)
             .attr("ry", @vertexHeight / 2)
-        @vertices.call(@setVertexLabels, graph, frame)
+        @vertices.call(@createVertexLabels, graph, frame)
+                 .call(@updateVertexLabels, graph, frame)
 
     fitGraph: (graph, animate = false) ->
         console.log "fitGraph"
@@ -283,33 +284,37 @@ class GraphDisplay
 
     # ----------- display mode node functions ---------- #
 
-    setVertexLabels: (vertexGroup, graph, frame) =>
-        console.log "setVertexLabels"
+    createVertexLabels: (vertexGroup) =>
+        console.log "createVertexLabels"
+        x = @vertexWidth  / 2
+        y = @vertexHeight / 2
+        xOffset = x / 2
+        yOffset = y / 2
+        setLabel = (klass, xPos, yPos) =>
+            vertexGroup.append("text")
+                .attr("class", klass)
+                .attr("x", xPos)
+                .attr("y", yPos)
+        setLabel("vertex-contents", -3, 5)
+        setLabel("vertex-ne-label", x, - y)
+        setLabel("vertex-nw-label", - x - xOffset, - y)
+        setLabel("vertex-se-label", x, y + yOffset)
+        setLabel("vertex-sw-label", - x - xOffset, y + yOffset)
+        return vertexGroup
+
+    updateVertexLabels: (vertexGroup, graph, frame) =>
+        console.log "updateVertexLabels"
         for type, style of @vertexLabels
-            getLabel = (klass, xPos, yPos) =>
-                vertexGroup.append("text")
-                    .attr("class", klass)
-                    .attr("x", xPos)
-                    .attr("y", yPos)
 
-            x = @vertexWidth  / 2
-            y = @vertexHeight / 2
-            xOffset = x / 2
-            yOffset = y / 2
-
-            switch type
-                when "inner"
-                    target = getLabel("vertex-contents", -3, 5)
-                when "ne"
-                    target = getLabel("vertex-ne-label", x, - y)
-                when "nw"
-                    target = getLabel("vertex-nw-label", - x - xOffset, - y)
-                when "se"
-                    target = getLabel("vertex-se-label", x, y + yOffset)
-                when "sw"
-                    target = getLabel("vertex-sw-label", - x - xOffset, y + yOffset)
+            target = vertexGroup.selectAll("text." + switch type
+                when "inner" then "vertex-contents"
+                when "ne"    then "vertex-ne-label"
+                when "nw"    then "vertex-nw-label"
+                when "se"    then "vertex-se-label"
+                when "sw"    then "vertex-sw-label"
                 else
                     throw Error "GraphDisplay '#{ @varName }': no vertex label \"#{ type }\""
+            )
 
             if style.constructor.name is "Function"
                 target.text((d) => Vamonos.rawToTxt(style(d)))
@@ -325,6 +330,7 @@ class GraphDisplay
                 target.text((d) => Vamonos.rawToTxt(style[@mode](d)))
             else
                 target.text(style)
+        return vertexGroup
 
     createEdgeLabels: (edgeGroups) =>
         return unless @edgeLabel[@mode]?
