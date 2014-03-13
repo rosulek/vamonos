@@ -178,64 +178,55 @@ class GraphDisplay
         @directed = graph.directed
         @$outer.find(".changed").removeClass("changed")
 
+        @updateEdges(graph)
+        @updateVertices(graph, frame)
         if not @initialized
-            @createEdges(graph, frame)
-            @updateVertices(graph, frame)
             @startDragging(graph)
             @initialized = true
-        else
-            @updateEdges(graph, frame)
-            @updateVertices(graph, frame)
-
         if @mode is "display"
             @previousGraph = graph
         else
             delete @previousGraph
 
 
-    trans: (d) -> "translate(" + [ d.x, d.y ] + ")"
-
     startDragging: (graph) ->
+        console.log "startDragging"
         ths = @
         dragmove = (d) ->
-            lines = dragmove.oldThis.lines
-            setEdgePos = dragmove.oldThis.setEdgePos
-            trans = dragmove.oldThis.trans
+            trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
             d.x = d3.event.x
             d.y = d3.event.y
             d3.select(@).attr('transform', trans)
             ths.updateEdges(graph)
-
-        dragmove.oldThis = @
-
         drag = d3.behavior.drag()
             .on("drag", dragmove)
         @inner.selectAll("g.vertex").call(drag)
 
-    createEdges: (graph, frame) ->
-        console.log "createEdges"
-        @edges = @inner.selectAll("g.edge")
-        @edgeGroup = @edges
-            .data(graph.getEdges(), graph.edgeId)
-            .enter()
-            .append("g")
-            .attr("class", "edge")
-        @lines = @edgeGroup.append("line")
-            .call(@setEdgePos)
-            .attr("class", "edge")
-        @edgeGroup.call(@createEdgeLabels, graph)
-
     updateEdges: (graph) ->
         console.log "updateEdges"
-        @lines.call(@setEdgePos)
-        @edgeLabels?.call(@setEdgeLabelPos)
+        # update
+        edges = @inner.selectAll("g.edge")
+            .data(graph.getEdges(), graph.edgeId)
+        edges.call(@updateEdgeLabels)
+            .selectAll("line.edge")
+            .call(@setEdgePos)
+        # enter
+        enter = edges.enter()
+            .append("g")
+            .attr("class", "edge")
+        enter.append("line")
+            .attr("class", "edge")
+            .call(@setEdgePos)
+        enter.call(@createEdgeLabels)
+        # exit
+        edges.exit()
+            .remove()
 
-    setEdgePos: (e) ->
-        e.attr("x1", (d) -> d.source.x )
-         .attr("y1", (d) -> d.source.y )
-         .attr("x2", (d) -> d.target.x )
-         .attr("y2", (d) -> d.target.y )
-        return e
+    setEdgePos: (line) ->
+        line.attr("x1", (d) -> d.source.x )
+            .attr("y1", (d) -> d.source.y )
+            .attr("x2", (d) -> d.target.x )
+            .attr("y2", (d) -> d.target.y )
 
     updateVertices: (graph, frame) ->
         console.log "createVertices"
@@ -246,9 +237,10 @@ class GraphDisplay
             .call(@updateVertexLabels, graph, frame)
             .call(@updateVertexClasses)
         # enter
+        trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
         enter = vertices.enter()
             .append("g")
-            .attr("transform", @trans)
+            .attr("transform", trans)
             .attr("class", "vertex")
         enter.append("ellipse")
             .attr("class", "vertex")
@@ -349,17 +341,31 @@ class GraphDisplay
     createEdgeLabels: (edgeGroups) =>
         return unless @edgeLabel[@mode]?
         console.log "createEdgeLabels"
-        @edgeLabels = edgeGroups.append("foreignObject")
+        edgeGroups.selectAll("foreignObject")
+            .data((d)->[d])
+            .enter()
+            .append("foreignObject")
             .append("xhtml:body")
             .append("div")
-            .call(@setEdgeLabelPos)
             .attr("class", "graph-label")
+            .call(@setEdgeLabelPos)
             .html(@edgeLabelVal)
+        return edgeGroups
 
-    setEdgeLabelPos: (edge) =>
-        edge.style("left", (d) => Math.floor((d.source.x + d.target.x) / 2) - 4 + @containerMargin )
-            .style("top",  (d) => Math.floor((d.source.y + d.target.y) / 2) - 7 + @containerMargin )
-        return edge
+    updateEdgeLabels: (edgeGroups) =>
+        return unless @edgeLabel[@mode]?
+        console.log "updateEdgeLabels"
+        edgeGroups.select("foreignObject")
+            .select("xhtml:body")
+            .select("div.graph-label")
+            .call(@setEdgeLabelPos)
+            .html(@edgeLabelVal)
+        return edgeGroups
+
+    setEdgeLabelPos: (labelSel) =>
+        labelSel.style("left", (d) => Math.floor((d.source.x + d.target.x) / 2) - 4 + @containerMargin )
+                .style("top",  (d) => Math.floor((d.source.y + d.target.y) / 2) - 7 + @containerMargin )
+        return labelSel
 
     edgeLabelVal: (edge) =>
         return unless @edgeLabel[@mode]?

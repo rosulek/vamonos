@@ -2,8 +2,6 @@
 
 * restore:
 
-** vertex classes
-
 ** edge update/ enter/ exit pattern
 
 ** edge classes
