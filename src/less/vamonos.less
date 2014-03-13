@@ -478,7 +478,6 @@ ellipse.vertex {
     stroke-width: 1;
 }
 
-
 .vertex {
     width: @vertex-size;
     height: @vertex-size;
@@ -507,9 +506,11 @@ ellipse.vertex {
     &.ui-draggable {
         cursor: move;
     }
+
     &.ui-draggable-dragging, &.vertex-drag-onto {
         .default-box-shadow(@shadow-color);
     }
+
     &.vertex-drag-onto {
         cursor: default;
     }
@@ -563,74 +564,6 @@ ellipse.vertex {
     &:hover .vertex-tooltip {
         display: block;
     }
-
-    // SUBDIVIDED VERTICES
-
-/*
-
-    .vertex-tophalf, .vertex-bottomhalf, .vertex-righthalf, .vertex-lefthalf,
-    .vertex-nwquad, .vertex-nequad, .vertex-swquad, .vertex-sequad {
-        border: 1px solid black;
-        position: absolute;
-    }
-
-    .vertex-tophalf, .vertex-bottomhalf {
-        height: 50%;
-        width: 100%;
-    }
-    .vertex-tophalf {
-        border-width: 0 0 1px 0;
-        top: 0px;
-        left: 0px;
-    }
-    .vertex-bottomhalf {
-        border-width: 1px 0 0 0;
-        bottom: 0px;
-        left: 0px;
-    }
-
-    .vertex-righthalf, .vertex-lefthalf {
-        height: 100%;
-        width: 50%;
-    }
-    .vertex-righthalf {
-        border-width: 0 0 0 1px;
-        top: 0px;
-        right: 0px;
-    }
-    .vertex-lefthalf {
-        border-width: 0 1px 0 0;
-        top: 0px;
-        left: 0px;
-    }
-
-    .vertex-swquad, .vertex-sequad, .vertex-nequad, .vertex-nwquad {
-        height: 50%;
-        width: 50%;
-    }
-    .vertex-swquad {
-        border-width: 1px 1px 0 0;
-        bottom: 0px;
-        left: 0px;
-    }
-    .vertex-sequad {
-        border-width: 1px 0 0 1px;
-        bottom: 0px;
-        right: 0px;
-    }
-    .vertex-nwquad {
-        border-width: 0 1px 1px 0;
-        top: 0px;
-        left: 0px;
-    }
-    .vertex-nequad {
-        border-width: 0 0 1px 1px;
-        top: 0px;
-        right: 0px;
-    }
-
-*/
-
 }
 
 

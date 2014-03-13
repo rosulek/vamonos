@@ -8,26 +8,21 @@
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
     <style type="text/css">
-        .vertex {
-            width: 40;
-            height: 30;
-        }
+    .vertex-contents {
+        font-size: .8em;
+    }
 
-        .vertex-contents {
-            font-size: .8em;
-        }
+    .vertex-ne-label, .vertex-nw-label {
+        font-weight: bold;
+    }
 
-        .vertex-ne-label, .vertex-nw-label {
-            font-weight: bold;
-        }
+    .vertex-sw-label {
+        font-style: italic;
+    }
 
-        .vertex-sw-label {
-            font-style: italic;
-        }
-
-        body {
-            text-align: center;
-        }
+    body {
+        text-align: center;
+    }
     </style>
 
 </head><body>
@@ -98,49 +93,49 @@ var myviz = new Vamonos.Visualizer({
                 directed: false,
                 prefix: "",
                 vertices: [
-                    { id: 'v0', x: 10, y: 187 },
-                    { id: 'v1', x: 4, y: 13 },
-                    { x: 87, y: 156, id: 'v4' },
-                    { x: 94, y: 87, id: 'v5' },
-                    { x: 207, y: 195, id: 'v6' },
-                    { x: 160, y: 124, id: 'v7' },
-                    { x: 223, y: 26, id: 'v8' },
-                    { x: 151, y: 53, id: 'v9' },
-                    { x: 104, y: 0, id: 'v10' },
+                    { x: 10,  y: 187, id: 'v0'  },
+                    { x: 4,   y: 13,  id: 'v1'  },
+                    { x: 87,  y: 156, id: 'v4'  },
+                    { x: 94,  y: 87,  id: 'v5'  },
+                    { x: 207, y: 195, id: 'v6'  },
+                    { x: 160, y: 124, id: 'v7'  },
+                    { x: 223, y: 26,  id: 'v8'  },
+                    { x: 151, y: 53,  id: 'v9'  },
+                    { x: 104, y: 0,   id: 'v10' },
                 ],
                 edges: [
-                    { source: 'v1', target: 'v0', w: 6 },
-                    { source: 'v0', target: 'v6', w: 9 },
-                    { source: 'v0', target: 'v4', w: 3 },
-                    { source: 'v1', target: 'v0', w: 6 },
-                    { source: 'v4', target: 'v1', w: 4 },
-                    { source: 'v5', target: 'v1', w: 2 },
-                    { source: 'v9', target: 'v1', w: 5 },
-                    { source: 'v10', target: 'v1', w: 4 },
-                    { source: 'v0', target: 'v6', w: 9 },
-                    { source: 'v7', target: 'v6', w: 8 },
-                    { source: 'v6', target: 'v4', w: 9 },
-                    { source: 'v6', target: 'v8', w: 18 },
-                    { source: 'v0', target: 'v4', w: 3 },
-                    { source: 'v4', target: 'v1', w: 4 },
-                    { source: 'v4', target: 'v5', w: 2 },
-                    { source: 'v6', target: 'v4', w: 9 },
-                    { source: 'v4', target: 'v5', w: 2 },
-                    { source: 'v5', target: 'v1', w: 2 },
-                    { source: 'v5', target: 'v7', w: 8 },
-                    { source: 'v5', target: 'v7', w: 8 },
-                    { source: 'v7', target: 'v6', w: 8 },
-                    { source: 'v8', target: 'v7', w: 10 },
-                    { source: 'v7', target: 'v9', w: 9 },
-                    { source: 'v6', target: 'v8', w: 18 },
-                    { source: 'v8', target: 'v7', w: 10 },
-                    { source: 'v8', target: 'v9', w: 3 },
-                    { source: 'v8', target: 'v10', w: 4 },
-                    { source: 'v7', target: 'v9', w: 9 },
-                    { source: 'v8', target: 'v9', w: 3 },
-                    { source: 'v9', target: 'v1', w: 5 },
-                    { source: 'v8', target: 'v10', w: 4 },
-                    { source: 'v10', target: 'v1', w: 4 },
+                    { source: 'v1',  target: 'v0',  w: 6  },
+                    { source: 'v0',  target: 'v6',  w: 9  },
+                    { source: 'v0',  target: 'v4',  w: 3  },
+                    { source: 'v1',  target: 'v0',  w: 6  },
+                    { source: 'v4',  target: 'v1',  w: 4  },
+                    { source: 'v5',  target: 'v1',  w: 2  },
+                    { source: 'v9',  target: 'v1',  w: 5  },
+                    { source: 'v10', target: 'v1',  w: 4  },
+                    { source: 'v0',  target: 'v6',  w: 9  },
+                    { source: 'v7',  target: 'v6',  w: 8  },
+                    { source: 'v6',  target: 'v4',  w: 9  },
+                    { source: 'v6',  target: 'v8',  w: 18 },
+                    { source: 'v0',  target: 'v4',  w: 3  },
+                    { source: 'v4',  target: 'v1',  w: 4  },
+                    { source: 'v4',  target: 'v5',  w: 2  },
+                    { source: 'v6',  target: 'v4',  w: 9  },
+                    { source: 'v4',  target: 'v5',  w: 2  },
+                    { source: 'v5',  target: 'v1',  w: 2  },
+                    { source: 'v5',  target: 'v7',  w: 8  },
+                    { source: 'v5',  target: 'v7',  w: 8  },
+                    { source: 'v7',  target: 'v6',  w: 8  },
+                    { source: 'v8',  target: 'v7',  w: 10 },
+                    { source: 'v7',  target: 'v9',  w: 9  },
+                    { source: 'v6',  target: 'v8',  w: 18 },
+                    { source: 'v8',  target: 'v7',  w: 10 },
+                    { source: 'v8',  target: 'v9',  w: 3  },
+                    { source: 'v8',  target: 'v10', w: 4  },
+                    { source: 'v7',  target: 'v9',  w: 9  },
+                    { source: 'v8',  target: 'v9',  w: 3  },
+                    { source: 'v9',  target: 'v1',  w: 5  },
+                    { source: 'v8',  target: 'v10', w: 4  },
+                    { source: 'v10', target: 'v1',  w: 4  },
                 ]
             }),
         })

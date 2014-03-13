@@ -187,7 +187,11 @@ class GraphDisplay
             @updateEdges(graph, frame)
             @updateVertices(graph, frame)
 
-        @previousGraph = graph
+        if @mode is "display"
+            @previousGraph = graph
+        else
+            delete @previousGraph
+
 
     trans: (d) -> "translate(" + [ d.x, d.y ] + ")"
 
@@ -224,7 +228,7 @@ class GraphDisplay
     updateEdges: (graph) ->
         console.log "updateEdges"
         @lines.call(@setEdgePos)
-        @edgeLabels.call(@setEdgeLabelPos)
+        @edgeLabels?.call(@setEdgeLabelPos)
 
     setEdgePos: (e) ->
         e.attr("x1", (d) -> d.source.x )
@@ -367,46 +371,59 @@ class GraphDisplay
         else
             return
 
+    # this will be cleaner should I find a way to have ellipses and
+    # text svg elements inherit classes from their groups. otherwise
+    # we need to tell both ellipses and vertex-content text elems what
+    # their class is, so they can color coordinate (like black oval
+    # with white text).
     updateVertexClasses: (vertexGroups) =>
+        console.log "updateVertexClasses"
 
         vertices = vertexGroups.selectAll("ellipse.vertex")
-        vertices.data((d) -> [d])
-        console.log "updateVertexClasses", vertices
+            .data((d) -> [d])
+            .classed("changed", (vertex) =>
+                return @highlightChanges and
+                       @mode is 'display' and
+                       @vertexChanged(vertex)
+            )
 
-        vertices.classed("changed", (vertex) =>
-            console.log vertex, @highlightChanges, @mode
-            r =  @highlightChanges and
-                 @mode is 'display' and
-                 @vertexChanged(vertex)
-            console.log "#{ vertex.name } changed!" if r
-            return r
-        )
+        labels = vertexGroups.selectAll("text.vertex-contents")
+            .data((d) -> [d])
 
-        # for attr, val of @vertexCssAttributes
-        #     if val.constructor.name is "Function"
-        #         (@appliedNodeClasses ?= {})[vertex.id] ?= {}
-        #         newClass = val(vertex)
-        #         continue if newClass is @appliedNodeClasses[vertex.id][attr]
-        #         # remove previously applied class for this attr
-        #         if @appliedNodeClasses[vertex.id][attr]?
-        #             node.classed(@appliedNodeClasses[vertex.id][attr], false)
-        #         if newClass?
-        #             node.classed(newClass, true)
-        #             @appliedNodeClasses[vertex.id][attr] = newClass
-        #         else
-        #             delete @appliedNodeClasses[vertex.id][attr]
-        #     else if val.constructor.name is "Array"
-        #         node.classed("#{attr}-#{kind}", false) for kind in val
-        #         if vertex[attr] in val
-        #             node.classed("#{attr}-#{vertex[attr]}", true)
-        #     else
-        #         if vertex[attr] == val
-        #             node.classed(attr, true)
-        #         else
-        #             node.classed(attr, false)
+        for attr, val of @vertexCssAttributes
+            if val.constructor.name is "Function"
+                ths = @
+                vertexGroups.each (vertex) ->
+                    (ths.appliedNodeClasses ?= {})[vertex.id] ?= {}
+                    sel = d3.select(this)
+                    newClass = val(vertex)
+                    # dont reapply classes
+                    return if newClass is ths.appliedNodeClasses[vertex.id][attr]
+                    # remove previously applied class for this attr
+                    if ths.appliedNodeClasses[vertex.id][attr]?
+                        sel.select("ellipse.vertex")
+                            .classed(ths.appliedNodeClasses[vertex.id][attr], false)
+                        sel.select("text.vertex-contents")
+                            .classed(ths.appliedNodeClasses[vertex.id][attr], false)
+                    # add new class
+                    if newClass?
+                        sel.select("ellipse.vertex").classed(newClass, true)
+                        sel.select("text.vertex-contents").classed(newClass, true)
+                        ths.appliedNodeClasses[vertex.id][attr] = newClass
+                    else
+                        delete ths.appliedNodeClasses[vertex.id][attr]
+
+            else if val.constructor.name is "Array"
+                for kind in val
+                    applyClass = (sel) ->
+                        sel.classed("#{ attr }-#{ kind }", (vtx) -> vtx[attr] == kind )
+                    vertices.call(applyClass)
+                    labels.call(applyClass)
+
+            else
+                vertices.classed(attr, (vertex) -> vertex[attr] == val)
 
     vertexChanged: (newv) ->
-        console.log "previousGraph", @previousGraph
         return false unless newv?
         return false unless @previousGraph?
         return false unless oldv = @previousGraph.vertex(newv.id)

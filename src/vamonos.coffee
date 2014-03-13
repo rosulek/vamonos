@@ -83,7 +83,7 @@
             inc = Math.floor(360 / nGroups)
             "hsl(#{ inc * n }, 60%, 70%)"
         for i in [0..nGroups-1]
-            $('<style>.'+ prefix + i + ' { background: ' + cs(i) + '; }</style>')
+            $('<style>ellipse.'+ prefix + i + ' { fill: ' + cs(i) + '; }</style>')
                 .appendTo($('html > head'))
 
     warn: (objName, str) ->
@@ -260,7 +260,7 @@
         return out.join("")
 
     # LZW-compress a string
-    lzw_encode: (s) -> 
+    lzw_encode: (s) ->
         dict = {}
         data = (s + "").split("")
         out = []

@@ -10,6 +10,9 @@
 
 ** fix dragging edges on display mode
 
+** subscript - bipartite matching
+** max flow - residual edge labels all over the place
+
 ** tooltips
 ** directed edges - back edges, label positions
 ** editable edge attributes
@@ -21,3 +24,8 @@
 
 * notes
 ** jQuery used for @$outer, d3 for @inner
+
+
+Here's a quick way to move the mouseover element to the front:
+
+selection.on("mouseover", function() { this.parentNode.appendChild(this); });
