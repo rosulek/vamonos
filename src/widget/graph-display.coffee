@@ -48,29 +48,6 @@ class GraphDisplay
                 edgeLabel: function(e){ return e.w + "!" },
                 """
 
-        colorEdges:
-            type: "Array"
-            defaultValue: []
-            description:
-                "provides a way to set edge coloring based on vertex variables " +
-                "or edge properties. takes an array of doubles of the form  " +
-                "`[ edge-predicate, color, [optional weight] ]`, where color is a hex color and edge-" +
-                "predicate is either a string of the form `'vertex1->vertex2'` or " +
-                "a function that takes an edge and returns a boolean. Also for added " +
-                "complexity and enjoyment, the color string can also be a function taking " +
-                "an edge and returning a color string or a color string and a width (if " +
-                "it returns an array)."
-            example: """
-                colorEdges: [
-                    ['u->v', '#FF7D7D'],
-                    [ function(edge){
-                        return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
-                            || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }
-                    , '#92E894' ],
-                    [ 'w->t', function(e){ if (e.f > 10) return "blue"; } ],
-                    [ 'w->x', function(e){ if (e.f < 10) return ["blue",10]; } ],
-                ]
-                """
         vertexCssAttributes:
             type: "Object"
             defaultValue: {}
@@ -90,6 +67,26 @@ class GraphDisplay
                     magic: function(vtx){ return "class-" + vtx.magicAttr },
                 },
                 """
+
+        edgeCssAttributes:
+            type: "Object"
+            defaultValue: undefined
+            description: "provides a way to change CSS classes of edges based " +
+                "upon the values of variables or the edges themselves. You provide " +
+                "a mapping of classnames to functions or strings. The function " +
+                "simply needs to take an edge and return a boolean (whether to " +
+                "apply the class). The string is a pairing of variable names in " +
+                "the form `'u->v'`."
+            example: """
+                edgeCssAttributes: {
+                    green: function(edge){
+                        return (edge.target.pred === edge.source.name)
+                            || (edge.source.pred === edge.target.name)
+                    },
+                    red: "u->v",
+                }
+                """
+
         containerMargin:
             type: "Number"
             defaultValue: 26
@@ -178,7 +175,7 @@ class GraphDisplay
         @directed = graph.directed
         @$outer.find(".changed").removeClass("changed")
 
-        @updateEdges(graph)
+        @updateEdges(graph, frame)
         @updateVertices(graph, frame)
         if not @initialized
             @startDragging(graph)
@@ -202,12 +199,13 @@ class GraphDisplay
             .on("drag", dragmove)
         @inner.selectAll("g.vertex").call(drag)
 
-    updateEdges: (graph) ->
+    updateEdges: (graph, frame) ->
         console.log "updateEdges"
         # update
         edges = @inner.selectAll("g.edge")
             .data(graph.getEdges(), graph.edgeId)
         edges.call(@updateEdgeLabels)
+            .call(@updateEdgeClasses, frame)
             .selectAll("line.edge")
             .call(@setLinePos)
         # enter
@@ -218,6 +216,7 @@ class GraphDisplay
             .attr("class", "edge")
             .call(@setLinePos)
         enter.call(@createEdgeLabels)
+            .call(@updateEdgeClasses, frame)
         # exit
         edges.exit()
             .remove()
@@ -373,6 +372,20 @@ class GraphDisplay
             val = Vamonos.rawToTxt(edge[attr] ? "")
         else
             return
+
+    updateEdgeClasses: (edgeGroups, frame) =>
+        return unless @edgeCssAttributes?
+        console.log "updateEdgeClasses"
+        lines = edgeGroups.selectAll("line.edge")
+            .data((d)->[d])
+        for klass, test of @edgeCssAttributes
+            if test?.constructor.name is 'Function'
+                lines.classed(klass, test)
+            else if test?.constructor.name is 'String'
+                [source, target] = test.split(/->/).map((v)->frame[v]) if frame?
+                lines.classed(klass, (e) -> e.source.id == source?.id and
+                                            e.target.id == target?.id)
+        return edgeGroups
 
     # this will be cleaner should I find a way to have ellipses and
     # text svg elements inherit classes from their groups. otherwise

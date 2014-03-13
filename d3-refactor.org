@@ -2,7 +2,7 @@
 
 * restore:
 
-** edge classes
+** edge classes - handle bidirectional edges in undirected graphs for 'u->v'
 
 ** fix dragging edges on display mode
 
