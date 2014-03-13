@@ -76,7 +76,7 @@ class GraphDisplay
                 "a mapping of classnames to functions or strings. The function " +
                 "simply needs to take an edge and return a boolean (whether to " +
                 "apply the class). The string is a pairing of variable names in " +
-                "the form `'u->v'`."
+                "the form `'u->v'` or `'u<->v'` for undirected graphs."
             example: """
                 edgeCssAttributes: {
                     green: function(edge){
@@ -150,12 +150,12 @@ class GraphDisplay
     # ------------ PUBLIC INTERACTION METHODS ------------- #
 
     # A widget that uses GraphDisplay will need to pass along the setup event
-    # in order to register vars from vertexLabels and colorEdges
+    # in order to register vars from vertexLabels and edgeCssAttributes
     event: (event, options...) -> switch event
         when "setup"
             [@viz, done] = options
-            for e in @colorEdges when typeof e[0] is 'string'
-                @viz.registerVariable(v) for v in e[0].split(/<?->?/)
+            for klass, test of @edgeCssAttributes when typeof test is 'string'
+                @viz.registerVariable(v) for v in test.split(/<?->?/)
             for label, values of @vertexLabels
                 for v in values when typeof v is 'string'
                     @viz.registerVariable(v)
@@ -382,9 +382,15 @@ class GraphDisplay
             if test?.constructor.name is 'Function'
                 lines.classed(klass, test)
             else if test?.constructor.name is 'String'
-                [source, target] = test.split(/->/).map((v)->frame[v]) if frame?
-                lines.classed(klass, (e) -> e.source.id == source?.id and
-                                            e.target.id == target?.id)
+                if test.match(/<->/) # bidirectional
+                    [source, target] = test.split(/<->/).map((v)->frame[v]) if frame?
+                    lines.classed(klass, (e) ->
+                        (e.source.id == source?.id and e.target.id == target?.id) or
+                        (e.target.id == source?.id and e.source.id == target?.id))
+                else
+                    [source, target] = test.split(/->/).map((v)->frame[v]) if frame?
+                    lines.classed(klass, (e) -> e.source.id == source?.id and
+                                                e.target.id == target?.id)
         return edgeGroups
 
     # this will be cleaner should I find a way to have ellipses and
