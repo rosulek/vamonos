@@ -209,20 +209,20 @@ class GraphDisplay
             .data(graph.getEdges(), graph.edgeId)
         edges.call(@updateEdgeLabels)
             .selectAll("line.edge")
-            .call(@setEdgePos)
+            .call(@setLinePos)
         # enter
         enter = edges.enter()
             .append("g")
             .attr("class", "edge")
         enter.append("line")
             .attr("class", "edge")
-            .call(@setEdgePos)
+            .call(@setLinePos)
         enter.call(@createEdgeLabels)
         # exit
         edges.exit()
             .remove()
 
-    setEdgePos: (line) ->
+    setLinePos: (line) ->
         line.attr("x1", (d) -> d.source.x )
             .attr("y1", (d) -> d.source.y )
             .attr("x2", (d) -> d.target.x )
@@ -348,16 +348,14 @@ class GraphDisplay
             .append("xhtml:body")
             .append("div")
             .attr("class", "graph-label")
-            .call(@setEdgeLabelPos)
-            .html(@edgeLabelVal)
+        edgeGroups.call(@updateEdgeLabels)
         return edgeGroups
 
     updateEdgeLabels: (edgeGroups) =>
         return unless @edgeLabel[@mode]?
         console.log "updateEdgeLabels"
-        edgeGroups.select("foreignObject")
-            .select("xhtml:body")
-            .select("div.graph-label")
+        edgeGroups.selectAll("div.graph-label")
+            .data((d)->[d])
             .call(@setEdgeLabelPos)
             .html(@edgeLabelVal)
         return edgeGroups
@@ -365,7 +363,6 @@ class GraphDisplay
     setEdgeLabelPos: (labelSel) =>
         labelSel.style("left", (d) => Math.floor((d.source.x + d.target.x) / 2) - 4 + @containerMargin )
                 .style("top",  (d) => Math.floor((d.source.y + d.target.y) / 2) - 7 + @containerMargin )
-        return labelSel
 
     edgeLabelVal: (edge) =>
         return unless @edgeLabel[@mode]?
