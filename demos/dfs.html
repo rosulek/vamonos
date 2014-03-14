@@ -32,6 +32,10 @@
         fill: black;
     }
 
+    line.red {
+        stroke: #FF7D7D;
+    }
+
     text.color-black, text.color-gray {
         fill: white;
     }
@@ -160,9 +164,9 @@ var myviz = new Vamonos.Visualizer({
             vertexCssAttributes: {
                 color: ["white", "gray", "black"],
             },
-            colorEdges: [
-                ["u->visit::v", "#FF7D7D"],
-            ],
+            edgeCssAttributes: {
+                red : "u->visit::v"
+            },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: true,
                 vertices: [

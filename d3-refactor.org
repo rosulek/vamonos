@@ -1,18 +1,26 @@
 #+TITLE: GraphDisplay D3 refactor notes
 
-* restore:
+* Graph Display:
 
-** edge classes - handle bidirectional edges in undirected graphs for 'u->v'
-
-** fix dragging edges on display mode
+** directed edges - back edges, label positions
+- put arrows on edge of ellipses
 
 ** subscript - bipartite matching
+
 ** max flow - residual edge labels all over the place
 
-** tooltips
-** directed edges - back edges, label positions
+** vertex attributes tooltips
+
+** optionally remember modified vertex positions in display mode
+
+** force layout
+
+* Graph Editing
+
 ** editable edge attributes
+
 ** dragging - update TheGraph
+
 ** selection
 
 * unneeded things currently out of scope

@@ -147,6 +147,20 @@ class GraphDisplay
                       @containerMargin ] +
                     ")")
 
+        # make arrows
+        @svg.append("svg:defs")
+            .append("svg:marker")
+            .attr("id", "arrow")
+            .attr("viewBox", "0 0 20 20")
+            .attr("refX", @vertexWidth / 2 + 6)
+            .attr("refY", 5)
+            .attr("markerUnits", "strokeWidth")
+            .attr("markerWidth", 8)
+            .attr("markerHeight", 6)
+            .attr("orient", "auto")
+            .append("svg:path")
+            .attr("d", "M 0 0 L 10 5 L 0 10 z")
+
     # ------------ PUBLIC INTERACTION METHODS ------------- #
 
     # A widget that uses GraphDisplay will need to pass along the setup event
@@ -186,7 +200,7 @@ class GraphDisplay
             delete @previousGraph
 
 
-    startDragging: (graph) ->
+    startDragging: () ->
         console.log "startDragging"
         ths = @
         dragmove = (d) ->
@@ -194,9 +208,13 @@ class GraphDisplay
             d.x = d3.event.x
             d.y = d3.event.y
             d3.select(@).attr('transform', trans)
-            ths.updateEdges(graph)
+            d3.selectAll("line.edge")
+                .call(ths.setLinePos)
+            d3.selectAll("div.graph-label")
+                .call(ths.setEdgeLabelPos)
         drag = d3.behavior.drag()
             .on("drag", dragmove)
+            .on("dragstart", ->this.parentNode.appendChild(this))
         @inner.selectAll("g.vertex").call(drag)
 
     updateEdges: (graph, frame) ->
@@ -212,9 +230,11 @@ class GraphDisplay
         enter = edges.enter()
             .append("g")
             .attr("class", "edge")
-        enter.append("line")
+        enterLines = enter.append("line")
             .attr("class", "edge")
             .call(@setLinePos)
+        if graph.directed
+            enterLines.attr("marker-end", "url(#arrow)")
         enter.call(@createEdgeLabels)
             .call(@updateEdgeClasses, frame)
         # exit
@@ -230,13 +250,14 @@ class GraphDisplay
     updateVertices: (graph, frame) ->
         console.log "createVertices"
         id = (vtx) -> return vtx.id
+        trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
         # update
         vertices = @inner.selectAll("g.vertex")
             .data(graph.getVertices(), id)
             .call(@updateVertexLabels, graph, frame)
             .call(@updateVertexClasses)
+            .attr("transform", trans)
         # enter
-        trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
         enter = vertices.enter()
             .append("g")
             .attr("transform", trans)
