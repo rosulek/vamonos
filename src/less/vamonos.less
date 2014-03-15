@@ -438,18 +438,19 @@ div.graph-label {
     position: absolute;
 }
 
-line.edge {
+path.edge {
     stroke: #cccccc;
+    fill: #cccccc;
     stroke-width: 4;
 }
 
-line.potential-edge {
+path.potential-edge {
     stroke: @editing-bg-color;
     stroke-width: 5;
-    stroke-dasharray: "1,1"
+    stroke-dasharray: 5,5
 }
 
-line.selected-edge {
+path.selected-edge {
     stroke-width: 4;
     stroke: @editing-bg-color;
 }

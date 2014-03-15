@@ -151,15 +151,16 @@ class GraphDisplay
         @svg.append("svg:defs")
             .append("svg:marker")
             .attr("id", "arrow")
-            .attr("viewBox", "0 0 20 20")
-            .attr("refX", @vertexWidth / 2 + 6)
+            .attr("viewBox", "0 0 40 40")
+            .attr("refX", 10)
             .attr("refY", 5)
             .attr("markerUnits", "strokeWidth")
-            .attr("markerWidth", 8)
-            .attr("markerHeight", 6)
+            .attr("markerWidth", 10)
+            .attr("markerHeight", 20)
             .attr("orient", "auto")
             .append("svg:path")
             .attr("d", "M 0 0 L 10 5 L 0 10 z")
+            .attr("class", "edge")
 
     # ------------ PUBLIC INTERACTION METHODS ------------- #
 
@@ -208,8 +209,8 @@ class GraphDisplay
             d.x = d3.event.x
             d.y = d3.event.y
             d3.select(@).attr('transform', trans)
-            d3.selectAll("line.edge")
-                .call(ths.setLinePos)
+            d3.selectAll("path.edge")
+                .attr("d", ths.genPath)
             d3.selectAll("div.graph-label")
                 .call(ths.setEdgeLabelPos)
         drag = d3.behavior.drag()
@@ -219,27 +220,41 @@ class GraphDisplay
 
     updateEdges: (graph, frame) ->
         console.log "updateEdges"
+
         # update
         edges = @inner.selectAll("g.edge")
             .data(graph.getEdges(), graph.edgeId)
         edges.call(@updateEdgeLabels)
             .call(@updateEdgeClasses, frame)
-            .selectAll("line.edge")
-            .call(@setLinePos)
+            .selectAll("path.edge")
+            .attr("d", @genPath)
         # enter
         enter = edges.enter()
             .append("g")
             .attr("class", "edge")
-        enterLines = enter.append("line")
+        enter.append("path")
             .attr("class", "edge")
-            .call(@setLinePos)
-        if graph.directed
-            enterLines.attr("marker-end", "url(#arrow)")
+            .attr("d", @genPath)
+            .attr("marker-end", if graph.directed then "url(#arrow)" else null)
         enter.call(@createEdgeLabels)
             .call(@updateEdgeClasses, frame)
         # exit
         edges.exit()
             .remove()
+
+    genPath: (e) =>
+        # (x1,y1) is the coordinate of intersection of the edge line and the
+        # vertex ellipse as defined by @vertexWidth and @vertexHeight, treating
+        # the centerpoint of the vertex as the origin.
+        x0 = e.source.x - e.target.x
+        y0 = e.source.y - e.target.y
+        sq = (x) -> Math.pow(x, 2)
+        a = @vertexWidth / 2 + 5
+        b = @vertexHeight / 2 + 5
+        thingy = a * b / Math.sqrt( sq(a) * sq(y0) + sq(b) * sq(x0) )
+        x1 = ~~(thingy * x0)
+        y1 = ~~(thingy * y0)
+        "M #{ e.source.x } #{ e.source.y }, L #{ e.target.x + x1 } #{ e.target.y + y1 }"
 
     setLinePos: (line) ->
         line.attr("x1", (d) -> d.source.x )
@@ -397,7 +412,7 @@ class GraphDisplay
     updateEdgeClasses: (edgeGroups, frame) =>
         return unless @edgeCssAttributes?
         console.log "updateEdgeClasses"
-        lines = edgeGroups.selectAll("line.edge")
+        lines = edgeGroups.selectAll("path.edge")
             .data((d)->[d])
         for klass, test of @edgeCssAttributes
             if test?.constructor.name is 'Function'
