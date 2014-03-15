@@ -120,6 +120,15 @@ class GraphDisplay
             defaultValue: 30
             description: "the height of vertices in the graph"
 
+        arrowWidth:
+            type: "Number"
+            defaultValue: 8
+            description: "the width of arrows in directed graphs"
+        arrowLength:
+            type: "Number"
+            defaultValue: 8
+            description: "the length of arrows in directed graphs"
+
     constructor: (args) ->
 
         Vamonos.handleArguments
@@ -235,26 +244,55 @@ class GraphDisplay
         enter.append("path")
             .attr("class", "edge")
             .attr("d", @genPath)
-            .attr("marker-end", if graph.directed then "url(#arrow)" else null)
+            # .attr("marker-end", if graph.directed then "url(#arrow)" else null)
         enter.call(@createEdgeLabels)
             .call(@updateEdgeClasses, frame)
         # exit
         edges.exit()
             .remove()
 
+    # creates the text for the d attribute of a path element
+    # representing an edge `e`.
     genPath: (e) =>
-        # (x1,y1) is the coordinate of intersection of the edge line and the
-        # vertex ellipse as defined by @vertexWidth and @vertexHeight, treating
-        # the centerpoint of the vertex as the origin.
-        x0 = e.source.x - e.target.x
-        y0 = e.source.y - e.target.y
+        r = "M #{ e.source.x } #{ e.source.y }"
+        if not @directed
+            # if the graph is not directed, there is no need to draw
+            # fancy arrows. Just return a path from center of source
+            # vertex to center of target vertex.
+            return r + " L #{ e.target.x } #{ e.target.y }"
+        # otherwise, we need to find the point of intersection with
+        # the target vertex's ellipse.
+        dx = e.source.x - e.target.x
+        dy = e.source.y - e.target.y
+        # abbreviation for squaring and floor
         sq = (x) -> Math.pow(x, 2)
+        # do some algebra using the definition of ellipses
         a = @vertexWidth / 2 + 5
         b = @vertexHeight / 2 + 5
-        thingy = a * b / Math.sqrt( sq(a) * sq(y0) + sq(b) * sq(x0) )
-        x1 = ~~(thingy * x0)
-        y1 = ~~(thingy * y0)
-        "M #{ e.source.x } #{ e.source.y }, L #{ e.target.x + x1 } #{ e.target.y + y1 }"
+        thingy = a * b / Math.sqrt( sq(a) * sq(dy) + sq(b) * sq(dx) )
+        # (x1,y1) is the coordinate of intersection of the edge line
+        # and the vertex ellipse as defined by @vertexWidth and
+        # @vertexHeight, treating the centerpoint of the vertex as the
+        # origin. reminder: ~~ is fast Math.floor
+        x1 = ~~(thingy * dx) + e.target.x
+        y1 = ~~(thingy * dy) + e.target.y
+        # return r + "L #{ x1 } #{ y1 }"
+
+        dist = Math.sqrt(sq(dx) + sq(dy))
+        dx /= dist
+        dy /= dist
+        # get stopping point before end of line
+        x2 = x1 - (dx * -@arrowLength)
+        y2 = y1 - (dy * -@arrowLength)
+        r += " L #{ ~~x2 } #{ ~~y2 }"
+        # get perpendicular points
+        x3 = x2 + (@arrowWidth / 2) * dy
+        y3 = y2 - (@arrowWidth / 2) * dx
+        x4 = x2 - (@arrowWidth / 2) * dy
+        y4 = y2 + (@arrowWidth / 2) * dx
+        r += " L #{ ~~x3 } #{ ~~y3 } L #{ ~~x1 } #{ ~~y1 }" +
+             " L #{ ~~x4 } #{ ~~y4 } L #{ ~~x2 } #{ ~~y2 }"
+        return r
 
     setLinePos: (line) ->
         line.attr("x1", (d) -> d.source.x )

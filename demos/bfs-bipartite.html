@@ -9,12 +9,7 @@
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
     <style type="text/css">
-    .vertex {
-        width: 40;
-        height: 30;
-    }
-
-    .vertex-contents {
+    text.vertex-contents {
         font-size: .8em;
     }
 
@@ -41,6 +36,16 @@
     text.color-blue {
         fill: white;
         font-weight: bold;
+    }
+
+    path.grey {
+        fill: #595959;
+        stroke: #595959;
+    }
+
+    path.red {
+        fill: red;
+        stroke: red;
     }
 
     body {
@@ -165,13 +170,10 @@ var myviz = new Vamonos.Visualizer({
             vertexCssAttributes: {
                 color: ["white", "blue", "red"],
             },
-            colorEdges: [
-                ["u->v", "#595959"],
-                [ function(edge){
-                    return (edge.target.bad && edge.source.bad)
-                  }
-                , "red" ],
-            ],
+            edgeCssAttributes: {
+                grey : "u->v",
+                red  : function(edge){return (edge.target.bad && edge.source.bad)},
+            },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 vertices: [
                     {id: "v0", x: 17,  y: 10},
