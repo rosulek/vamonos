@@ -122,11 +122,11 @@ class GraphDisplay
 
         arrowWidth:
             type: "Number"
-            defaultValue: 8
+            defaultValue: 6
             description: "the width of arrows in directed graphs"
         arrowLength:
             type: "Number"
-            defaultValue: 8
+            defaultValue: 6
             description: "the length of arrows in directed graphs"
 
     constructor: (args) ->
@@ -155,21 +155,6 @@ class GraphDisplay
                     [ @containerMargin ,
                       @containerMargin ] +
                     ")")
-
-        # make arrows
-        @svg.append("svg:defs")
-            .append("svg:marker")
-            .attr("id", "arrow")
-            .attr("viewBox", "0 0 40 40")
-            .attr("refX", 10)
-            .attr("refY", 5)
-            .attr("markerUnits", "strokeWidth")
-            .attr("markerWidth", 10)
-            .attr("markerHeight", 20)
-            .attr("orient", "auto")
-            .append("svg:path")
-            .attr("d", "M 0 0 L 10 5 L 0 10 z")
-            .attr("class", "edge")
 
     # ------------ PUBLIC INTERACTION METHODS ------------- #
 
@@ -273,25 +258,24 @@ class GraphDisplay
         # (x1,y1) is the coordinate of intersection of the edge line
         # and the vertex ellipse as defined by @vertexWidth and
         # @vertexHeight, treating the centerpoint of the vertex as the
-        # origin. reminder: ~~ is fast Math.floor
-        x1 = ~~(thingy * dx) + e.target.x
-        y1 = ~~(thingy * dy) + e.target.y
+        # origin. reminder:  is fast Math.floor
+        x1 = (thingy * dx) + e.target.x
+        y1 = (thingy * dy) + e.target.y
         # return r + "L #{ x1 } #{ y1 }"
-
         dist = Math.sqrt(sq(dx) + sq(dy))
         dx /= dist
         dy /= dist
         # get stopping point before end of line
         x2 = x1 - (dx * -@arrowLength)
         y2 = y1 - (dy * -@arrowLength)
-        r += " L #{ ~~x2 } #{ ~~y2 }"
+        r += " L #{ x2 } #{ y2 }"
         # get perpendicular points
         x3 = x2 + (@arrowWidth / 2) * dy
         y3 = y2 - (@arrowWidth / 2) * dx
         x4 = x2 - (@arrowWidth / 2) * dy
         y4 = y2 + (@arrowWidth / 2) * dx
-        r += " L #{ ~~x3 } #{ ~~y3 } L #{ ~~x1 } #{ ~~y1 }" +
-             " L #{ ~~x4 } #{ ~~y4 } L #{ ~~x2 } #{ ~~y2 }"
+        r += " L #{ x3 } #{ y3 } L #{ x1 } #{ y1 }" +
+             " L #{ x4 } #{ y4 } L #{ x2 } #{ y2 }"
         return r
 
     setLinePos: (line) ->
