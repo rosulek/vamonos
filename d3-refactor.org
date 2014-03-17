@@ -2,7 +2,7 @@
 
 * Graph Display:
 
-** styleEdges
+** svg size in firefox
 
 ** directed edges - back edges, label positions
 
