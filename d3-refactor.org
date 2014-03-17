@@ -2,12 +2,13 @@
 
 * Graph Display:
 
-** directed edges - back edges, label positions
-- put arrows on edge of ellipses
+** max flow - residual edge labels all over the place
 
 ** subscript - bipartite matching
 
-** max flow - residual edge labels all over the place
+** styleEdges
+
+** directed edges - back edges, label positions
 
 ** vertex attributes tooltips
 
@@ -29,7 +30,6 @@
 * notes
 ** jQuery used for @$outer, d3 for @inner
 
+* check when done
 
-Here's a quick way to move the mouseover element to the front:
-
-selection.on("mouseover", function() { this.parentNode.appendChild(this); });
+** dijkstra-quiz highlighting the correct vertex

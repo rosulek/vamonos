@@ -23,6 +23,16 @@
     body {
         text-align: center;
     }
+
+    path.red {
+        fill: #FF7D7D;
+        stroke: #FF7d7d;
+    }
+
+    path.blue {
+        fill: #276CFF;
+        stroke: #276cff;
+    }
     </style>
 
 </head><body>
@@ -83,12 +93,12 @@ var myviz = new Vamonos.Visualizer({
             vertexCssAttributes: {
                 group: function(vtx){ if (vtx.group !== undefined) return "group-" + vtx.group; },
             },
+            edgeCssAttributes: {
+                red  : "u->v",
+                blue : function(edge){ return edge.inMST }
+            },
             edgeLabel: "w",
             defaultEdgeAttrs: { w: 1 },
-            colorEdges: [
-                ["u->v", "#FF7D7D"],
-                [ function(edge){ return edge.inMST }, "#276CFF" ],
-            ],
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: false,
                 prefix: "",

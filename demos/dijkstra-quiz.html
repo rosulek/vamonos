@@ -32,6 +32,14 @@
         fill: yellow;
     }
 
+    path.green {
+        stroke: #92E894;
+    }
+
+    path.red {
+        stroke: #FF7D7D;
+    }
+
     span.bad {
         color: red;
         font-weight: bold;
@@ -221,13 +229,15 @@ var myviz = new Vamonos.Visualizer({
             },
             edgeLabel: "w",
             defaultEdgeAttrs: { w: 1 },
-            colorEdges: [
-                [ function(edge){
+
+            edgeCssAttributes: {
+                green : function(edge){
                     return (edge.target.pred === edge.source.name)
-                        || (edge.source.pred === edge.target.name) }
-                , "#92E894" ],
-                ["u->v", "#FF7D7D"],
-            ],
+                        || (edge.source.pred === edge.target.name)
+                },
+                red   : "u<->v",
+            },
+
             defaultGraph: new Vamonos.DataStructure.Graph({
                 //directed: true,
                 vertices: [

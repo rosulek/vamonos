@@ -89,7 +89,7 @@ class GraphDisplay
 
         containerMargin:
             type: "Number"
-            defaultValue: 26
+            defaultValue: 30
             description: "how close vertices can get to the container edge"
         minX:
             type: "Number"

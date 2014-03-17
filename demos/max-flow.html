@@ -29,6 +29,16 @@
         font-weight: bold;
     }
 
+    path.green {
+        fill: #92E894;
+        stroke: #92E894;
+    }
+
+    path.red {
+        fill: #FF7D7D;
+        stroke: #FF7D7D;
+    }
+
     body {
         text-align: center;
     }
@@ -121,17 +131,17 @@ var myviz = new Vamonos.Visualizer({
                 },
             },
             defaultEdgeAttrs: { c: 1 },
-            colorEdges: [
-                ["u->v", "#92E894"],
-                [ function(e){ if (e.f !== undefined && (e.f > 0)) return true; },
-                  function(e){
+            edgeCssAttributes: { green: "u->v" },
+            styleEdges: [
+                { condition: function(e){ if (e.f !== undefined && (e.f > 0)) return true; },
+                  style: function(e){
                       var percent = e.f / e.c;
                       var s = 255 * (1 - percent);
                       var color = Vamonos.rgbToHex(s,s,255);
                       var width = 2 + e.f;
                       return [color,width];
                   }
-                ],
+                },
             ],
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: true,
@@ -183,12 +193,9 @@ var myviz = new Vamonos.Visualizer({
                 nw   : ["s_f"],
                 ne   : ["t_f"],
             },
-            colorEdges: [
-                [ function(edge){
-                    return (edge.target.pred === edge.source.id)
-                  }
-                ,  "#FF7D7D"],
-            ]
+            edgeCssAttributes: {
+                red : function(edge){return (edge.target.pred === edge.source.id)},
+            },
         }),
 
         new Vamonos.Widget.Error({

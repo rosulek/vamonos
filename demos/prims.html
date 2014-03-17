@@ -8,26 +8,36 @@
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
     <style type="text/css">
-        .vertex {
-            width: 40;
-            height: 30;
-        }
+    .vertex {
+        width: 40;
+        height: 30;
+    }
 
-        .vertex-contents {
-            font-size: .8em;
-        }
+    .vertex-contents {
+        font-size: .8em;
+    }
 
-        .vertex-ne-label, .vertex-nw-label {
-            font-weight: bold;
-        }
+    .vertex-ne-label, .vertex-nw-label {
+        font-weight: bold;
+    }
 
-        .vertex-sw-label {
-            font-style: italic;
-        }
+    .vertex-sw-label {
+        font-style: italic;
+    }
 
-        body {
-            text-align: center;
-        }
+    path.red {
+        fill: #FF7D7D;
+        stroke: #FF7d7d;
+    }
+
+    path.blue {
+        fill: #276CFF;
+        stroke: #276cff;
+    }
+
+    body {
+        text-align: center;
+    }
     </style>
 
 </head><body>
@@ -152,13 +162,12 @@ var myviz = new Vamonos.Visualizer({
             },
             edgeLabel: "w",
             defaultEdgeAttrs: { w: 1 },
-            colorEdges: [
-                ["u->v", "#FF7D7D"],
-                [ function(edge){
+            edgeCssAttributes: {
+                red  : "u->v",
+                blue : function(edge){
                     return (edge.target.pred === edge.source.name)
                         || (edge.source.pred === edge.target.name) }
-                , "#276CFF" ],
-            ],
+            },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: false,
                 prefix: "",
