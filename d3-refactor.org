@@ -4,7 +4,9 @@
 
 ** max flow - residual edge labels all over the place
 
-** subscript - bipartite matching
+** subscript
+Trying to embed html inside a text element
+maybe vertex labels should be foreignObjects too
 
 ** styleEdges
 

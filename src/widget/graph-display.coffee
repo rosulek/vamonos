@@ -149,12 +149,22 @@ class GraphDisplay
                 minHeight: @minY
 
         @svg = d3.selectAll("#" + @$outer.attr("id")).append("svg")
-        @inner = @svg.append("g")
-              .attr("transform",
-                    "translate(" +
-                    [ @containerMargin ,
-                      @containerMargin ] +
-                    ")")
+        @inner = @initialize(@svg)
+
+        # debug
+        if (not window.graphNum?)
+            window.graphNum = 0
+        else
+            window.graphNum += 1
+
+        window["svg#{window.graphNum}"] = @svg
+        window["inner#{window.graphNum}"] = @inner
+
+    initialize: () ->
+        @svg.append("g")
+            .attr("transform", "translate(" +
+                [ @containerMargin ,
+                  @containerMargin ] + ")")
 
     # ------------ PUBLIC INTERACTION METHODS ------------- #
 
@@ -184,8 +194,8 @@ class GraphDisplay
         @directed = graph.directed
         @$outer.find(".changed").removeClass("changed")
 
-        @updateEdges(graph, frame)
         @updateVertices(graph, frame)
+        @updateEdges(graph, frame)
         if not @initialized
             @startDragging(graph)
             @initialized = true
@@ -194,6 +204,9 @@ class GraphDisplay
         else
             delete @previousGraph
 
+    clearDisplay: () ->
+        @inner.remove()
+        @inner = @initialize()
 
     startDragging: () ->
         console.log "startDragging"
@@ -215,16 +228,18 @@ class GraphDisplay
     updateEdges: (graph, frame) ->
         console.log "updateEdges"
 
-        # update
+        # update #
         edges = @inner.selectAll("g.edge")
             .data(graph.getEdges(), graph.edgeId)
         edges.call(@updateEdgeLabels)
             .call(@updateEdgeClasses, frame)
             .selectAll("path.edge")
             .attr("d", @genPath)
-        # enter
+        # enter #
+        # insert edges at the start of the svg, so they dont overlap
+        # vertices, which are appended to the end of the svg
         enter = edges.enter()
-            .append("g")
+            .insert("g", ":first-child")
             .attr("class", "edge")
         enter.append("path")
             .attr("class", "edge")
@@ -232,8 +247,9 @@ class GraphDisplay
             # .attr("marker-end", if graph.directed then "url(#arrow)" else null)
         enter.call(@createEdgeLabels)
             .call(@updateEdgeClasses, frame)
-        # exit
+        # exit #
         edges.exit()
+            .call(@removeEdgeLabels)
             .remove()
 
     # creates the text for the d attribute of a path element
@@ -350,15 +366,18 @@ class GraphDisplay
 
     createVertexLabels: (vertexGroup, graph, frame) =>
         console.log "createVertexLabels"
-        x = @vertexWidth  / 2
+        x = @vertexWidth / 2
         y = @vertexHeight / 2
         xOffset = x / 2
         yOffset = y / 2
         setLabel = (klass, xPos, yPos) =>
-            vertexGroup.append("text")
+            vertexGroup.append("foreignObject")
+                .attr("class", "foreignObject")
+                .append("xhtml:body")
+                .append("div")
                 .attr("class", klass)
-                .attr("x", xPos)
-                .attr("y", yPos)
+                .attr("left", xPos)
+                .attr("top", yPos)
         setLabel("vertex-contents", 0, yOffset / 2)
         setLabel("vertex-ne-label", x, - y)
         setLabel("vertex-nw-label", - x - xOffset, - y)
@@ -370,7 +389,7 @@ class GraphDisplay
     updateVertexLabels: (sel, graph, frame) =>
         console.log "updateVertexLabels #{ @mode }-mode"
         for type, style of @vertexLabels
-            target = sel.selectAll("text." + switch type
+            target = sel.selectAll("div." + switch type
                 when "inner" then "vertex-contents"
                 when "ne"    then "vertex-ne-label"
                 when "nw"    then "vertex-nw-label"
@@ -379,18 +398,18 @@ class GraphDisplay
                 else
                     throw Error "GraphDisplay '#{ @varName }': no vertex label \"#{ type }\""
             )
-            target.data (d) -> [d]
+            target.data((d) -> [d])
             if style.constructor.name is "Function"
-                target.text((d) => Vamonos.rawToTxt(style(d)))
+                target.html((d) => Vamonos.rawToTxt(style(d)))
             else if style.constructor.name is "Array"
-                target.text (d) =>
+                target.html (d) =>
                     res = []
                     for v in style when frame[v]?.id is d.id
                         res.push(Vamonos.resolveSubscript(Vamonos.removeNamespace(v)))
                     return res.join(",")
             else if (style.constructor.name is "Object" and
                      style[@mode]?.constructor.name is "Function")
-                target.text((d) => Vamonos.rawToTxt(style[@mode](d)))
+                target.html((d) => Vamonos.rawToTxt(style[@mode](d)))
             else
                 target.text("")
         return sel
@@ -402,11 +421,19 @@ class GraphDisplay
             .data((d)->[d])
             .enter()
             .append("foreignObject")
+            # there is a bug in webkit where you can't select camelCase objects
+            # so use a class to be able to select these elements later
+            .attr("class", "foreignObject")
             .append("xhtml:body")
             .append("div")
             .attr("class", "graph-label")
         edgeGroups.call(@updateEdgeLabels)
         return edgeGroups
+
+    removeEdgeLabels: (edgeGroups) =>
+        # there is a bug in webkit where you can't select camelCase objects
+        # so use a class to be able to select these elements later
+        edgeGroups.selectAll(".foreignObject").remove()
 
     updateEdgeLabels: (edgeGroups) =>
         return unless @edgeLabel[@mode]?
