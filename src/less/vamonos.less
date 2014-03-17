@@ -429,13 +429,11 @@ tr.pseudocode-active {
     opacity: 0.8;
 }
 
-div.graph-label {
+text.graph-label {
     font-family: sans-serif;
     font-size: .8em;
     cursor: default;
-    background: #F3F3F3;
-    padding: 0 1px 0 1px;
-    position: absolute;
+    text-anchor: middle;
 }
 
 path.edge {
@@ -446,13 +444,15 @@ path.edge {
 
 path.potential-edge {
     stroke: @editing-bg-color;
+    fill: @editing-bg-color;
     stroke-width: 5;
-    stroke-dasharray: 5,5
+    stroke-dasharray: 5,5;
 }
 
 path.selected-edge {
     stroke-width: 4;
     stroke: @editing-bg-color;
+    fill: @editing-bg-color;
 }
 
 div.graph-drawer {
@@ -480,14 +480,6 @@ ellipse.vertex {
 }
 
 .vertex {
-    width: @vertex-size;
-    height: @vertex-size;
-    padding: 0px;
-
-    .border-radius(50%);
-    border: 1px solid @border-color;
-    background: @normal-item-bg-color;
-
     position: relative; // left/top: relative to container
 
     // additional layer to allow centering contents

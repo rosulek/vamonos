@@ -218,7 +218,7 @@ class GraphDisplay
             d3.select(@).attr('transform', trans)
             d3.selectAll("path.edge")
                 .attr("d", ths.genPath)
-            d3.selectAll("div.graph-label")
+            d3.selectAll("text.graph-label")
                 .call(ths.setEdgeLabelPos)
         drag = d3.behavior.drag()
             .on("drag", dragmove)
@@ -413,15 +413,10 @@ class GraphDisplay
     createEdgeLabels: (edgeGroups) =>
         return unless @edgeLabel[@mode]?
         console.log "createEdgeLabels"
-        edgeGroups.selectAll("foreignObject")
+        edgeGroups.selectAll("text")
             .data((d)->[d])
             .enter()
-            .append("foreignObject")
-            # there is a bug in webkit where you can't select camelCase objects
-            # so use a class to be able to select these elements later
-            .attr("class", "foreignObject")
-            .append("xhtml:body")
-            .append("div")
+            .append("text")
             .attr("class", "graph-label")
         edgeGroups.call(@updateEdgeLabels)
         return edgeGroups
@@ -434,15 +429,15 @@ class GraphDisplay
     updateEdgeLabels: (edgeGroups) =>
         return unless @edgeLabel[@mode]?
         console.log "updateEdgeLabels"
-        edgeGroups.selectAll("div.graph-label")
+        edgeGroups.selectAll("text.graph-label")
             .data((d)->[d])
             .call(@setEdgeLabelPos)
-            .html(@edgeLabelVal)
+            .text(@edgeLabelVal)
         return edgeGroups
 
     setEdgeLabelPos: (labelSel) =>
-        labelSel.style("left", (d) => Math.floor((d.source.x + d.target.x) / 2) - 4 + @containerMargin )
-                .style("top",  (d) => Math.floor((d.source.y + d.target.y) / 2) - 7 + @containerMargin )
+        labelSel.attr("x", (d) => Math.floor((d.source.x + d.target.x) / 2))
+                .attr("y", (d) => Math.floor((d.source.y + d.target.y) / 2) + 4)
 
     edgeLabelVal: (edge) =>
         return unless @edgeLabel[@mode]?
