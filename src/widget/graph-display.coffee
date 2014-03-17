@@ -87,6 +87,25 @@ class GraphDisplay
                 }
                 """
 
+        styleEdges:
+            type: "Array"
+            defaultValue: undefined
+            description: "Provides a way to add styles (given by the function in " +
+            "`style`) to each edge path object matching `condition`."
+            example: """
+                styleEdges: [
+                    { condition: function(e){ if (e.f !== undefined && (e.f > 0)) return true; },
+                      style: function(e){
+                          var percent = e.f / e.c;
+                          var s = 255 * (1 - percent);
+                          var color = Vamonos.rgbToHex(s,s,255);
+                          var width = 2 + e.f;
+                          return [color,width];
+                      }
+                    },
+                ],
+                """
+
         containerMargin:
             type: "Number"
             defaultValue: 30
@@ -232,6 +251,7 @@ class GraphDisplay
             .data(graph.getEdges(), graph.edgeId)
         edges.call(@updateEdgeLabels)
             .call(@updateEdgeClasses, frame)
+            .call(@updateEdgeStyles)
             .selectAll("path.edge")
             .attr("d", @genPath)
         # enter #
@@ -246,6 +266,7 @@ class GraphDisplay
             # .attr("marker-end", if graph.directed then "url(#arrow)" else null)
         enter.call(@createEdgeLabels)
             .call(@updateEdgeClasses, frame)
+            .call(@updateEdgeStyles)
         # exit #
         edges.exit()
             .call(@removeEdgeLabels)
@@ -468,6 +489,23 @@ class GraphDisplay
                     lines.classed(klass, (e) -> e.source.id == source?.id and
                                                 e.target.id == target?.id)
         return edgeGroups
+
+    updateEdgeStyles: (edgeGroups) =>
+        return unless @styleEdges?.length
+        for styleObj in @styleEdges
+            continue unless styleObj.condition?.constructor.name is 'Function'
+            continue unless styleObj.style?.constructor.name is 'Function'
+            styles = (@appliedEdgeStyles ?= [])
+            edgeGroups.selectAll("path.edge")
+                .data((d)->[d])
+                .each (e) ->
+                    if styleObj.condition(e)
+                        [attr, val] = styleObj.style(e)
+                        styles.push attr
+                        d3.select(this).style(attr, val)
+                    else
+                        d3.select(this).style(attr, null) for attr in styles
+
 
     # this will be cleaner should I find a way to have ellipses and
     # text svg elements inherit classes from their groups. otherwise
