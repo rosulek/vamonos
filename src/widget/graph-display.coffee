@@ -227,7 +227,6 @@ class GraphDisplay
 
     updateEdges: (graph, frame) ->
         console.log "updateEdges"
-
         # update #
         edges = @inner.selectAll("g.edge")
             .data(graph.getEdges(), graph.edgeId)
@@ -371,13 +370,10 @@ class GraphDisplay
         xOffset = x / 2
         yOffset = y / 2
         setLabel = (klass, xPos, yPos) =>
-            vertexGroup.append("foreignObject")
-                .attr("class", "foreignObject")
-                .append("xhtml:body")
-                .append("div")
+            vertexGroup.append("text")
                 .attr("class", klass)
-                .attr("left", xPos)
-                .attr("top", yPos)
+                .attr("x", xPos)
+                .attr("y", yPos)
         setLabel("vertex-contents", 0, yOffset / 2)
         setLabel("vertex-ne-label", x, - y)
         setLabel("vertex-nw-label", - x - xOffset, - y)
@@ -389,7 +385,7 @@ class GraphDisplay
     updateVertexLabels: (sel, graph, frame) =>
         console.log "updateVertexLabels #{ @mode }-mode"
         for type, style of @vertexLabels
-            target = sel.selectAll("div." + switch type
+            target = sel.selectAll("text." + switch type
                 when "inner" then "vertex-contents"
                 when "ne"    then "vertex-ne-label"
                 when "nw"    then "vertex-nw-label"
