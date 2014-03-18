@@ -148,6 +148,11 @@ class GraphDisplay
             defaultValue: 6
             description: "the length of arrows in directed graphs"
 
+        bezierCurviness:
+            type: "Number"
+            defaultValue: 15
+            description: "the curviness of bezier curves in this graph"
+
     constructor: (args) ->
 
         Vamonos.handleArguments
@@ -168,6 +173,8 @@ class GraphDisplay
                 minHeight: @minY
 
         @svg = d3.selectAll("#" + @$outer.attr("id")).append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
         @inner = @initialize(@svg)
 
         # debug
@@ -218,10 +225,7 @@ class GraphDisplay
         if not @initialized
             @startDragging(graph)
             @initialized = true
-        if @mode is "display"
-            @previousGraph = graph
-        else
-            delete @previousGraph
+        @previousGraph = graph
 
     clearDisplay: () ->
         @inner.remove()
@@ -234,11 +238,11 @@ class GraphDisplay
             trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
             d.x = d3.event.x
             d.y = d3.event.y
-            d3.select(@).attr('transform', trans)
-            d3.selectAll("path.edge")
-                .attr("d", ths.genPath)
-            d3.selectAll("text.graph-label")
-                .call(ths.setEdgeLabelPos)
+            d3.select(this).attr('transform', trans)
+            ths.inner.selectAll("g.edge")
+                .call(ths.genPath)
+            ths.inner.selectAll("text.graph-label")
+                .call(ths.setEdgeLabelPos, ths.previousGraph)
         drag = d3.behavior.drag()
             .on("drag", dragmove)
             .on("dragstart", ->this.parentNode.appendChild(this))
@@ -249,11 +253,10 @@ class GraphDisplay
         # update #
         edges = @inner.selectAll("g.edge")
             .data(graph.getEdges(), graph.edgeId)
-        edges.call(@updateEdgeLabels)
+        edges.call(@genPath, graph)
+            .call(@updateEdgeLabels)
             .call(@updateEdgeClasses, frame)
             .call(@updateEdgeStyles)
-            .selectAll("path.edge")
-            .attr("d", @genPath)
         # enter #
         # insert edges at the start of the svg, so they dont overlap
         # vertices, which are appended to the end of the svg
@@ -262,7 +265,7 @@ class GraphDisplay
             .attr("class", "edge")
         enter.append("path")
             .attr("class", "edge")
-            .attr("d", @genPath)
+        enter.call(@genPath, graph)
             # .attr("marker-end", if graph.directed then "url(#arrow)" else null)
         enter.call(@createEdgeLabels)
             .call(@updateEdgeClasses, frame)
@@ -272,53 +275,100 @@ class GraphDisplay
             .call(@removeEdgeLabels)
             .remove()
 
-    # creates the text for the d attribute of a path element
+    # dispatches to genStraightPath or genCurvyPath depending on whether
+    # edge `e` has a back-edge in `g`.
+    genPath: (sel, graph) =>
+        console.log "genPath"
+        getPath  = (e) =>
+            return @pathStraightNoArrow(e) unless @directed
+            if graph?.edge(e.target, e.source)
+                path = @pathBezierWithArrow(e)
+            else
+                path = @pathStraightWithArrow(e)
+            return path
+        sel.selectAll("path.edge")
+            .attr("d", getPath)
+
+
+    # if the graph is not directed, there is no need to draw fancy
+    # arrows. Just return a path from center of source vertex to
+    # center of target vertex.
+    pathStraightNoArrow: (e) =>
+        return "M #{ e.source.x } #{ e.source.y } " +
+               "L #{ e.target.x } #{ e.target.y } "
+
+    # creates the text for the d attribute of a straight path element
     # representing an edge `e`.
-    genPath: (e) =>
-        r = "M #{ e.source.x } #{ e.source.y }"
-        if not @directed
-            # if the graph is not directed, there is no need to draw
-            # fancy arrows. Just return a path from center of source
-            # vertex to center of target vertex.
-            return r + " L #{ e.target.x } #{ e.target.y }"
-        # otherwise, we need to find the point of intersection with
-        # the target vertex's ellipse.
-        dx = e.source.x - e.target.x
-        dy = e.source.y - e.target.y
+    pathStraightWithArrow: (e) =>
+        [x1,y1] = @intersectVertex([e.target.x, e.target.y],
+                                   [e.source.x, e.source.y])
+
+        return "M #{ e.source.x } #{ e.source.y }" +
+                @pathArrowAt([x1,y1], [e.source.x, e.source.y])
+
+    pathBezierWithArrow: (e) =>
+        console.log "pathBezierWithArrow"
+        # midpoint of direct line from vertex center to vertex center
+        # => (midx, midy)
+        midx = (e.source.x + e.target.x) / 2
+        midy = (e.source.y + e.target.y) / 2
+        [dx, dy] = @dvector([e.source.x, e.source.y],
+                            [e.target.x, e.target.y])
+        # tangent point => (refx, refy)
+        refx = midx - @bezierCurviness * dy
+        refy = midy + @bezierCurviness * dx
+
+        # TODO (refx, refy) will be the point where the edge label
+        # should go. save it somehow.
+
+        # get vertex intersection points
+        [x1,y1] = @intersectVertex([e.source.x, e.source.y], [refx, refy])
+        [x2,y2] = @intersectVertex([e.target.x, e.target.y], [refx, refy])
+
+        return " M #{ e.source.x } #{ e.source.y } L #{ x1 } #{ y1 } " +
+               " Q #{ refx } #{ refy } #{ x2 } #{ y2 }" +
+               @pathArrowAt([x2, y2], [refx, refy])
+
+        # find intersection of target vertex
+        # draw arrow there, using tangent point as reference
+
+    # arrow at (x1,y1) at the end of a line originating at (x2,y2)
+    pathArrowAt: ([x1,y1], [xstart,ystart]) ->
+        [dx, dy] = @dvector([xstart,ystart], [x1,y1])
+        # get stopping point before end of line
+        x2 = x1 - (dx * -@arrowLength)
+        y2 = y1 - (dy * -@arrowLength)
+        [[x3,y3], [x4,y4]] = @perpendicularPoints([x2,y2], dx, dy, @arrowWidth / 2)
+        return " L #{ x2 } #{ y2 } L #{ x3 } #{ y3 }" +
+               " L #{ x1 } #{ y1 } L #{ x4 } #{ y4 }" +
+               " L #{ x2 } #{ y2 } L #{ x1 } #{ y1 }"
+
+    # gets [dx, dy] for the line defined by (x1,y1) and (x2,y2)
+    dvector: ([x1,y1], [x2,y2]) =>
+        dx = x1 - x2
+        dy = y1 - y2
+        dist = Math.sqrt(dx * dx + dy * dy)
+        dx = dx / dist
+        dy = dy / dist
+        return [dx, dy]
+
+    # get two points perpendicular to the line defined by (x,y) and dx
+    # dy, at `len` distance.
+    perpendicularPoints: ([x,y], dx, dy, len) =>
+        return [[x + len * dy, y - len * dx],
+                [x - len * dy, y + len * dx]]
+
+    # get the point of intersection with the vertex centered at (x1,y1)
+    intersectVertex: ([x1,y1], [x0,y0]) =>
+        dx = x0 - x1
+        dy = y0 - y1
         # abbreviation for squaring and floor
         sq = (x) -> Math.pow(x, 2)
         # do some algebra using the definition of ellipses
         a = @vertexWidth / 2 + 5
         b = @vertexHeight / 2 + 5
         thingy = a * b / Math.sqrt( sq(a) * sq(dy) + sq(b) * sq(dx) )
-        # (x1,y1) is the coordinate of intersection of the edge line
-        # and the vertex ellipse as defined by @vertexWidth and
-        # @vertexHeight, treating the centerpoint of the vertex as the
-        # origin. reminder:  is fast Math.floor
-        x1 = (thingy * dx) + e.target.x
-        y1 = (thingy * dy) + e.target.y
-        # return r + "L #{ x1 } #{ y1 }"
-        dist = Math.sqrt(sq(dx) + sq(dy))
-        dx /= dist
-        dy /= dist
-        # get stopping point before end of line
-        x2 = x1 - (dx * -@arrowLength)
-        y2 = y1 - (dy * -@arrowLength)
-        r += " L #{ x2 } #{ y2 }"
-        # get perpendicular points
-        x3 = x2 + (@arrowWidth / 2) * dy
-        y3 = y2 - (@arrowWidth / 2) * dx
-        x4 = x2 - (@arrowWidth / 2) * dy
-        y4 = y2 + (@arrowWidth / 2) * dx
-        r += " L #{ x3 } #{ y3 } L #{ x1 } #{ y1 }" +
-             " L #{ x4 } #{ y4 } L #{ x2 } #{ y2 }"
-        return r
-
-    setLinePos: (line) ->
-        line.attr("x1", (d) -> d.source.x )
-            .attr("y1", (d) -> d.source.y )
-            .attr("x2", (d) -> d.target.x )
-            .attr("y2", (d) -> d.target.y )
+        return [thingy * dx + x1, thingy * dy + y1 ]
 
     updateVertices: (graph, frame) ->
         console.log "createVertices"
@@ -327,9 +377,9 @@ class GraphDisplay
         # update
         vertices = @inner.selectAll("g.vertex")
             .data(graph.getVertices(), id)
+            .attr("transform", trans)
             .call(@updateVertexLabels, graph, frame)
             .call(@updateVertexClasses)
-            .attr("transform", trans)
         # enter
         enter = vertices.enter()
             .append("g")
@@ -457,8 +507,8 @@ class GraphDisplay
         return edgeGroups
 
     setEdgeLabelPos: (labelSel) =>
-        labelSel.attr("x", (d) => Math.floor((d.source.x + d.target.x) / 2))
-                .attr("y", (d) => Math.floor((d.source.y + d.target.y) / 2) + 4)
+        labelSel.attr("x", (d) =>  Math.floor((d.source.x + d.target.x) / 2))
+            .attr("y", (d) =>  Math.floor((d.source.y + d.target.y) / 2) + 4)
 
     edgeLabelVal: (edge) =>
         return unless @edgeLabel[@mode]?

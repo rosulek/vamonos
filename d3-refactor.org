@@ -4,6 +4,8 @@
 
 ** directed edges - back edges, label positions
 
+** styleEdges - can merge condition and callback
+
 ** vertex attributes tooltips
 
 ** optionally remember modified vertex positions in display mode
