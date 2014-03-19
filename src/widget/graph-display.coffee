@@ -220,10 +220,13 @@ class GraphDisplay
         @directed = graph.directed
         @$outer.find(".changed").removeClass("changed")
 
-        @updateVertices(graph, frame)
-        @updateEdges(graph, frame)
+        @currentGraph = graph
+        @currentFrame = frame
+
+        @updateVertices()
+        @updateEdges()
         if not @initialized
-            @startDragging(graph)
+            @startDragging()
             @initialized = true
         @previousGraph = graph
 
@@ -248,14 +251,15 @@ class GraphDisplay
             .on("dragstart", ->this.parentNode.appendChild(this))
         @inner.selectAll("g.vertex").call(drag)
 
-    updateEdges: (graph, frame) ->
+    updateEdges: () ->
         console.log "updateEdges"
         # update #
         edges = @inner.selectAll("g.edge")
-            .data(graph.getEdges(), graph.edgeId)
-        edges.call(@genPath, graph)
+            .data(@currentGraph.getEdges(),
+                  @currentGraph.edgeId)
+        edges.call(@genPath)
             .call(@updateEdgeLabels)
-            .call(@updateEdgeClasses, frame)
+            .call(@updateEdgeClasses)
             .call(@updateEdgeStyles)
         # enter #
         # insert edges at the start of the svg, so they dont overlap
@@ -265,23 +269,22 @@ class GraphDisplay
             .attr("class", "edge")
         enter.append("path")
             .attr("class", "edge")
-        enter.call(@genPath, graph)
+        enter.call(@genPath)
             # .attr("marker-end", if graph.directed then "url(#arrow)" else null)
         enter.call(@createEdgeLabels)
-            .call(@updateEdgeClasses, frame)
+            .call(@updateEdgeClasses)
             .call(@updateEdgeStyles)
         # exit #
-        edges.exit()
-            .call(@removeEdgeLabels)
-            .remove()
+        edges.exit().remove()
 
     # dispatches to genStraightPath or genCurvyPath depending on whether
     # edge `e` has a back-edge in `g`.
-    genPath: (sel, graph = @previousGraph) =>
+    genPath: (sel) =>
         console.log "genPath"
-        getPath  = (e) =>
-            return @pathStraightNoArrow(e) unless @directed
-            if graph?.edge(e.target, e.source)
+        getPath = (e) =>
+            if not @directed
+                path = @pathStraightNoArrow(e)
+            else if @antiparallelEdge(e)
                 path = @pathBezierWithArrow(e)
             else
                 path = @pathStraightWithArrow(e)
@@ -290,6 +293,9 @@ class GraphDisplay
             .data((d) -> [d])           # update edge data for paths
             .attr("d", getPath)
 
+    antiparallelEdge: (e) =>
+        return false unless @directed
+        return @currentGraph.edge(e.target, e.source)
 
     # if the graph is not directed, there is no need to draw fancy
     # arrows. Just return a path from center of source vertex to
@@ -303,12 +309,10 @@ class GraphDisplay
     pathStraightWithArrow: (e) =>
         [x1,y1] = @intersectVertex([e.target.x, e.target.y],
                                    [e.source.x, e.source.y])
-
         return "M #{ e.source.x } #{ e.source.y }" +
                 @pathArrowAt([x1,y1], [e.source.x, e.source.y])
 
-    pathBezierWithArrow: (e) =>
-        console.log "pathBezierWithArrow"
+    bezierRefPoint: (e) ->
         # midpoint of direct line from vertex center to vertex center
         # => (midx, midy)
         midx = (e.source.x + e.target.x) / 2
@@ -318,20 +322,17 @@ class GraphDisplay
         # tangent point => (refx, refy)
         refx = midx - @bezierCurviness * dy
         refy = midy + @bezierCurviness * dx
+        return [refx, refy]
 
-        # TODO (refx, refy) will be the point where the edge label
-        # should go. save it somehow.
-
+    pathBezierWithArrow: (e) =>
+        console.log "pathBezierWithArrow"
+        [refx, refy] = @bezierRefPoint(e)
         # get vertex intersection points
         [x1,y1] = @intersectVertex([e.source.x, e.source.y], [refx, refy])
         [x2,y2] = @intersectVertex([e.target.x, e.target.y], [refx, refy])
-
         return " M #{ e.source.x } #{ e.source.y } L #{ x1 } #{ y1 } " +
                " Q #{ refx } #{ refy } #{ x2 } #{ y2 }" +
                @pathArrowAt([x2, y2], [refx, refy])
-
-        # find intersection of target vertex
-        # draw arrow there, using tangent point as reference
 
     # arrow at (x1,y1) at the end of a line originating at (x2,y2)
     pathArrowAt: ([x1,y1], [xstart,ystart]) ->
@@ -371,15 +372,15 @@ class GraphDisplay
         thingy = a * b / Math.sqrt( sq(a) * sq(dy) + sq(b) * sq(dx) )
         return [thingy * dx + x1, thingy * dy + y1 ]
 
-    updateVertices: (graph, frame) ->
+    updateVertices: () ->
         console.log "createVertices"
         id = (vtx) -> return vtx.id
         trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
         # update
         vertices = @inner.selectAll("g.vertex")
-            .data(graph.getVertices(), id)
+            .data(@currentGraph.getVertices(), id)
             .attr("transform", trans)
-            .call(@updateVertexLabels, graph, frame)
+            .call(@updateVertexLabels)
             .call(@updateVertexClasses)
         # enter
         enter = vertices.enter()
@@ -392,12 +393,13 @@ class GraphDisplay
             .attr("cy", 0)
             .attr("rx", @vertexWidth  / 2)
             .attr("ry", @vertexHeight / 2)
-        enter.call(@createVertexLabels, graph, frame)
+        enter.call(@createVertexLabels)
             .call(@updateVertexClasses)
         # exit
         vertices.exit()
             .remove()
 
+    # todo - use @currentGraph
     fitGraph: (graph, animate = false) ->
         console.log "fitGraph"
         if graph?
@@ -435,7 +437,7 @@ class GraphDisplay
 
     # ----------- display mode node functions ---------- #
 
-    createVertexLabels: (vertexGroup, graph, frame) =>
+    createVertexLabels: (vertexGroup) =>
         console.log "createVertexLabels"
         x = @vertexWidth / 2
         y = @vertexHeight / 2
@@ -451,10 +453,10 @@ class GraphDisplay
         setLabel("vertex-nw-label", - x - xOffset, - y)
         setLabel("vertex-se-label", x, y + yOffset)
         setLabel("vertex-sw-label", - x - xOffset, y + yOffset)
-        vertexGroup.call(@updateVertexLabels, graph, frame)
+        vertexGroup.call(@updateVertexLabels)
         return vertexGroup
 
-    updateVertexLabels: (sel, graph, frame) =>
+    updateVertexLabels: (sel) =>
         console.log "updateVertexLabels #{ @mode }-mode"
         for type, style of @vertexLabels
             target = sel.selectAll("text." + switch type
@@ -472,7 +474,7 @@ class GraphDisplay
             else if style.constructor.name is "Array"
                 target.html (d) =>
                     res = []
-                    for v in style when frame[v]?.id is d.id
+                    for v in style when @currentFrame[v]?.id is d.id
                         res.push(Vamonos.resolveSubscript(Vamonos.removeNamespace(v)))
                     return res.join(",")
             else if (style.constructor.name is "Object" and
@@ -493,11 +495,6 @@ class GraphDisplay
         edgeGroups.call(@updateEdgeLabels)
         return edgeGroups
 
-    removeEdgeLabels: (edgeGroups) =>
-        # there is a bug in webkit where you can't select camelCase objects
-        # so use a class to be able to select these elements later
-        edgeGroups.selectAll(".foreignObject").remove()
-
     updateEdgeLabels: (edgeGroups) =>
         return unless @edgeLabel[@mode]?
         console.log "updateEdgeLabels"
@@ -508,8 +505,21 @@ class GraphDisplay
         return edgeGroups
 
     setEdgeLabelPos: (labelSel) =>
-        labelSel.attr("x", (d) =>  Math.floor((d.source.x + d.target.x) / 2))
-            .attr("y", (d) =>  Math.floor((d.source.y + d.target.y) / 2) + 4)
+        xPos = (e) =>
+            if @antiparallelEdge(e)
+                [x,y] = @bezierRefPoint(e)
+                return x
+            else
+                return Math.floor((e.source.x + e.target.x) / 2)
+        yPos = (e) =>
+            if @antiparallelEdge(e)
+                [x,y] = @bezierRefPoint(e)
+                return y + 4
+            else
+                return Math.floor((e.source.y + e.target.y) / 2 + 4)
+
+        labelSel.attr("x", xPos)
+                .attr("y", yPos)
 
     edgeLabelVal: (edge) =>
         return unless @edgeLabel[@mode]?
@@ -521,9 +531,9 @@ class GraphDisplay
         else
             return
 
-    updateEdgeClasses: (edgeGroups, frame) =>
+    updateEdgeClasses: (edgeGroups) =>
         return unless @edgeCssAttributes?
-        console.log "updateEdgeClasses"
+        console.log "updateEdgeClasses", @currentFrame
         lines = edgeGroups.selectAll("path.edge")
             .data((d)->[d])
         for klass, test of @edgeCssAttributes
@@ -531,12 +541,12 @@ class GraphDisplay
                 lines.classed(klass, test)
             else if test?.constructor.name is 'String'
                 if test.match(/<->/) # bidirectional
-                    [source, target] = test.split(/<->/).map((v)->frame[v]) if frame?
+                    [source, target] = test.split(/<->/).map((v) => @currentFrame[v])
                     lines.classed(klass, (e) ->
                         (e.source.id == source?.id and e.target.id == target?.id) or
                         (e.target.id == source?.id and e.source.id == target?.id))
                 else
-                    [source, target] = test.split(/->/).map((v)->frame[v]) if frame?
+                    [source, target] = test.split(/->/).map((v) => @currentFrame[v])
                     lines.classed(klass, (e) -> e.source.id == source?.id and
                                                 e.target.id == target?.id)
         return edgeGroups
