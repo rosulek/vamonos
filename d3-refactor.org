@@ -2,7 +2,7 @@
 
 * Graph Display:
 
-** directed edges - label positions and/or label backgrounds - perhaps use textPath
+** directed edges - label positions, near arrows on directed graphs. axis-aligned.
 
 ** styleEdges - merge condition and callback
 

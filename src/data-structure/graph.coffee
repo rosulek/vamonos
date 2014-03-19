@@ -157,9 +157,7 @@ class Graph
         args: [["e", "an edge object"]]
         description: "returns a string identifying `e`"
     edgeId: (e) =>
-        ret = e.source.id + (if @directed then "->" else "<->") + e.target.id
-        console.log ret
-        return ret
+        e.source.id + (if @directed then "-arr-" else "-bi-") + e.target.id
 
     @interface.addEdge =
         args: [

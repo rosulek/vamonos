@@ -242,8 +242,8 @@ class GraphDisplay
             d3.select(this).attr('transform', trans)
             ths.inner.selectAll("g.edge")
                 .call(ths.genPath)
-            ths.inner.selectAll("text.graph-label")
-                .call(ths.setEdgeLabelPos)
+            ths.inner.selectAll("g.edge")
+                .call(ths.updateEdgeLabels)
         drag = d3.behavior.drag()
             .on("drag", dragmove)
             .on("dragstart", ->this.parentNode.appendChild(this))
@@ -268,8 +268,7 @@ class GraphDisplay
         enter.append("path")
             .attr("class", "edge")
         enter.call(@genPath)
-            # .attr("marker-end", if graph.directed then "url(#arrow)" else null)
-        enter.call(@createEdgeLabels)
+            .call(@createEdgeLabels)
             .call(@updateEdgeClasses)
             .call(@updateEdgeStyles)
         # exit #
@@ -291,6 +290,7 @@ class GraphDisplay
             .data((d) -> [d])           # update edge data for paths
             .attr("d", getPath)
             .attr("id", @currentGraph.edgeId)
+        return sel
 
     antiparallelEdge: (e) =>
         return false unless @directed
@@ -486,23 +486,35 @@ class GraphDisplay
     createEdgeLabels: (edgeGroups) =>
         return unless @edgeLabel[@mode]?
         console.log "createEdgeLabels"
-        @textPaths = edgeGroups.selectAll("text")
+        edgeGroups.selectAll("text")
             .data((d)->[d])
             .enter()
-            .append("svg:text")
-            .append("svg:textPath")
+            .append("text")
+            .append("textPath")
             .attr("xlink:xlink:href", (e) => "#" + @currentGraph.edgeId(e))
             .attr("class", "graph-label")
-            .text(@edgeLabelVal)
-            .attr("startOffset", "60%")
         edgeGroups.call(@updateEdgeLabels)
         return edgeGroups
 
     updateEdgeLabels: (edgeGroups) =>
         return unless @edgeLabel[@mode]?
         console.log "updateEdgeLabels"
-        @textPaths?.data((d)->[d])
+        arrowOffset = @arrowWidth * 2 + @arrowLength * 2 + 5
+        id = @currentGraph.edgeId
+        cont = @inner
+        directed = @directed
+        apEdge = @antiparallelEdge
+        getOffset = (d) ->
+            if directed
+                cont.select("path#" + id(d)).node().getTotalLength() - arrowOffset
+            else if apEdge(d)
+                cont.select("path#" + id(d)).node().getTotalLength() - arrowOffset * 4
+            else
+                "50%"
+        edgeGroups.selectAll(".graph-label") # webkit camelCase selector bug
+            .data((d)->[d])
             .text(@edgeLabelVal)
+            .attr("startOffset", getOffset)
         return edgeGroups
 
     setEdgeLabelPos: (labelSel) =>
@@ -534,7 +546,7 @@ class GraphDisplay
 
     updateEdgeClasses: (edgeGroups) =>
         return unless @edgeCssAttributes?
-        console.log "updateEdgeClasses", @currentFrame
+        console.log "updateEdgeClasses"
         lines = edgeGroups.selectAll("path.edge")
             .data((d)->[d])
         for klass, test of @edgeCssAttributes
