@@ -234,15 +234,15 @@ class GraphDisplay
     startDragging: () ->
         console.log "startDragging"
         ths = @
+        trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
         dragmove = (d) ->
-            trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
             d.x = d3.event.x
             d.y = d3.event.y
             d3.select(this).attr('transform', trans)
             ths.inner.selectAll("g.edge")
                 .call(ths.genPath)
             ths.inner.selectAll("text.graph-label")
-                .call(ths.setEdgeLabelPos, ths.previousGraph)
+                .call(ths.setEdgeLabelPos)
         drag = d3.behavior.drag()
             .on("drag", dragmove)
             .on("dragstart", ->this.parentNode.appendChild(this))
@@ -277,7 +277,7 @@ class GraphDisplay
 
     # dispatches to genStraightPath or genCurvyPath depending on whether
     # edge `e` has a back-edge in `g`.
-    genPath: (sel, graph) =>
+    genPath: (sel, graph = @previousGraph) =>
         console.log "genPath"
         getPath  = (e) =>
             return @pathStraightNoArrow(e) unless @directed
@@ -287,6 +287,7 @@ class GraphDisplay
                 path = @pathStraightWithArrow(e)
             return path
         sel.selectAll("path.edge")
+            .data((d) -> [d])           # update edge data for paths
             .attr("d", getPath)
 
 
