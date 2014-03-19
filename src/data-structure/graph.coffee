@@ -156,8 +156,10 @@ class Graph
     @interface.edgeId =
         args: [["e", "an edge object"]]
         description: "returns a string identifying `e`"
-    edgeId: (e) ->
-        e.source.id + (if @directed then "->" else "<->") + e.target.id
+    edgeId: (e) =>
+        ret = e.source.id + (if @directed then "->" else "<->") + e.target.id
+        console.log ret
+        return ret
 
     @interface.addEdge =
         args: [

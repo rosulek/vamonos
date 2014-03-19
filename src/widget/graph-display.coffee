@@ -290,6 +290,7 @@ class GraphDisplay
         sel.selectAll("path.edge")
             .data((d) -> [d])           # update edge data for paths
             .attr("d", getPath)
+            .attr("id", @currentGraph.edgeId)
 
     antiparallelEdge: (e) =>
         return false unless @directed
@@ -485,20 +486,22 @@ class GraphDisplay
     createEdgeLabels: (edgeGroups) =>
         return unless @edgeLabel[@mode]?
         console.log "createEdgeLabels"
-        edgeGroups.selectAll("text")
+        @textPaths = edgeGroups.selectAll("text")
             .data((d)->[d])
             .enter()
-            .append("text")
+            .append("svg:text")
+            .append("svg:textPath")
+            .attr("xlink:xlink:href", (e) => "#" + @currentGraph.edgeId(e))
             .attr("class", "graph-label")
+            .text(@edgeLabelVal)
+            .attr("startOffset", "60%")
         edgeGroups.call(@updateEdgeLabels)
         return edgeGroups
 
     updateEdgeLabels: (edgeGroups) =>
         return unless @edgeLabel[@mode]?
         console.log "updateEdgeLabels"
-        edgeGroups.selectAll("text.graph-label")
-            .data((d)->[d])
-            .call(@setEdgeLabelPos)
+        @textPaths?.data((d)->[d])
             .text(@edgeLabelVal)
         return edgeGroups
 
