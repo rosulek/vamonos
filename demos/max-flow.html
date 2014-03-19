@@ -131,21 +131,19 @@ var myviz = new Vamonos.Visualizer({
             defaultEdgeAttrs: { c: 1 },
             edgeCssAttributes: { green: "u->v" },
             styleEdges: [
-                {
-                    condition: function(e){ if (e.f !== undefined && (e.f > 0)) return true; },
-                    style: function(e){
+                function(e){
+                    if (e.f !== undefined && (e.f > 0)) {
                         var percent = e.f / e.c;
                         var s = 255 * (1 - percent);
                         var color = Vamonos.rgbToHex(s,s,255);
                         return ["stroke", color];
-                    },
+                    }
                 },
-                {
-                    condition: function(e){ if (e.f !== undefined && (e.f > 0)) return true; },
-                    style: function(e){
+                function(e){
+                    if (e.f !== undefined && (e.f > 0)) {
                         var width = 2 + e.f;
-                        return ["stroke-width" ,width];
-                    },
+                        return ["stroke-width", width];
+                    }
                 },
             ],
             defaultGraph: new Vamonos.DataStructure.Graph({

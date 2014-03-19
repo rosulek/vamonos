@@ -90,18 +90,16 @@ class GraphDisplay
         styleEdges:
             type: "Array"
             defaultValue: undefined
-            description: "Provides a way to add styles (given by the function in " +
-            "`style`) to each edge path object matching `condition`."
+            description: "Provides a way to add styles to path objects. " +
+                "Functions must return an array whose first element is an " +
+                "attribute name, and second element is the value."
             example: """
                 styleEdges: [
-                    { condition: function(e){ if (e.f !== undefined && (e.f > 0)) return true; },
-                      style: function(e){
-                          var percent = e.f / e.c;
-                          var s = 255 * (1 - percent);
-                          var color = Vamonos.rgbToHex(s,s,255);
-                          var width = 2 + e.f;
-                          return [color,width];
-                      }
+                    function(e){
+                        if (e.f !== undefined && (e.f > 0)) {
+                            var width = 2 + e.f;
+                            return ["stroke-width", width];
+                        }
                     },
                 ],
                 """
@@ -553,20 +551,19 @@ class GraphDisplay
 
     updateEdgeStyles: (edgeGroups) =>
         return unless @styleEdges?.length
-        for styleObj in @styleEdges
-            continue unless styleObj.condition?.constructor.name is 'Function'
-            continue unless styleObj.style?.constructor.name is 'Function'
+        for styleFunc in @styleEdges
+            continue unless styleFunc.constructor.name is 'Function'
             styles = (@appliedEdgeStyles ?= [])
             edgeGroups.selectAll("path.edge")
                 .data((d)->[d])
                 .each (e) ->
-                    if styleObj.condition(e)
-                        [attr, val] = styleObj.style(e)
+                    res = styleFunc(e)
+                    if res?.length == 2
+                        [attr, val] = res
                         styles.push attr
                         d3.select(this).style(attr, val)
                     else
                         d3.select(this).style(attr, null) for attr in styles
-
 
     # this will be cleaner should I find a way to have ellipses and
     # text svg elements inherit classes from their groups. otherwise

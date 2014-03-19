@@ -2,9 +2,9 @@
 
 * Graph Display:
 
-** directed edges - back edges, label positions
+** directed edges - label positions - perhaps use textPath
 
-** styleEdges - can merge condition and callback
+** styleEdges - merge condition and callback
 
 ** vertex attributes tooltips
 
