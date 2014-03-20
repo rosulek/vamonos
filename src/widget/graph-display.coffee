@@ -242,11 +242,13 @@ class GraphDisplay
             d3.select(this).attr('transform', trans)
             ths.inner.selectAll("g.edge")
                 .call(ths.genPath)
-            ths.inner.selectAll("g.edge")
-                .call(ths.updateEdgeLabels)
+            ths.updateEdgeLabels()
         drag = d3.behavior.drag()
             .on("drag", dragmove)
-            .on("dragstart", ->this.parentNode.appendChild(this))
+            .on "dragstart", () ->
+                parent = this.parentNode
+                ref = parent.querySelector(".graph-label")
+                parent.insertBefore(this, ref)
         @inner.selectAll("g.vertex").call(drag)
 
     updateEdges: () ->
@@ -256,9 +258,9 @@ class GraphDisplay
             .data(@currentGraph.getEdges(),
                   @currentGraph.edgeId)
         edges.call(@genPath)
-            .call(@updateEdgeLabels)
             .call(@updateEdgeClasses)
             .call(@updateEdgeStyles)
+
         # enter #
         # insert edges at the start of the svg, so they dont overlap
         # vertices, which are appended to the end of the svg
@@ -268,14 +270,14 @@ class GraphDisplay
         enter.append("path")
             .attr("class", "edge")
         enter.call(@genPath)
-            .call(@createEdgeLabels)
             .call(@updateEdgeClasses)
             .call(@updateEdgeStyles)
         # exit #
         edges.exit().remove()
+        @updateEdgeLabels()
 
     # dispatches to genStraightPath or genCurvyPath depending on whether
-    # edge `e` has a back-edge in `g`.
+    # edge `e` has a back-edge in `g`. sets _labelx and _labely on data.
     genPath: (sel) =>
         console.log "genPath"
         getPath = (e) =>
@@ -300,6 +302,12 @@ class GraphDisplay
     # arrows. Just return a path from center of source vertex to
     # center of target vertex.
     pathStraightNoArrow: (e) =>
+        midx = ( e.source.x + e.target.x ) / 2
+        midy = ( e.source.y + e.target.y ) / 2
+        [dx, dy] = @dvector([e.source.x,e.source.y], [e.target.x,e.target.y])
+        [_, [lx,ly]] = @perpendicularPoints([midx,midy], dx, dy, @arrowWidth * 1.5)
+        e._labelx = lx
+        e._labely = ly
         return "M #{ e.source.x } #{ e.source.y } " +
                "L #{ e.target.x } #{ e.target.y } "
 
@@ -309,7 +317,16 @@ class GraphDisplay
         [x1,y1] = @intersectVertex([e.target.x, e.target.y],
                                    [e.source.x, e.source.y])
         return "M #{ e.source.x } #{ e.source.y }" +
-                @pathArrowAt([x1,y1], [e.source.x, e.source.y])
+                @pathArrowAt([x1,y1], [e.source.x, e.source.y], e)
+
+    pathBezierWithArrow: (e) =>
+        [refx, refy] = @bezierRefPoint(e)
+        # get vertex intersection points
+        [x1,y1] = @intersectVertex([e.source.x, e.source.y], [refx, refy])
+        [x2,y2] = @intersectVertex([e.target.x, e.target.y], [refx, refy])
+        return " M #{ e.source.x } #{ e.source.y } L #{ x1 } #{ y1 } " +
+               " Q #{ refx } #{ refy } #{ x2 } #{ y2 }" +
+               @pathArrowAt([x2, y2], [refx, refy], e)
 
     bezierRefPoint: (e) ->
         # midpoint of direct line from vertex center to vertex center
@@ -323,23 +340,18 @@ class GraphDisplay
         refy = midy + @bezierCurviness * dx
         return [refx, refy]
 
-    pathBezierWithArrow: (e) =>
-        console.log "pathBezierWithArrow"
-        [refx, refy] = @bezierRefPoint(e)
-        # get vertex intersection points
-        [x1,y1] = @intersectVertex([e.source.x, e.source.y], [refx, refy])
-        [x2,y2] = @intersectVertex([e.target.x, e.target.y], [refx, refy])
-        return " M #{ e.source.x } #{ e.source.y } L #{ x1 } #{ y1 } " +
-               " Q #{ refx } #{ refy } #{ x2 } #{ y2 }" +
-               @pathArrowAt([x2, y2], [refx, refy])
-
-    # arrow at (x1,y1) at the end of a line originating at (x2,y2)
-    pathArrowAt: ([x1,y1], [xstart,ystart]) ->
+    # arrow at (x1,y1) at the end of a line originating at (x2,y2). also sets
+    # edge's _labelx and _labely if edge is present.
+    pathArrowAt: ([x1,y1], [xstart,ystart], edge) ->
         [dx, dy] = @dvector([xstart,ystart], [x1,y1])
         # get stopping point before end of line
         x2 = x1 - (dx * -@arrowLength)
         y2 = y1 - (dy * -@arrowLength)
         [[x3,y3], [x4,y4]] = @perpendicularPoints([x2,y2], dx, dy, @arrowWidth / 2)
+        if edge?
+            [_, [x5,y5]] = @perpendicularPoints([x2,y2], dx,dy, @arrowWidth * 2)
+            edge._labelx = x5
+            edge._labely = y5
         return " L #{ x2 } #{ y2 } L #{ x3 } #{ y3 }" +
                " L #{ x1 } #{ y1 } L #{ x4 } #{ y4 }" +
                " L #{ x2 } #{ y2 } L #{ x1 } #{ y1 }"
@@ -483,39 +495,33 @@ class GraphDisplay
                 target.text("")
         return sel
 
-    createEdgeLabels: (edgeGroups) =>
+    createEdgeLabels: () =>
         return unless @edgeLabel[@mode]?
         console.log "createEdgeLabels"
-        edgeGroups.selectAll("text")
-            .data((d)->[d])
+        @inner.selectAll("text.graph-label")
+            .data((d)->@currentGraph.getEdges())
             .enter()
             .append("text")
-            .append("textPath")
-            .attr("xlink:xlink:href", (e) => "#" + @currentGraph.edgeId(e))
             .attr("class", "graph-label")
-        edgeGroups.call(@updateEdgeLabels)
+        @updateEdgeLabels()
         return edgeGroups
 
-    updateEdgeLabels: (edgeGroups) =>
+    updateEdgeLabels: () =>
         return unless @edgeLabel[@mode]?
         console.log "updateEdgeLabels"
-        arrowOffset = @arrowWidth * 2 + @arrowLength * 2 + 5
-        id = @currentGraph.edgeId
-        cont = @inner
-        directed = @directed
-        apEdge = @antiparallelEdge
-        getOffset = (d) ->
-            if directed
-                cont.select("path#" + id(d)).node().getTotalLength() - arrowOffset
-            else if apEdge(d)
-                cont.select("path#" + id(d)).node().getTotalLength() - arrowOffset * 4
-            else
-                "50%"
-        edgeGroups.selectAll(".graph-label") # webkit camelCase selector bug
-            .data((d)->[d])
+        sel = @inner.selectAll("text.graph-label")
+            .data((d)=>@currentGraph.getEdges())
             .text(@edgeLabelVal)
-            .attr("startOffset", getOffset)
-        return edgeGroups
+            .attr("x", (d)->d._labelx)
+            .attr("y", (d)->d._labely)
+        sel.enter()
+            .append("text")
+            .attr("class", "graph-label")
+            .text(@edgeLabelVal)
+            .attr("x", (d)->d._labelx)
+            .attr("y", (d)->d._labely)
+        sel.exit()
+            .remove()
 
     setEdgeLabelPos: (labelSel) =>
         xPos = (e) =>
@@ -646,124 +652,6 @@ class GraphDisplay
                 return true if newv[k]?.id isnt v.id
             else
                 return true if newv[k] isnt v
-
-    # --------- Display mode connection functions ---------- #
-
-    addConnection: (sourceId, targetId) ->
-        # stop if the connection is there already
-        return if @connections[sourceId]?[targetId]?
-        # if there is a back edge and the graph is directed
-        if @directed and @connections[targetId]?[sourceId]?
-            con = @connections[targetId][sourceId]
-            @addBackArrow(con)
-            con.backEdgeSource = sourceId
-        else # the forward connection does not exist
-            con = @jsPlumbInstance.connect({
-                source: sourceId
-                target: targetId
-                deleteEndpointsOnDetach: false # maybe speedup?
-            })
-            if @directed
-                @addForwardArrow(con)
-                con.forwardEdgeSource = sourceId
-        (@connections[sourceId] ?= {})[targetId] = con
-        # edges go into @connections both ways in undirected graphs
-        (@connections[targetId] ?= {})[sourceId] = con unless @directed
-        return con
-
-    removeConnection: (sourceId, targetId) ->
-        con = @connections[sourceId]?[targetId]
-        return unless con?
-        # it's pretty simple when the graph is undirected
-        if not @directed
-            @jsPlumbInstance.detach(con) # this is a costly operation, AVOID IT
-            # delete both forward and back entries in connections table
-            delete @connections[sourceId][targetId]
-            delete @connections[targetId][sourceId]
-            # we'll return here, so as to simplify the directed mess to follow
-            return con
-
-        # if the edge is a forward edge with a back edge, delete forward arrow
-        if con.forwardEdgeSource is sourceId and con.backEdgeSource is targetId
-            @removeForwardArrow(con)
-            delete con.forwardEdgeSource
-
-        # if the edge is a forward edge with no back edge, delete connection
-        if con.forwardEdgeSource is sourceId and not con.backEdgeSource?
-            @jsPlumbInstance.detach(con)
-
-        # if the edge is a back edge with a forward edge, delete back arrow
-        if con.forwardEdgeSource is targetId and con.backEdgeSource is sourceId
-            @removeBackArrow(con)
-            delete con.backEdgeSource
-
-        # if the edge is a back edge with no forward edge, delete connection
-        if not con.forwardEdgeSource? and con.backEdgeSource is sourceId
-            @jsPlumbInstance.detach(con)
-
-        # we're always going to be wanting to do this
-        delete @connections[sourceId][targetId]
-        return con
-
-    addForwardArrow: (con) ->
-        con.addOverlay([
-            "PlainArrow"
-            {id: "forwardArrow", location:-1.000001, width:12, length:8}
-        ])
-
-    removeForwardArrow: (con) ->
-        con.removeOverlay("forwardArrow")
-
-    addBackArrow: (con) ->
-        con.addOverlay([
-            "PlainArrow"
-            { id: "backArrow", location: 1.000001, direction: -1, width: 12, length: 8 }
-        ])
-
-    removeBackArrow: (con) ->
-        con.removeOverlay("backArrow")
-
-    setStyle: (con, edge, color, width) ->
-        if color.constructor.name is 'String'
-            con.setPaintStyle(@customStyle(color, width))
-
-        else if color.constructor.name is 'Function'
-            res = color(edge)
-            if res.constructor.name is 'String'
-                con.setPaintStyle(@customStyle(res))
-            else if res.constructor.name is 'Array'
-                con.setPaintStyle(@customStyle(res[0],res[1]))
-
-    updateConnections: (graph, frame) ->
-        @eachConnection (sourceId, targetId, con) =>
-            # clear coloring
-            @resetConnectionStyle(con)
-            # update label in display mode. in edit mode the host widget will
-            # want to be in charge of labeling.
-            @setLabel(con, graph) if @mode is 'display'
-
-        # connection coloring
-        return unless @colorEdges?
-        for style in @colorEdges
-            # the first elem of style is a string from one vertex var to another "u->v"
-            if typeof style[0] is 'string'
-                [source, target] = style[0].split(/->/).map((v)->frame[v])
-                continue unless source? and target?
-                con = @connections[source.id]?[target.id]
-                edge = graph.edge(source.id, target.id)
-                continue unless con? and edge?
-                @setStyle(con, edge, style[1], style[2])
-
-            # the first elem of style is a function taking an edge and returning a bool
-            else if typeof style[0] is 'function'
-                for edge in graph.getEdges()
-                    if style[0](edge)
-                        con = @connections[edge.source.id]?[edge.target.id]
-                        @setStyle(con, edge, style[1], style[2])
-
-    resetConnectionStyle: (con) ->
-        return unless con?.connector?
-        con.setPaintStyle(@normalPaintStyle)
 
     # ----------------- drawer --------------- #
 

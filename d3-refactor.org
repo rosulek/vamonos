@@ -2,10 +2,6 @@
 
 * Graph Display:
 
-** directed edges - label positions, near arrows on directed graphs. axis-aligned.
-
-** styleEdges - merge condition and callback
-
 ** vertex attributes tooltips
 
 ** optionally remember modified vertex positions in display mode
@@ -13,6 +9,8 @@
 ** force layout
 
 * Graph Editing
+
+** more visual feedback - highlight vertices and edges on mouseover
 
 ** editable edge attributes
 

@@ -133,16 +133,22 @@ var myviz = new Vamonos.Visualizer({
             styleEdges: [
                 function(e){
                     if (e.f !== undefined && (e.f > 0)) {
-                        var percent = e.f / e.c;
-                        var s = 255 * (1 - percent);
-                        var color = Vamonos.rgbToHex(s,s,255);
+                        var r = 96,
+                            g = 127,
+                            b = 255,
+                            scale = d3.scale.linear()
+                                      .domain([0, e.c])
+                                      .range([255, r]),
+                            color = Vamonos.rgbToHex(scale(e.f), scale(e.f), b);
                         return ["stroke", color];
                     }
                 },
                 function(e){
                     if (e.f !== undefined && (e.f > 0)) {
-                        var width = 2 + e.f;
-                        return ["stroke-width", width];
+                        var scale = d3.scale.linear()
+                                      .domain([0, 5])
+                                      .range([2, 8]);
+                        return ["stroke-width", scale(e.f)];
                     }
                 },
             ],
