@@ -151,6 +151,12 @@ class GraphDisplay
             defaultValue: 15
             description: "the curviness of bezier curves in this graph"
 
+        persistentDragging:
+            type: "Boolean"
+            defaultValue: true
+            description: "whether the positions resulting from dragging " +
+                "vertices are persistent across frames in display mode."
+
     constructor: (args) ->
 
         Vamonos.handleArguments
@@ -176,6 +182,11 @@ class GraphDisplay
         @inner = @initialize(@svg)
 
     initialize: () ->
+        if @persistentDragging
+            # _savex and _savey are for saving the dragged positions of
+            # vertices across frames.
+            @_savex = {}
+            @_savey = {}
         @svg.append("g")
             .attr("transform", "translate(" +
                 [ @containerMargin ,
@@ -195,38 +206,32 @@ class GraphDisplay
                     @viz.registerVariable(v)
                 done() if done?
 
-    # draw is the main display function for the graphDisplay widget. It draws
-    # only as much of the graph that wasn't there before and removes nodes
-    # and edges that have become obsolete. it doesn't rely on events, so that
-    # the graph can be updated in various host widget's edit mode.
     draw: (graph, frame = {}) ->
         # if there is a hidden graph, show it
         @showGraph() if @graphHidden
         # if we're in edit mode, @mode will be set already. otherwise, we need
-        # to set it to "display" so things like updateNodeLabels uses the
-        # intended mode.
+        # to set it to "display"
         @mode ?= "display"
         @directed = graph.directed
-        @$outer.find(".changed").removeClass("changed")
-
-        @currentGraph = graph
-        @currentFrame = frame
-
+        @inner.selectAll(".changed").classed("changed", null)
+        @currentGraph = Vamonos.clone(graph)
+        @currentFrame = Vamonos.clone(frame)
+        if @persistentDragging
+            @currentGraph.eachVertex (v) =>
+                if @_savex[v.id]? and @_savey[v.id]?
+                    v.x = @_savex[v.id]
+                    v.y = @_savey[v.id]
         @updateVertices()
         @updateEdges()
-        if not @initialized
-            @startDragging()
-            @initialized = true
-
+        @startDragging()
         @previousGraph = graph
-
 
     clearDisplay: () ->
         @inner.remove()
         @inner = @initialize()
 
     startDragging: () ->
-        console.log "startDragging" if window.DEBUG
+        console.log "startDragging" if window.DEBUG?
         trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
         ths = @
 
@@ -252,6 +257,9 @@ class GraphDisplay
         dragmove = (d) ->
             d.x = d3.event.x
             d.y = d3.event.y
+            if ths.persistentDragging
+                ths._savex[d.id] = d.x
+                ths._savey[d.id] = d.y
             d3.select(this).attr('transform', trans)
             ths.inner.selectAll("g.edge")
                 .call(ths.genPath)
@@ -266,7 +274,7 @@ class GraphDisplay
 
 
     updateEdges: () ->
-        console.log "updateEdges" if window.DEBUG
+        console.log "updateEdges" if window.DEBUG?
         # update #
         edges = @inner.selectAll("g.edge")
             .data(@currentGraph.getEdges(),
@@ -293,7 +301,7 @@ class GraphDisplay
     # dispatches to genStraightPath or genCurvyPath depending on whether
     # edge `e` has a back-edge in `g`. sets _labelx and _labely on data.
     genPath: (sel) =>
-        console.log "genPath" if window.DEBUG
+        console.log "genPath" if window.DEBUG?
         getPath = (e) =>
             unless [e.source.x, e.source.y,
                     e.target.x, e.target.y].every(isFinite)
@@ -401,7 +409,7 @@ class GraphDisplay
         return [thingy * dx + x1, thingy * dy + y1 ]
 
     updateVertices: () ->
-        console.log "createVertices" if window.DEBUG
+        console.log "createVertices" if window.DEBUG?
         id = (vtx) -> return vtx.id
         trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
         # update
@@ -429,7 +437,7 @@ class GraphDisplay
 
     # todo - use @currentGraph
     fitGraph: (graph, animate = false) ->
-        console.log "fitGraph" if window.DEBUG
+        console.log "fitGraph" if window.DEBUG?
         if graph?
             xVals = []
             yVals = []
@@ -466,7 +474,7 @@ class GraphDisplay
     # ----------- display mode node functions ---------- #
 
     createVertexLabels: (vertexGroup) =>
-        console.log "createVertexLabels" if window.DEBUG
+        console.log "createVertexLabels" if window.DEBUG?
         x = @vertexWidth / 2
         y = @vertexHeight / 2
         xOffset = x / 2
@@ -485,7 +493,7 @@ class GraphDisplay
         return vertexGroup
 
     updateVertexLabels: (sel) =>
-        console.log "updateVertexLabels #{ @mode }-mode" if window.DEBUG
+        console.log "updateVertexLabels #{ @mode }-mode" if window.DEBUG?
         for type, style of @vertexLabels
             target = sel.selectAll("text." + switch type
                 when "inner" then "vertex-contents"
@@ -514,7 +522,7 @@ class GraphDisplay
 
     createEdgeLabels: () =>
         return unless @edgeLabel[@mode]?
-        console.log "createEdgeLabels" if window.DEBUG
+        console.log "createEdgeLabels" if window.DEBUG?
         @inner.selectAll("text.graph-label")
             .data((d)->@currentGraph.getEdges())
             .enter()
@@ -525,7 +533,7 @@ class GraphDisplay
 
     updateEdgeLabels: () =>
         return unless @edgeLabel[@mode]?
-        console.log "updateEdgeLabels" if window.DEBUG
+        console.log "updateEdgeLabels" if window.DEBUG?
         sel = @inner.selectAll("text.graph-label")
             .data((d)=>@currentGraph.getEdges())
             .text(@edgeLabelVal)
@@ -569,7 +577,7 @@ class GraphDisplay
 
     updateEdgeClasses: (edgeGroups) =>
         return unless @edgeCssAttributes?
-        console.log "updateEdgeClasses" if window.DEBUG
+        console.log "updateEdgeClasses" if window.DEBUG?
         lines = edgeGroups.selectAll("path.edge")
             .data((d)->[d])
         for klass, test of @edgeCssAttributes
@@ -609,7 +617,7 @@ class GraphDisplay
     # their class is, so they can color coordinate (like black oval
     # with white text).
     updateVertexClasses: (vertexGroups) =>
-        console.log "updateVertexClasses" if window.DEBUG
+        console.log "updateVertexClasses" if window.DEBUG?
 
         vertices = vertexGroups.selectAll("ellipse.vertex")
             .data((d) -> [d])
