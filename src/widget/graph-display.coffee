@@ -175,15 +175,6 @@ class GraphDisplay
             .attr("height", "100%")
         @inner = @initialize(@svg)
 
-        # debug
-        if (not window.graphNum?)
-            window.graphNum = 0
-        else
-            window.graphNum += 1
-
-        window["svg#{window.graphNum}"] = @svg
-        window["inner#{window.graphNum}"] = @inner
-
     initialize: () ->
         @svg.append("g")
             .attr("transform", "translate(" +
@@ -226,16 +217,38 @@ class GraphDisplay
         if not @initialized
             @startDragging()
             @initialized = true
+
         @previousGraph = graph
+
 
     clearDisplay: () ->
         @inner.remove()
         @inner = @initialize()
 
     startDragging: () ->
-        console.log "startDragging"
-        ths = @
+        console.log "startDragging" if window.DEBUG
         trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
+        ths = @
+
+        # ## force directed stuff
+        # width = @svg.node().offsetWidth
+        # height = @svg.node().offsetHeight
+        # force = d3.layout.force()
+        #     .charge(-1000)
+        #     .linkDistance(100)
+        #     .size([width, height])
+        #     .nodes(@currentGraph.getVertices())
+        #     .links(@currentGraph.getEdges())
+        #     .start()
+        # tick = () ->
+        #     ths.inner.selectAll("g.vertex")
+        #         .attr('transform', trans)
+        #     ths.inner.selectAll("g.edge")
+        #         .call(ths.genPath)
+        #     ths.updateEdgeLabels()
+        # force.on("tick", tick)
+        # @inner.selectAll("g.vertex").call(force.drag)
+
         dragmove = (d) ->
             d.x = d3.event.x
             d.y = d3.event.y
@@ -251,8 +264,9 @@ class GraphDisplay
                 parent.insertBefore(this, ref)
         @inner.selectAll("g.vertex").call(drag)
 
+
     updateEdges: () ->
-        console.log "updateEdges"
+        console.log "updateEdges" if window.DEBUG
         # update #
         edges = @inner.selectAll("g.edge")
             .data(@currentGraph.getEdges(),
@@ -279,8 +293,11 @@ class GraphDisplay
     # dispatches to genStraightPath or genCurvyPath depending on whether
     # edge `e` has a back-edge in `g`. sets _labelx and _labely on data.
     genPath: (sel) =>
-        console.log "genPath"
+        console.log "genPath" if window.DEBUG
         getPath = (e) =>
+            unless [e.source.x, e.source.y,
+                    e.target.x, e.target.y].every(isFinite)
+                throw "GETPATH: Bad coordinates"
             if not @directed
                 path = @pathStraightNoArrow(e)
             else if @antiparallelEdge(e)
@@ -384,7 +401,7 @@ class GraphDisplay
         return [thingy * dx + x1, thingy * dy + y1 ]
 
     updateVertices: () ->
-        console.log "createVertices"
+        console.log "createVertices" if window.DEBUG
         id = (vtx) -> return vtx.id
         trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
         # update
@@ -412,7 +429,7 @@ class GraphDisplay
 
     # todo - use @currentGraph
     fitGraph: (graph, animate = false) ->
-        console.log "fitGraph"
+        console.log "fitGraph" if window.DEBUG
         if graph?
             xVals = []
             yVals = []
@@ -449,7 +466,7 @@ class GraphDisplay
     # ----------- display mode node functions ---------- #
 
     createVertexLabels: (vertexGroup) =>
-        console.log "createVertexLabels"
+        console.log "createVertexLabels" if window.DEBUG
         x = @vertexWidth / 2
         y = @vertexHeight / 2
         xOffset = x / 2
@@ -468,7 +485,7 @@ class GraphDisplay
         return vertexGroup
 
     updateVertexLabels: (sel) =>
-        console.log "updateVertexLabels #{ @mode }-mode"
+        console.log "updateVertexLabels #{ @mode }-mode" if window.DEBUG
         for type, style of @vertexLabels
             target = sel.selectAll("text." + switch type
                 when "inner" then "vertex-contents"
@@ -497,7 +514,7 @@ class GraphDisplay
 
     createEdgeLabels: () =>
         return unless @edgeLabel[@mode]?
-        console.log "createEdgeLabels"
+        console.log "createEdgeLabels" if window.DEBUG
         @inner.selectAll("text.graph-label")
             .data((d)->@currentGraph.getEdges())
             .enter()
@@ -508,7 +525,7 @@ class GraphDisplay
 
     updateEdgeLabels: () =>
         return unless @edgeLabel[@mode]?
-        console.log "updateEdgeLabels"
+        console.log "updateEdgeLabels" if window.DEBUG
         sel = @inner.selectAll("text.graph-label")
             .data((d)=>@currentGraph.getEdges())
             .text(@edgeLabelVal)
@@ -552,7 +569,7 @@ class GraphDisplay
 
     updateEdgeClasses: (edgeGroups) =>
         return unless @edgeCssAttributes?
-        console.log "updateEdgeClasses"
+        console.log "updateEdgeClasses" if window.DEBUG
         lines = edgeGroups.selectAll("path.edge")
             .data((d)->[d])
         for klass, test of @edgeCssAttributes
@@ -592,7 +609,7 @@ class GraphDisplay
     # their class is, so they can color coordinate (like black oval
     # with white text).
     updateVertexClasses: (vertexGroups) =>
-        console.log "updateVertexClasses"
+        console.log "updateVertexClasses" if window.DEBUG
 
         vertices = vertexGroups.selectAll("ellipse.vertex")
             .data((d) -> [d])
