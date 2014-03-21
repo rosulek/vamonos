@@ -230,30 +230,34 @@ class GraphDisplay
         @inner.remove()
         @inner = @initialize()
 
+    # extranious force directed layout. doesn't save position
+    forceIt: () ->
+        width = @svg.node().offsetWidth
+        height = @svg.node().offsetHeight
+        ths = @
+        trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
+        force = d3.layout.force()
+            .charge(-300)
+            .linkDistance(100)
+            .size([width, height])
+            .nodes(@currentGraph.getVertices())
+            .links(@currentGraph.getEdges())
+            .start()
+        tick = () ->
+            ths.inner.selectAll("g.vertex")
+                .attr('transform', trans)
+            ths.inner.selectAll("g.edge")
+                .call(ths.genPath)
+            ths.updateEdgeLabels()
+        force.on("tick", tick)
+        @inner.selectAll("g.vertex").call(force.drag)
+        @forcedAlready = true
+
+
     startDragging: () ->
         console.log "startDragging" if window.DEBUG?
         trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
         ths = @
-
-        # ## force directed stuff
-        # width = @svg.node().offsetWidth
-        # height = @svg.node().offsetHeight
-        # force = d3.layout.force()
-        #     .charge(-1000)
-        #     .linkDistance(100)
-        #     .size([width, height])
-        #     .nodes(@currentGraph.getVertices())
-        #     .links(@currentGraph.getEdges())
-        #     .start()
-        # tick = () ->
-        #     ths.inner.selectAll("g.vertex")
-        #         .attr('transform', trans)
-        #     ths.inner.selectAll("g.edge")
-        #         .call(ths.genPath)
-        #     ths.updateEdgeLabels()
-        # force.on("tick", tick)
-        # @inner.selectAll("g.vertex").call(force.drag)
-
         dragmove = (d) ->
             d.x = d3.event.x
             d.y = d3.event.y
