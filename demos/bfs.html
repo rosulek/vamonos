@@ -38,12 +38,14 @@
     }
 
     path.red {
-        fill: #FF7D7D;
         stroke: #FF7D7D;
     }
 
+    path.blue {
+        stroke: rgb(96,127,255);
+    }
+
     path.green {
-        fill: #92E894;
         stroke: #92E894;
     }
 
@@ -157,7 +159,7 @@ var myviz = new Vamonos.Visualizer({
                 red   : "u->v",
                 green : function(edge){
                     return (edge.target.pred ? edge.target.pred === edge.source.name : false)
-                    || (edge.source.pred ? edge.source.pred === edge.target.name : false)
+                        || (edge.source.pred ? edge.source.pred === edge.target.name : false)
                 },
             },
             defaultGraph: new Vamonos.DataStructure.Graph({

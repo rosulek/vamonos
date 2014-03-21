@@ -22,18 +22,15 @@
     }
 
     path.green {
-        fill: #92E894;
         stroke: #92E894;
     }
 
     path.red {
-        fill: red;
-        stroke: red;
+        stroke: #FF7D7D;
     }
 
     path.blue {
-        fill: blue;
-        stroke: blue;
+        stroke: rgb(96,127,255);
     }
 
     body {
@@ -117,9 +114,9 @@ var myviz = new Vamonos.Visualizer({
             edgeLabel: "w",
             defaultEdgeAttrs: { w: 1 },
             edgeCssAttributes: {
-                green : function(edge){ return (edge.target.pred === edge.source.id) },
+                blue  : function(edge){ return (edge.target.pred === edge.source.id) },
                 red   : function(e){ return e.error },
-                blue  : "u->v"
+                green : "u->v"
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: true,
