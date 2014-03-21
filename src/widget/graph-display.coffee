@@ -179,14 +179,12 @@ class GraphDisplay
         @svg = d3.selectAll("#" + @$outer.attr("id")).append("svg")
             .attr("width", "100%")
             .attr("height", "100%")
-        @inner = @initialize(@svg)
+        @inner = @initializeInner(@svg)
 
-    initialize: () ->
-        if @persistentDragging
-            # _savex and _savey are for saving the dragged positions of
-            # vertices across frames.
-            @_savex = {}
-            @_savey = {}
+        @_savex = {}
+        @_savey = {}
+
+    initializeInner: () ->
         @svg.append("g")
             .attr("transform", "translate(" +
                 [ @containerMargin ,
@@ -198,39 +196,89 @@ class GraphDisplay
     # in order to register vars from vertexLabels and edgeCssAttributes
     event: (event, options...) -> switch event
         when "setup"
-            [@viz, done] = options
+            [viz, done] = options
             for klass, test of @edgeCssAttributes when typeof test is 'string'
-                @viz.registerVariable(v) for v in test.split(/<?->?/)
+                viz.registerVariable(v) for v in test.split(/<?->?/)
             for label, values of @vertexLabels
                 for v in values when typeof v is 'string'
-                    @viz.registerVariable(v)
+                    viz.registerVariable(v)
                 done() if done?
 
     draw: (graph, frame = {}) ->
         # if there is a hidden graph, show it
         @showGraph() if @graphHidden
-        # if we're in edit mode, @mode will be set already. otherwise, we need
-        # to set it to "display"
+        # if we're in edit mode, @mode will be set already. otherwise,
+        # we need to set it to "display". this is so that edge and
+        # vertex labels and classes know what to show.
         @mode ?= "display"
-        @directed = graph.directed
+        @directed = graph.directed # convenience
+        # remove all the changed vertex highlighting from previous frame
         @inner.selectAll(".changed").classed("changed", null)
+        # set global variables so we don't have to pass stuff around
+        # annoyingly and buggyily
         @currentGraph = Vamonos.clone(graph)
         @currentFrame = Vamonos.clone(frame)
+        @fitGraph()
+        # transfer the positions of vertices that have been dragged to
+        # the new @currentGraph
         if @persistentDragging
             @currentGraph.eachVertex (v) =>
                 if @_savex[v.id]? and @_savey[v.id]?
                     v.x = @_savex[v.id]
                     v.y = @_savey[v.id]
+        # updateVertices and updateEdges are the main methods for
+        # displaying stuff with d3.
         @updateVertices()
         @updateEdges()
-        @startDragging()
-        @previousGraph = graph
+        @startDragging() if @draggable
+        @previousGraph = graph # used in vertexChanged
+
+    # sets the size of @$outer based on the positions of vertices in @currentGraph
+    fitGraph: (animate = false) ->
+        if @currentGraph?
+            xVals = []
+            yVals = []
+            for vertex in @currentGraph.getVertices()
+                xVals.push(vertex.x + (@vertexWidth  / 2) + @containerMargin * 2)
+                yVals.push(vertex.y + (@vertexHeight / 2) + @containerMargin * 2)
+            max_x = Math.max(xVals..., @minX)
+            max_y = Math.max(yVals..., @minY)
+        else
+            max_x = 0
+            max_y = 0
+        if animate
+            @$outer.animate({width: max_x, height: max_y}, 500)
+        else
+            @$outer.width(max_x)
+            @$outer.height(max_y)
+        if @resizable
+            @$outer.resizable("option", "minWidth", max_x)
+            @$outer.resizable("option", "minHeight", max_y)
+
+    # PLACEHOLDER SO SHIT STILL WORKS WHILE I REFACTOR GRAPH.COFFEE
+    eachConnection: () -> undefined
+
+    hideGraph: () ->
+        @$outer.hide()
+        @graphHidden = true
+
+    showGraph: () ->
+        @$outer.show()
+        @graphHidden = false
 
     clearDisplay: () ->
+        if @persistentDragging
+            # _savex and _savey are for saving the dragged positions of
+            # vertices across frames.
+            @_savex = {}
+            @_savey = {}
         @inner.remove()
-        @inner = @initialize()
+        @inner = @initializeInner()
+        @currentGraph = undefined
+        @previousGraph = undefined
+        @fitGraph()
 
-    # extranious force directed layout. doesn't save position
+    # extranious force directed layout. doesn't save positions
     forceIt: () ->
         width = @svg.node().offsetWidth
         height = @svg.node().offsetHeight
@@ -255,7 +303,6 @@ class GraphDisplay
 
 
     startDragging: () ->
-        console.log "startDragging" if window.DEBUG?
         trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
         ths = @
         dragmove = (d) ->
@@ -278,7 +325,6 @@ class GraphDisplay
 
 
     updateEdges: () ->
-        console.log "updateEdges" if window.DEBUG?
         # update #
         edges = @inner.selectAll("g.edge")
             .data(@currentGraph.getEdges(),
@@ -305,7 +351,6 @@ class GraphDisplay
     # dispatches to genStraightPath or genCurvyPath depending on whether
     # edge `e` has a back-edge in `g`. sets _labelx and _labely on data.
     genPath: (sel) =>
-        console.log "genPath" if window.DEBUG?
         getPath = (e) =>
             unless [e.source.x, e.source.y,
                     e.target.x, e.target.y].every(isFinite)
@@ -413,7 +458,6 @@ class GraphDisplay
         return [thingy * dx + x1, thingy * dy + y1 ]
 
     updateVertices: () ->
-        console.log "createVertices" if window.DEBUG?
         id = (vtx) -> return vtx.id
         trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
         # update
@@ -439,46 +483,7 @@ class GraphDisplay
         vertices.exit()
             .remove()
 
-    # todo - use @currentGraph
-    fitGraph: (graph, animate = false) ->
-        console.log "fitGraph" if window.DEBUG?
-        if graph?
-            xVals = []
-            yVals = []
-            for vertex in graph.getVertices()
-                xVals.push(vertex.x + (@vertexWidth  / 2) + @containerMargin * 2)
-                yVals.push(vertex.y + (@vertexHeight / 2) + @containerMargin * 2)
-            max_x = Math.max(xVals..., @minX)
-            max_y = Math.max(yVals..., @minY)
-        else
-            max_x = 0
-            max_y = 0
-        if animate
-            @$outer.animate({width: max_x, height: max_y}, 500)
-        else
-            @$outer.width(max_x)
-            @$outer.height(max_y)
-        if @resizable
-            @$outer.resizable("option", "minWidth", max_x)
-            @$outer.resizable("option", "minHeight", max_y)
-
-    hideGraph: () ->
-        @$outer.hide()
-        @graphHidden = true
-
-    showGraph: () ->
-        @$outer.show()
-        @graphHidden = false
-
-    # ---------------------------------------------------------- #
-
-    eachConnection: (f) ->
-        return
-
-    # ----------- display mode node functions ---------- #
-
     createVertexLabels: (vertexGroup) =>
-        console.log "createVertexLabels" if window.DEBUG?
         x = @vertexWidth / 2
         y = @vertexHeight / 2
         xOffset = x / 2
@@ -497,7 +502,6 @@ class GraphDisplay
         return vertexGroup
 
     updateVertexLabels: (sel) =>
-        console.log "updateVertexLabels #{ @mode }-mode" if window.DEBUG?
         for type, style of @vertexLabels
             target = sel.selectAll("text." + switch type
                 when "inner" then "vertex-contents"
@@ -526,7 +530,6 @@ class GraphDisplay
 
     createEdgeLabels: () =>
         return unless @edgeLabel[@mode]?
-        console.log "createEdgeLabels" if window.DEBUG?
         @inner.selectAll("text.graph-label")
             .data((d)->@currentGraph.getEdges())
             .enter()
@@ -537,7 +540,6 @@ class GraphDisplay
 
     updateEdgeLabels: () =>
         return unless @edgeLabel[@mode]?
-        console.log "updateEdgeLabels" if window.DEBUG?
         sel = @inner.selectAll("text.graph-label")
             .data((d)=>@currentGraph.getEdges())
             .text(@edgeLabelVal)
@@ -581,7 +583,6 @@ class GraphDisplay
 
     updateEdgeClasses: (edgeGroups) =>
         return unless @edgeCssAttributes?
-        console.log "updateEdgeClasses" if window.DEBUG?
         lines = edgeGroups.selectAll("path.edge")
             .data((d)->[d])
         for klass, test of @edgeCssAttributes
@@ -621,7 +622,6 @@ class GraphDisplay
     # their class is, so they can color coordinate (like black oval
     # with white text).
     updateVertexClasses: (vertexGroups) =>
-        console.log "updateVertexClasses" if window.DEBUG?
 
         vertices = vertexGroups.selectAll("ellipse.vertex")
             .data((d) -> [d])
@@ -697,35 +697,5 @@ class GraphDisplay
     closeDrawer: ->
         return unless @$drawer?
         @$drawer.fadeOut("fast")
-
-    # ----------- styles, colors and jsplumb stuff -------------- #
-
-    @editColor        = "#92E894"
-    @lightEdgeColor   = "#cccccc"
-    @darkEdgeColor    = "#aaaaaa"
-    @deletionColor    = "#FF7D7D"
-    @lineWidth        = 4
-
-    normalPaintStyle:
-        dashstyle   : "0"
-        lineWidth   : @lineWidth
-        strokeStyle : @lightEdgeColor
-
-    potentialEdgePaintStyle:
-        dashstyle   : "1 1"
-        strokeStyle : @editColor
-        lineWidth   : @lineWidth + 1
-
-    selectedPaintStyle:
-        lineWidth   : @lineWidth
-        strokeStyle : @editColor
-
-    hoverPaintStyle:
-        lineWidth   : @lineWidth
-        strokeStyle : @darkEdgeColor
-
-    customStyle: (color, width) ->
-        lineWidth   : width ? GraphDisplay.lineWidth
-        strokeStyle : color
 
 @Vamonos.export { Widget: { GraphDisplay } }

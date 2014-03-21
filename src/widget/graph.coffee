@@ -29,10 +29,6 @@ class Graph
             description: "type of frame shifts to highlight changes at, " +
                         "can be multiple types with an array of strings"
             defaultValue: "next"
-        tooltips:
-            type: "Boolean"
-            defaultValue: true
-            description: "whether to display tooltips"
         defaultEdgeAttrs:
             type: "Object"
             defaultValue: undefined
@@ -51,7 +47,6 @@ class Graph
         delete @_args[a] for a in [
             "defaultEdgeAttrs"
             "showChanges"
-            "tooltips"
             "varName"
             "defaultGraph"
             "inputVars"
@@ -82,22 +77,17 @@ class Graph
                 @displayWidget.highlightChanges = true
             else
                 @displayWidget.highlightChanges = false
-
             if frame[@varName]?
-                @displayWidget.fitGraph(frame[@varName])
                 @displayWidget.draw(frame[@varName], frame)
             else
                 @displayWidget.hideGraph()
-                @displayWidget.fitGraph()
 
         when "displayStart"
             @displayWidget.mode = "display"
-            @setDisplayToolTips() if @tooltips
 
         when "displayStop"
             unless @editable
                 @displayWidget.clearDisplay()
-                @displayWidget.fitGraph()
 
         when "editStart"
             if @editable
@@ -124,34 +114,13 @@ class Graph
 
     # ----------------- EDITING MODE ------------------------ #
 
-    setEditToolTips: ->
-        @displayWidget.$outer.prop("title", "Click on whitespace to add vertices, edges to modify them.")
-        @displayWidget.$outer.children(".vertex").prop("title", "Click a vertex to modify vertex attributes and edges.")
-        # @displayWidget.svg.selectAll("line").append("svg:title").text("Click an edge attribute to modify it.")
-
-    setNodeSelectionToolTips: ->
-        @displayWidget.$outer.prop("title", "Click on white space to deselect.")
-        @displayWidget.$outer.children(".vertex").prop("title", "Click a vertex to add an edge or change selected vertex.")
-
-    setConnectionSelectionToolTips: ->
-        @displayWidget.$outer.prop("title", "Click on white space to deselect. Click on another edge to select it.")
-        @displayWidget.$outer.children(".vertex").prop("title", "Click a vertex to select it.")
-
-    setDisplayToolTips: ->
-        @displayWidget.$outer.prop("title", "Drag a vertex to move it.")
-        @displayWidget.$outer.children(".vertex").removeAttr("title")
-        @displayWidget.$outer.children(".graph-label").removeAttr("title")
 
     startEditing: ->
-        # fitGraph needs to come before draw so as to prevent strange bug wherein the
-        # first potential edge causing a new edge would make all the endpoints on the
-        # source vertex flip 180 degrees. weird.
-        @displayWidget.fitGraph(@theGraph)
         @displayWidget.draw(@theGraph, @inputVars)
         if @editable
+            console.log "startEditing"
             @setContainerEditBindings()
             @setConnectionEditBindings()
-            @setEditToolTips() if @tooltips
 
     stopEditing: ->
         if @editable
@@ -180,9 +149,7 @@ class Graph
     addVertex: (vertex) ->
         newv = @theGraph.addVertex(vertex)
         @displayWidget.draw(@theGraph, @inputVars)
-        node = @displayWidget.nodes[newv.id]
-        @selectNode(node)
-        return node
+        # TODO SELECT ME
 
     removeVertex: (vid) ->
         @deselect()
@@ -206,40 +173,44 @@ class Graph
         @displayWidget.draw(@theGraph, @inputVars)
 
     setContainerEditBindings: ->
-        @displayWidget.$outer.on "click.vamonos-graph", (e) =>
-            $target = $(e.target)
-            if not @selected()
-                if $target.is("div.vertex-contents")
-                    @selectNode($target.parent())
-                if $target.is(@displayWidget.$inner)
-                    x = e.offsetX ? e.pageX - @displayWidget.$outer.offset().left
-                    y = e.offsetY ? e.pageY - @displayWidget.$outer.offset().top
-                    width  = @displayWidget._vertexWidth  ? 24
-                    height = @displayWidget._vertexHeight ? 24
-                    dwH = @displayWidget.$inner.height()
-                    dwW = @displayWidget.$inner.width()
-                    if (y - (height / 2) > 0) and (y + (height / 2) < dwH) and
-                       (x - (width / 2) > 0)  and (x + (width / 2) < dwW)
-                        @addVertex({x: x - (width / 2), y: y - (height / 2)})
-            else
-                if $target.is("div.vertex-contents") and 'vertex' is @selected()
-                    sourceId = @$selectedNode.attr("id")
-                    targetId = $target.parent().attr("id")
-                    if sourceId is targetId
-                        @deselect()
-                    else if @theGraph.edge(sourceId, targetId)
-                        @selectNode(@displayWidget.nodes[targetId])
-                    else
-                        @addEdge(sourceId, targetId)
-                        @removePotentialEdge()
-                else if $target.is("div.vertex-contents") and 'edge' is @selected()
-                    @selectNode($target.parent())
-                else if $target.is(@displayWidget.$inner)
-                    @deselect()
-            true
+        @displayWidget.svg.on "click.vamonos-graph", () =>
+            target = d3.event.toElement
+            x = d3.event.offsetX - @displayWidget.containerMargin
+            y = d3.event.offsetY - @displayWidget.containerMargin
+            @addVertex({x:x, y:y})
+
+            # if not @selected()
+            #     if $target.is("div.vertex-contents")
+            #         @selectNode($target.parent())
+            #     if $target.is(@displayWidget.$inner)
+            #         x = e.offsetX ? e.pageX - @displayWidget.$outer.offset().left
+            #         y = e.offsetY ? e.pageY - @displayWidget.$outer.offset().top
+            #         width  = @displayWidget._vertexWidth  ? 24
+            #         height = @displayWidget._vertexHeight ? 24
+            #         dwH = @displayWidget.$inner.height()
+            #         dwW = @displayWidget.$inner.width()
+            #         if (y - (height / 2) > 0) and (y + (height / 2) < dwH) and
+            #            (x - (width / 2) > 0)  and (x + (width / 2) < dwW)
+            #             @addVertex({x: x - (width / 2), y: y - (height / 2)})
+            # else
+            #     if $target.is("div.vertex-contents") and 'vertex' is @selected()
+            #         sourceId = @$selectedNode.attr("id")
+            #         targetId = $target.parent().attr("id")
+            #         if sourceId is targetId
+            #             @deselect()
+            #         else if @theGraph.edge(sourceId, targetId)
+            #             @selectNode(@displayWidget.nodes[targetId])
+            #         else
+            #             @addEdge(sourceId, targetId)
+            #             @removePotentialEdge()
+            #     else if $target.is("div.vertex-contents") and 'edge' is @selected()
+            #         @selectNode($target.parent())
+            #     else if $target.is(@displayWidget.$inner)
+            #         @deselect()
+            # true
 
     unsetContainerEditBindings: ->
-        @displayWidget.$outer.off("click.vamonos-graph")
+        @displayWidget.svg.on("click.vamonos-graph", null)
 
     setConnectionEditBindings: ->
         @displayWidget.eachConnection (sourceId, targetId, con) =>
@@ -314,7 +285,6 @@ class Graph
             @potentialEdgeTo($(e.target).parent())
         @$others.on "mouseleave.vamonos-graph", @removePotentialEdge
         @openDrawer()
-        @setNodeSelectionToolTips() if @tooltips
 
     selectConnection: (con) ->
         @deselectNode()       if 'vertex' is @selected()
@@ -322,13 +292,11 @@ class Graph
         @$selectedConnection = con
         @$selectedConnection.setPaintStyle(@displayWidget.selectedPaintStyle)
         @openDrawer()
-        @setConnectionSelectionToolTips() if @tooltips
 
     deselect: ->
         @deselectNode()
         @deselectConnection()
         @closeDrawer()
-        @setEditToolTips() if @tooltips
 
     deselectNode: ->
         return unless @$selectedNode?

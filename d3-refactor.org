@@ -7,6 +7,8 @@
 
 * Graph Editing
 
+** something weird is going on with vertex creation when there is a querystring
+
 ** more visual feedback - highlight vertices and edges on mouseover
 
 ** editable edge attributes
