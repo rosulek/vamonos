@@ -150,6 +150,7 @@ class Graph
         newv = @theGraph.addVertex(vertex)
         @displayWidget.draw(@theGraph, @inputVars)
         # TODO SELECT ME
+        @selectVertex(newv)
 
     removeVertex: (vid) ->
         @deselect()
@@ -285,6 +286,9 @@ class Graph
             @potentialEdgeTo($(e.target).parent())
         @$others.on "mouseleave.vamonos-graph", @removePotentialEdge
         @openDrawer()
+
+    selectVertex: (vtx) ->
+
 
     selectConnection: (con) ->
         @deselectNode()       if 'vertex' is @selected()

@@ -478,6 +478,9 @@ ellipse.vertex {
     fill: #eee;
     stroke: #888;
     stroke-width: 1;
+    -webkit-filter: drop-shadow( 16px 16px 20px black );
+    filter: drop-shadow( 16px 16px 20px black );
+    -webkit-filter: blur(10px);
 }
 
 .vertex {
@@ -505,7 +508,6 @@ ellipse.vertex {
         .default-box-shadow(@shadow-color); // TODO - implement this in svg
         cursor: move;
     }
-
 
     &.changed .vertex-nw-label, .vertex-ne-label, .vertex-sw-label, .vertex-se-label {
         .no-animation;

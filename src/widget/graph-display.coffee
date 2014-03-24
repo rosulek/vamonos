@@ -179,6 +179,23 @@ class GraphDisplay
         @svg = d3.selectAll("#" + @$outer.attr("id")).append("svg")
             .attr("width", "100%")
             .attr("height", "100%")
+
+        @createShadowFilter
+            svg: @svg
+            id: "shadow-yellow"
+            red: 0.3
+            green: 0.3
+            blue: 0.9
+
+        @createShadowFilter
+            svg: @svg
+            id: "shadow"
+            red: 0
+            green: 0
+            blue: 0
+            dx: 5
+            dy: 5
+
         @inner = @initializeInner(@svg)
 
         @_savex = {}
@@ -190,7 +207,32 @@ class GraphDisplay
                 [ @containerMargin ,
                   @containerMargin ] + ")")
 
-    # ------------ PUBLIC INTERACTION METHODS ------------- #
+    createShadowFilter: ({ svg, id, red, green, blue, dx, dy }) ->
+        dx ?= 0
+        dy ?= 0
+        filter = svg.append("svg:defs")
+            .append("svg:filter")
+            .attr("id", id)
+            .attr("height", "200%")
+            .attr("width", "200%")
+            .attr("x", "-50%")
+            .attr("y", "-50%")
+        filter.append("svg:feGaussianBlur")
+            .attr("in", "SourceGraphic")
+            .attr("stdDeviation", 5)
+        filter.append("svg:feOffset")
+            .attr("dx", dx)
+            .attr("dy", dy)
+        filter.append("svg:feColorMatrix")
+            .attr("type", "matrix")
+            .attr("values", "0 0 0 #{ red   } 0
+                             0 0 0 #{ green } 0
+                             0 0 0 #{ blue  } 0
+                             0 0 0 1          0")
+            .attr("result", "colorblur")
+        merge = filter.append("feMerge")
+        merge.append("feMergeNode").attr("in", "colorblur")
+        merge.append("feMergeNode").attr("in", "SourceGraphic")
 
     # A widget that uses GraphDisplay will need to pass along the setup event
     # in order to register vars from vertexLabels and edgeCssAttributes
@@ -313,6 +355,7 @@ class GraphDisplay
                 ths._savey[d.id] = d.y
             d3.select(this).attr('transform', trans)
                 .classed("vertex-drag-onto", true)
+                .attr("filter", "url(#shadow)")
             ths.inner.selectAll("g.edge")
                 .call(ths.genPath)
             ths.updateEdgeLabels()
@@ -323,7 +366,8 @@ class GraphDisplay
                 ref = parent.querySelector(".graph-label")
                 parent.insertBefore(this, ref))
             .on("dragend", () ->
-                d3.select(this).classed("vertex-drag-onto", false))
+                d3.select(this).classed("vertex-drag-onto", false)
+                    .attr("filter", null))
         @inner.selectAll("g.vertex").call(drag)
 
 

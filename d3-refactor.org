@@ -7,15 +7,13 @@
 
 * Graph Editing
 
-** something weird is going on with vertex creation when there is a querystring
+** selection
 
 ** more visual feedback - highlight vertices and edges on mouseover
 
 ** editable edge attributes
 
 ** dragging - update TheGraph
-
-** selection
 
 * unneeded things currently out of scope
 ** setup continuations waiting for jsPlumb to load
