@@ -66,7 +66,11 @@ class Graph
         return vtx.id if @vertices[vtx.id]?
         newVtx = {}
         newVtx.type = 'Vertex'
-        newVtx.name = vtx.name ? @nextVertexName()
+        if vtx.name?
+            @removeVertexName(vtx.name)
+            newVtx.name = vtx.name
+        else
+            newVtx.name = vtx.name ? @nextVertexName()
         newVtx.id   = vtx.id ? @nextVertexId()
         @vertices[newVtx.id] = newVtx
         for k, v of vtx when k not in ['type','name','id']
@@ -116,8 +120,11 @@ class Graph
     @interface.nextVertexId = description: "returns an unused vertex id"
     nextVertexId: () ->
         @_customVertexNum ?= 0
-        "#{@prefix ? "custom-"}vertex-#{@_customVertexNum++}"
-
+        for existingVtx in @getVertices()
+            newId = "#{@prefix ? "custom-"}vertex-#{@_customVertexNum++}"
+            if existingVtx.id == newId
+                return @nextVertexId()
+        return newId
 
     @interface.returnVertexName =
         args: [["n", "string"]]
@@ -127,6 +134,12 @@ class Graph
         @availableNames.unshift(n)
         @availableNames.sort()
 
+    @interface.removeVertexName =
+        args: [["name"]]
+        description: "removes `name` from the list of available vertex names"
+    removeVertexName: (name) ->
+        @_initAvailableNames()
+        @availableNames = @availableNames.filter((n) -> n isnt name)
 
     @interface.nextVertexName =
         description: "returns the next available vertex name"

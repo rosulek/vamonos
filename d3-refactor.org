@@ -2,8 +2,8 @@
 
 * Graph Display:
 
-** force layout
 ** vertex attributes tooltips
+** drop shadows
 
 * Graph Editing
 
