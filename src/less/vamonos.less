@@ -493,27 +493,19 @@ ellipse.vertex {
         text-anchor: middle;
     }
 
+    &:hover {
+        cursor: default;
+    }
+
     &.selected {
         box-shadow:0px 0px 5px 5px @editing-bg-color;
     }
 
-    &.ui-draggable {
+    &.ui-draggable-dragging, &.vertex-drag-onto {
+        .default-box-shadow(@shadow-color); // TODO - implement this in svg
         cursor: move;
     }
 
-    &.ui-draggable-dragging, &.vertex-drag-onto {
-        .default-box-shadow(@shadow-color);
-    }
-
-    &.vertex-drag-onto {
-        cursor: default;
-    }
-
-    &.vertex-deletable:hover {
-        background: @alert-color;
-        .default-box-shadow(@shadow-color);
-        cursor: crosshair;
-    }
 
     &.changed .vertex-nw-label, .vertex-ne-label, .vertex-sw-label, .vertex-se-label {
         .no-animation;

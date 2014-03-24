@@ -312,15 +312,18 @@ class GraphDisplay
                 ths._savex[d.id] = d.x
                 ths._savey[d.id] = d.y
             d3.select(this).attr('transform', trans)
+                .classed("vertex-drag-onto", true)
             ths.inner.selectAll("g.edge")
                 .call(ths.genPath)
             ths.updateEdgeLabels()
         drag = d3.behavior.drag()
             .on("drag", dragmove)
-            .on "dragstart", () ->
+            .on("dragstart", () ->
                 parent = this.parentNode
                 ref = parent.querySelector(".graph-label")
-                parent.insertBefore(this, ref)
+                parent.insertBefore(this, ref))
+            .on("dragend", () ->
+                d3.select(this).classed("vertex-drag-onto", false))
         @inner.selectAll("g.vertex").call(drag)
 
 
@@ -471,6 +474,7 @@ class GraphDisplay
             .append("g")
             .attr("transform", trans)
             .attr("class", "vertex")
+            .attr("id", (d) -> d.id)
         enter.append("ellipse")
             .attr("class", "vertex")
             .attr("cx", 0)
