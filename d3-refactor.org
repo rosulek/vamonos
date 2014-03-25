@@ -4,6 +4,7 @@
 
 ** vertex attributes tooltips
 ** drop shadows
+   find a way to get better colors
 
 * Graph Editing
 
@@ -14,6 +15,7 @@
 ** editable edge attributes
 
 ** dragging - update TheGraph
+   it should be harder to create new vertices accidentally
 
 * unneeded things currently out of scope
 ** setup continuations waiting for jsPlumb to load

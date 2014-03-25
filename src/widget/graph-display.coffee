@@ -162,6 +162,9 @@ class GraphDisplay
         Vamonos.handleArguments
             widgetObject : this
             givenArgs    : args
+            specObj      : Vamonos.Widget.GraphDisplay.spec # for calling from super
+                                                            # when 'this' will be a Graph
+                                                            # not GraphDisplay
 
         @$outer = Vamonos.jqueryify(@container)
 
@@ -182,10 +185,10 @@ class GraphDisplay
 
         @createShadowFilter
             svg: @svg
-            id: "shadow-yellow"
-            red: 0.3
-            green: 0.3
-            blue: 0.9
+            id: "shadow-green"
+            red: 0.0
+            green: 0.9
+            blue: 0.0
 
         @createShadowFilter
             svg: @svg
@@ -210,8 +213,8 @@ class GraphDisplay
     createShadowFilter: ({ svg, id, red, green, blue, dx, dy }) ->
         dx ?= 0
         dy ?= 0
-        filter = svg.append("svg:defs")
-            .append("svg:filter")
+        @defs ?= svg.append("svg:defs")
+        filter = @defs.append("svg:filter")
             .attr("id", id)
             .attr("height", "200%")
             .attr("width", "200%")
@@ -321,7 +324,7 @@ class GraphDisplay
         @fitGraph()
 
     # extranious force directed layout. doesn't save positions
-    forceIt: () ->
+    forceLayout: () ->
         width = @svg.node().offsetWidth
         height = @svg.node().offsetHeight
         ths = @
@@ -720,11 +723,13 @@ class GraphDisplay
         return false unless @previousGraph?
         return false unless oldv = @previousGraph.vertex(newv.id)
         for k,v of newv when k[0] isnt "_"
+            continue if k in ["x", "y"]
             if v?.type is "Vertex"
                 return true if oldv[k]?.id isnt v.id
             else
                 return true if oldv[k] isnt v
         for k,v of oldv when k[0] isnt "_"
+            continue if k in ["x", "y"]
             if v?.type is "Vertex"
                 return true if newv[k]?.id isnt v.id
             else

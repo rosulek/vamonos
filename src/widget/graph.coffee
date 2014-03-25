@@ -1,4 +1,4 @@
-class Graph
+class Graph extends Vamonos.Widget.GraphDisplay
 
     @description: "The Graph widget provides graph input functionality. It " +
         "uses GraphDisplay for functionality that is not related to input."
@@ -62,36 +62,36 @@ class Graph
             @_args.resizable ?= false
 
         @edgeLabel = @_args.edgeLabel?.edit ? @_args.edgeLabel
-        @displayWidget = new Vamonos.Widget.GraphDisplay(@_args)
+        super(@_args)
 
     event: (event, options...) -> switch event
         when "setup"
             [@viz, done] = options
             @registerVariables()
             @updateVariables()
-            @displayWidget.event("setup", @viz, done) # displayWidget calls done()
+            super("setup", @viz, done) # displayWidget calls done()
 
         when "render"
             [frame, type] = options
             if type in @showChanges
-                @displayWidget.highlightChanges = true
+                @highlightChanges = true
             else
-                @displayWidget.highlightChanges = false
+                @highlightChanges = false
             if frame[@varName]?
-                @displayWidget.draw(frame[@varName], frame)
+                @draw(frame[@varName], frame)
             else
-                @displayWidget.hideGraph()
+                @hideGraph()
 
         when "displayStart"
-            @displayWidget.mode = "display"
+            @mode = "display"
 
         when "displayStop"
             unless @editable
-                @displayWidget.clearDisplay()
+                @clearDisplay()
 
         when "editStart"
             if @editable
-                @displayWidget.mode = "edit"
+                @mode = "edit"
                 @startEditing()
 
         when "editStop"
@@ -116,7 +116,7 @@ class Graph
 
 
     startEditing: ->
-        @displayWidget.draw(@theGraph, @inputVars)
+        @draw(@theGraph, @inputVars)
         if @editable
             console.log "startEditing"
             @setContainerEditBindings()
@@ -148,7 +148,7 @@ class Graph
 
     addVertex: (vertex) ->
         newv = @theGraph.addVertex(vertex)
-        @displayWidget.draw(@theGraph, @inputVars)
+        @draw(@theGraph, @inputVars)
         # TODO SELECT ME
         @selectVertex(newv)
 
@@ -157,7 +157,7 @@ class Graph
         @theGraph.removeVertex(vid)
         for k, v of @inputVars when v? and v.id is vid
             @inputVars[k] = undefined
-        @displayWidget.draw(@theGraph, @inputVars)
+        @draw(@theGraph, @inputVars)
 
     addEdge: (sourceId, targetId) ->
         attrs = {}
@@ -173,12 +173,21 @@ class Graph
         @theGraph.removeEdge(sourceId, targetId)
         @displayWidget.draw(@theGraph, @inputVars)
 
+    selectVertex: (sel) ->
+        sel.filter("shadow-green", true)
+
     setContainerEditBindings: ->
-        @displayWidget.svg.on "click.vamonos-graph", () =>
-            target = d3.event.toElement
-            x = d3.event.offsetX - @displayWidget.containerMargin
-            y = d3.event.offsetY - @displayWidget.containerMargin
-            @addVertex({x:x, y:y})
+        # @displayWidget.svg.on "click.vamonos-graph", () =>
+        #     target = d3.event.toElement
+        #     x = d3.event.offsetX - @displayWidget.containerMargin
+        #     y = d3.event.offsetY - @displayWidget.containerMargin
+        #     @addVertex({x:x, y:y})
+
+        vertices = @inner.selectAll("g.vertex")
+        ths = @
+        vertices.on "click.vamonos-graph", () =>
+            target = d3.select(d3.event.target)
+            @selectVertex(target)
 
             # if not @selected()
             #     if $target.is("div.vertex-contents")
@@ -211,11 +220,9 @@ class Graph
             # true
 
     unsetContainerEditBindings: ->
-        @displayWidget.svg.on("click.vamonos-graph", null)
+        @svg.on("click.vamonos-graph", null)
 
     setConnectionEditBindings: ->
-        @displayWidget.eachConnection (sourceId, targetId, con) =>
-            @connectionBindings(con)
 
     connectionBindings: (con) ->
         con.bind "click", (c) =>
@@ -260,12 +267,12 @@ class Graph
             ]) if backLoc?
 
     unsetConnectionEditBindings: ->
-        @displayWidget.eachConnection (sourceId, targetId, con) =>
-            con.unbind("click")
-            con.unbind("mouseenter")
-            con.unbind("mouseexit")
-            con.removeOverlay("editableEdgeLabel")
-            con.removeOverlay("editableEdgeLabel-back")
+        # @displayWidget.eachConnection (sourceId, targetId, con) =>
+        #     con.unbind("click")
+        #     con.unbind("mouseenter")
+        #     con.unbind("mouseexit")
+        #     con.removeOverlay("editableEdgeLabel")
+        #     con.removeOverlay("editableEdgeLabel-back")
 
     selected: ->
         return 'vertex' if @$selectedNode?
@@ -287,9 +294,6 @@ class Graph
         @$others.on "mouseleave.vamonos-graph", @removePotentialEdge
         @openDrawer()
 
-    selectVertex: (vtx) ->
-
-
     selectConnection: (con) ->
         @deselectNode()       if 'vertex' is @selected()
         @deselectConnection() if 'edge' is @selected()
@@ -300,7 +304,7 @@ class Graph
     deselect: ->
         @deselectNode()
         @deselectConnection()
-        @closeDrawer()
+        # @closeDrawer()
 
     deselectNode: ->
         return unless @$selectedNode?
