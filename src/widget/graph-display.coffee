@@ -70,7 +70,7 @@ class GraphDisplay
 
         edgeCssAttributes:
             type: "Object"
-            defaultValue: undefined
+            defaultValue: {}
             description: "provides a way to change CSS classes of edges based " +
                 "upon the values of variables or the edges themselves. You provide " +
                 "a mapping of classnames to functions or strings. The function " +

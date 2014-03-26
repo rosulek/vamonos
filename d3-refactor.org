@@ -11,6 +11,8 @@
 
 ** fit graph shouldn't change minx and miny - or maybe dragging should change it
 
+** self-loops
+
 * Graph Editing
 
 ** selection

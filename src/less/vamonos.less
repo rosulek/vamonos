@@ -443,14 +443,14 @@ path.edge {
     stroke-width: 4;
 }
 
-path.potential-edge {
+path._potential {
     stroke: @editing-bg-color;
     fill: none;
     stroke-width: 5;
-    stroke-dasharray: 5,5;
+    // stroke-dasharray: 5,5; // doesn't work very well with my homebrew arrow
 }
 
-path.selected-edge {
+path._selected {
     stroke-width: 4;
     stroke: @editing-bg-color;
     fill: none;

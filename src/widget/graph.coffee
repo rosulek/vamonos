@@ -61,6 +61,9 @@ class Graph extends Vamonos.Widget.GraphDisplay
             @_args.minY      ?= 0
             @_args.resizable ?= false
 
+        @_args.edgeCssAttributes._potential ?= (edge) -> edge._potential
+        @_args.edgeCssAttributes._selected  ?= (edge) -> edge._selected
+
         @edgeLabel = @_args.edgeLabel?.edit ? @_args.edgeLabel
         super(@_args)
 
@@ -196,6 +199,7 @@ class Graph extends Vamonos.Widget.GraphDisplay
 
 
     addEdge: (sourceId, targetId) ->
+        @removePotentialEdge()
         attrs = {}
         if @defaultEdgeAttrs?
             # set edgeLabel default values
@@ -220,7 +224,12 @@ class Graph extends Vamonos.Widget.GraphDisplay
         @inner.selectAll("g.vertex")
             .on "click.vamonos-graph", (d) =>
                 console.log "vertex selection click"
-                @selectVertexById(d3.event.target.__data__.id)
+                sourceId = @selectedVertex?.attr("id")
+                targetId = d3.event.target.__data__.id
+                if sourceId? and @theGraph.edge(sourceId, targetId)._potential?
+                    @addEdge(sourceId, targetId)
+                else
+                    @selectVertexById(targetId)
                 @_vertexClick = true
 
         @$outer.off("click.vamonos-graph") # dont register multiple identical handlers, jquery
@@ -337,8 +346,10 @@ class Graph extends Vamonos.Widget.GraphDisplay
 
     selectVertexBySelector: (sel) ->
         @deselectVertex() if 'vertex' is @selected()
-        sel.classed("selected", true)
-        @selectedVertex = sel
+        @selectedVertex = sel.classed("selected", true)
+        @inner.selectAll("g.vertex")
+            .on("mouseover.vamonos-graph", (v) => @potentialEdgeTo(v.id))
+            .on("mouseleave.vamonos-graph", (v) => @removePotentialEdge())
 
     selectNode: (node) ->
         @stopEditingLabel()
@@ -371,9 +382,13 @@ class Graph extends Vamonos.Widget.GraphDisplay
         return unless @selectedVertex?
         @selectedVertex.classed("selected", false)
         delete @selectedVertex
-        # @$others.off("mouseenter.vamonos-graph mouseleave.vamonos-graph")
-        # @$selectedNode.removeClass("selected")
-        # @$selectedNode = undefined
+        @unsetPotentialEdgeBindings()
+
+    unsetPotentialEdgeBindings: () ->
+        @removePotentialEdge()
+        @inner.selectAll("g.vertex")
+            .on("mouseover.vamonos-graph", null)
+            .on("mouseleave.vamonos-graph", null)
 
     deselectEdge: ->
         return unless @$selectedConnection?
@@ -381,24 +396,20 @@ class Graph extends Vamonos.Widget.GraphDisplay
         @$selectedConnection = undefined
         @removePotentialEdge()
 
-    potentialEdgeTo: (node) =>
-        sourceId = @$selectedNode.attr("id")
-        targetId = node.attr("id")
-        return if @displayWidget.connections[sourceId]?[targetId]?
-
-        potentialEdge = @displayWidget.addConnection(sourceId, targetId)
-        potentialEdge.setPaintStyle(@displayWidget.potentialEdgePaintStyle)
-        @potentialEdge = { sourceId, targetId }
+    potentialEdgeTo: (vid) =>
+        sourceId = @selectedVertex.attr("id")
+        return unless sourceId isnt vid
+        @removePotentialEdge()
+        @potentialEdge = @theGraph.addEdge(sourceId, vid, { _potential: true })
+        console.log "potentialEdgeTo, result", @potentialEdge
+        @draw(@theGraph, @inputVars)
 
     removePotentialEdge: =>
         return unless @potentialEdge?
-        { sourceId, targetId } = @potentialEdge
-        edge = @theGraph.edge(sourceId, targetId)
-        if edge
-            con = @displayWidget.connections[sourceId][targetId]
-        else
-            con = @displayWidget.removeConnection(sourceId, targetId)
-        @displayWidget.resetConnectionStyle(con) if con?
+        e = @potentialEdge
+        @theGraph.removeEdge(e.source.id, e.target.id)
+        delete @potentialEdge
+        @draw(@theGraph, @inputVars)
 
     openDrawer: ->
         type = @selected()
