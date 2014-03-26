@@ -261,8 +261,8 @@ class GraphDisplay
         @inner.selectAll(".changed").classed("changed", null)
         # set global variables so we don't have to pass stuff around
         # annoyingly and buggyily
-        @currentGraph = Vamonos.clone(graph)
-        @currentFrame = Vamonos.clone(frame)
+        @currentGraph = graph
+        @currentFrame = frame
         @fitGraph()
         # transfer the positions of vertices that have been dragged to
         # the new @currentGraph
@@ -284,6 +284,8 @@ class GraphDisplay
             xVals = []
             yVals = []
             for vertex in @currentGraph.getVertices()
+                continue unless not isNaN vertex.x
+                continue unless not isNaN vertex.y
                 xVals.push(vertex.x + (@vertexWidth  / 2) + @containerMargin * 2)
                 yVals.push(vertex.y + (@vertexHeight / 2) + @containerMargin * 2)
             max_x = Math.max(xVals..., @minX)
@@ -300,7 +302,7 @@ class GraphDisplay
             @$outer.resizable("option", "minWidth", max_x)
             @$outer.resizable("option", "minHeight", max_y)
 
-    # PLACEHOLDER SO SHIT STILL WORKS WHILE I REFACTOR GRAPH.COFFEE
+    # TODO PLACEHOLDER SO SHIT STILL WORKS WHILE I REFACTOR GRAPH.COFFEE
     eachConnection: () -> undefined
 
     hideGraph: () ->
@@ -312,67 +314,41 @@ class GraphDisplay
         @graphHidden = false
 
     clearDisplay: () ->
+        console.log "clearDisplay"
         if @persistentDragging
-            # _savex and _savey are for saving the dragged positions of
-            # vertices across frames.
-            @_savex = {}
-            @_savey = {}
+            @_savex = {} # _savex and _savey are for saving the
+            @_savey = {} # dragged positions of vertices across frames.
         @inner.remove()
         @inner = @initializeInner()
         @currentGraph = undefined
         @previousGraph = undefined
         @fitGraph()
 
-    # extranious force directed layout. doesn't save positions
-    forceLayout: () ->
-        width = @svg.node().offsetWidth
-        height = @svg.node().offsetHeight
-        ths = @
-        trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
-        force = d3.layout.force()
-            .charge(-300)
-            .linkDistance(100)
-            .size([width, height])
-            .nodes(@currentGraph.getVertices())
-            .links(@currentGraph.getEdges())
-            .start()
-        tick = () ->
-            ths.inner.selectAll("g.vertex")
-                .attr('transform', trans)
-            ths.inner.selectAll("g.edge")
-                .call(ths.genPath)
-            ths.updateEdgeLabels()
-        force.on("tick", tick)
-        @inner.selectAll("g.vertex").call(force.drag)
-        @forcedAlready = true
-
-
-    startDragging: () ->
+    startDragging: (graph) ->
         trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
         ths = @
         dragmove = (d) ->
+            parent = this.parentNode
+            ref = parent.querySelector(".graph-label")
+            parent.insertBefore(this, ref)
             d.x = d3.event.x
             d.y = d3.event.y
-            if ths.persistentDragging
-                ths._savex[d.id] = d.x
-                ths._savey[d.id] = d.y
             d3.select(this).attr('transform', trans)
-                .classed("vertex-drag-onto", true)
-                .attr("filter", "url(#shadow)")
+                .classed("vertex-drag", true)
             ths.inner.selectAll("g.edge")
                 .call(ths.genPath)
             ths.updateEdgeLabels()
         drag = d3.behavior.drag()
             .on("drag", dragmove)
-            .on("dragstart", () ->
-                parent = this.parentNode
-                ref = parent.querySelector(".graph-label")
-                parent.insertBefore(this, ref))
-            .on("dragend", () ->
-                d3.select(this).classed("vertex-drag-onto", false)
-                    .attr("filter", null))
+            .on "dragend", (d) ->
+                d3.select(this).classed("vertex-drag", null)
+                if ths.persistentDragging and ths.mode is 'display'
+                    ths._savex[d.id] = d.x
+                    ths._savey[d.id] = d.y
         @inner.selectAll("g.vertex").call(drag)
 
+    stopDragging: () ->
+        @inner.selectAll("g.vertex").on("mousedown.drag", null)
 
     updateEdges: () ->
         # update #

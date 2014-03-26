@@ -498,11 +498,11 @@ ellipse.vertex {
     }
 
     &.selected {
-        box-shadow:0px 0px 5px 5px @editing-bg-color;
+        filter: url(#shadow-green); // defined as svg filter in Widget.GraphDisplay
     }
 
-    &.ui-draggable-dragging, &.vertex-drag-onto {
-        .default-box-shadow(@shadow-color); // TODO - implement this in svg
+    &.vertex-drag {
+        filter: url(#shadow); // defined as svg filter in Widget.GraphDisplay
         cursor: move;
     }
 

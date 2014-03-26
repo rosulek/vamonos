@@ -5,10 +5,19 @@
 ** vertex attributes tooltips
 ** drop shadows
    find a way to get better colors
+   maybe use a tint or something
+
+** some kind of transition for vertices appearing and disappearing and moving
+
+** fit graph shouldn't change minx and miny - or maybe dragging should change it
 
 * Graph Editing
 
 ** selection
+   nodes shouldn't be selected by dragging them - fix later
+
+** creating new vertices
+   when one is selected already, it gets an automatic edge
 
 ** more visual feedback - highlight vertices and edges on mouseover
 
