@@ -61,8 +61,8 @@ class Graph extends Vamonos.Widget.GraphDisplay
             @_args.minY      ?= 0
             @_args.resizable ?= false
 
-        @_args.edgeCssAttributes._potential ?= (edge) -> edge._potential
-        @_args.edgeCssAttributes._selected  ?= (edge) -> edge._selected
+        @_args.edgeCssAttributes.potential ?= (edge) -> edge._potential
+        @_args.edgeCssAttributes.selected  ?= (edge) -> edge._selected
 
         @edgeLabel = @_args.edgeLabel?.edit ? @_args.edgeLabel
         super(@_args)
@@ -312,6 +312,7 @@ class Graph extends Vamonos.Widget.GraphDisplay
         @deselect()
         return if oldEdgeId is sel.attr('id')
         @selectedEdge = sel.classed("selected", true)
+        @openDrawer()
 
     selectVertexById: (vid) ->
         console.log "selectVertexById", vid
@@ -323,11 +324,12 @@ class Graph extends Vamonos.Widget.GraphDisplay
         @inner.selectAll("g.vertex")
             .on("mouseover.vamonos-graph", (v) => @potentialEdgeTo(v.id))
             .on("mouseleave.vamonos-graph", (v) => @removePotentialEdge())
+        @openDrawer()
 
     deselect: ->
         @deselectVertex()
         @deselectEdge()
-        # @closeDrawer()
+        @closeDrawer()
 
     deselectVertex: ->
         return unless @selectedVertex?
@@ -364,27 +366,29 @@ class Graph extends Vamonos.Widget.GraphDisplay
     openDrawer: ->
         type = @selected()
         if type is 'vertex'
-            vtx     = @theGraph.vertex(@$selectedNode.attr("id"))
+            vtx     = @theGraph.vertex(@selectedVertex.attr("id"))
             label   = "vertex&nbsp;&nbsp;#{vtx.name}&nbsp;&nbsp;"
             buttons = []
             for v of @inputVars
-                # we have to close over v in this loop. otherwise multiple variables will be all set to the
-                # final variable in the click handler.
-                do (v, vtx, buttons, inputVars = @inputVars, displayWidget = @displayWidget, theGraph = @theGraph) ->
+                # we have to close over v in this loop. otherwise
+                # multiple variables will be all set to the final
+                # variable in the click handler.
+                do (v, vtx, buttons, ths = @, inputVars = @inputVars, theGraph = @theGraph) ->
                     vName = Vamonos.resolveSubscript(v)
                     $b = $("<button>", { text: "#{vName}", title: "Set #{vName}=#{vtx.name}" })
                     $b.on "click.vamonos-graph", (e) =>
                         inputVars[v] = vtx
-                        displayWidget.draw(theGraph, inputVars)
+                        ths.draw(theGraph, inputVars)
                     buttons.push($b)
 
             buttons.push($("<button>", {text: "del", title: "Delete #{vtx.name}"})
                     .on "click.vamonos-graph", (e) =>
                         @removeVertex(vtx.id))
         else if type is 'edge'
-            sourceId = @$selectedConnection.sourceId
-            targetId = @$selectedConnection.targetId
-            edge     = @theGraph.edge(sourceId, targetId)
+            edge = @selectedEdge.data()[0]
+            console.log edge
+            sourceId = edge.source.id
+            targetId = edge.target.id
             if @theGraph.directed and not @theGraph.edge(targetId,sourceId)
                 arr = "&rarr;"
             else
@@ -400,10 +404,7 @@ class Graph extends Vamonos.Widget.GraphDisplay
             ]
         else
             return
-        @displayWidget.openDrawer({buttons, label})
-
-    closeDrawer: ->
-        @displayWidget.closeDrawer()
+        super({ buttons, label })
 
     createEditableEdgeLabel: (edge, con) =>
         return unless @edgeLabel.constructor.name is 'String'
