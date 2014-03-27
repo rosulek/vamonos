@@ -238,11 +238,12 @@ class Graph extends Vamonos.Widget.GraphDisplay
 
         @inner.selectAll("path.edge")
             .on "mouseenter.vamonos-graph", (d) ->
-                d3.select(this).classed("_selectme", true)
+                d3.select(this).classed("selectme", true)
             .on "mouseout.vamonos-graph", (d) ->
-                d3.select(this).classed("_selectme", null)
+                d3.select(this).classed("selectme", null)
             .on "click.vamonos-graph", (d) =>
                 console.log "edge selection click"
+                @selectEdgeBySelector(d3.select(d3.event.target))
                 @_notNewVertexClick = true
 
         @$outer.off("click.vamonos-graph") # dont register multiple identical handlers, jquery
@@ -300,95 +301,28 @@ class Graph extends Vamonos.Widget.GraphDisplay
     removeButtons: ->
         @newVertexButton?.remove()
 
-    setConnectionEditBindings: ->
-
-    connectionBindings: (con) ->
-        con.bind "click", (c) =>
-            @selectConnection(c)
-        con.bind "mouseenter", (c) =>
-            return if c.id is @$selectedConnection?.id
-            c.setPaintStyle(@displayWidget.hoverPaintStyle)
-        con.bind "mouseexit", (c) =>
-            return if c.id is @$selectedConnection?.id
-            @displayWidget.resetConnectionStyle(c)
-        if @edgeLabel?
-            con.removeOverlay("editableEdgeLabel")
-            con.removeOverlay("editableEdgeLabel-back")
-            con.removeOverlay("edgeLabel")
-
-            if @theGraph.directed
-                loc = 0.70
-            else
-                loc = 0.5
-
-            if @theGraph.directed and @theGraph.edge(con.targetId, con.sourceId)
-                backLoc = 0.30
-
-            con.addOverlay([
-                "Custom"
-                create: =>
-                    edge = @theGraph.edge(con.sourceId, con.targetId)
-                    @createEditableEdgeLabel(edge, con)
-                id: "editableEdgeLabel"
-                cssClass: "graph-label"
-                location: loc
-            ])
-
-            con.addOverlay([
-                "Custom"
-                create: =>
-                    backEdge = @theGraph.edge(con.targetId, con.sourceId)
-                    @createEditableEdgeLabel(backEdge, con)
-                id: "editableEdgeLabel-back"
-                cssClass: "graph-label"
-                location: backLoc
-            ]) if backLoc?
-
-    unsetConnectionEditBindings: ->
-        # @displayWidget.eachConnection (sourceId, targetId, con) =>
-        #     con.unbind("click")
-        #     con.unbind("mouseenter")
-        #     con.unbind("mouseexit")
-        #     con.removeOverlay("editableEdgeLabel")
-        #     con.removeOverlay("editableEdgeLabel-back")
-
     selected: ->
         return 'vertex' if @selectedVertex?
         return 'edge'   if @selectedEdge?
         return false
+
+    selectEdgeBySelector: (sel) ->
+        console.log "selectEdgeById", sel.attr("id")
+        oldEdgeId = @selectedEdge?.attr('id')
+        @deselect()
+        return if oldEdgeId is sel.attr('id')
+        @selectedEdge = sel.classed("selected", true)
 
     selectVertexById: (vid) ->
         console.log "selectVertexById", vid
         @selectVertexBySelector(@inner.select("#" + vid))
 
     selectVertexBySelector: (sel) ->
-        @deselectVertex() if 'vertex' is @selected()
+        @deselect()
         @selectedVertex = sel.classed("selected", true)
         @inner.selectAll("g.vertex")
             .on("mouseover.vamonos-graph", (v) => @potentialEdgeTo(v.id))
             .on("mouseleave.vamonos-graph", (v) => @removePotentialEdge())
-
-    selectNode: (node) ->
-        @stopEditingLabel()
-        @deselectNode()       if 'vertex' is @selected()
-        @deselectConnection() if 'edge' is @selected()
-        @$selectedNode = node
-        @$selectedNode.addClass("selected")
-        @$selectedNode.removeClass('hovering')
-        @$others = @$selectedNode
-            .siblings("div.vertex")
-            .children("div.vertex-contents")
-        @$others.on "mouseenter.vamonos-graph", (e) =>
-            @potentialEdgeTo($(e.target).parent())
-        @$others.on "mouseleave.vamonos-graph", @removePotentialEdge
-        @openDrawer()
-
-    selectConnection: (con) ->
-        @deselectNode()       if 'vertex' is @selected()
-        @deselectConnection() if 'edge' is @selected()
-        @$selectedConnection = con
-        @$selectedConnection.setPaintStyle(@displayWidget.selectedPaintStyle)
-        @openDrawer()
 
     deselect: ->
         @deselectVertex()
@@ -408,10 +342,9 @@ class Graph extends Vamonos.Widget.GraphDisplay
             .on("mouseleave.vamonos-graph", null)
 
     deselectEdge: ->
-        return unless @$selectedConnection?
-        @displayWidget.resetConnectionStyle(@$selectedConnection)
-        @$selectedConnection = undefined
-        @removePotentialEdge()
+        return unless @selectedEdge?
+        @selectedEdge.classed("selected", null)
+        delete @selectedEdge
 
     potentialEdgeTo: (vid) =>
         sourceId = @selectedVertex.attr("id")
