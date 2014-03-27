@@ -1,32 +1,18 @@
 #+TITLE: GraphDisplay D3 refactor notes
 
 * Graph Display:
-
 ** vertex attributes tooltips
 ** drop shadows
    find a way to get better colors
    maybe use a tint or something
-
 ** some kind of transition for vertices appearing and disappearing and moving
-
 ** fit graph shouldn't change minx and miny - or maybe dragging should change it
-
-** self-loops
+** add self-loops for nfa to regex
 
 * Graph Editing
-
-** selection
-   nodes shouldn't be selected by dragging them - fix later
-
-** creating new vertices
-   when one is selected already, it gets an automatic edge
-
-** more visual feedback - highlight vertices and edges on mouseover
-
 ** editable edge attributes
-
-** dragging - update TheGraph
-   it should be harder to create new vertices accidentally
+** selection
+   nodes shouldn't be selected and unselected by dragging them
 
 * unneeded things currently out of scope
 ** setup continuations waiting for jsPlumb to load
@@ -35,5 +21,4 @@
 ** jQuery used for @$outer, d3 for @inner
 
 * check when done
-
 ** dijkstra-quiz highlighting the correct vertex

@@ -127,6 +127,7 @@ class Graph extends Vamonos.Widget.GraphDisplay
     stopEditing: ->
         if @editable
             @deselect()
+            @closeDrawer()
             @unsetEditBindings()
             @updateVariables()
 
@@ -192,6 +193,7 @@ class Graph extends Vamonos.Widget.GraphDisplay
 
     removeVertex: (vid) ->
         @deselect()
+        @closeDrawer()
         @theGraph.removeVertex(vid)
         for k, v of @inputVars when v? and v.id is vid
             @inputVars[k] = undefined
@@ -210,6 +212,7 @@ class Graph extends Vamonos.Widget.GraphDisplay
 
     removeEdge: (sourceId, targetId) ->
         @deselect() if 'edge' is @selected()
+        @closeDrawer()
         @theGraph.removeEdge(sourceId, targetId)
         @draw(@theGraph, @inputVars)
 
@@ -232,6 +235,7 @@ class Graph extends Vamonos.Widget.GraphDisplay
                     @addEdge(sourceId, targetId)
                 else if sourceId is targetId
                     @deselect()
+                    @closeDrawer()
                 else
                     @selectVertexById(targetId)
                 @_notNewVertexClick = true
@@ -253,6 +257,7 @@ class Graph extends Vamonos.Widget.GraphDisplay
             else if @selected()
                 console.log "deselect click"
                 @deselect()
+                @closeDrawer()
             else # create new vertex
                 console.log "create new vertex click"
                 x = e.offsetX - @containerMargin
@@ -297,6 +302,7 @@ class Graph extends Vamonos.Widget.GraphDisplay
         @inner.selectAll("path.edge")
             .on("mouseenter.vamonos-graph", null)
             .on("mouseout.vamonos-graph", null)
+            .classed("selectme", null)
 
     removeButtons: ->
         @newVertexButton?.remove()
@@ -329,7 +335,6 @@ class Graph extends Vamonos.Widget.GraphDisplay
     deselect: ->
         @deselectVertex()
         @deselectEdge()
-        @closeDrawer()
 
     deselectVertex: ->
         return unless @selectedVertex?
@@ -389,7 +394,7 @@ class Graph extends Vamonos.Widget.GraphDisplay
             console.log edge
             sourceId = edge.source.id
             targetId = edge.target.id
-            if @theGraph.directed and not @theGraph.edge(targetId,sourceId)
+            if @theGraph.directed
                 arr = "&rarr;"
             else
                 arr = "-"
@@ -398,9 +403,7 @@ class Graph extends Vamonos.Widget.GraphDisplay
             buttons = [
                 $("<button>", {text: "del", title: "Delete #{edge.source.name}->#{edge.target.name}"})
                     .on "click.vamonos-graph", (e) =>
-                        if @theGraph.directed and @theGraph.edge(targetId, sourceId)
-                            @removeEdge(edge.target.id, edge.source.id)
-                        @removeEdge(edge.source.id, edge.target.id)
+                        @removeEdge(edge.target.id, edge.source.id)
             ]
         else
             return

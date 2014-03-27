@@ -216,10 +216,10 @@ class GraphDisplay
         @defs ?= svg.append("svg:defs")
         filter = @defs.append("svg:filter")
             .attr("id", id)
-            .attr("height", "200%")
-            .attr("width", "200%")
-            .attr("x", "-50%")
-            .attr("y", "-50%")
+            .attr("height", 100)
+            .attr("width", 100)
+            .attr("x", -50)
+            .attr("y", -50)
         filter.append("svg:feGaussianBlur")
             .attr("in", "SourceGraphic")
             .attr("stdDeviation", 5)
@@ -335,8 +335,7 @@ class GraphDisplay
             d.y = d3.event.y
             d3.select(this).attr('transform', trans)
                 .classed("vertex-drag", true)
-            ths.inner.selectAll("g.edge")
-                .call(ths.genPath)
+            ths.inner.selectAll("path.edge").call(ths.genPath)
             ths.updateEdgeLabels()
         drag = d3.behavior.drag()
             .on("drag", dragmove)
@@ -352,7 +351,7 @@ class GraphDisplay
 
     updateEdges: () ->
         # update #
-        edges = @inner.selectAll("g.edge")
+        edges = @inner.selectAll("path.edge")
             .data(@currentGraph.getEdges(),
                   @currentGraph.edgeId)
         edges.call(@genPath)
@@ -363,9 +362,7 @@ class GraphDisplay
         # insert edges at the start of the svg, so they dont overlap
         # vertices, which are appended to the end of the svg
         enter = edges.enter()
-            .insert("g", ":first-child")
-            .attr("class", "edge")
-        enter.append("path")
+            .insert("path", ":first-child")
             .attr("class", "edge")
         enter.call(@genPath)
             .call(@updateEdgeClasses)
@@ -388,10 +385,7 @@ class GraphDisplay
             else
                 path = @pathStraightWithArrow(e)
             return path
-        sel.selectAll("path.edge")
-            .data((d) -> [d])           # update edge data for paths
-            .attr("d", getPath)
-            .attr("id", @currentGraph.edgeId)
+        sel.attr("d", getPath).attr("id", @currentGraph.edgeId)
         return sel
 
     antiparallelEdge: (e) =>
@@ -608,40 +602,37 @@ class GraphDisplay
         else
             return
 
-    updateEdgeClasses: (edgeGroups) =>
+    updateEdgeClasses: (edges) =>
+        console.log "updateEdgeClasses", edges
         return unless @edgeCssAttributes?
-        lines = edgeGroups.selectAll("path.edge")
-            .data((d)->[d])
         for klass, test of @edgeCssAttributes
             if test?.constructor.name is 'Function'
-                lines.classed(klass, test)
+                edges.classed(klass, test)
             else if test?.constructor.name is 'String'
                 if test.match(/<->/) # bidirectional
                     [source, target] = test.split(/<->/).map((v) => @currentFrame[v])
-                    lines.classed(klass, (e) ->
+                    edges.classed(klass, (e) ->
                         (e.source.id == source?.id and e.target.id == target?.id) or
                         (e.target.id == source?.id and e.source.id == target?.id))
                 else
                     [source, target] = test.split(/->/).map((v) => @currentFrame[v])
-                    lines.classed(klass, (e) -> e.source.id == source?.id and
+                    edges.classed(klass, (e) -> e.source.id == source?.id and
                                                 e.target.id == target?.id)
-        return edgeGroups
+        return edges
 
-    updateEdgeStyles: (edgeGroups) =>
+    updateEdgeStyles: (edges) =>
         return unless @styleEdges?.length
         for styleFunc in @styleEdges
             continue unless styleFunc.constructor.name is 'Function'
             styles = (@appliedEdgeStyles ?= [])
-            edgeGroups.selectAll("path.edge")
-                .data((d)->[d])
-                .each (e) ->
-                    res = styleFunc(e)
-                    if res?.length == 2
-                        [attr, val] = res
-                        styles.push attr
-                        d3.select(this).style(attr, val)
-                    else
-                        d3.select(this).style(attr, null) for attr in styles
+            edges.each (e) ->
+                res = styleFunc(e)
+                if res?.length == 2
+                    [attr, val] = res
+                    styles.push attr
+                    d3.select(this).style(attr, val)
+                else
+                    d3.select(this).style(attr, null) for attr in styles
 
     # this will be cleaner should I find a way to have ellipses and
     # text svg elements inherit classes from their groups. otherwise
@@ -649,7 +640,6 @@ class GraphDisplay
     # their class is, so they can color coordinate (like black oval
     # with white text).
     updateVertexClasses: (vertexGroups) =>
-
         vertices = vertexGroups.selectAll("ellipse.vertex")
             .data((d) -> [d])
             .classed("changed", (vertex) =>
