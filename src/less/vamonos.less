@@ -425,10 +425,6 @@ tr.pseudocode-active {
     height: inherit;
 }
 
-._jsPlumb_connector {
-    opacity: 0.8;
-}
-
 .graph-label {
     font-family: sans-serif;
     font-size: .7em;
@@ -441,20 +437,27 @@ path.edge {
     stroke: #cccccc;
     fill: none;
     stroke-width: 4;
+
+    &._selectme {
+        stroke: #dddddd;
+        fill: none;
+        stroke-width: 8;
+    }
+
+    &._potential {
+        stroke: @editing-bg-color;
+        fill: none;
+        stroke-width: 5;
+        // stroke-dasharray: 5,5; // doesn't work very well with my homebrew arrow
+    }
+
+    &._selected {
+        stroke-width: 4;
+        stroke: @editing-bg-color;
+        fill: none;
+    }
 }
 
-path._potential {
-    stroke: @editing-bg-color;
-    fill: none;
-    stroke-width: 5;
-    // stroke-dasharray: 5,5; // doesn't work very well with my homebrew arrow
-}
-
-path._selected {
-    stroke-width: 4;
-    stroke: @editing-bg-color;
-    fill: none;
-}
 
 div.graph-drawer {
     background-color: @editing-bg-color;
@@ -480,10 +483,12 @@ ellipse.vertex {
     stroke-width: 1;
 }
 
-.vertex {
-    position: relative; // left/top: relative to container
+g.editable-vertex:hover ellipse {
+    stroke-width: 3;
+    stroke: #BBB;
+}
 
-    // additional layer to allow centering contents
+.vertex {
     .vertex-contents {
         display: table-cell;
         width: inherit;
@@ -491,10 +496,7 @@ ellipse.vertex {
         vertical-align: middle;
         font-weight: bolder;
         text-anchor: middle;
-    }
 
-    &:hover {
-        cursor: default;
     }
 
     &.selected {
@@ -510,28 +512,9 @@ ellipse.vertex {
         .no-animation;
     }
 
-    // LABELS
-
     .vertex-nw-label, .vertex-ne-label, .vertex-sw-label, .vertex-se-label {
         position: absolute;
         text-anchor: middle;
-    }
-
-    .vertex-nw-label {
-        right: 85%;
-        bottom: 85%;
-    }
-    .vertex-ne-label {
-        left: 85%;
-        bottom: 85%;
-    }
-    .vertex-sw-label {
-        right: 85%;
-        top: 85%;
-    }
-    .vertex-se-label {
-        left: 85%;
-        top: 85%;
     }
 
     .vertex-tooltip {

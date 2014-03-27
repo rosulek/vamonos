@@ -222,26 +222,38 @@ class Graph extends Vamonos.Widget.GraphDisplay
         console.log "setEditBindings"
 
         @inner.selectAll("g.vertex")
+            .classed("editable-vertex", true)
             .on "click.vamonos-graph", (d) =>
                 console.log "vertex selection click"
                 sourceId = @selectedVertex?.attr("id")
                 targetId = d3.event.target.__data__.id
+                # if a vertex is selected and there is no (actual) edge already
                 if sourceId? and @theGraph.edge(sourceId, targetId)._potential?
                     @addEdge(sourceId, targetId)
+                else if sourceId is targetId
+                    @deselect()
                 else
                     @selectVertexById(targetId)
-                @_vertexClick = true
+                @_notNewVertexClick = true
+
+        @inner.selectAll("path.edge")
+            .on "mouseenter.vamonos-graph", (d) ->
+                d3.select(this).classed("_selectme", true)
+            .on "mouseout.vamonos-graph", (d) ->
+                d3.select(this).classed("_selectme", null)
+            .on "click.vamonos-graph", (d) =>
+                console.log "edge selection click"
+                @_notNewVertexClick = true
 
         @$outer.off("click.vamonos-graph") # dont register multiple identical handlers, jquery
         @$outer.on "click.vamonos-graph", (e) =>
-            console.log e.target
-            if @_vertexClick
-                console.log "svg click ignored"
-                delete @_vertexClick
+            if @_notNewVertexClick
+                delete @_notNewVertexClick
             else if @selected()
-                console.log "svg click accepted"
+                console.log "deselect click"
                 @deselect()
             else # create new vertex
+                console.log "create new vertex click"
                 x = e.offsetX - @containerMargin
                 y = e.offsetY - @containerMargin
                 @addVertex({x:x, y:y})
@@ -278,7 +290,12 @@ class Graph extends Vamonos.Widget.GraphDisplay
 
     unsetEditBindings: ->
         @$outer.off("click.vamonos-graph")
-        @inner.selectAll("g.vertex").on("click.vamonos-graph", null)
+        @inner.selectAll("g.vertex")
+            .on("click.vamonos-graph", null)
+            .classed("editable-vertex", null)
+        @inner.selectAll("path.edge")
+            .on("mouseenter.vamonos-graph", null)
+            .on("mouseout.vamonos-graph", null)
 
     removeButtons: ->
         @newVertexButton?.remove()
