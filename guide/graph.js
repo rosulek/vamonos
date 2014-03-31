@@ -9,7 +9,7 @@ $(function() {
     });
 
 
-    
+
     var p2 = new Vamonos.Visualizer({
         widgets: [
             new Vamonos.Widget.Controls("controls2"),
@@ -64,7 +64,7 @@ $(function() {
                 varName: "G",
                 inputVars: { r: "p2v3" },
                 defaultGraph: new Vamonos.DataStructure.Graph({
-                    vertices: [ 
+                    vertices: [
                         {id: "p2v0", x: 17,  y: 10},
                         {id: "p2v1", x: 98,  y: 10},
                         {id: "p2v2", x: 176, y: 13},
@@ -95,8 +95,8 @@ $(function() {
             with (this) {
                 G.eachVertex(function(vtx){
     _(1);           u = vtx;
-    _(2);           u.key = Infinity; 
-    _(3);           u.pred = null; 
+    _(2);           u.key = Infinity;
+    _(3);           u.pred = null;
                 });
     _(4);       r.key = 0;
     _(5);       Q = new Vamonos.DataStructure.Queue({
@@ -115,7 +115,7 @@ $(function() {
     _(11);                  v.key = G.edge(u,v).w;
                         }
                     })
-                    
+
                 }
             }
         },
@@ -187,15 +187,15 @@ $(function() {
                     nw: ['r'],
                 },
                 edgeLabel: "w",
-                colorEdges: [
-                    ["u->v", "#FF7D7D"],
-                    [ function(edge){
+                edgeCssAttributes: {
+                    red: "u->v",
+                    green: function(edge){
                         return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
-                            || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }
-                    , "#92E894" ],
-                ],
+                            || (edge.source.pred ? edge.source.pred.id === edge.target.id : false)
+                    },
+                },
                 defaultGraph: new Vamonos.DataStructure.Graph({
-                    vertices: [ 
+                    vertices: [
                         {id: "p3v0", x: 17,  y: 10},
                         {id: "p3v1", x: 98,  y: 10},
                         {id: "p3v2", x: 176, y: 13},
@@ -225,8 +225,8 @@ $(function() {
             with (this) {
                 G.eachVertex(function(vtx){
     _(1);           u = vtx;
-    _(2);           u.key = Infinity; 
-    _(3);           u.pred = undefined; 
+    _(2);           u.key = Infinity;
+    _(3);           u.pred = undefined;
                 });
     _(4);       r.key = 0;
     _(5);       Q = new Vamonos.DataStructure.Queue({
@@ -245,7 +245,7 @@ $(function() {
     _(11);                  v.key = G.edge(u,v).w;
                         }
                     })
-                    
+
                 }
             }
         },

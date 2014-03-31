@@ -46,7 +46,7 @@ The `Graph` widget takes the same required arguments as most other widgets -
 
 Prim's has an argument `r`, that needs to be provided somehow. We
 can use `Graph`'s `inputVars` argument for that. It takes an object
-mapping a variable name to a "graph id". 
+mapping a variable name to a "graph id".
 
 Speaking of graph ids - we can use a `Graph` data structure
 ([docs](../api/data-graph.md)) to define a default graph for the widget.
@@ -63,7 +63,7 @@ Lets put it in to Prim's and see how it looks.
 >         varName: "G",
 >         inputVars: { r: "v3" },
 >         defaultGraph: new Vamonos.DataStructure.Graph({
->             vertices: [ 
+>             vertices: [
 >                 {id: "v0", x: 17,  y: 10},
 >                 {id: "v1", x: 98,  y: 10},
 >                 {id: "v2", x: 176, y: 13},
@@ -134,7 +134,7 @@ when it's all done!
 Fortunately the Vamonos team has created solutions for all of these problems.
 
 * `vertexLabels` - lets you declare labels around vertices. It will either display
-a variable name when the corresponding variable equals that vertex, or some 
+a variable name when the corresponding variable equals that vertex, or some
 arbitrary attribute of the vertex, accessed with a function. It is perhaps best
 explained by example:
 
@@ -162,21 +162,22 @@ attribute you want to see.
 >     edgeLabel: "w",
 
 
-* `colorEdges` - is a little trickier. You can apply a color when two 
-vertex variables are connected by an edge. The edge must be encoded as a string
-with the variable names and an arrow between them. You can also perform custom
-calulations based on an edge input to a function that you provide. When you
-return true, the color will be applied to the edge.
+* `edgeCssAttributes` - is a little trickier. You can apply a class to
+an edge when two vertex variables are connected by an edge. The edge
+must be encoded as a string with the variable names and an arrow
+between them. You can also perform custom calulations based on an edge
+input to a function that you provide. When you return true, the class
+will be applied to the edge-path.
 
 > Javascript:
 >
->     colorEdges: [
->         ["u->v", "#FF7D7D"],
->         [ function(edge){
+>     edgeCssAttributes: {
+>         red: "u->v",
+>         green: function(edge){
 >             return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
->                 || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }
->         , "#92E894" ],
->     ],
+>                 || (edge.source.pred ? edge.source.pred.id === edge.target.id : false)
+>         },
+>     },
 
 Finally, we can customize how the labels (and vertices) look with CSS.
 
@@ -199,6 +200,13 @@ Finally, we can customize how the labels (and vertices) look with CSS.
 >         .vertex-sw-label {
 >             font-style: italic;
 >         }
+>
+>         path.red {
+>             stroke: "#FF7D7D"
+>         }
+>         path.green {
+>             stroke: "#FF7D7D"
+>         }
 >     </style>
 
 Now we have a fully functional Prim's MST algorithm visualization!
@@ -218,6 +226,12 @@ Now we have a fully functional Prim's MST algorithm visualization!
 >     }
 >     .vertex-sw-label {
 >         font-style: italic;
+>     }
+>     path.red {
+>         stroke: "#FF7D7D"
+>     }
+>     path.green {
+>         stroke: "#FF7D7D"
 >     }
 > </style>
 > <table class="vamonos">
@@ -254,6 +268,3 @@ Now we have a fully functional Prim's MST algorithm visualization!
 >         </table>
 >     </td></tr>
 > </table>
-
-
-
