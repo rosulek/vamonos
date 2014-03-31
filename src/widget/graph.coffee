@@ -115,13 +115,9 @@ class Graph extends Vamonos.Widget.GraphDisplay
                 if inp[varName]?.type is "Vertex"
                     @inputVars[varName] = @theGraph.vertex( inp[varName] )
 
-    # ----------------- EDITING MODE ------------------------ #
-
-
     startEditing: ->
         @draw(@theGraph, @inputVars)
         if @editable
-            console.log "startEditing"
             @setEditBindings()
 
     stopEditing: ->
@@ -147,43 +143,6 @@ class Graph extends Vamonos.Widget.GraphDisplay
     verifyInputVarsSet: () ->
         s = ("#{ @varName } says: please set #{k}!" for k, v of @inputVars when not v?).join('\n')
         return s if s.length
-
-    # forceLayout: (whenDoneFunc) =>
-    #     console.log "forceLayout"
-    #     width = @svg.node().offsetWidth
-    #     height = @svg.node().offsetHeight
-    #     trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
-    #     force = d3.layout.force()
-    #         .charge(-300)
-    #         .linkDistance(100)
-    #         .size([width, height])
-    #         .nodes(@theGraph.getVertices())
-    #         .links(@theGraph.getEdges())
-    #         .friction(0.1)
-    #         .start()
-    #     tick = () =>
-    #         @inner.selectAll("g.vertex")
-    #             .attr('transform', trans)
-    #             .each((d) =>
-    #                 @currentGraph.vertex(d.id).x = d.x
-    #                 @currentGraph.vertex(d.id).y = d.y)
-    #         @inner.selectAll("g.edge")
-    #             .call(@genPath)
-    #         @updateEdgeLabels()
-    #         @fitGraph()
-    #     timer = true
-    #     checkAndRetry = () =>
-    #         if force.alpha() == 0
-    #             timer = null
-    #             force.stop()
-    #             whenDoneFunc() if whenDoneFunc?
-    #         else
-    #             timer = setTimeout(checkAndRetry, 100)
-    #     for i in [0..200]
-    #         tick()
-    #     whenDoneFunc()
-    #     # force.on("tick", tick)
-    #     # checkAndRetry()
 
     addVertex: (vertex) ->
         newv = @theGraph.addVertex(vertex)
@@ -222,12 +181,9 @@ class Graph extends Vamonos.Widget.GraphDisplay
             .insertAfter("#g-var")
 
     setEditBindings: ->
-        console.log "setEditBindings"
-
         @inner.selectAll("g.vertex")
             .classed("editable-vertex", true)
             .on "click.vamonos-graph", (d) =>
-                console.log "vertex selection click"
                 sourceId = @selectedVertex?.attr("id")
                 targetId = d3.event.target.__data__.id
                 # if a vertex is selected and there is no (actual) edge already
@@ -239,60 +195,25 @@ class Graph extends Vamonos.Widget.GraphDisplay
                 else
                     @selectVertexById(targetId)
                 @_notNewVertexClick = true
-
         @inner.selectAll("path.edge")
             .on "mouseenter.vamonos-graph", (d) ->
                 d3.select(this).classed("selectme", true)
             .on "mouseout.vamonos-graph", (d) ->
                 d3.select(this).classed("selectme", null)
             .on "click.vamonos-graph", (d) =>
-                console.log "edge selection click"
                 @selectEdgeBySelector(d3.select(d3.event.target))
                 @_notNewVertexClick = true
-
         @$outer.off("click.vamonos-graph") # dont register multiple identical handlers, jquery
         @$outer.on "click.vamonos-graph", (e) =>
             if @_notNewVertexClick
                 delete @_notNewVertexClick
             else if @selected()
-                console.log "deselect click"
                 @deselect()
                 @closeDrawer()
             else # create new vertex
-                console.log "create new vertex click"
                 x = e.offsetX - @containerMargin
                 y = e.offsetY - @containerMargin
                 @addVertex({x:x, y:y})
-
-            # if not @selected()
-            #     if $target.is("div.vertex-contents")
-            #         @selectNode($target.parent())
-            #     if $target.is(@displayWidget.$inner)
-            #         x = e.offsetX ? e.pageX - @displayWidget.$outer.offset().left
-            #         y = e.offsetY ? e.pageY - @displayWidget.$outer.offset().top
-            #         width  = @displayWidget._vertexWidth  ? 24
-            #         height = @displayWidget._vertexHeight ? 24
-            #         dwH = @displayWidget.$inner.height()
-            #         dwW = @displayWidget.$inner.width()
-            #         if (y - (height / 2) > 0) and (y + (height / 2) < dwH) and
-            #            (x - (width / 2) > 0)  and (x + (width / 2) < dwW)
-            #             @addVertex({x: x - (width / 2), y: y - (height / 2)})
-            # else
-            #     if $target.is("div.vertex-contents") and 'vertex' is @selected()
-            #         sourceId = @$selectedNode.attr("id")
-            #         targetId = $target.parent().attr("id")
-            #         if sourceId is targetId
-            #             @deselect()
-            #         else if @theGraph.edge(sourceId, targetId)
-            #             @selectNode(@displayWidget.nodes[targetId])
-            #         else
-            #             @addEdge(sourceId, targetId)
-            #             @removePotentialEdge()
-            #     else if $target.is("div.vertex-contents") and 'edge' is @selected()
-            #         @selectNode($target.parent())
-            #     else if $target.is(@displayWidget.$inner)
-            #         @deselect()
-            # true
 
     unsetEditBindings: ->
         @$outer.off("click.vamonos-graph")
@@ -313,7 +234,6 @@ class Graph extends Vamonos.Widget.GraphDisplay
         return false
 
     selectEdgeBySelector: (sel) ->
-        console.log "selectEdgeById", sel.attr("id")
         oldEdgeId = @selectedEdge?.attr('id')
         @deselect()
         return if oldEdgeId is sel.attr('id')
@@ -321,7 +241,6 @@ class Graph extends Vamonos.Widget.GraphDisplay
         @openDrawer()
 
     selectVertexById: (vid) ->
-        console.log "selectVertexById", vid
         @selectVertexBySelector(@inner.select("#" + vid))
 
     selectVertexBySelector: (sel) ->
@@ -358,7 +277,6 @@ class Graph extends Vamonos.Widget.GraphDisplay
         return unless sourceId isnt vid
         @removePotentialEdge()
         @potentialEdge = @theGraph.addEdge(sourceId, vid, { _potential: true })
-        console.log "potentialEdgeTo, result", @potentialEdge
         @draw(@theGraph, @inputVars)
 
     removePotentialEdge: =>
@@ -391,7 +309,6 @@ class Graph extends Vamonos.Widget.GraphDisplay
                         @removeVertex(vtx.id))
         else if type is 'edge'
             edge = @selectedEdge.data()[0]
-            console.log edge
             sourceId = edge.source.id
             targetId = edge.target.id
             if @theGraph.directed
@@ -427,27 +344,5 @@ class Graph extends Vamonos.Widget.GraphDisplay
             )
         else return
         super({ buttons, label })
-
-    createEditableEdgeLabel: (edge, con) =>
-        return unless @edgeLabel.constructor.name is 'String'
-        val    = Vamonos.rawToTxt(edge[@edgeLabel] ? "")
-        $label = $("<div>#{val}</div>")
-            .on "click", =>
-                @selectConnection(con)
-                @editAttribute($label, edge)
-
-    editAttribute: ($label, edge) =>
-        valFunc = () =>
-            edge[@edgeLabel] ? ""
-        returnFunc = (newVal) =>
-            val = Vamonos.txtToRaw(newVal)
-            edge[@edgeLabel] = val if val?
-            Vamonos.rawToTxt(val)
-        Vamonos.editableValue($label, valFunc, returnFunc)
-
-    stopEditingLabel: =>
-        @displayWidget.$inner
-            .find("input.inline-input")
-            .trigger("something-was-selected")
 
 @Vamonos.export { Widget: { Graph } }

@@ -1,14 +1,8 @@
 #+TITLE: GraphDisplay D3 refactor notes
 
-see if i can find the souce code to box-shadow and copy it
-
 * Graph Display:
 ** vertex attributes tooltips
-** drop shadows
-   find a way to get better colors
-   maybe use a tint or something
 ** some kind of transition for vertices appearing and disappearing and moving
-** fit graph shouldn't change minx and miny - or maybe dragging should change it
 ** add self-loops for nfa to regex
 
 * Graph Editing
@@ -17,6 +11,3 @@ see if i can find the souce code to box-shadow and copy it
 
 * unneeded things currently out of scope
 ** setup continuations waiting for jsPlumb to load
-
-* check when done
-** dijkstra-quiz highlighting the correct vertex

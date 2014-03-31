@@ -263,7 +263,9 @@ class GraphDisplay
         # annoyingly and buggyily
         @currentGraph = graph
         @currentFrame = frame
-        @fitGraph()
+        unless @fitAlready
+            @fitGraph()
+            @fitAlready = true
         # transfer the positions of vertices that have been dragged to
         # the new @currentGraph
         if @persistentDragging
@@ -298,12 +300,9 @@ class GraphDisplay
         else
             @$outer.width(max_x)
             @$outer.height(max_y)
-        if @resizable
-            @$outer.resizable("option", "minWidth", max_x)
-            @$outer.resizable("option", "minHeight", max_y)
-
-    # TODO PLACEHOLDER SO SHIT STILL WORKS WHILE I REFACTOR GRAPH.COFFEE
-    eachConnection: () -> undefined
+        # if @resizable
+        #     @$outer.resizable("option", "minWidth", max_x)
+        #     @$outer.resizable("option", "minHeight", max_y)
 
     hideGraph: () ->
         @$outer.hide()
@@ -314,7 +313,6 @@ class GraphDisplay
         @graphHidden = false
 
     clearDisplay: () ->
-        console.log "clearDisplay"
         if @persistentDragging
             @_savex = {} # _savex and _savey are for saving the
             @_savey = {} # dragged positions of vertices across frames.
@@ -323,6 +321,7 @@ class GraphDisplay
         @currentGraph = undefined
         @previousGraph = undefined
         @fitGraph()
+        @fitAlready = undefined
 
     startDragging: (graph) ->
         trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
@@ -602,7 +601,6 @@ class GraphDisplay
             return
 
     updateEdgeClasses: (edges) =>
-        console.log "updateEdgeClasses", edges
         return unless @edgeCssAttributes?
         for klass, test of @edgeCssAttributes
             if test?.constructor.name is 'Function'
