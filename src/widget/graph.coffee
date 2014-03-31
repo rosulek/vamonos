@@ -61,8 +61,8 @@ class Graph extends Vamonos.Widget.GraphDisplay
             @_args.minY      ?= 0
             @_args.resizable ?= false
 
-        @_args.edgeCssAttributes.potential ?= (edge) -> edge._potential
-        @_args.edgeCssAttributes.selected  ?= (edge) -> edge._selected
+        (@_args.edgeCssAttributes ?= {}).potential ?= (edge) -> edge._potential
+        (@_args.edgeCssAttributes ?= {}).selected  ?= (edge) -> edge._selected
 
         @edgeLabel = @_args.edgeLabel?.edit ? @_args.edgeLabel
         super(@_args)
@@ -326,7 +326,7 @@ class Graph extends Vamonos.Widget.GraphDisplay
                         .append($val)
                         .on("click", =>
                             update = (newVal) ->
-                                edge[attrName] = newVal
+                                edge[attrName] = +newVal
                                 ths.draw(theGraph, inputVars)
                                 $label.removeClass("active")
                                 return newVal
