@@ -380,7 +380,7 @@ class Graph extends Vamonos.Widget.GraphDisplay
                 # variable in the click handler.
                 do (v, vtx, buttons, ths = @, inputVars = @inputVars, theGraph = @theGraph) ->
                     vName = Vamonos.resolveSubscript(v)
-                    $b = $("<button>", { text: "#{vName}", title: "Set #{vName}=#{vtx.name}" })
+                    $b = $("<button>", { text: vName, title: "Set #{vName}=#{vtx.name}" })
                     $b.on "click.vamonos-graph", (e) =>
                         inputVars[v] = vtx
                         ths.draw(theGraph, inputVars)
@@ -400,13 +400,32 @@ class Graph extends Vamonos.Widget.GraphDisplay
                 arr = "-"
             nametag  = edge.source.name + "&nbsp;" + arr + "&nbsp;" + edge.target.name
             label = "edge&nbsp;&nbsp;#{nametag}&nbsp;&nbsp;"
-            buttons = [
-                $("<button>", {text: "del", title: "Delete #{edge.source.name}->#{edge.target.name}"})
-                    .on "click.vamonos-graph", (e) =>
-                        @removeEdge(edge.target.id, edge.source.id)
-            ]
-        else
-            return
+            buttons = []
+            for attrName, defaultVal of @defaultEdgeAttrs
+                do (edge, attrName, buttons, ths = @, inputVars = @inputVars, theGraph = @theGraph) ->
+
+                    $val = $("<span>", { text: edge[attrName] })
+                    $label = $("<div>", { text: "#{attrName} = ", class: "editable-attr" })
+                        .append($val)
+                        .on("click", =>
+                            update = (newVal) ->
+                                edge[attrName] = newVal
+                                ths.draw(theGraph, inputVars)
+                                $label.removeClass("active")
+                                return newVal
+                            $label.addClass("active")
+                            Vamonos.editableValue($val, ((e)->e.text()), update))
+
+                    buttons.push($label)
+
+                continue
+            buttons.push(
+                $("<button>", {
+                    text: "del",
+                    title: "Delete #{edge.source.name}->#{edge.target.name}"
+                }).on "click.vamonos-graph", (e) => @removeEdge(edge.source.id, edge.target.id)
+            )
+        else return
         super({ buttons, label })
 
     createEditableEdgeLabel: (edge, con) =>

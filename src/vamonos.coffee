@@ -130,7 +130,6 @@
         oldVal = valFunc($elem)
         $editor = $("<input class='inline-input'>")
             .hide()
-            .width($elem.width())
             .val(oldVal)
             .on "keydown.vamonos-graph", (event) =>
                 return unless event.keyCode in [13, 32, 9, 27]

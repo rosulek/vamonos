@@ -125,7 +125,7 @@ body.processing *, body.processing {
 
 input.inline-input {
     display: inline;
-    border: 0px;
+    border: none;
     background-color: @editing-bg-color;
     font: inherit;
     padding: 0px;
@@ -472,9 +472,18 @@ div.graph-drawer {
     }
 
     input {
-        border: 1px solid @border-color;
         text-align: left;
-        outline: 0;
+        width: 40px;
+    }
+
+}
+
+div.editable-attr {
+    display: inline;
+    margin-left: 10px;
+    margin-right: 10px;
+    &:hover, &.active {
+        box-shadow: @border-color -1px -1px 1px, white 1px 1px 1px;
     }
 }
 
