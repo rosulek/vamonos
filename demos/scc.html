@@ -8,35 +8,38 @@
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
     <style type="text/css">
-        .vertex {
-            width: 40;
-            height: 30;
-        }
+    .vertex {
+        width: 40;
+        height: 30;
+    }
 
-        .vertex-contents {
-            font-size: .8em;
-        }
+    .vertex-contents {
+        font-size: .8em;
+    }
 
-        .vertex-sw-label {
-            font-style: italic;
-        }
+    .vertex-sw-label {
+        font-style: italic;
+    }
 
-        .vertex-ne-label, .vertex-nw-label {
-            font-weight: bold;
-        }
+    .vertex-ne-label, .vertex-nw-label {
+        font-weight: bold;
+    }
 
-        .vertex-contents {
-            font-weight: bold;
-        }
+    .vertex-contents {
+        font-weight: bold;
+    }
 
-        body {
-            text-align: center;
-        }
+    body {
+        text-align: center;
+    }
 
-        div.pseudocode-procedures {
-            max-width: 400px;
-        }
+    div.pseudocode-procedures {
+        max-width: 400px;
+    }
 
+    path.red {
+        stroke: #bf906b;
+    }
     </style>
 
 </head><body>
@@ -145,11 +148,11 @@ var myviz = new Vamonos.Visualizer({
                 sw: function(vtx){ return vtx.name },
                 ne: ["u", "dfs::v"],
             },
-            colorEdges: [
-                ["dfs::v->u", "#FF7D7D"],
-            ],
             vertexCssAttributes: {
                 group: function(vtx){ if (vtx.group !== undefined) return "group-" + vtx.group; },
+            },
+            edgeCssAttributes: {
+                red : "dfs::v->u",
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: true,

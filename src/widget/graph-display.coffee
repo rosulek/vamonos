@@ -47,29 +47,7 @@ class GraphDisplay
                 edgeLabel: 'w',
                 edgeLabel: function(e){ return e.w + "!" },
                 """
-        colorEdges:
-            type: "Array"
-            defaultValue: []
-            description:
-                "provides a way to set edge coloring based on vertex variables " +
-                "or edge properties. takes an array of doubles of the form  " +
-                "`[ edge-predicate, color, [optional weight] ]`, where color is a hex color and edge-" +
-                "predicate is either a string of the form `'vertex1->vertex2'` or " +
-                "a function that takes an edge and returns a boolean. Also for added " +
-                "complexity and enjoyment, the color string can also be a function taking " +
-                "an edge and returning a color string or a color string and a width (if " +
-                "it returns an array)."
-            example: """
-                colorEdges: [
-                    ['u->v', '#FF7D7D'],
-                    [ function(edge){
-                        return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
-                            || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }
-                    , '#92E894' ],
-                    [ 'w->t', function(e){ if (e.f > 10) return "blue"; } ],
-                    [ 'w->x', function(e){ if (e.f < 10) return ["blue",10]; } ],
-                ]
-                """
+
         vertexCssAttributes:
             type: "Object"
             defaultValue: {}
@@ -83,16 +61,53 @@ class GraphDisplay
                 "matches. You can also provide a function that takes a vertex " +
                 "and returns a class to apply to it."
             example: """
-                vertexCssAttributes: { 
-                    done: true, 
+                vertexCssAttributes: {
+                    done: true,
                     color: ['white', 'gray', 'black'],
                     magic: function(vtx){ return "class-" + vtx.magicAttr },
                 },
                 """
+
+        edgeCssAttributes:
+            type: "Object"
+            defaultValue: {}
+            description: "provides a way to change CSS classes of edges based " +
+                "upon the values of variables or the edges themselves. You provide " +
+                "a mapping of classnames to functions or strings. The function " +
+                "simply needs to take an edge and return a boolean (whether to " +
+                "apply the class). The string is a pairing of variable names in " +
+                "the form `'u->v'` or `'u<->v'` for undirected graphs."
+            example: """
+                edgeCssAttributes: {
+                    green: function(edge){
+                        return (edge.target.pred === edge.source.name)
+                            || (edge.source.pred === edge.target.name)
+                    },
+                    red: "u->v",
+                }
+                """
+
+        styleEdges:
+            type: "Array"
+            defaultValue: undefined
+            description: "Provides a way to add styles to path objects. " +
+                "Functions must return an array whose first element is an " +
+                "attribute name, and second element is the value."
+            example: """
+                styleEdges: [
+                    function(e){
+                        if (e.f !== undefined && (e.f > 0)) {
+                            var width = 2 + e.f;
+                            return ["stroke-width", width];
+                        }
+                    },
+                ],
+                """
+
         containerMargin:
             type: "Number"
             defaultValue: 30
-            description: "how close nodes can get to the container edge"
+            description: "how close vertices can get to the container edge"
         minX:
             type: "Number"
             defaultValue: 100
@@ -108,135 +123,186 @@ class GraphDisplay
         draggable:
             type: "Boolean"
             defaultValue: true
-            description: "whether nodes can be moved"
+            description: "whether vertices can be moved"
         highlightChanges:
             type: "Boolean"
             defaultValue: true
-            description: "whether nodes will get the css class 'changed' when they are modified"
+            description: "whether vertices will get the css class 'changed' when they are modified"
+        vertexWidth:
+            type: "Number"
+            defaultValue: 40
+            description: "the width of vertices in the graph"
+        vertexHeight:
+            type: "Number"
+            defaultValue: 30
+            description: "the height of vertices in the graph"
+
+        arrowWidth:
+            type: "Number"
+            defaultValue: 6
+            description: "the width of arrows in directed graphs"
+        arrowLength:
+            type: "Number"
+            defaultValue: 6
+            description: "the length of arrows in directed graphs"
+
+        bezierCurviness:
+            type: "Number"
+            defaultValue: 15
+            description: "the curviness of bezier curves in this graph"
+
+        persistentDragging:
+            type: "Boolean"
+            defaultValue: true
+            description: "whether the positions resulting from dragging " +
+                "vertices are persistent across frames in display mode."
 
     constructor: (args) ->
 
         Vamonos.handleArguments
             widgetObject : this
             givenArgs    : args
+            specObj      : Vamonos.Widget.GraphDisplay.spec # for calling from super
+                                                            # when 'this' will be a Graph
+                                                            # not GraphDisplay
 
-        @connections = {}
-        @nodes       = {}
-        @$outer      = Vamonos.jqueryify(@container)
-        @$inner      = $("<div>", {class: "graph-inner-container"})
+        @$outer = Vamonos.jqueryify(@container)
 
         if @edgeLabel?.constructor.name isnt 'Object'
             @edgeLabel = { edit: @edgeLabel, display: @edgeLabel }
 
-        @$outer.append(@$inner)
         @$outer.disableSelection()
 
         if @resizable
-            @$outer.resizable(
+            @$outer.resizable
                 handles: "se"
                 minWidth: @minX
                 minHeight: @minY
-            )
 
-    # ------------ PUBLIC INTERACTION METHODS ------------- #
+        @svg = d3.selectAll("#" + @$outer.attr("id")).append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+
+        @createShadowFilter
+            svg: @svg
+            id: "shadow-green"
+            red: 0.0
+            green: 0.9
+            blue: 0.0
+
+        @createShadowFilter
+            svg: @svg
+            id: "shadow"
+            red: 0
+            green: 0
+            blue: 0
+            dx: 5
+            dy: 5
+
+        @inner = @initializeInner(@svg)
+
+        @_savex = {}
+        @_savey = {}
+
+    initializeInner: () ->
+        @svg.append("g")
+            .attr("transform", "translate(" +
+                [ @containerMargin ,
+                  @containerMargin ] + ")")
+
+    createShadowFilter: ({ svg, id, red, green, blue, dx, dy }) ->
+        dx ?= 0
+        dy ?= 0
+        @defs ?= svg.append("svg:defs")
+        filter = @defs.append("svg:filter")
+            .attr("id", id)
+            .attr("height", 100)
+            .attr("width", 100)
+            .attr("x", -50)
+            .attr("y", -50)
+        filter.append("svg:feGaussianBlur")
+            .attr("in", "SourceGraphic")
+            .attr("stdDeviation", 5)
+        filter.append("svg:feOffset")
+            .attr("dx", dx)
+            .attr("dy", dy)
+        filter.append("svg:feColorMatrix")
+            .attr("type", "matrix")
+            .attr("values", "0 0 0 #{ red   } 0
+                             0 0 0 #{ green } 0
+                             0 0 0 #{ blue  } 0
+                             0 0 0 1          0")
+            .attr("result", "colorblur")
+        merge = filter.append("feMerge")
+        merge.append("feMergeNode").attr("in", "colorblur")
+        merge.append("feMergeNode").attr("in", "SourceGraphic")
 
     # A widget that uses GraphDisplay will need to pass along the setup event
-    # in order to register vars from vertexLabels and colorEdges
+    # in order to register vars from vertexLabels and edgeCssAttributes
     event: (event, options...) -> switch event
         when "setup"
-            [@viz, done] = options
-            for e in @colorEdges when typeof e[0] is 'string'
-                @viz.registerVariable(v) for v in e[0].split(/<?->?/)
+            [viz, done] = options
+            for klass, test of @edgeCssAttributes when typeof test is 'string'
+                viz.registerVariable(v) for v in test.split(/<?->?/)
             for label, values of @vertexLabels
                 for v in values when typeof v is 'string'
-                    @viz.registerVariable(v)
-            # the whole point of having this done() business is so that jsPlumb
-            # can load asynchroniously and it won't mess anything up. usually
-            # the outer widget calls done(), but in this case, it needs to be 
-            # done by the inner widget.
-            jsPlumb.ready =>
-                @jsPlumbInstance = jsPlumb.getInstance
-                    Connector: ["Straight"]
-                    PaintStyle: @normalPaintStyle
-                    Endpoint: "Blank"
-                    Anchor: [ "Perimeter", { shape: "Circle" } ]
+                    viz.registerVariable(v)
                 done() if done?
 
-    # draw is the main display function for the graphDisplay widget. It draws
-    # only as much of the graph that wasn't there before and removes nodes
-    # and edges that have become obsolete. it doesn't rely on events, so that
-    # the graph can be updated in various host widget's edit mode.
     draw: (graph, frame = {}) ->
         # if there is a hidden graph, show it
         @showGraph() if @graphHidden
-        # if we're in edit mode, @mode will be set already. otherwise, we need
-        # to set it to "display" so things like updateNodeLabels uses the
-        # intended mode.
+        # if we're in edit mode, @mode will be set already. otherwise,
+        # we need to set it to "display". this is so that edge and
+        # vertex labels and classes know what to show.
         @mode ?= "display"
-        @directed = graph.directed
-        @$outer.find(".changed").removeClass("changed")
+        @directed = graph.directed # convenience
+        # remove all the changed vertex highlighting from previous frame
+        @inner.selectAll(".changed").classed("changed", null)
+        # set global variables so we don't have to pass stuff around
+        # annoyingly and buggyily
+        @currentGraph = graph
+        @currentFrame = frame
+        unless @fitAlready
+            @fitGraph()
+            @fitAlready = true
+        # transfer the positions of vertices that have been dragged to
+        # the new @currentGraph
+        if @persistentDragging
+            @currentGraph.eachVertex (v) =>
+                if @_savex[v.id]? and @_savey[v.id]?
+                    v.x = @_savex[v.id]
+                    v.y = @_savey[v.id]
+        # updateVertices and updateEdges are the main methods for
+        # displaying stuff with d3.
+        @updateVertices()
+        @updateEdges()
+        @startDragging() if @draggable
+        @previousGraph = graph # used in vertexChanged
 
-        # add new vertices
-        for vertex in graph.getVertices()
-            continue if @nodes[vertex.id]?
-            @addNode(vertex)
-
-        # add new edges - this needs to happen before edge removal so that edges in 
-        # directed graphs can have their arrows flipped instead of being deleted and
-        # recreated going in the opposite direction
-        for edge in graph.getEdges()
-            continue if @connections[edge.source.id]?[edge.target.id]?
-            continue if not @directed and @connections[edge.target.id]?[edge.source.id]?
-            @addConnection(edge.source.id, edge.target.id)
-
-        # remove unneeded edges
-        @eachConnection (sourceId, targetId) =>
-            unless graph.edge(sourceId, targetId)
-                @removeConnection(sourceId, targetId)
-
-        # remove unneeded vertices and update needed ones
-        @eachNode (vid, node) =>
-            if graph.vertex(vid)
-                @updateNode(node, graph.vertex(vid), frame)
-            else
-                @removeNode(vid)
-
-        @updateConnections(graph, frame)
-        @previousGraph = graph
-
-    fitGraph: (graph, animate = false) ->
-        if graph?
-            nodes = $("div.vertex-contents")
-            @getVertexDimensions(nodes) unless @_vertexWidth? and @_vertexHeight?
+    # sets the size of @$outer based on the positions of vertices in @currentGraph
+    fitGraph: (animate = false) ->
+        if @currentGraph?
             xVals = []
             yVals = []
-            for vertex in graph.getVertices()
-                xVals.push(vertex.x + @_vertexWidth  + @containerMargin)
-                yVals.push(vertex.y + @_vertexHeight + @containerMargin)
+            for vertex in @currentGraph.getVertices()
+                continue unless not isNaN vertex.x
+                continue unless not isNaN vertex.y
+                xVals.push(vertex.x + (@vertexWidth  / 2) + @containerMargin * 2)
+                yVals.push(vertex.y + (@vertexHeight / 2) + @containerMargin * 2)
             max_x = Math.max(xVals..., @minX)
             max_y = Math.max(yVals..., @minY)
         else
             max_x = 0
             max_y = 0
-
         if animate
             @$outer.animate({width: max_x, height: max_y}, 500)
         else
             @$outer.width(max_x)
             @$outer.height(max_y)
-
-        if @resizable
-            @$outer.resizable("option", "minWidth", max_x)
-            @$outer.resizable("option", "minHeight", max_y)
-
-    getVertexDimensions: (nodes) ->
-        unless nodes.length
-            fakeNode = @addNode({id:"FAKER"}, false)
-            nodes = fakeNode
-        @_vertexHeight = nodes.height()
-        @_vertexWidth  = nodes.width()
-        if fakeNode?
-            @removeNode("FAKER")
+        # if @resizable
+        #     @$outer.resizable("option", "minWidth", max_x)
+        #     @$outer.resizable("option", "minHeight", max_y)
 
     hideGraph: () ->
         @$outer.hide()
@@ -246,307 +312,391 @@ class GraphDisplay
         @$outer.show()
         @graphHidden = false
 
-    clearDisplay: ->
-        @jsPlumbInstance.reset()
-        @$inner.html("")
-        @connections   = {}
-        @nodes         = {}
+    clearDisplay: () ->
+        if @persistentDragging
+            @_savex = {} # _savex and _savey are for saving the
+            @_savey = {} # dragged positions of vertices across frames.
+        @inner.remove()
+        @inner = @initializeInner()
+        @currentGraph = undefined
         @previousGraph = undefined
+        @fitGraph()
+        @fitAlready = undefined
 
-    # ---------------------------------------------------------- #
+    startDragging: (graph) ->
+        trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
+        ths = @
+        dragmove = (d) ->
+            parent = this.parentNode
+            ref = parent.querySelector(".graph-label")
+            parent.insertBefore(this, ref)
+            d.x = d3.event.x
+            d.y = d3.event.y
+            d3.select(this).attr('transform', trans)
+                .classed("vertex-drag", true)
+            ths.inner.selectAll("path.edge").call(ths.genPath)
+            ths.updateEdgeLabels()
+        drag = d3.behavior.drag()
+            .on("drag", dragmove)
+            .on "dragend", (d) ->
+                d3.select(this).classed("vertex-drag", null)
+                if ths.persistentDragging and ths.mode is 'display'
+                    ths._savex[d.id] = d.x
+                    ths._savey[d.id] = d.y
+        @inner.selectAll("g.vertex").call(drag)
 
-    eachNode: (f) ->
-        f(vid, node) for vid, node of @nodes
+    stopDragging: () ->
+        @inner.selectAll("g.vertex").on("mousedown.drag", null)
 
-    eachConnection: (f) ->
-        # If the graph is undirected, we need to keep track of which
-        # connections have already been processed since the @connections
-        # object will contain two identical references to each connection.
-        seen = [] unless @directed
-        for sourceId, targets of @connections
-            for targetId, con of targets
-                unless @directed
-                    continue if con in seen
-                    seen.push con
-                f(sourceId, targetId, con)
+    updateEdges: () ->
+        # update #
+        edges = @inner.selectAll("path.edge")
+            .data(@currentGraph.getEdges(),
+                  @currentGraph.edgeId)
+        edges.call(@genPath)
+            .call(@updateEdgeClasses)
+            .call(@updateEdgeStyles)
 
-    # ----------- display mode node functions ---------- #
+        # enter #
+        # insert edges at the start of the svg, so they dont overlap
+        # vertices, which are appended to the end of the svg
+        enter = edges.enter()
+            .insert("path", ":first-child")
+            .attr("class", "edge")
+        enter.call(@genPath)
+            .call(@updateEdgeClasses)
+            .call(@updateEdgeStyles)
+        # exit #
+        edges.exit().remove()
+        @updateEdgeLabels()
 
-    addNode: (vertex, show = true) ->
-        $v = $("<div>", {class: 'vertex', id: vertex.id})
-              .hide()
-        $v.css({
-            left: vertex.x
-            top: vertex.y
-            position: "absolute"
-        })
-        $contents = $("<div>", class: "vertex-contents")
+    # dispatches to genStraightPath or genCurvyPath depending on whether
+    # edge `e` has a back-edge in `g`. sets _labelx and _labely on data.
+    genPath: (sel) =>
+        getPath = (e) =>
+            unless [e.source.x, e.source.y,
+                    e.target.x, e.target.y].every(isFinite)
+                throw "GETPATH: Bad coordinates"
+            if not @directed
+                path = @pathStraightNoArrow(e)
+            else if @antiparallelEdge(e)
+                path = @pathBezierWithArrow(e)
+            else
+                path = @pathStraightWithArrow(e)
+            return path
+        sel.attr("d", getPath).attr("id", @currentGraph.edgeId)
+        return sel
+
+    antiparallelEdge: (e) =>
+        return false unless @directed
+        return @currentGraph.edge(e.target, e.source)
+
+    # if the graph is not directed, there is no need to draw fancy
+    # arrows. Just return a path from center of source vertex to
+    # center of target vertex.
+    pathStraightNoArrow: (e) =>
+        midx = ( e.source.x + e.target.x ) / 2
+        midy = ( e.source.y + e.target.y ) / 2
+        [dx, dy] = @dvector([e.source.x,e.source.y], [e.target.x,e.target.y])
+        [_, [lx,ly]] = @perpendicularPoints([midx,midy], dx, dy, @arrowWidth * 1.5)
+        e._labelx = lx
+        e._labely = ly
+        return "M #{ e.source.x } #{ e.source.y } " +
+               "L #{ e.target.x } #{ e.target.y } "
+
+    # creates the text for the d attribute of a straight path element
+    # representing an edge `e`.
+    pathStraightWithArrow: (e) =>
+        [x1,y1] = @intersectVertex([e.target.x, e.target.y],
+                                   [e.source.x, e.source.y])
+        return "M #{ e.source.x } #{ e.source.y }" +
+                @pathArrowAt([x1,y1], [e.source.x, e.source.y], e)
+
+    pathBezierWithArrow: (e) =>
+        [refx, refy] = @bezierRefPoint(e)
+        # get vertex intersection points
+        [x1,y1] = @intersectVertex([e.source.x, e.source.y], [refx, refy])
+        [x2,y2] = @intersectVertex([e.target.x, e.target.y], [refx, refy])
+        return " M #{ e.source.x } #{ e.source.y } L #{ x1 } #{ y1 } " +
+               " Q #{ refx } #{ refy } #{ x2 } #{ y2 }" +
+               @pathArrowAt([x2, y2], [refx, refy], e)
+
+    bezierRefPoint: (e) ->
+        # midpoint of direct line from vertex center to vertex center
+        # => (midx, midy)
+        midx = (e.source.x + e.target.x) / 2
+        midy = (e.source.y + e.target.y) / 2
+        [dx, dy] = @dvector([e.source.x, e.source.y],
+                            [e.target.x, e.target.y])
+        # tangent point => (refx, refy)
+        refx = midx - @bezierCurviness * dy
+        refy = midy + @bezierCurviness * dx
+        return [refx, refy]
+
+    # arrow at (x1,y1) at the end of a line originating at (x2,y2). also sets
+    # edge's _labelx and _labely if edge is present.
+    pathArrowAt: ([x1,y1], [xstart,ystart], edge) ->
+        [dx, dy] = @dvector([xstart,ystart], [x1,y1])
+        # get stopping point before end of line
+        x2 = x1 - (dx * -@arrowLength)
+        y2 = y1 - (dy * -@arrowLength)
+        [[x3,y3], [x4,y4]] = @perpendicularPoints([x2,y2], dx, dy, @arrowWidth / 2)
+        if edge?
+            [_, [x5,y5]] = @perpendicularPoints([x2,y2], dx,dy, @arrowWidth * 2)
+            edge._labelx = x5
+            edge._labely = y5
+        return " L #{ x2 } #{ y2 } L #{ x3 } #{ y3 }" +
+               " L #{ x1 } #{ y1 } L #{ x4 } #{ y4 }" +
+               " L #{ x2 } #{ y2 } L #{ x1 } #{ y1 }"
+
+    # gets [dx, dy] for the line defined by (x1,y1) and (x2,y2)
+    dvector: ([x1,y1], [x2,y2]) =>
+        dx = x1 - x2
+        dy = y1 - y2
+        dist = Math.sqrt(dx * dx + dy * dy)
+        dx = dx / dist
+        dy = dy / dist
+        return [dx, dy]
+
+    # get two points perpendicular to the line defined by (x,y) and dx
+    # dy, at `len` distance.
+    perpendicularPoints: ([x,y], dx, dy, len) =>
+        return [[x + len * dy, y - len * dx],
+                [x - len * dy, y + len * dx]]
+
+    # get the point of intersection with the vertex centered at (x1,y1)
+    intersectVertex: ([x1,y1], [x0,y0]) =>
+        dx = x0 - x1
+        dy = y0 - y1
+        # abbreviation for squaring and floor
+        sq = (x) -> Math.pow(x, 2)
+        # do some algebra using the definition of ellipses
+        a = @vertexWidth / 2 + 5
+        b = @vertexHeight / 2 + 5
+        thingy = a * b / Math.sqrt( sq(a) * sq(dy) + sq(b) * sq(dx) )
+        return [thingy * dx + x1, thingy * dy + y1 ]
+
+    updateVertices: () ->
+        id = (vtx) -> return vtx.id
+        trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
+        # update
+        vertices = @inner.selectAll("g.vertex")
+            .data(@currentGraph.getVertices(), id)
+            .attr("transform", trans)
+            .call(@updateVertexLabels)
+            .call(@updateVertexClasses)
+        # enter
+        enter = vertices.enter()
+            .append("g")
+            .attr("transform", trans)
+            .attr("class", "vertex")
+            .attr("id", (d) -> d.id)
+        enter.append("ellipse")
+            .attr("class", "vertex")
+            .attr("cx", 0)
+            .attr("cy", 0)
+            .attr("rx", @vertexWidth  / 2)
+            .attr("ry", @vertexHeight / 2)
+        enter.call(@createVertexLabels)
+            .call(@updateVertexClasses)
+        # exit
+        vertices.exit()
+            .remove()
+
+    createVertexLabels: (vertexGroup) =>
+        x = @vertexWidth / 2
+        y = @vertexHeight / 2
+        xOffset = x / 2
+        yOffset = y / 2
+        setLabel = (klass, xPos, yPos) =>
+            vertexGroup.append("text")
+                .attr("class", klass)
+                .attr("x", xPos)
+                .attr("y", yPos)
+        setLabel("vertex-contents", 0, yOffset / 2)
+        setLabel("vertex-ne-label", x, - y)
+        setLabel("vertex-nw-label", - x - xOffset, - y)
+        setLabel("vertex-se-label", x, y + yOffset)
+        setLabel("vertex-sw-label", - x - xOffset, y + yOffset)
+        vertexGroup.call(@updateVertexLabels)
+        return vertexGroup
+
+    updateVertexLabels: (sel) =>
         for type, style of @vertexLabels
-            if type in ["ne","nw","se","sw"]
-                $("<div>", { class:"vertex-#{type}-label" }).appendTo($v)
-
-        @jsPlumbInstance.draggable($v,
-            containment: "parent"
-            start: (event, ui) ->
-                Vamonos.moveToTop($v)
-            stop: (event, ui) =>
-                $v.css("z-index", "auto")
-                if @mode is 'edit'
-                    vertex.x = ui.position.left
-                    vertex.y = ui.position.top
-        ) if @draggable
-
-        $v.append($contents)
-        @$inner.append($v)
-        $v.fadeIn(100) if show
-        @nodes[vertex.id] = $v
-        return $v
-
-    removeNode: (vid) ->
-        node = @nodes[vid]
-        delete @nodes[vid]
-        @jsPlumbInstance.removeAllEndpoints(node)
-        node.fadeOut(100, -> node.remove())
-
-    updateNode: ($node = @nodes[vid], vertex, frame) ->
-        return unless $node? and vertex?
-        @updateNodeLabels($node, vertex, frame)
-        @updateNodeClasses($node, vertex, frame)
-        @updateNodePosition($node, vertex, frame)
-
-    updateNodePosition: ($node, vertex) ->
-        pos = $node.position()
-        return if pos.left == vertex.x and pos.top == vertex.y
-        @jsPlumbInstance.animate(
-            vertex.id
-            { left: vertex.x, top: vertex.y }
-            { duration: 500 }
-        )
-
-    updateNodeLabels: ($node, vertex, frame) ->
-        for type, style of @vertexLabels
-            $target =
-                if type is "inner"
-                    $node.children("div.vertex-contents")
-                else if type in ["ne","nw","se","sw"]
-                    $node.children("div.vertex-#{type}-label")
-            return unless $target?
-            $target.html(
-                if style.constructor.name is "Function"
-                    Vamonos.rawToTxt(style(vertex))
-                else if style.constructor.name is "Array"
-                    res = []
-                    for v in style when frame[v]?.id is vertex.id
-                        res.push(Vamonos.resolveSubscript(Vamonos.removeNamespace(v)))
-                    res.join(",")
-                else if style.constructor.name is "Object"
-                    Vamonos.rawToTxt(style[@mode](vertex))
+            target = sel.selectAll("text." + switch type
+                when "inner" then "vertex-contents"
+                when "ne"    then "vertex-ne-label"
+                when "nw"    then "vertex-nw-label"
+                when "se"    then "vertex-se-label"
+                when "sw"    then "vertex-sw-label"
                 else
-                    style)
+                    throw Error "GraphDisplay '#{ @varName }': no vertex label \"#{ type }\""
+            )
+            target.data((d) -> [d])
+            if style.constructor.name is "Function"
+                target.html((d) => Vamonos.rawToTxt(style(d)))
+            else if style.constructor.name is "Array"
+                target.html (d) =>
+                    res = []
+                    for v in style when @currentFrame[v]?.id is d.id
+                        res.push(Vamonos.resolveSubscript(Vamonos.removeNamespace(v)))
+                    return res.join(",")
+            else if (style.constructor.name is "Object" and
+                     style[@mode]?.constructor.name is "Function")
+                target.html((d) => Vamonos.rawToTxt(style[@mode](d)))
+            else
+                target.text("")
+        return sel
 
-    updateNodeClasses: ($node, vertex) ->
-        if @highlightChanges and @mode is 'display' and @vertexChanged(vertex)
-            $node.addClass("changed")
+    createEdgeLabels: () =>
+        return unless @edgeLabel[@mode]?
+        @inner.selectAll("text.graph-label")
+            .data((d)->@currentGraph.getEdges())
+            .enter()
+            .append("text")
+            .attr("class", "graph-label")
+        @updateEdgeLabels()
+        return edgeGroups
+
+    updateEdgeLabels: () =>
+        return unless @edgeLabel[@mode]?
+        sel = @inner.selectAll("text.graph-label")
+            .data((d)=>@currentGraph.getEdges())
+            .text(@edgeLabelVal)
+            .attr("x", (d)->d._labelx)
+            .attr("y", (d)->d._labely)
+        sel.enter()
+            .append("text")
+            .attr("class", "graph-label")
+            .text(@edgeLabelVal)
+            .attr("x", (d)->d._labelx)
+            .attr("y", (d)->d._labely)
+        sel.exit()
+            .remove()
+
+    setEdgeLabelPos: (labelSel) =>
+        xPos = (e) =>
+            if @antiparallelEdge(e)
+                [x,y] = @bezierRefPoint(e)
+                return x
+            else
+                return Math.floor((e.source.x + e.target.x) / 2)
+        yPos = (e) =>
+            if @antiparallelEdge(e)
+                [x,y] = @bezierRefPoint(e)
+                return y + 4
+            else
+                return Math.floor((e.source.y + e.target.y) / 2 + 4)
+        labelSel.attr("x", xPos)
+                .attr("y", yPos)
+
+    edgeLabelVal: (edge) =>
+        return unless @edgeLabel[@mode]?
+        if @edgeLabel[@mode].constructor.name is 'Function'
+            val = @edgeLabel[@mode](edge)
+        else if @edgeLabel[@mode].constructor.name is 'String'
+            attr = @edgeLabel[@mode]
+            val = Vamonos.rawToTxt(edge[attr] ? "")
+        else
+            return
+
+    updateEdgeClasses: (edges) =>
+        return unless @edgeCssAttributes?
+        for klass, test of @edgeCssAttributes
+            if test?.constructor.name is 'Function'
+                edges.classed(klass, test)
+            else if test?.constructor.name is 'String'
+                if test.match(/<->/) # bidirectional
+                    [source, target] = test.split(/<->/).map((v) => @currentFrame[v])
+                    edges.classed(klass, (e) ->
+                        (e.source.id == source?.id and e.target.id == target?.id) or
+                        (e.target.id == source?.id and e.source.id == target?.id))
+                else
+                    [source, target] = test.split(/->/).map((v) => @currentFrame[v])
+                    edges.classed(klass, (e) -> e.source.id == source?.id and
+                                                e.target.id == target?.id)
+        return edges
+
+    updateEdgeStyles: (edges) =>
+        return unless @styleEdges?.length
+        for styleFunc in @styleEdges
+            continue unless styleFunc.constructor.name is 'Function'
+            styles = (@appliedEdgeStyles ?= [])
+            edges.each (e) ->
+                res = styleFunc(e)
+                if res?.length == 2
+                    [attr, val] = res
+                    styles.push attr
+                    d3.select(this).style(attr, val)
+                else
+                    d3.select(this).style(attr, null) for attr in styles
+
+    # this will be cleaner should I find a way to have ellipses and
+    # text svg elements inherit classes from their groups. otherwise
+    # we need to tell both ellipses and vertex-content text elems what
+    # their class is, so they can color coordinate (like black oval
+    # with white text).
+    updateVertexClasses: (vertexGroups) =>
+        vertices = vertexGroups.selectAll("ellipse.vertex")
+            .data((d) -> [d])
+            .classed("changed", (vertex) =>
+                return @highlightChanges and
+                       @mode is 'display' and
+                       @vertexChanged(vertex)
+            )
+
+        labels = vertexGroups.selectAll("text.vertex-contents")
+            .data((d) -> [d])
+
         for attr, val of @vertexCssAttributes
             if val.constructor.name is "Function"
-                (@appliedNodeClasses ?= {})[vertex.id] ?= {}
-                newClass = val(vertex)
-                continue if newClass is @appliedNodeClasses[vertex.id][attr]
-                # remove previously applied class for this attr
-                if @appliedNodeClasses[vertex.id][attr]?
-                    $node.removeClass(@appliedNodeClasses[vertex.id][attr])
-                if newClass?
-                    $node.addClass(newClass) 
-                    @appliedNodeClasses[vertex.id][attr] = newClass
-                else
-                    delete @appliedNodeClasses[vertex.id][attr]
+                ths = @
+                vertexGroups.each (vertex) ->
+                    (ths.appliedNodeClasses ?= {})[vertex.id] ?= {}
+                    sel = d3.select(this)
+                    newClass = val(vertex)
+                    # dont reapply classes
+                    return if newClass is ths.appliedNodeClasses[vertex.id][attr]
+                    # remove previously applied class for this attr
+                    if ths.appliedNodeClasses[vertex.id][attr]?
+                        sel.select("ellipse.vertex")
+                            .classed(ths.appliedNodeClasses[vertex.id][attr], false)
+                        sel.select("text.vertex-contents")
+                            .classed(ths.appliedNodeClasses[vertex.id][attr], false)
+                    # add new class
+                    if newClass?
+                        sel.select("ellipse.vertex").classed(newClass, true)
+                        sel.select("text.vertex-contents").classed(newClass, true)
+                        ths.appliedNodeClasses[vertex.id][attr] = newClass
+                    else
+                        delete ths.appliedNodeClasses[vertex.id][attr]
+
             else if val.constructor.name is "Array"
-                $node.removeClass("#{attr}-#{kind}") for kind in val
-                if vertex[attr] in val
-                    $node.addClass("#{attr}-#{vertex[attr]}")
+                for kind in val
+                    applyClass = (sel) ->
+                        sel.classed("#{ attr }-#{ kind }", (vtx) -> vtx[attr] == kind )
+                    vertices.call(applyClass)
+                    labels.call(applyClass)
+
             else
-                if vertex[attr] == val
-                    $node.addClass(attr)
-                else
-                    $node.removeClass(attr)
+                vertices.classed(attr, (vertex) -> vertex[attr] == val)
 
     vertexChanged: (newv) ->
         return false unless newv?
         return false unless @previousGraph?
         return false unless oldv = @previousGraph.vertex(newv.id)
         for k,v of newv when k[0] isnt "_"
+            continue if k in ["x", "y"]
             if v?.type is "Vertex"
                 return true if oldv[k]?.id isnt v.id
             else
                 return true if oldv[k] isnt v
         for k,v of oldv when k[0] isnt "_"
+            continue if k in ["x", "y"]
             if v?.type is "Vertex"
                 return true if newv[k]?.id isnt v.id
             else
                 return true if newv[k] isnt v
-
-    # --------- Display mode connection functions ---------- #
-
-    addConnection: (sourceId, targetId) ->
-        # stop if the connection is there already
-        return if @connections[sourceId]?[targetId]?
-        # if there is a back edge and the graph is directed
-        if @directed and @connections[targetId]?[sourceId]?
-            con = @connections[targetId][sourceId]
-            @addBackArrow(con)
-            con.backEdgeSource = sourceId
-        else # the forward connection does not exist
-            con = @jsPlumbInstance.connect({
-                source: sourceId
-                target: targetId
-                deleteEndpointsOnDetach: false # maybe speedup?
-            })
-            if @directed 
-                @addForwardArrow(con)
-                con.forwardEdgeSource = sourceId
-        (@connections[sourceId] ?= {})[targetId] = con
-        # edges go into @connections both ways in undirected graphs
-        (@connections[targetId] ?= {})[sourceId] = con unless @directed
-        return con
-
-    removeConnection: (sourceId, targetId) ->
-        con = @connections[sourceId]?[targetId]
-        return unless con?
-        # it's pretty simple when the graph is undirected
-        if not @directed
-            @jsPlumbInstance.detach(con) # this is a costly operation, AVOID IT
-            # delete both forward and back entries in connections table
-            delete @connections[sourceId][targetId]
-            delete @connections[targetId][sourceId]
-            # we'll return here, so as to simplify the directed mess to follow
-            return con
-
-        # if the edge is a forward edge with a back edge, delete forward arrow
-        if con.forwardEdgeSource is sourceId and con.backEdgeSource is targetId
-            @removeForwardArrow(con)
-            delete con.forwardEdgeSource
-
-        # if the edge is a forward edge with no back edge, delete connection
-        if con.forwardEdgeSource is sourceId and not con.backEdgeSource?
-            @jsPlumbInstance.detach(con)
-
-        # if the edge is a back edge with a forward edge, delete back arrow
-        if con.forwardEdgeSource is targetId and con.backEdgeSource is sourceId
-            @removeBackArrow(con)
-            delete con.backEdgeSource
-
-        # if the edge is a back edge with no forward edge, delete connection
-        if not con.forwardEdgeSource? and con.backEdgeSource is sourceId
-            @jsPlumbInstance.detach(con)
-
-        # we're always going to be wanting to do this
-        delete @connections[sourceId][targetId]
-        return con
-
-    addForwardArrow: (con) ->
-        con.addOverlay([
-            "PlainArrow"
-            {id: "forwardArrow", location:-1.000001, width:12, length:8}
-        ])
-
-    removeForwardArrow: (con) ->
-        con.removeOverlay("forwardArrow")
-
-    addBackArrow: (con) ->
-        con.addOverlay([
-            "PlainArrow"
-            { id: "backArrow", location: 1.000001, direction: -1, width: 12, length: 8 }
-        ])
-
-    removeBackArrow: (con) ->
-        con.removeOverlay("backArrow")
-
-    setStyle: (con, edge, color, width) ->
-        if color.constructor.name is 'String'
-            con.setPaintStyle(@customStyle(color, width))
-
-        else if color.constructor.name is 'Function'
-            res = color(edge)
-            if res.constructor.name is 'String'
-                con.setPaintStyle(@customStyle(res))
-            else if res.constructor.name is 'Array'
-                con.setPaintStyle(@customStyle(res[0],res[1]))
-
-    updateConnections: (graph, frame) ->
-        @eachConnection (sourceId, targetId, con) =>
-            # clear coloring
-            @resetConnectionStyle(con)
-            # update label in display mode. in edit mode the host widget will
-            # want to be in charge of labeling.
-            @setLabel(con, graph) if @mode is 'display'
-
-        # connection coloring
-        return unless @colorEdges?
-        for style in @colorEdges
-            # the first elem of style is a string from one vertex var to another "u->v"
-            if typeof style[0] is 'string'
-                [source, target] = style[0].split(/->/).map((v)->frame[v])
-                continue unless source? and target?
-                con = @connections[source.id]?[target.id]
-                edge = graph.edge(source.id, target.id)
-                continue unless con? and edge?
-                @setStyle(con, edge, style[1], style[2])
-
-            # the first elem of style is a function taking an edge and returning a bool
-            else if typeof style[0] is 'function'
-                for edge in graph.getEdges()
-                    if style[0](edge)
-                        con = @connections[edge.source.id]?[edge.target.id]
-                        @setStyle(con, edge, style[1], style[2])
-
-    resetConnectionStyle: (con) ->
-        return unless con?.connector?
-        con.setPaintStyle(@normalPaintStyle)
-
-    setLabel: (con, graph) ->
-        return unless @edgeLabel[@mode]?
-        con.removeOverlay("edgeLabel")
-        con.removeOverlay("edgeLabel")
-
-        if @directed
-            loc = 0.70
-
-        if @directed and graph.edge(con.targetId, con.sourceId)
-            backEdge = graph.edge(con.targetId, con.sourceId)
-            backLoc = 0.30
-
-        edge = graph.edge(con.sourceId, con.targetId)
-
-        if @edgeLabel[@mode].constructor.name is 'Function'
-            val = @edgeLabel[@mode](edge)
-            backVal = @edgeLabel[@mode](backEdge) if backEdge?
-
-        else if @edgeLabel[@mode].constructor.name is 'String'
-            attr = @edgeLabel[@mode]
-            val = Vamonos.rawToTxt(edge[attr] ? "")
-            backVal = Vamonos.rawToTxt(backEdge[attr] ? "") if backEdge?
-
-        else
-            return
-
-        con.addOverlay([
-            "Custom",
-            create: =>
-                $label = $("<div class='graph-label'>#{val}</div>")
-                return $("<div>").append($label)
-            id: "edgeLabel",
-            location: loc ? 0.5
-        ])
-
-        con.addOverlay([
-            "Custom",
-            create: =>
-                $label = $("<div class='graph-label'>#{backVal}</div>")
-                return $("<div>").append($label)
-            id: "edgeLabel",
-            location: backLoc
-        ]) if backEdge?
-
 
     # ----------------- drawer --------------- #
 
@@ -563,35 +713,5 @@ class GraphDisplay
     closeDrawer: ->
         return unless @$drawer?
         @$drawer.fadeOut("fast")
-
-    # ----------- styles, colors and jsplumb stuff -------------- #
-
-    @editColor        = "#92E894"
-    @lightEdgeColor   = "#cccccc"
-    @darkEdgeColor    = "#aaaaaa"
-    @deletionColor    = "#FF7D7D"
-    @lineWidth        = 4
-
-    normalPaintStyle:
-        dashstyle   : "0"
-        lineWidth   : @lineWidth
-        strokeStyle : @lightEdgeColor
-
-    potentialEdgePaintStyle:
-        dashstyle   : "1 1"
-        strokeStyle : @editColor
-        lineWidth   : @lineWidth + 1
-
-    selectedPaintStyle:
-        lineWidth   : @lineWidth
-        strokeStyle : @editColor
-
-    hoverPaintStyle:
-        lineWidth   : @lineWidth
-        strokeStyle : @darkEdgeColor
-
-    customStyle: (color, width) ->
-        lineWidth   : width ? GraphDisplay.lineWidth
-        strokeStyle : color
 
 @Vamonos.export { Widget: { GraphDisplay } }

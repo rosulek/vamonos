@@ -8,31 +8,41 @@
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
     <style type="text/css">
-        .vertex {
-            width: 40;
-            height: 30;
-        }
+    .vertex {
+        width: 40;
+        height: 30;
+    }
 
-        .vertex-contents {
-            font-size: .8em;
-        }
+    .vertex-contents {
+        font-size: .8em;
+    }
 
-        .vertex-sw-label {
-            font-style: italic;
-        }
+    .vertex-sw-label {
+        font-style: italic;
+    }
 
-        .vertex-ne-label, .vertex-nw-label {
-            font-weight: bold;
-            font-style: italic;
-        }
+    .vertex-ne-label, .vertex-nw-label {
+        font-weight: bold;
+        font-style: italic;
+    }
 
-        .vertex-contents {
-            font-weight: bold;
-        }
+    .vertex-contents {
+        font-weight: bold;
+    }
 
-        body {
-            text-align: center;
-        }
+    path.green {
+        fill: #B929e8;
+        stroke: #B929E8;
+    }
+
+    path.blue {
+        fill: #7A72FF;
+        stroke: #7A72FF;
+    }
+
+    body {
+        text-align: center;
+    }
     </style>
 
 </head><body>
@@ -124,12 +134,10 @@ var myviz = new Vamonos.Visualizer({
                 ne   : ["t"],
                 sw   : ["u", "v"],
             },
-            colorEdges: [
-                ["u->v", "#92E894"],
-                [ function(e){
-                    return (e.f !== undefined ? (e.f > 0) : false);
-                }, "#0000FF" ],
-            ],
+            edgeCssAttributes: {
+                green : "u->v",
+                blue  : function(e){return (e.f !== undefined ? (e.f > 0) : false)}
+            },
             defaultEdgeAttrs: {
                 c: 1,
             },
@@ -194,12 +202,9 @@ var myviz = new Vamonos.Visualizer({
                 nw   : ["s_f"],
                 ne   : ["t_f"],
             },
-            colorEdges: [
-                [ function(edge){
-                    return (edge.target.pred === edge.source.id)
-                  }
-                ,  "#FF7D7D"],
-            ]
+            edgeCssAttributes: {
+                blue  : function(edge){return (edge.target.pred === edge.source.id)}
+            },
         }),
 
         new Vamonos.Widget.Error({

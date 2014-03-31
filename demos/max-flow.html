@@ -8,30 +8,38 @@
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
     <style type="text/css">
-        .vertex {
-            width: 40;
-            height: 30;
-        }
+    .vertex {
+        width: 40;
+        height: 30;
+    }
 
-        .vertex-contents {
-            font-size: .8em;
-        }
+    .vertex-contents {
+        font-size: .8em;
+    }
 
-        .vertex-sw-label {
-            font-style: italic;
-        }
+    .vertex-sw-label {
+        font-style: italic;
+    }
 
-        .vertex-ne-label, .vertex-nw-label {
-            font-weight: bold;
-        }
+    .vertex-ne-label, .vertex-nw-label {
+        font-weight: bold;
+    }
 
-        .vertex-contents {
-            font-weight: bold;
-        }
+    text.vertex-contents {
+        font-weight: bold;
+    }
 
-        body {
-            text-align: center;
-        }
+    path.green {
+        stroke: #92E894;
+    }
+
+    path.red {
+        stroke: #FF7D7D;
+    }
+
+    body {
+        text-align: center;
+    }
     </style>
 
 </head><body>
@@ -87,6 +95,7 @@ var i = 0;
 
 var myviz = new Vamonos.Visualizer({
     widgets: [
+
         new Vamonos.Widget.Controls("controls"),
 
         new Vamonos.Widget.Pseudocode({
@@ -100,7 +109,7 @@ var myviz = new Vamonos.Visualizer({
             inputVar: true,
         }),
 
-        new Vamonos.Widget.Graph({
+        window.g = new Vamonos.Widget.Graph({
             varName: "G",
             container: "graph-g",
             inputVars: {
@@ -121,17 +130,28 @@ var myviz = new Vamonos.Visualizer({
                 },
             },
             defaultEdgeAttrs: { c: 1 },
-            colorEdges: [
-                ["u->v", "#92E894"],
-                [ function(e){ if (e.f !== undefined && (e.f > 0)) return true; },
-                  function(e){
-                      var percent = e.f / e.c;
-                      var s = 255 * (1 - percent);
-                      var color = Vamonos.rgbToHex(s,s,255);
-                      var width = 2 + e.f;
-                      return [color,width];
-                  }
-                ],
+            edgeCssAttributes: { green: "u->v" },
+            styleEdges: [
+                function(e){
+                    if (e.f !== undefined && (e.f > 0)) {
+                        var r = 96,
+                            g = 127,
+                            b = 255,
+                            scale = d3.scale.linear()
+                                      .domain([0, e.c])
+                                      .range([255, r]),
+                            color = Vamonos.rgbToHex(scale(e.f), scale(e.f), b);
+                        return ["stroke", color];
+                    }
+                },
+                function(e){
+                    if (e.f !== undefined && (e.f > 0)) {
+                        var scale = d3.scale.linear()
+                                      .domain([0, 5])
+                                      .range([2, 8]);
+                        return ["stroke-width", scale(e.f)];
+                    }
+                },
             ],
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: true,
@@ -183,12 +203,9 @@ var myviz = new Vamonos.Visualizer({
                 nw   : ["s_f"],
                 ne   : ["t_f"],
             },
-            colorEdges: [
-                [ function(edge){
-                    return (edge.target.pred === edge.source.id)
-                  }
-                ,  "#FF7D7D"],
-            ]
+            edgeCssAttributes: {
+                red : function(edge){return (edge.target.pred === edge.source.id)},
+            },
         }),
 
         new Vamonos.Widget.Error({

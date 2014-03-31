@@ -48,3 +48,9 @@ Copyright (c) 2013 Simon Porritt, http://jsplumb.org/
 qTip is distributed under the MIT license, which is reproduced above.
 
 Copyright (c) 2009 Craig Thompson, http://craigsworks.com
+
+## d3 ##
+
+d3 is distributed under the BSD licence.
+
+Copyright (c) 2014, Michael Bostock

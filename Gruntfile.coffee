@@ -35,6 +35,7 @@ module.exports = (grunt) ->
                 command: "cat header-all.js deps/jquery.min.js deps/jquery-ui.min.js " +
                          "deps/jquery-jsplumb.js deps/jquery-qtip.min.js " +
                          "deps/jquery.ui.touch-punch.js lib/vamonos.js " +
+                         "deps/d3.min.js " +
                          "> lib/vamonos-all.js"
                 options: { stderr: true, stdout: true }
             zip:

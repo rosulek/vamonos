@@ -10,15 +10,18 @@
 
         ignoreExtraArgs,    # optional argument: whether or not to check for extra args.
                             # for use when using constructor args multiple times.
+
+        specObj,            # optional argument, for providing the spec manually
         }) ->
 
         ignoreExtraArgs ?= false
         widgetName = widgetObject.constructor.name
+        spec = specObj ? widgetObject.constructor.spec
 
         throw Error "handleArguments: widgetName required" unless widgetName?
         throw Error "handleArguments: widgetObject required for #{widgetName} widget" unless widgetObject?
         throw Error "handleArguments: givenArgs required for #{widgetName} widget" unless givenArgs?
-        throw Error "handleArguments: no spec for #{widgetName} widget" unless widgetObject.constructor.spec?
+        throw Error "handleArguments: no spec for #{widgetName} widget" unless spec
 
         # The spec object is required for all widgets. It is an object mapping arg
         # names to objects of the form:
@@ -32,7 +35,7 @@
         #    type can be a string ("String", "Integer", "Function", etc) or an
         #    array when an argument can be one of many types.
 
-        for argName, specs of widgetObject.constructor.spec
+        for argName, specs of spec
             { type, description, defaultValue } = specs
             throw Error "handleArguments: no type provided for #{widgetName}.#{argName}" unless type?
 
@@ -83,7 +86,7 @@
             inc = Math.floor(360 / nGroups)
             "hsl(#{ inc * n }, 60%, 70%)"
         for i in [0..nGroups-1]
-            $('<style>.'+ prefix + i + ' { background: ' + cs(i) + '; }</style>')
+            $('<style>ellipse.'+ prefix + i + ' { fill: ' + cs(i) + '; }</style>')
                 .appendTo($('html > head'))
 
     warn: (objName, str) ->
@@ -127,7 +130,6 @@
         oldVal = valFunc($elem)
         $editor = $("<input class='inline-input'>")
             .hide()
-            .width($elem.width())
             .val(oldVal)
             .on "keydown.vamonos-graph", (event) =>
                 return unless event.keyCode in [13, 32, 9, 27]
@@ -260,7 +262,7 @@
         return out.join("")
 
     # LZW-compress a string
-    lzw_encode: (s) -> 
+    lzw_encode: (s) ->
         dict = {}
         data = (s + "").split("")
         out = []
