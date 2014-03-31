@@ -588,7 +588,6 @@ class GraphDisplay
                 return y + 4
             else
                 return Math.floor((e.source.y + e.target.y) / 2 + 4)
-
         labelSel.attr("x", xPos)
                 .attr("y", yPos)
 

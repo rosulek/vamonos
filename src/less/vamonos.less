@@ -453,9 +453,10 @@ path.edge {
 
     &.selected {
         stroke-width: 8;
-        stroke: #aaa;
+        stroke: @editing-bg-color;
+        // stroke: #aaa;
         fill: none;
-        filter: url(#shadow-green); // defined as svg filter in Widget.GraphDisplay
+        // filter: url(#shadow-green); // defined as svg filter in Widget.GraphDisplay
     }
 }
 
@@ -509,8 +510,10 @@ g.editable-vertex:hover ellipse {
 
     }
 
-    &.selected {
-        filter: url(#shadow-green); // defined as svg filter in Widget.GraphDisplay
+    &.selected > ellipse.vertex {
+        stroke: @editing-bg-color;
+        stroke-width: 3;
+        // filter: url(#shadow-green); // defined as svg filter in Widget.GraphDisplay
     }
 
     &.vertex-drag {

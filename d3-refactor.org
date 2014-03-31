@@ -1,5 +1,7 @@
 #+TITLE: GraphDisplay D3 refactor notes
 
+see if i can find the souce code to box-shadow and copy it
+
 * Graph Display:
 ** vertex attributes tooltips
 ** drop shadows
@@ -10,15 +12,11 @@
 ** add self-loops for nfa to regex
 
 * Graph Editing
-** editable edge attributes
 ** selection
    nodes shouldn't be selected and unselected by dragging them
 
 * unneeded things currently out of scope
 ** setup continuations waiting for jsPlumb to load
-
-* notes
-** jQuery used for @$outer, d3 for @inner
 
 * check when done
 ** dijkstra-quiz highlighting the correct vertex

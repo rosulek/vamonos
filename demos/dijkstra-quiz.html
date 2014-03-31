@@ -130,11 +130,13 @@ var myviz = new Vamonos.Visualizer({
             }
         }),
 
-        new Vamonos.Widget.Pseudocode("pseudocode-main"),
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-main",
+            breakpoints: [11],
+        }),
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-relax",
-            breakpoints: [1,2,3],
             procedureName: "relax",
         }),
 
@@ -148,7 +150,6 @@ var myviz = new Vamonos.Visualizer({
             container: "q-var",
             varName: "global::Q",
             displayName: "Q",
-            watching: true,
         }),
 
         new Vamonos.Widget.ResultProperty({
@@ -210,7 +211,6 @@ var myviz = new Vamonos.Visualizer({
             },
 
             defaultGraph: new Vamonos.DataStructure.Graph({
-                //directed: true,
                 vertices: [
                     {id: "v0", x: 17,  y: 10},
                     {id: "v1", x: 98,  y: 10},
@@ -264,11 +264,11 @@ var myviz = new Vamonos.Visualizer({
                 });
 
                 while (_(7), !global.Q.isEmpty()) {
-                    _(8);               u = global.Q.extractMin();
-                    _(9);               u.done = true;
+_(8);               u = global.Q.extractMin();
+_(9);               u.done = true;
                     G.eachNeighbor(u, function(vtx){
-                        _(10);                  v = vtx;
-                        _(11);                  relax({u:u,v:v,G:G});
+_(10);                  v = vtx;
+_(11);                  relax({u:u,v:v,G:G});
                     });
                     v = undefined;
                 }
@@ -278,9 +278,10 @@ var myviz = new Vamonos.Visualizer({
 
         relax: function(_){
             with (this) {
-                if (_(1), u.d + G.edge(u,v).w < v.d) {
+                if (_(1), u.d + (+G.edge(u,v).w) < v.d) {
                     _(2);
-                    v.d = u.d + G.edge(u,v).w; global.Q.sort();
+                    v.d = u.d + (+G.edge(u,v).w); global.Q.sort();
+                    console.log(v.d);
                     _(3);
                     v.pred = u.name;
                     _(4);
