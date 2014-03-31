@@ -163,3 +163,19 @@ table.fiftyfifty > tbody > tr > td {
     width: 50%;
     text-align: center;
 }
+
+.vertex-contents {
+    font-size: .8em;
+}
+.vertex-ne-label, .vertex-nw-label {
+    font-weight: bold;
+}
+.vertex-sw-label {
+    font-style: italic;
+}
+path.edge.red {
+    stroke: #FF7D7D;
+}
+path.edge.green {
+    stroke: #92E894;
+}

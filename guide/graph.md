@@ -172,11 +172,11 @@ will be applied to the edge-path.
 > Javascript:
 >
 >     edgeCssAttributes: {
->         red: "u->v",
 >         green: function(edge){
->             return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
->                 || (edge.source.pred ? edge.source.pred.id === edge.target.id : false)
+>             return (edge.target.pred === edge.source.name)
+>                 || (edge.source.pred === edge.target.name)
 >         },
+>         red: "u<->v",
 >     },
 
 Finally, we can customize how the labels (and vertices) look with CSS.
@@ -214,27 +214,6 @@ Now we have a fully functional Prim's MST algorithm visualization!
 
 > [prims3.html](graph-tutorial/prims3.html)
 >
-> <style type="text/css">
->     .vertex {
->         width: 40;
->         height: 30;
->     }
->     .vertex-contents {
->         font-size: .8em;
->     }
->     .vertex-ne-label, .vertex-nw-label {
->         font-weight: bold;
->     }
->     .vertex-sw-label {
->         font-style: italic;
->     }
->     path.red {
->         stroke: #FF7D7D;
->     }
->     path.green {
->         stroke: #92E894;
->     }
-> </style>
 > <table class="vamonos">
 >     <tr><td class="pseudocode-and-controls">
 >         <div id="controls3"></div>

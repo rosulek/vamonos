@@ -188,11 +188,11 @@ $(function() {
                 },
                 edgeLabel: "w",
                 edgeCssAttributes: {
-                    red: "u->v",
                     green: function(edge){
-                        return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
-                            || (edge.source.pred ? edge.source.pred.id === edge.target.id : false)
+                        return (edge.target.pred === edge.source.name)
+                            || (edge.source.pred === edge.target.name)
                     },
+                    red: "u<->v",
                 },
                 defaultGraph: new Vamonos.DataStructure.Graph({
                     vertices: [
@@ -241,7 +241,7 @@ $(function() {
                     G.eachNeighbor(u, function(vtx){
     _(8);               v = vtx;
     _(9);               if (Q.contains(v) && G.edge(u,v).w < v.key) {
-    _(10);                  v.pred = u;
+    _(10);                  v.pred = u.name;
     _(11);                  v.key = G.edge(u,v).w;
                         }
                     })
