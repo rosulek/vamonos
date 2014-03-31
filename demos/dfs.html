@@ -8,42 +8,41 @@
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
     <style type="text/css">
-        .vertex {
-            width: 40;
-            height: 30;
-        }
+    text.vertex-contents {
+        font-size: .8em;
+    }
 
-        .vertex-contents {
-            font-size: .8em;
-        }
+    .vertex-ne-label, .vertex-nw-label {
+        font-weight: bold;
+    }
 
-        .vertex-ne-label, .vertex-nw-label {
-            font-weight: bold;
-        }
+    .vertex-sw-label {
+        font-style: italic;
+    }
 
-        .vertex-sw-label {
-            font-style: italic;
-        }
+    ellipse.color-white {
+        fill: white;
+    }
 
-        .color-white {
-            background: white;
-        }
+    ellipse.color-gray {
+        fill: #888;
+    }
 
-        .color-gray {
-            background: #888;
-        }
+    ellipse.color-black {
+        fill: black;
+    }
 
-        .color-black {
-            background: black;
-        }
+    path.red {
+        stroke: #FF7D7D;
+    }
 
-        .color-black .vertex-contents, .color-gray .vertex-contents {
-            color: white;
-        }
+    text.color-black, text.color-gray {
+        fill: white;
+    }
 
-        body {
-            text-align: center;
-        }
+    body {
+        text-align: center;
+    }
     </style>
 
 </head>
@@ -165,9 +164,9 @@ var myviz = new Vamonos.Visualizer({
             vertexCssAttributes: {
                 color: ["white", "gray", "black"],
             },
-            colorEdges: [
-                ["u->visit::v", "#FF7D7D"],
-            ],
+            edgeCssAttributes: {
+                red : "u->visit::v"
+            },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: true,
                 vertices: [
@@ -186,6 +185,7 @@ var myviz = new Vamonos.Visualizer({
                     {source: 'v1',target: 'v2'},
                     {source: 'v1',target: 'v4'},
                     {source: 'v3',target: 'v4'},
+                    {source: 'v4',target: 'v3'},
                     {source: 'v3',target: 'v6'},
                     {source: 'v5',target: 'v8'},
                     {source: 'v6',target: 'v7'},

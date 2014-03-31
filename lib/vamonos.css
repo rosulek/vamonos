@@ -13,7 +13,7 @@ body.processing {
 }
 input.inline-input {
   display: inline;
-  border: 0px;
+  border: none;
   background-color: #92e894;
   font: inherit;
   padding: 0px;
@@ -289,15 +289,32 @@ tr.pseudocode-active td.pseudocode-gutter {
   width: inherit;
   height: inherit;
 }
-._jsPlumb_connector {
-  opacity: 0.8;
-}
-div.graph-label {
+.graph-label {
   font-family: sans-serif;
-  font-size: .8em;
+  font-size: .7em;
   cursor: default;
-  background: #F3F3F3;
-  padding: 0 1px 0 1px;
+  text-anchor: middle;
+  alignment-baseline: middle;
+}
+path.edge {
+  stroke: #cccccc;
+  fill: none;
+  stroke-width: 4;
+}
+path.edge.selectme {
+  stroke: #dddddd;
+  fill: none;
+  stroke-width: 8;
+}
+path.edge.potential {
+  stroke: #92e894;
+  fill: none;
+  stroke-width: 5;
+}
+path.edge.selected {
+  stroke-width: 8;
+  stroke: #92e894;
+  fill: none;
 }
 div.graph-drawer {
   background-color: #92e894;
@@ -310,86 +327,26 @@ div.graph-drawer span.label {
   font-size: 1.1em;
 }
 div.graph-drawer input {
-  border: 1px solid #888888;
   text-align: left;
-  outline: 0;
+  width: 40px;
 }
-.vertex {
-  width: 22px;
-  height: 22px;
-  text-align: center;
-  padding: 0px;
-  border-radius: 50%;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  border: 1px solid #888888;
-  background: #eeeeee;
-  position: relative;
-  /*
-
-    .vertex-tophalf, .vertex-bottomhalf, .vertex-righthalf, .vertex-lefthalf,
-    .vertex-nwquad, .vertex-nequad, .vertex-swquad, .vertex-sequad {
-        border: 1px solid black;
-        position: absolute;
-    }
-
-    .vertex-tophalf, .vertex-bottomhalf {
-        height: 50%;
-        width: 100%;
-    }
-    .vertex-tophalf {
-        border-width: 0 0 1px 0;
-        top: 0px;
-        left: 0px;
-    }
-    .vertex-bottomhalf {
-        border-width: 1px 0 0 0;
-        bottom: 0px;
-        left: 0px;
-    }
-
-    .vertex-righthalf, .vertex-lefthalf {
-        height: 100%;
-        width: 50%;
-    }
-    .vertex-righthalf {
-        border-width: 0 0 0 1px;
-        top: 0px;
-        right: 0px;
-    }
-    .vertex-lefthalf {
-        border-width: 0 1px 0 0;
-        top: 0px;
-        left: 0px;
-    }
-
-    .vertex-swquad, .vertex-sequad, .vertex-nequad, .vertex-nwquad {
-        height: 50%;
-        width: 50%;
-    }
-    .vertex-swquad {
-        border-width: 1px 1px 0 0;
-        bottom: 0px;
-        left: 0px;
-    }
-    .vertex-sequad {
-        border-width: 1px 0 0 1px;
-        bottom: 0px;
-        right: 0px;
-    }
-    .vertex-nwquad {
-        border-width: 0 1px 1px 0;
-        top: 0px;
-        left: 0px;
-    }
-    .vertex-nequad {
-        border-width: 0 0 1px 1px;
-        top: 0px;
-        right: 0px;
-    }
-
-*/
-
+div.editable-attr {
+  display: inline;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+div.editable-attr:hover,
+div.editable-attr.active {
+  box-shadow: #888888 -1px -1px 1px, #ffffff 1px 1px 1px;
+}
+ellipse.vertex {
+  fill: #eee;
+  stroke: #888;
+  stroke-width: 1;
+}
+g.editable-vertex:hover ellipse {
+  stroke-width: 3;
+  stroke: #BBB;
 }
 .vertex .vertex-contents {
   display: table-cell;
@@ -397,28 +354,15 @@ div.graph-drawer input {
   height: inherit;
   vertical-align: middle;
   font-weight: bolder;
+  text-anchor: middle;
 }
-.vertex.selected {
-  box-shadow: 0px 0px 5px 5px #92e894;
+.vertex.selected > ellipse.vertex {
+  stroke: #92e894;
+  stroke-width: 3;
 }
-.vertex.ui-draggable {
+.vertex.vertex-drag {
+  filter: url(#shadow);
   cursor: move;
-}
-.vertex.ui-draggable-dragging,
-.vertex.vertex-drag-onto {
-  -webkit-box-shadow: 5px 5px 10px #aaaaaa;
-  -moz-box-shadow: 5px 5px 10px #aaaaaa;
-  box-shadow: 5px 5px 10px #aaaaaa;
-}
-.vertex.vertex-drag-onto {
-  cursor: default;
-}
-.vertex.vertex-deletable:hover {
-  background: #f77f6f;
-  -webkit-box-shadow: 5px 5px 10px #aaaaaa;
-  -moz-box-shadow: 5px 5px 10px #aaaaaa;
-  box-shadow: 5px 5px 10px #aaaaaa;
-  cursor: crosshair;
 }
 .vertex.changed .vertex-nw-label,
 .vertex .vertex-ne-label,
@@ -434,22 +378,7 @@ div.graph-drawer input {
 .vertex .vertex-sw-label,
 .vertex .vertex-se-label {
   position: absolute;
-}
-.vertex .vertex-nw-label {
-  right: 85%;
-  bottom: 85%;
-}
-.vertex .vertex-ne-label {
-  left: 85%;
-  bottom: 85%;
-}
-.vertex .vertex-sw-label {
-  right: 85%;
-  top: 85%;
-}
-.vertex .vertex-se-label {
-  left: 85%;
-  top: 85%;
+  text-anchor: middle;
 }
 .vertex .vertex-tooltip {
   position: absolute;
@@ -736,6 +665,7 @@ span.var-editable.var-editing {
   }
   20% {
     background: #fcfbbb;
+    fill: #fcfbbb;
     color: #ff0000;
   }
   100% {
@@ -750,6 +680,7 @@ span.var-editable.var-editing {
   }
   20% {
     background: #fcfbbb;
+    fill: #fcfbbb;
     color: #ff0000;
   }
   100% {

@@ -56,6 +56,8 @@ Widgets
 
  * [Queue](widget-queue.html)
 
+ * [ResultProperty](widget-resultproperty.html)
+
  * [UserQuiz](widget-userquiz.html)
 
  * [VarDisplay](widget-vardisplay.html)

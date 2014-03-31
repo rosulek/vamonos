@@ -8,12 +8,7 @@
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
     <style type="text/css">
-    .vertex {
-        width: 40;
-        height: 30;
-    }
-
-    .vertex-contents {
+    text.vertex-contents {
         font-size: .8em;
     }
 
@@ -26,15 +21,23 @@
         font-family: serif;
     }
 
-    .done {
-        background: #ddd;
+    ellipse.done {
+        fill: #bbb;
     }
 
-    .ok {
+    ellipse.ok {
         -webkit-box-shadow: 0px 0px 10px yellow;
         -moz-box-shadow: 0px 0px 10px yellow;
         box-shadow: 0px 0px 10px yellow;
-        background: yellow;
+        fill: yellow;
+    }
+
+    path.green {
+        stroke: #92E894;
+    }
+
+    path.red {
+        stroke: #FF7D7D;
     }
 
     span.bad {
@@ -47,19 +50,7 @@
         font-weight: bold;
     }
 
-    .color-white {
-        background: white;
-    }
-
-    .color-gray {
-        background: #888;
-    }
-
-    .color-black {
-        background: black;
-    }
-
-    .color-black .vertex-contents, .color-gray .vertex-contents {
+    text.color-black, text.color-gray {
         color: white;
     }
 
@@ -110,10 +101,6 @@
                     <td><div id="graph"></div></td></tr>
                 <tr><td><div id="q-var"></div></td>
                     <td><div id="queue"></div></td></tr>
-                <tr><td><div id="u-var"></div></td>
-                    <td><div id="u"></div></td></tr>
-                <tr><td><div id="v-var"></div></td>
-                    <td><div id="v"></div></td></tr>
             </table>
 
         </td></tr>
@@ -143,11 +130,13 @@ var myviz = new Vamonos.Visualizer({
             }
         }),
 
-        new Vamonos.Widget.Pseudocode("pseudocode-main"),
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-main",
+            breakpoints: [11],
+        }),
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-relax",
-            breakpoints: [1,2,3],
             procedureName: "relax",
         }),
 
@@ -156,33 +145,36 @@ var myviz = new Vamonos.Visualizer({
             varName: "G",
             inputVar: true,
         }),
-        new Vamonos.Widget.VarName({
-            container: "u-var",
-            varName: "u",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "u",
-            varName: "u",
-            attributes: ["done","pred","d"]
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "v-var",
-            varName: "v",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "v",
-            varName: "v",
-            attributes: ["done","pred","d"]
-        }),
 
         new Vamonos.Widget.VarName({
             container: "q-var",
             varName: "global::Q",
             displayName: "Q",
-            watching: true,
+        }),
+
+        new Vamonos.Widget.ResultProperty({
+            G: function(G){
+                var vs = G.getVertices();
+                var ok = undefined;
+                var text = "";
+                for (var i = 0; i < vs.length; i++) {
+                    if (vs[i].timesRelaxed !== undefined && vs[i].timesRelaxed >= 5) {
+                        ok = vs[i];
+                        break;
+                    }
+                }
+                if (ok !== undefined) {
+                    text = "<span class='good'>" +
+                           "Great job! Vertex " + ok.name +
+                           " was relaxed " + ok.timesRelaxed + " times." +
+                           "</span>";
+                } else {
+                    text = "<span class='bad'>" +
+                           "No vertex relaxed 5 times. Try again!" +
+                           "</span>";
+                }
+                $("#result").html(text);
+            },
         }),
 
         new Vamonos.Widget.Graph({
@@ -198,10 +190,6 @@ var myviz = new Vamonos.Visualizer({
                 },
                 ne    : ["u", "v"],
                 nw    : ["s"],
-                sw: {
-                    edit: function(vtx){ return "" },
-                    display: function(vtx){ return vtx.timesRelaxed },
-                },
             },
             vertexCssAttributes: {
                 done: true,
@@ -213,15 +201,16 @@ var myviz = new Vamonos.Visualizer({
             },
             edgeLabel: "w",
             defaultEdgeAttrs: { w: 1 },
-            colorEdges: [
-                [ function(edge){
+
+            edgeCssAttributes: {
+                green : function(edge){
                     return (edge.target.pred === edge.source.name)
-                        || (edge.source.pred === edge.target.name) }
-                , "#92E894" ],
-                ["u->v", "#FF7D7D"],
-            ],
+                        || (edge.source.pred === edge.target.name)
+                },
+                red   : "u<->v",
+            },
+
             defaultGraph: new Vamonos.DataStructure.Graph({
-                //directed: true,
                 vertices: [
                     {id: "v0", x: 17,  y: 10},
                     {id: "v1", x: 98,  y: 10},
@@ -275,44 +264,24 @@ var myviz = new Vamonos.Visualizer({
                 });
 
                 while (_(7), !global.Q.isEmpty()) {
-                    _(8);               u = global.Q.extractMin();
-                    _(9);               u.done = true;
+_(8);               u = global.Q.extractMin();
+_(9);               u.done = true;
                     G.eachNeighbor(u, function(vtx){
-                        _(10);                  v = vtx;
-                        _(11);                  relax({u:u,v:v,G:G});
+_(10);                  v = vtx;
+_(11);                  relax({u:u,v:v,G:G});
                     });
                     v = undefined;
                 }
                 u = undefined;
-
-                var vs = G.getVertices();
-                var ok = undefined;
-                var text = "";
-                for (var i = 0; i < vs.length; i++) {
-                    if (vs[i].timesRelaxed !== undefined && vs[i].timesRelaxed >= 5) {
-                        ok = vs[i];
-                        break;
-                    }
-                }
-                if (ok !== undefined) {
-                    text = "<span class='good'>" +
-                           "Great job! Vertex " + ok.name +
-                           " was relaxed " + ok.timesRelaxed + " times." +
-                           "</span>";
-                } else {
-                    text = "<span class='bad'>" +
-                           "No vertex relaxed 5 times. Try again!" +
-                           "</span>";
-                }
-                $("#result").html(text);
             }
         },
 
         relax: function(_){
             with (this) {
-                if (_(1), u.d + G.edge(u,v).w < v.d) {
+                if (_(1), u.d + (+G.edge(u,v).w) < v.d) {
                     _(2);
-                    v.d = u.d + G.edge(u,v).w; global.Q.sort();
+                    v.d = u.d + (+G.edge(u,v).w); global.Q.sort();
+                    console.log(v.d);
                     _(3);
                     v.pred = u.name;
                     _(4);

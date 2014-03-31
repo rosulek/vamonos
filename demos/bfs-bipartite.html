@@ -9,42 +9,41 @@
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
     <style type="text/css">
-        .vertex {
-            width: 40;
-            height: 30;
-        }
+    text.vertex-contents {
+        font-size: .8em;
+    }
 
-        .vertex-contents {
-            font-size: .8em;
-        }
+    .vertex-ne-label, .vertex-nw-label {
+        font-weight: bold;
+    }
 
-        .vertex-ne-label, .vertex-nw-label {
-            font-weight: bold;
-        }
+    .vertex-sw-label {
+        font-style: italic;
+    }
 
-        .vertex-sw-label {
-            font-style: italic;
-        }
+    ellipse.color-white {
+        fill: white;
+    }
 
-        .color-white {
-            background: white;
-        }
+    ellipse.color-red {
+        fill: #f2a7ad;
+    }
 
-        .color-red {
-            background: red;
-        }
+    ellipse.color-blue {
+        fill: #a2bae0;
+    }
 
-        .color-blue {
-            background: blue;
-        }
+    path.grey {
+        stroke: #bf906b;
+    }
 
-        .color-blue .vertex-contents, .color-blue .vertex-contents {
-            color: white;
-        }
+    path.red {
+        stroke: #F26A69;
+    }
 
-        body {
-            text-align: center;
-        }
+    body {
+        text-align: center;
+    }
     </style>
 
 </head><body>
@@ -86,13 +85,6 @@
                 </tr>
                 <tr><td><div id="q-var"></div></td>
                     <td><div id="queue"></div></td></tr>
-                <tr><td><div id="u-var"></div></td>
-                    <td><div id="u"></div></td>
-                </tr>
-                </tr>
-                <tr><td><div id="v-var"></div></td>
-                    <td><div id="v"></div></td>
-                </tr>
             </table>
 
         </td></tr>
@@ -122,28 +114,6 @@ var myviz = new Vamonos.Visualizer({
         }),
 
         new Vamonos.Widget.VarName({
-            container: "u-var",
-            varName: "u",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "u",
-            varName: "u",
-            attributes: ["name","color"]
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "v-var",
-            varName: "v",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "v",
-            varName: "v",
-            attributes: ["name","color"]
-        }),
-
-        new Vamonos.Widget.VarName({
             container: "g-var",
             varName: "G",
             inputVar: true,
@@ -164,13 +134,11 @@ var myviz = new Vamonos.Visualizer({
             vertexCssAttributes: {
                 color: ["white", "blue", "red"],
             },
-            colorEdges: [
-                ["u->v", "#595959"],
-                [ function(edge){
-                    return (edge.target.bad && edge.source.bad)
-                  }
-                , "red" ],
-            ],
+            edgeCssAttributes: {
+                grey : "u<->v",
+                red  : function(edge){ return (edge.target.bad && edge.source.bad)
+                                           || (edge.source.bad && edge.target.bad) },
+            },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 vertices: [
                     {id: "v0", x: 17,  y: 10},

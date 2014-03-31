@@ -9,46 +9,33 @@
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
     <style type="text/css">
-        .vertex {
-            width: 40;
-            height: 30;
-        }
+    text.vertex-contents {
+        font-size: .8em;
+    }
 
-        .vertex-contents {
-            font-size: .8em;
-        }
+    .vertex-ne-label, .vertex-nw-label {
+        font-weight: bold;
+    }
 
-        .vertex-ne-label, .vertex-nw-label {
-            font-weight: bold;
-        }
+    .vertex-sw-label {
+        font-style: italic;
+    }
 
-        .vertex-sw-label {
-            font-style: italic;
-        }
+    path.green {
+        stroke: #92E894;
+    }
 
-        .done {
-            background: #ddd;
-        }
+    path.red {
+        stroke: #FF7D7D;
+    }
 
-        .color-white {
-            background: white;
-        }
+    path.blue {
+        stroke: rgb(96,127,255);
+    }
 
-        .color-gray {
-            background: #888;
-        }
-
-        .color-black {
-            background: black;
-        }
-
-        .color-black .vertex-contents, .color-gray .vertex-contents {
-            color: white;
-        }
-
-        body {
-            text-align: center;
-        }
+    body {
+        text-align: center;
+    }
     </style>
 
 </head><body>
@@ -117,20 +104,16 @@ var myviz = new Vamonos.Visualizer({
                     edit: function(vtx){return vtx.name},
                     display: function(vtx){return vtx.d}
                 },
-                sw    : {
-                    edit: function(vtx){return ""},
-                    display: function(vtx){return vtx.name}
-                },
                 ne    : ["u", "v"],
                 nw    : ["s"],
             },
             edgeLabel: "w",
             defaultEdgeAttrs: { w: 1 },
-            colorEdges: [
-                [ function(edge){ return (edge.target.pred === edge.source.id) } , "#92E894" ],
-                [ function(e){ return e.error }, "red" ],
-                ["u->v", "blue"],
-            ],
+            edgeCssAttributes: {
+                blue  : function(edge){ return (edge.target.pred === edge.source.id) },
+                red   : function(e){ return e.error },
+                green : "u->v"
+            },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: true,
                 vertices: [
