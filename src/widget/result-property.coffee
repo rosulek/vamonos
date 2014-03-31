@@ -9,9 +9,6 @@ class ResultProperty
     constructor: (@vars) ->
 
     event: (event, options...) ->
-        if event is 'setup'
-            [@viz,done] = options
-            done() if done?
         if event is 'displayStart'
             view = @viz.frames[..].pop()
             for vName, vFunc of @vars

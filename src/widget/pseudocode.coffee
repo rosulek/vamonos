@@ -17,7 +17,7 @@ class Pseudocode
         breakpoints:
             type: ["Array", "String"]
             defaultValue: []
-            description: 
+            description:
                 "initial breakpoints, as an array of line numbers, " +
                 "or `'all'` for all breakpoints"
         procedureName:
@@ -46,9 +46,8 @@ class Pseudocode
 
     event: (event, options...) -> switch event
         when "setup"
-            [@viz, done] = options
+            [@viz] = options
             @viz.setBreakpoint(b, @procedureName) for b in @breakpoints
-            done() if done?
 
         when "editStart"
             @enableBreakpointSelection() if @editableBreakpoints
@@ -68,7 +67,7 @@ class Pseudocode
 
         when "render"
             [frame, type] = options
-            @render(frame) 
+            @render(frame)
 
 
     render: (frame) ->
@@ -122,7 +121,7 @@ class Pseudocode
 
     getBreakpointStatus: (n) ->
         return unless Vamonos.isNumber(n)
-        n = parseInt(n) 
+        n = parseInt(n)
 
         if n in @viz.getBreakpoints(@procedureName)
             return "on"

@@ -16,13 +16,13 @@ class Matrix
         showChanges:
             type: ["String", "Array"]
             defaultValue: "next"
-            description: 
+            description:
                 "type of frame shifts to highlight changes at, " +
                 "can be multiple types with an array of strings"
         cssRules:
             type: "Array"
             defaultValue: []
-            description: 
+            description:
                 "an array of quadruples of the form [row/column, " +
                 "comparison, index-variable-expr, css-class] " +
                 "where every row/column in the matrix that matches the " +
@@ -31,14 +31,14 @@ class Matrix
         showIndices:
             type: "Array"
             defaultValue: []
-            description: 
+            description:
                 "an array of doubles of the form [row/column, " +
                 "index-variable-expr] that show the text of the " +
                 "index-variable-expr on the row/column it corresponds to."
         cellFormat:
             type: "Function"
             defaultValue: undefined
-            description: 
+            description:
                 "A function that takes the raw contents of each entry and " +
                 "returns the html to be displayed."
 
@@ -65,17 +65,15 @@ class Matrix
 
     event: (event, options...) -> switch event
         when "setup"
-            [@viz, done] = options
+            [@viz] = options
 
-            @viz.registerVariable(@varName) 
+            @viz.registerVariable(@varName)
 
             # ensure array indices exist in the stash
             for [_,_,i,_] in @cssRules
                 @viz.registerVariable(v) for v in @virtualIndexDependents(i)
             for [_,i] in @showIndices
                 @viz.registerVariable(v) for v in @virtualIndexDependents(i)
-           
-            done() if done?
 
         when "editStart"
             @$container.hide()
@@ -135,7 +133,7 @@ class Matrix
 
         rowIndices = {}
         colIndices = {}
-        
+
         for [type, i] in @showIndices
             home = if type is "row" then rowIndices else colIndices
             target = "" + @virtualIndex(frame, i)
@@ -171,7 +169,7 @@ class Matrix
                 prevOp = null
             else prevOp = t
         return total
-                    
+
     virtualIndexDependents: (indexStr) ->
         return [] unless indexStr.match(/^([a-zA-Z_]+|\d+)((-|\+)([a-zA-Z_]+|\d+))*$/g)
         return indexStr.match(/([a-zA-Z_]+)/g)
@@ -247,7 +245,7 @@ class Matrix
         rowName = "" + rowName
         return unless rowName in @rows
         pos = @rows.indexOf(rowName)
-        
+
         @rows.splice(pos, 1)
 
         @$table.find("tr:nth-child(#{ pos + 2 })").remove()
@@ -261,7 +259,7 @@ class Matrix
         colName = "" + colName
         return unless colName in @cols
         pos = @cols.indexOf(colName)
-        
+
         @cols.splice(pos, 1)
 
         @$table.find("tr > :nth-child(#{ pos + 2 })").remove()
@@ -319,20 +317,20 @@ class Matrix
             for c in cols
                 res[r][c] = matrix[r][c]
         return res
-        
 
-    comparator: (str, a, b) -> 
+
+    comparator: (str, a, b) ->
         if Vamonos.isNumber(a) and Vamonos.isNumber(b)
-            res = parseInt(a) - parseInt(b) 
+            res = parseInt(a) - parseInt(b)
         else
             res = a.localeCompare(b)
-        
+
         switch str
             when "<"        then return res < 0
             when "<="       then return res <= 0
             when "=", "=="  then return res == 0
             when ">"        then return res > 0
             when ">="       then return res >= 0
-            
+
 
 @Vamonos.export { Widget: { Matrix } }

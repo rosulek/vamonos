@@ -4,8 +4,8 @@ class VarName
         "a buton to set the variable as a watchVar, and visual feedback for " +
         "editable variables in editMode."
 
-    @spec = 
-        container: 
+    @spec =
+        container:
             type: ["String", "jQuery Selector"]
             description:
                 "The id or a jQuery selector of the div in which this widget " +
@@ -15,7 +15,7 @@ class VarName
             description: "the name of variable that this widget represents"
         displayName:
             type: "String"
-            description: 
+            description:
                 "alternate varname to display - defaults to `varName`. " +
                 "subscript can be displayed as everything following an underscore."
             defaultValue: undefined
@@ -24,7 +24,7 @@ class VarName
             type: "Boolean"
             description: "whether to accept input for this variable in edit mode"
             defaultValue: false
-        watchable: 
+        watchable:
             type: "Boolean"
             description: "whether the variable can be set as a watchVar"
             defaultValue: true
@@ -56,10 +56,9 @@ class VarName
 
     event: (event, options...) -> switch event
         when "setup"
-            [@viz, done] = options
-            @viz.registerVariable(@varName) 
+            [@viz] = options
+            @viz.registerVariable(@varName)
             @viz.setWatchVar(@varName) if @watching
-            done() if done?
 
         when "editStart"
             @setWatchStatus()
@@ -111,5 +110,5 @@ class VarName
             @viz.setWatchVar(@varName)
         @setWatchStatus()
         return false
-        
+
 @Vamonos.export { Widget: { VarName }}

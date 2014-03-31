@@ -14,11 +14,11 @@ class CallStack
         procedureNames:
             type: "Object"
             defaultValue: {}
-            description: 
+            description:
                 "an object mapping procedure names (those in the Visualizer's " +
                 "'algorithm' argument) to their fully capitalized and formatted " +
                 "display forms."
-            example:  
+            example:
                     "procedureNames: {\n" +
                     "    main: \"DFS\",\n" +
                     "    visit: \"DFS-Visit\",\n" +
@@ -34,7 +34,7 @@ class CallStack
         ignoreMain:
             type: "Boolean"
             defaultValue: false
-            description: 
+            description:
                 "CallStack will not display calls to the `main` procedure when set. " +
                 "This is useful when you'd like to use `main` to set variables, or " +
                 "do other useful housekeeping."
@@ -47,7 +47,7 @@ class CallStack
         formatArgumentValues:
             type: "Object"
             defaultValue: {}
-            description: 
+            description:
                 "A mapping of arg-names to functions of arg-values to strings"
         formatReturnValue:
             type: "Object"
@@ -80,8 +80,7 @@ class CallStack
 
     event: (event, options...) -> switch event
         when "setup"
-            [@viz, done] = options
-            done() if done?
+            [@viz] = options
 
         when "render"
             [frame, type] = options
@@ -119,13 +118,13 @@ class CallStack
         newScrollTop = @$inner.scrollTop() - @$inner.offset().top \
                      - @$inner.height() + tgt.height() \
                      + tgt.offset().top + 1
-                    
+
         if type in @animate and newScrollTop > 0
             @$inner.animate { scrollTop: newScrollTop }, 500, =>
                 while stack.length < @$argRows.length
                     @$argRows.pop().remove()
                     @$procRows.pop().remove()
-        else 
+        else
             while stack.length < @$argRows.length
                 @$argRows.pop().remove()
                 @$procRows.pop().remove()
@@ -153,10 +152,10 @@ class CallStack
             else if v.constructor.name is 'Array'
                 "#{k}=#{k}"
             else
-                "#{k}=#{Vamonos.rawToTxt(v)}" 
+                "#{k}=#{Vamonos.rawToTxt(v)}"
         )
-            
-            
+
+
         return r.join(",") + "<span class='callstack-arrow'>&darr;</span>"
 
     retStr: (scope) ->

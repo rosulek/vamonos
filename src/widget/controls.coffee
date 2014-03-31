@@ -3,7 +3,7 @@ class Controls
     @description = "The Controls widget controls the Visualizer - switching " +
         "modes and frames."
 
-    @spec = 
+    @spec =
         container:
             type: ["String", "jQuery Selector"]
             description:
@@ -64,7 +64,7 @@ class Controls
 
         if @frameNumber
             @frameLabel = new ControlFrameLabel({ container: @$frameLabel })
-        
+
         if @slider
             @sliderObj = new ControlSlider({
                 container: @$slider,
@@ -74,7 +74,7 @@ class Controls
 
         if @buttons
             @buttonsObj = new ControlButtons({
-                container: @$buttons, 
+                container: @$buttons,
                 runStopButton: @runStopButton,
                 autoPlay: @autoPlay,
                 keyboardShortcuts: @keyboardShortcuts
@@ -108,8 +108,7 @@ class Controls
 
         switch event
             when "setup"
-                [viz,done] = options
-                done() if done?
+                [viz] = options
             when "setupEnd"
                 @$container.width(@$container.parent().width() + 1) if @expandWidth
             when "displayStart"
@@ -139,14 +138,14 @@ class ControlFrameLabel
         when "render"
             [frame, type] = options
             @writeLabel(frame._frameNumber, frame._numFrames)
- 
+
     writeLabel: (value, max) ->
         if value?
             @$frameLabel.html( "#{value} / #{max}" )
         else
             @$frameLabel.html( "stopped" )
-    
-        
+
+
 
 #===============================================================================
 #===============================================================================
@@ -182,7 +181,7 @@ class ControlButtons
             @visualizer.trigger("nextFrame")
             @stopPlaying()
         )
-        @$prevButton.on("click", => 
+        @$prevButton.on("click", =>
             @visualizer.trigger("prevFrame")
             @stopPlaying()
         )
@@ -210,12 +209,12 @@ class ControlButtons
         @playInterval = null
         @$playPauseButton.html(PLAY)
         @$playPauseButton.prop("title", "Start automatic playback of algorithm [shortcut: space bar]")
-                    
+
     event: (event, options...) -> switch event
         when "setup"
             [@visualizer] = options
             $("body").on("keydown.controlbuttons", (e) => @keyDownHandler(e) ) if @keyboardShortcuts
-        
+
         when "editStart"
             @$runStopButton.html(RUN)
             @$runStopButton.prop("title", "Execute the algorithm with current inputs/breakpoints/etc [shortcut: enter]")
@@ -250,7 +249,7 @@ class ControlButtons
             @prevButtonActive( frame._frameNumber isnt 1 )
 
 
-    keyDownHandler: (event) -> 
+    keyDownHandler: (event) ->
         return true if @visualizer.frozen
 
         if @mode is "display"
@@ -258,7 +257,7 @@ class ControlButtons
                 when 37 # left arrow
                     @$prevButton.trigger("click") unless @$prevButton.attr("disabled")
                     return false
-                    
+
                 when 39 # right arrow
                     @$nextButton.trigger("click") unless @$nextButton.attr("disabled")
                     return false
@@ -268,13 +267,13 @@ class ControlButtons
                     return false
 
                 when 27 # esc
-                    @$runStopButton.trigger("click") 
+                    @$runStopButton.trigger("click")
                     return false
 
         else
             switch event.keyCode
                 when 13 # enter
-                    @$runStopButton.trigger("click") 
+                    @$runStopButton.trigger("click")
                     return false
 
         return true
@@ -285,7 +284,7 @@ class ControlButtons
             @$playPauseButton.prop("title", "Start automatic playback of algorithm [shortcut: space bar]")
         else
             @$playPauseButton.attr("disabled", "true");
-            @$playPauseButton.prop("title", "")         
+            @$playPauseButton.prop("title", "")
 
     nextButtonActive: (active) ->
         if active
@@ -353,4 +352,3 @@ class ControlSlider
             @$slider.slider("option", "min",   1)
             @$slider.slider("option", "max",   frame._numFrames)
             @$slider.slider("option", "value", frame._frameNumber)
-

@@ -1,5 +1,5 @@
 class Hardcoded
-    @description = 
+    @description =
         "Hardcoded takes an object containing mappings of variable names to \n" +
         "default values.\n" +
         "\n" +
@@ -21,14 +21,14 @@ class Hardcoded
         "Note: setting `_callStack` as a watch var will break on procedure " +
         "calls and returns"
 
-    # Since Hardcoded has a non-standard constructor, it does not use 
+    # Since Hardcoded has a non-standard constructor, it does not use
     # Vamonos.handleArguments, and does not have a @spec.
 
     constructor: (@args = {}) ->
 
     event: (event, options...) -> switch event
         when "setup"
-            [@viz, done] = options
+            [@viz] = options
             for name, value of @args
                 if name is "breakpoints"
                     @setBreakpoints(value)
@@ -36,7 +36,6 @@ class Hardcoded
                     @setWatchVars(value)
                 else
                     @viz.setVariable(name, value, true)
-            done() if done?
 
         when "editStop"
             # put things in stash again
@@ -46,7 +45,7 @@ class Hardcoded
     setBreakpoints: (breakpoints) ->
         if breakpoints.constructor.name is 'Array'
             @viz.setBreakpoint(n, "main") for n in breakpoints
-        else 
+        else
             for context, points of breakpoints
                 @viz.setBreakpoint(n, context.proc) for n in points
 

@@ -237,17 +237,14 @@ class GraphDisplay
         merge.append("feMergeNode").attr("in", "colorblur")
         merge.append("feMergeNode").attr("in", "SourceGraphic")
 
-    # A widget that uses GraphDisplay will need to pass along the setup event
-    # in order to register vars from vertexLabels and edgeCssAttributes
     event: (event, options...) -> switch event
         when "setup"
-            [viz, done] = options
+            [viz] = options
             for klass, test of @edgeCssAttributes when typeof test is 'string'
                 viz.registerVariable(v) for v in test.split(/<?->?/)
             for label, values of @vertexLabels
                 for v in values when typeof v is 'string'
                     viz.registerVariable(v)
-                done() if done?
 
     draw: (graph, frame = {}) ->
         # if there is a hidden graph, show it

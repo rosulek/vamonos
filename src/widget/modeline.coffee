@@ -25,11 +25,10 @@ class ModeLine
 
     event: (event, options...) -> switch event
         when "setup"
-            [viz, done] = options
-            done() if done?
+            [viz] = options
         when "editStart"
             @$container.html(@editModeText)
         when "displayStart"
             @$container.html(@displayModeText)
-        
+
 @Vamonos.export { Widget: { ModeLine } }

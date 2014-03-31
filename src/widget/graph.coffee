@@ -69,10 +69,10 @@ class Graph extends Vamonos.Widget.GraphDisplay
 
     event: (event, options...) -> switch event
         when "setup"
-            [@viz, done] = options
+            [@viz] = options
             @registerVariables()
             @updateVariables()
-            super("setup", @viz, done) # displayWidget calls done()
+            super("setup", @viz)
 
         when "render"
             [frame, type] = options
