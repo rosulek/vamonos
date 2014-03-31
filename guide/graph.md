@@ -202,10 +202,11 @@ Finally, we can customize how the labels (and vertices) look with CSS.
 >         }
 >
 >         path.red {
->             stroke: "#FF7D7D"
+>             stroke: #FF7D7D;
 >         }
+>
 >         path.green {
->             stroke: "#FF7D7D"
+>             stroke: #92E894;
 >         }
 >     </style>
 
@@ -228,10 +229,10 @@ Now we have a fully functional Prim's MST algorithm visualization!
 >         font-style: italic;
 >     }
 >     path.red {
->         stroke: "#FF7D7D"
+>         stroke: #FF7D7D;
 >     }
 >     path.green {
->         stroke: "#FF7D7D"
+>         stroke: #92E894;
 >     }
 > </style>
 > <table class="vamonos">

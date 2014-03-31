@@ -4,26 +4,32 @@
     <script type="text/javascript" src="../../lib/vamonos-all.js"></script>
 
     <style type="text/css">
-        .vertex {
-            width: 40;
-            height: 30;
-        }
+    .vertex {
+        width: 40;
+        height: 30;
+    }
 
-        .vertex-contents {
-            font-size: .8em;
-        }
+    .vertex-contents {
+        font-size: .8em;
+    }
 
-        .vertex-ne-label, .vertex-nw-label {
-            font-weight: bold;
-        }
+    .vertex-ne-label, .vertex-nw-label {
+        font-weight: bold;
+    }
 
-        .vertex-sw-label {
-            font-style: italic;
-        }
+    .vertex-sw-label {
+        font-style: italic;
+    }
 
-        body {
-            text-align: center;
-        }
+    body {
+        text-align: center;
+    }
+    path.red {
+        stroke: #FF7D7D
+    }
+    path.green {
+        stroke: #92E894
+    }
     </style>
 
 </head><body>
@@ -131,23 +137,23 @@ var myviz = new Vamonos.Visualizer({
                     edit: function(vtx){ return vtx.name },
                     display: function(vtx){ return vtx.key },
                 },
-                sw: { 
-                    edit: function(vtx){return ""}, 
-                    display: function(vtx){return vtx.name} 
+                sw: {
+                    edit: function(vtx){return ""},
+                    display: function(vtx){return vtx.name}
                 },
                 ne: ['u','v'],
                 nw: ['r'],
             },
-            edgeLabel: [ "w", 1 ],
-            colorEdges: [
-                ["u->v", "#FF7D7D"],
-                [ function(edge){
+            edgeLabel: { w: 1 },
+            edgeCssAttributes: {
+                red: "u->v",
+                green: function(edge){
                     return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
-                        || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }
-                , "#92E894" ],
-            ],
+                        || (edge.source.pred ? edge.source.pred.id === edge.target.id : false)
+                },
+            },
             defaultGraph: new Vamonos.DataStructure.Graph({
-                vertices: [ 
+                vertices: [
                     {id: "v0", x: 17,  y: 10},
                     {id: "v1", x: 98,  y: 10},
                     {id: "v2", x: 176, y: 13},
@@ -177,8 +183,8 @@ var myviz = new Vamonos.Visualizer({
         with (this) {
             G.eachVertex(function(vtx){
 _(1);           u = vtx;
-_(2);           u.key = Infinity; 
-_(3);           u.pred = undefined; 
+_(2);           u.key = Infinity;
+_(3);           u.pred = undefined;
             });
 _(4);       r.key = 0;
 _(5);       Q = new Vamonos.DataStructure.Queue({
@@ -197,7 +203,7 @@ _(10);                  v.pred = u;
 _(11);                  v.key = G.edge(u,v).w;
                     }
                 })
-                
+
             }
         }
     },
