@@ -4,13 +4,13 @@
 
                        http://rosulek.github.io/vamonos
 
-                                Version: 1.2.1
-                             Released: 1-13-2014
+                                Version: 2.0.0
+                             Released: 4-8-2014
 
                               Licenced under MIT
                 http://www.opensource.org/licenses/mit-license.php
 
-            Copyright 2012-2013 Mike Rosulek & the Vamonos project team
+            Copyright 2012-2014 Mike Rosulek & the Vamonos project team
 
 ================================================================================
 
@@ -50,7 +50,7 @@ Science Foundation.
 
 The Vamonos project team:
 
-    Mike Rosulek (project leader) 
-    Brent Carmer 
-    Pat Kujawa (graduated) 
-    Eric Spaulding (graduated) 
+    Mike Rosulek (project leader)
+    Brent Carmer
+    Pat Kujawa (graduated)
+    Eric Spaulding (graduated)
