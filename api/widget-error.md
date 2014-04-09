@@ -25,7 +25,7 @@ are met.
 
 >     new Vamonos.Widget.Error({
 >         conditions: [
->             function(viz){ 
+>             function(viz){
 >                 var s = viz.getVariable("s");
 >                 var t = viz.getVariable("t");
 >                 if (s.id === t.id) {

@@ -21,33 +21,49 @@ GraphDisplay provides display functionality to widgets that might not need to us
 
 
 
- * **colorEdges** :: *Array* -- default value: `[]`
+ * **arrowLength** :: *Number* -- default value: `6`
 
-    provides a way to set edge coloring based on vertex variables or edge properties. takes an array of doubles of the form  `[ edge-predicate, color, [optional weight] ]`, where color is a hex color and edge-predicate is either a string of the form `'vertex1->vertex2'` or a function that takes an edge and returns a boolean. Also for added complexity and enjoyment, the color string can also be a function taking an edge and returning a color string or a color string and a width (if it returns an array).
+    the length of arrows in directed graphs
 
-    Example:
 
->     colorEdges: [
->         ['u->v', '#FF7D7D'],
->         [ function(edge){
->             return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
->                 || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }
->         , '#92E894' ],
->         [ 'w->t', function(e){ if (e.f > 10) return "blue"; } ],
->         [ 'w->x', function(e){ if (e.f < 10) return ["blue",10]; } ],
->     ]
+
+ * **arrowWidth** :: *Number* -- default value: `6`
+
+    the width of arrows in directed graphs
+
+
+
+ * **bezierCurviness** :: *Number* -- default value: `15`
+
+    the curviness of bezier curves in this graph
 
 
 
  * **containerMargin** :: *Number* -- default value: `30`
 
-    how close nodes can get to the container edge
+    how close vertices can get to the container edge
 
 
 
  * **draggable** :: *Boolean* -- default value: `true`
 
-    whether nodes can be moved
+    whether vertices can be moved
+
+
+
+ * **edgeCssAttributes** :: *Object* -- default value: `{}`
+
+    provides a way to change CSS classes of edges based upon the values of variables or the edges themselves. You provide a mapping of classnames to functions or strings. The function simply needs to take an edge and return a boolean (whether to apply the class). The string is a pairing of variable names in the form `'u->v'` or `'u<->v'` for undirected graphs.
+
+    Example:
+
+>     edgeCssAttributes: {
+>         green: function(edge){
+>             return (edge.target.pred === edge.source.name)
+>                 || (edge.source.pred === edge.target.name)
+>         },
+>         red: "u->v",
+>     }
 
 
 
@@ -65,7 +81,7 @@ GraphDisplay provides display functionality to widgets that might not need to us
 
  * **highlightChanges** :: *Boolean* -- default value: `true`
 
-    whether nodes will get the css class 'changed' when they are modified
+    whether vertices will get the css class 'changed' when they are modified
 
 
 
@@ -81,9 +97,32 @@ GraphDisplay provides display functionality to widgets that might not need to us
 
 
 
+ * **persistentDragging** :: *Boolean* -- default value: `true`
+
+    whether the positions resulting from dragging vertices are persistent across frames in display mode.
+
+
+
  * **resizable** :: *Boolean* -- default value: `true`
 
     whether the graph widget is resizable
+
+
+
+ * **styleEdges** :: *Array* -- optional
+
+    Provides a way to add styles to path objects. Functions must return an array whose first element is an attribute name, and second element is the value.
+
+    Example:
+
+>     styleEdges: [
+>         function(e){
+>             if (e.f !== undefined && (e.f > 0)) {
+>                 var width = 2 + e.f;
+>                 return ["stroke-width", width];
+>             }
+>         },
+>     ],
 
 
 
@@ -93,11 +132,17 @@ GraphDisplay provides display functionality to widgets that might not need to us
 
     Example:
 
->     vertexCssAttributes: { 
->         done: true, 
+>     vertexCssAttributes: {
+>         done: true,
 >         color: ['white', 'gray', 'black'],
 >         magic: function(vtx){ return "class-" + vtx.magicAttr },
 >     },
+
+
+
+ * **vertexHeight** :: *Number* -- default value: `30`
+
+    the height of vertices in the graph
 
 
 
@@ -116,6 +161,12 @@ GraphDisplay provides display functionality to widgets that might not need to us
 >         ne    : ['u', 'v'],
 >         nw    : ['s'],
 >     }
+
+
+
+ * **vertexWidth** :: *Number* -- default value: `40`
+
+    the width of vertices in the graph
 
 
 

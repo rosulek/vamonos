@@ -116,6 +116,11 @@ applies `f` to each vertex in the graph, ordered by `comp`
 
 if there is an edge from `source` to `target`, returns it. understands undirected graphs.
 
+## **edgeId**(`e`)
+ * `e`: an edge object
+
+returns a string identifying `e`
+
 ## **getEdges**()
 returns an array of all edges in the graph
 
@@ -154,6 +159,11 @@ removes the edge from `source` to `target`. understands directedness.
  * `v`: a vertex object containing an id field, or an id
 
 removes the vertex matching `v` and all related edges from the graph
+
+## **removeVertexName**(`name`)
+ * `name`: undefined
+
+removes `name` from the list of available vertex names
 
 ## **returnVertexName**(`n`)
  * `n`: string
