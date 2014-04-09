@@ -1,4 +1,4 @@
-class Graph extends Vamonos.Widget.GraphDisplay
+class Graph extends this.Vamonos.Widget.GraphDisplay
 
     @description: "The Graph widget provides graph input functionality. It " +
         "uses GraphDisplay for functionality that is not related to input."

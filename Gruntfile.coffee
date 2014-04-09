@@ -3,7 +3,7 @@ module.exports = (grunt) ->
         pkg: grunt.file.readJSON('package.json')
 
         coffee:
-            files: 
+            files:
                 src: [
                     'src/vamonos.coffee'
                     'src/data-structure/*'
@@ -15,9 +15,9 @@ module.exports = (grunt) ->
                 join: true
 
         less:
-            vamonos: 
-                files: 
-                    'lib/<%= pkg.name %>-demos.css' : 'src/less/vamonos-demos.less' 
+            vamonos:
+                files:
+                    'lib/<%= pkg.name %>-demos.css' : 'src/less/vamonos-demos.less'
                     'lib/<%= pkg.name %>.css' : 'src/less/vamonos.less'
 
         watch:
@@ -33,7 +33,7 @@ module.exports = (grunt) ->
                 options: { stderr: true, stdout: true }
             concat:
                 command: "cat header-all.js deps/jquery.min.js deps/jquery-ui.min.js " +
-                         "deps/jquery-jsplumb.js deps/jquery-qtip.min.js " +
+                         "deps/jquery-qtip.min.js " +
                          "deps/jquery.ui.touch-punch.js lib/vamonos.js " +
                          "deps/d3.min.js " +
                          "> lib/vamonos-all.js"
@@ -44,7 +44,7 @@ module.exports = (grunt) ->
                     cat generic-readme.txt dist-readme.txt > lib/vamonos/readme.txt
                     cd lib
                     cp vamonos.js vamonos-all.js vamonos.css vamonos
-                    cp -r ../deps vamonos 
+                    cp -r ../deps vamonos
                     zip -r vamonos.zip vamonos
                     rm -r vamonos
                     [ ! -e '../dist' ] && mkdir ../dist

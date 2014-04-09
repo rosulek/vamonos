@@ -81,7 +81,7 @@ makeInterface = (interObj, name) ->
     for [funcName, funcObj] in sortedByKey(interObj)
         pr "## **#{funcName}**("
         if funcObj.args?
-            pr ("`#{argName}`" for [argName, _] in funcObj.args).join(", ") 
+            pr ("`#{argName}`" for [argName, _] in funcObj.args).join(", ")
         pr ")\n"
 
         if funcObj.args?
@@ -101,7 +101,7 @@ makeArgSpec = (spec, name) ->
 
     for argName, specs of spec
         # Do not publish private constructor arguments
-        continue if /^_/.test argName 
+        continue if /^_/.test argName
         [required, doc] = argSpec(argName, specs)
         if required
             requiredArgs[argName] = doc
@@ -137,14 +137,14 @@ argSpec = (argName, specs) ->
         required = true
 
     if type.constructor.name is 'Array'
-        t = type.join("* | *")            
+        t = type.join("* | *")
     else
         t = type
     b "**#{argName}** :: *#{t}* -- #{r}"
     i description if description?
     if example?
         i "Example:"
-        code example 
+        code example
     return [required, ret.val]
 
 
@@ -154,7 +154,7 @@ index = (fileTypes) ->
     p mdHeader("Vamonos API Reference", "Vamonos API Reference")
 
     p "[Back](../index.html)"
-    
+
     for [ title, filesList ] in fileTypes
         h2 title if title.length
         for { name, fileName } in filesList
@@ -171,7 +171,7 @@ writeApiFile = (fileName, nameSpace, objectItself) ->
 
 #####################################################################
 
-unless fs.existsSync(targetDirName) 
+unless fs.existsSync(targetDirName)
     fs.mkdirSync(targetDirName)
 
 viz =  writeApiFile("visualizer", "", Vamonos.Visualizer)
