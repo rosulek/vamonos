@@ -66,7 +66,11 @@ class Graph
         return vtx.id if @vertices[vtx.id]?
         newVtx = {}
         newVtx.type = 'Vertex'
-        newVtx.name = vtx.name ? @nextVertexName()
+        if vtx.name?
+            @removeVertexName(vtx.name)
+            newVtx.name = vtx.name
+        else
+            newVtx.name = vtx.name ? @nextVertexName()
         newVtx.id   = vtx.id ? @nextVertexId()
         @vertices[newVtx.id] = newVtx
         for k, v of vtx when k not in ['type','name','id']
@@ -116,8 +120,11 @@ class Graph
     @interface.nextVertexId = description: "returns an unused vertex id"
     nextVertexId: () ->
         @_customVertexNum ?= 0
-        "#{@prefix ? "custom-"}vertex-#{@_customVertexNum++}"
-
+        for existingVtx in @getVertices()
+            newId = "#{@prefix ? "custom-"}vertex-#{@_customVertexNum++}"
+            if existingVtx.id == newId
+                return @nextVertexId()
+        return newId
 
     @interface.returnVertexName =
         args: [["n", "string"]]
@@ -127,6 +134,12 @@ class Graph
         @availableNames.unshift(n)
         @availableNames.sort()
 
+    @interface.removeVertexName =
+        args: [["name"]]
+        description: "removes `name` from the list of available vertex names"
+    removeVertexName: (name) ->
+        @_initAvailableNames()
+        @availableNames = @availableNames.filter((n) -> n isnt name)
 
     @interface.nextVertexName =
         description: "returns the next available vertex name"
@@ -153,6 +166,11 @@ class Graph
         targetId = @idify(target)
         @edges[sourceId]?[targetId] or not @directed and @edges[targetId]?[sourceId]
 
+    @interface.edgeId =
+        args: [["e", "an edge object"]]
+        description: "returns a string identifying `e`"
+    edgeId: (e) =>
+        e.source.id + (if @directed then "-arr-" else "-bi-") + e.target.id
 
     @interface.addEdge =
         args: [
@@ -308,7 +326,7 @@ class Graph
     collapseEdgesBy: (attr, func) ->
         while e = @nextEdgeMatching(attr)
             func(e)
-            @collapse(e) 
+            @collapse(e)
 
     nextEdgeMatching: (attr) ->
         edges = @getEdges()
@@ -322,9 +340,9 @@ class Graph
         console.log savedEdges
         restoredVertices = for v in savedVertices
             console.log "adding #{v.name}"
-            @addVertex(v) 
+            @addVertex(v)
         for edge in savedEdges
-            @addEdge(edge.source, edge.target, edge) 
+            @addEdge(edge.source, edge.target, edge)
         @removeVertex(vtx)
         delete @collapsedVertices[vtx.id]
         delete @collapsedEdges[vtx.id]
@@ -395,5 +413,16 @@ class Graph
 
         return s
 
+    # reconstruct a graph object from an object that only has vertices
+    # and edges but no methods
+    reconstruct: (graph) ->
+        @prefix = graph.prefix if graph.prefix?
+        @directed = graph.directed if graph.directed?
+        if graph.vertices?
+            @vertices = {}
+            @addVertex(vtx) for id, vtx of graph.vertices
+        if graph.edges?
+            for srcId, tObj of graph.edges
+                @addEdge(e.source, e.target, e) for trgId, e of tObj
 
 @Vamonos.export { DataStructure: { Graph } }

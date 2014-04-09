@@ -39,10 +39,16 @@ class DisjointSet
         e1Set = @find(e1)
         e2Set = @find(e2)
         return [] unless e1Set? and e2Set? and e1Set isnt e2Set
-        @guts[e1Set] = @guts[e1Set].concat(@guts[e2Set])
-        @guts[e2Set] = []
+        if @guts[e1Set].length > @guts[e2Set].length
+            @guts[e1Set] = @guts[e1Set].concat(@guts[e2Set])
+            @guts[e2Set] = []
+            newSet = @guts[e1Set]
+        else
+            @guts[e2Set] = @guts[e2Set].concat(@guts[e1Set])
+            @guts[e1Set] = []
+            newSet = @guts[e2Set]
         @update()
-        return @guts[e1Set]
+        return newSet
 
     @interface.numSets =
         description: "returns the max number of sets that have existed"

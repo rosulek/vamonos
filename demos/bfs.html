@@ -1,4 +1,5 @@
 <html><head>
+    <title>Breadth-First-Search</title>
 
     <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
 
@@ -7,42 +8,55 @@
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
     <style type="text/css">
-        .vertex {
-            width: 40;
-            height: 30;
-        }
+    .vertex {
+        width: 40;
+        height: 30;
+    }
 
-        .vertex-contents {
-            font-size: .8em;
-        }
+    .vertex-contents {
+        font-size: .8em;
+    }
 
-        .vertex-ne-label, .vertex-nw-label {
-            font-weight: bold;
-        }
+    .vertex-ne-label, .vertex-nw-label {
+        font-weight: bold;
+    }
 
-        .vertex-sw-label {
-            font-style: italic;
-        }
+    .vertex-sw-label {
+        font-style: italic;
+    }
 
-        .color-white { 
-            background: white; 
-        }
+    ellipse.color-white {
+        fill: white;
+    }
 
-        .color-gray {
-            background: #888; 
-        }
+    ellipse.color-gray {
+        fill: #888;
+    }
 
-        .color-black {
-            background: black;
-        }
+    ellipse.color-black {
+        fill: black;
+    }
 
-        .color-black .vertex-contents, .color-gray .vertex-contents { 
-            color: white; 
-        }
+    path.red {
+        stroke: #FF7D7D;
+    }
 
-        body {
-            text-align: center;
-        }
+    path.blue {
+        stroke: rgb(96,127,255);
+    }
+
+    path.green {
+        stroke: #92E894;
+    }
+
+    text.color-black, text.color-gray {
+        fill: white;
+        font-weight: bold;
+    }
+
+    body {
+        text-align: center;
+    }
     </style>
 
 </head><body>
@@ -76,7 +90,7 @@
 
             </div>
 
-        
+
         </td><td class="variable-widgets">
 
             <table class="variable-widgets">
@@ -85,13 +99,6 @@
                 </tr>
                 <tr><td><div id="q-var"></div></td>
                     <td><div id="queue"></div></td></tr>
-                <tr><td><div id="u-var"></div></td>
-                    <td><div id="u"></div></td>
-                </tr>
-                </tr>
-                <tr><td><div id="v-var"></div></td>
-                    <td><div id="v"></div></td>
-                </tr>
             </table>
 
         </td></tr>
@@ -121,27 +128,6 @@ var myviz = new Vamonos.Visualizer({
             varName: "G",
             inputVar: true,
         }),
-        new Vamonos.Widget.VarName({
-            container: "u-var",
-            varName: "u",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "u",
-            varName: "u",
-            attributes: ["name","color","d","pred"]
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "v-var",
-            varName: "v",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "v",
-            varName: "v",
-            attributes: ["name","color","d","pred"]
-        }),
 
         new Vamonos.Widget.VarName({
             container: "q-var",
@@ -155,13 +141,13 @@ var myviz = new Vamonos.Visualizer({
                 s: "v0"
             },
             vertexLabels: {
-                inner : { 
-                    edit: function(vtx){return vtx.name}, 
-                    display: function(vtx){return vtx.d} 
+                inner : {
+                    edit: function(vtx){return vtx.name},
+                    display: function(vtx){return vtx.d}
                 },
-                sw    : { 
-                    edit: function(vtx){return ""}, 
-                    display: function(vtx){return vtx.name} 
+                sw    : {
+                    edit: function(vtx){return ""},
+                    display: function(vtx){return vtx.name}
                 },
                 ne    : ["u", "v"],
                 nw    : ["s"],
@@ -169,15 +155,15 @@ var myviz = new Vamonos.Visualizer({
             vertexCssAttributes: {
                 color: ["white", "gray", "black"],
             },
-            colorEdges: [ 
-                ["u->v", "#FF7D7D"],
-                [ function(edge){
+            edgeCssAttributes: {
+                red   : "u->v",
+                green : function(edge){
                     return (edge.target.pred ? edge.target.pred === edge.source.name : false)
-                        || (edge.source.pred ? edge.source.pred === edge.target.name : false) }
-                , "#92E894" ],
-            ],
+                        || (edge.source.pred ? edge.source.pred === edge.target.name : false)
+                },
+            },
             defaultGraph: new Vamonos.DataStructure.Graph({
-                vertices: [ 
+                vertices: [
                     {id: "v0", x: 17,  y: 10},
                     {id: "v1", x: 98,  y: 10},
                     {id: "v2", x: 176, y: 13},

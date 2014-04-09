@@ -24,9 +24,11 @@ class ModeLine
         @$container = Vamonos.jqueryify(@container)
 
     event: (event, options...) -> switch event
+        when "setup"
+            [viz] = options
         when "editStart"
             @$container.html(@editModeText)
         when "displayStart"
             @$container.html(@displayModeText)
-        
+
 @Vamonos.export { Widget: { ModeLine } }

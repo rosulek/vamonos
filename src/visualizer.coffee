@@ -6,18 +6,18 @@ class Visualizer
         namespaces and variables, and runs the simulation itself.
         """
 
-    @spec = 
-        widgets: 
-            type: "Array" 
+    @spec =
+        widgets:
+            type: "Array"
             description: "a list of widgets for use in the visualization"
             defaultValue: []
-        algorithm: 
+        algorithm:
             type: ["Function", "Object"]
-            description: 
+            description:
                 "as a function, the 'main' procedure. as an object, an " +
                 "association of procedure names to functions."
             defaultValue: (->)
-        maxFrames: 
+        maxFrames:
             type: "Number"
             defaultValue: 250
             description: "the maximum number of snapshots"
@@ -25,6 +25,16 @@ class Visualizer
             type: "Boolean"
             defaultValue: false
             description: "whether to skip edit mode at load time"
+        maxCallStackSnapshotDepth:
+            type: "Number"
+            defaultValue: undefined
+            description: "the maximum depth of the callstack that snapshots " +
+                "will be taken at when it is set as a watchVar."
+        exportAfterEditMode:
+            type: "Boolean"
+            defaultValue: true
+            description: "whether the visualizer will update the location with " +
+                "the updated input after leaving edit mode every time"
 
     constructor: (args) ->
 
@@ -42,17 +52,18 @@ class Visualizer
 
         @tellWidgets("setup", @)
         @tellWidgets("setupEnd")
-
+        @tellWidgets("externalInput", @import())
         if @autoStart
-            @runAlgorithm() 
+            @runAlgorithm()
         else
-            @editMode() 
+            @editMode()
 
     # --------------- public methods ------------------ #
 
     trigger: (event, options...) -> switch event
         when "runAlgorithm" then @runAlgorithm()
         when "editMode"     then @editMode()
+        when "editStop"     then @tellWidgets("editStop")
         when "nextFrame"    then @nextFrame()
         when "prevFrame"    then @prevFrame()
         when "jumpFrame"    then @jumpFrame(options...)
@@ -108,7 +119,7 @@ class Visualizer
         @stash.currentScope     = @stash.inputScope
 
     getFrame: (num = 0, shallow = false) ->
-        r = 
+        r =
             _callStack   : (procName: c._procName, args: c._args for c in @stash.callStack)
             _frameNumber : num
             _prevLine    : @stash.currentScope._prevLine
@@ -133,7 +144,7 @@ class Visualizer
 
     cloneScopeToObj: (obj, procName, scope, bare = false, shallow) ->
         for k, v of scope
-            continue if typeof v is 'function' 
+            continue if typeof v is 'function'
             continue if k is 'global'
             continue if /^_/.test k
 
@@ -152,7 +163,7 @@ class Visualizer
                 (@returnStack ?= []).unshift(relevantScope) unless relevantScope.tailCall
                 @returnedProc  = relevantScope.procName
 
-        if typeof n is 'number' 
+        if typeof n is 'number'
             @stash.currentScope._nextLine = n
 
         reasons = @takeSnapshotReasons(n)
@@ -178,8 +189,8 @@ class Visualizer
         if typeof n is 'number'
             @stash.currentScope._prevLine = n
 
-        # reset the return stack if just in case we didn't take a snapshot 
-        # and reset it already. this prevents the call stack from accumulating 
+        # reset the return stack if just in case we didn't take a snapshot
+        # and reset it already. this prevents the call stack from accumulating
         # endlessly.
         @returnStack = [] if n is "call"
 
@@ -191,16 +202,23 @@ class Visualizer
         if typeof n is 'number'
             changes = @watchVarsChanged()
             (reasons ?= {}).watchVarsChanged = changes if changes?
-            (reasons ?= {}).procCalled       = @calledProc if @isWatchVar("_callstack") and @calledProc
-            (reasons ?= {}).procReturned     = @returnedProc if @isWatchVar("_callstack") and @returnedProc
+            (reasons ?= {}).procCalled       = @calledProc if @callStackSnapshotOk() and @calledProc
+            (reasons ?= {}).procReturned     = @returnedProc if @callStackSnapshotOk() and @returnedProc
 
-        if n is 'call' and @returnedProc and @isWatchVar("_callstack")
+        if n is 'call' and @returnedProc and @callStackSnapshotOk()
             (reasons ?= {}).procReturned = @returnedProc if @returnedProc
 
-        if n is "end" #and @isWatchVar("_callstack")
+        if n is "end"
             (reasons ?= {}).procReturned = "main"
 
         return reasons
+
+    # returns whether the callstack has been set as a watchvar, and whether the
+    # stack depth is less than the set limit
+    callStackSnapshotOk: ->
+        return unless @isWatchVar("_callstack")
+        return unless @stash.callStack.length <= (@maxCallStackSnapshotDepth ? Infinity)
+        return true
 
     watchVarsChanged: () ->
         return unless @watchVars.length
@@ -252,7 +270,7 @@ class Visualizer
 
             ret = procedure.call(newScope, (n)=>@line(n))
 
-            returnFrame = 
+            returnFrame =
                 procName    : @stash.currentScope._procName
                 args        : @stash.currentScope._args
                 returnValue : ret
@@ -276,6 +294,7 @@ class Visualizer
 
         @initializeStash()
         @tellWidgets("editStop") if @mode is "edit"
+        @export()
 
         @mode = "running"
 
@@ -320,7 +339,7 @@ class Visualizer
         @nextFrame()
 
     # ------------------ widget control methods ---------------------- #
-    
+
     tellWidgets: (event, options...) ->
         for widget in @widgets
             widget.event(event, options...)
@@ -351,6 +370,42 @@ class Visualizer
         return unless @mode is "display" and 1 <= n <= @frames.length
         @frameNumber = n
         @tellWidgets("render", @frames[@frameNumber-1], type)
+
+    # ----------------- export --------------------- #
+
+    # widgets call the @viz.allowExport(@varName) in order to mark
+    # variables as exportable.
+    allowExport: (varName) ->
+        (@exportableVariables ?= {})[varName] = true
+
+    export: ->
+        return unless @exportableVariables?
+        save = {}
+        for varName, varObj of @stash.inputScope when varObj?
+            continue unless varName of @exportableVariables
+            # placeholder for the graph datastructure to perform its
+            # own optimized exporting
+            if varObj.export? and varObj.export.constructor.name is 'Function'
+                save[varName] = varObj.export()
+            else
+                save[varName] = varObj
+        # overwrite the current history entry so as to not create an
+        # entry for every different input the user gives
+        window.history.replaceState({}, "",
+            window.location.origin +
+            window.location.pathname +
+            "#" + Vamonos.encode(save))
+        return "ok"
+
+    import: ->
+        return {} if @_alreadyImported?
+        s = window.location.hash
+        return {} unless s.length > 1 and s[0] is "#"
+        @_alreadyImported = yes
+        try
+            Vamonos.decode(s.substr(1))
+        catch error
+            {}
 
 
 @Vamonos.export { Visualizer }

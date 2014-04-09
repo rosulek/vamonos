@@ -1,20 +1,20 @@
 class Array
 
-    @description = 
+    @description =
         "The Array widget displays an array. It is a minimal wrapper " +
         "around the ArrayGuts widget."
 
     @dependencies = [ "Vamonos.Widget.ArrayGuts" ]
-    
+
     @spec =
         container:
             type: ["String", "jQuery Selector"]
-            description: 
+            description:
                 "The id or a jQuery selector of the div in which this widget " +
                 "should draw itself."
 
     constructor: (options) ->
-        
+
         Vamonos.handleArguments
             widgetObject    : this
             givenArgs       : options
@@ -25,7 +25,9 @@ class Array
         @$container.append(options.container)
         @guts = new Vamonos.Widget.ArrayGuts(options)
 
-    event: (args...) -> 
-        @guts.event(args...)
+    event: (event, options...) ->
+        @guts.event(arguments...)
+        if event is 'setup'
+            [viz] = options
 
 @Vamonos.export { Widget: { Array } }

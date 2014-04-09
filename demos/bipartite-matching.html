@@ -1,4 +1,5 @@
 <html><head>
+    <title>Bipartite Matching</title>
 
     <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
 
@@ -7,31 +8,41 @@
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
     <style type="text/css">
-        .vertex {
-            width: 40;
-            height: 30;
-        }
+    .vertex {
+        width: 40;
+        height: 30;
+    }
 
-        .vertex-contents {
-            font-size: .8em;
-        }
+    .vertex-contents {
+        font-size: .8em;
+    }
 
-        .vertex-sw-label {
-            font-style: italic;
-        }
+    .vertex-sw-label {
+        font-style: italic;
+    }
 
-        .vertex-ne-label, .vertex-nw-label {
-            font-weight: bold;
-            font-style: italic;
-        }
+    .vertex-ne-label, .vertex-nw-label {
+        font-weight: bold;
+        font-style: italic;
+    }
 
-        .vertex-contents {
-            font-weight: bold;
-        }
+    .vertex-contents {
+        font-weight: bold;
+    }
 
-        body {
-            text-align: center;
-        }
+    path.green {
+        fill: #B929e8;
+        stroke: #B929E8;
+    }
+
+    path.blue {
+        fill: #7A72FF;
+        stroke: #7A72FF;
+    }
+
+    body {
+        text-align: center;
+    }
     </style>
 
 </head><body>
@@ -123,12 +134,10 @@ var myviz = new Vamonos.Visualizer({
                 ne   : ["t"],
                 sw   : ["u", "v"],
             },
-            colorEdges: [
-                ["u->v", "#92E894"],
-                [ function(e){
-                    return (e.f !== undefined ? (e.f > 0) : false);
-                }, "#0000FF" ],
-            ],
+            edgeCssAttributes: {
+                green : "u->v",
+                blue  : function(e){return (e.f !== undefined ? (e.f > 0) : false)}
+            },
             defaultEdgeAttrs: {
                 c: 1,
             },
@@ -193,12 +202,9 @@ var myviz = new Vamonos.Visualizer({
                 nw   : ["s_f"],
                 ne   : ["t_f"],
             },
-            colorEdges: [
-                [ function(edge){
-                    return (edge.target.pred === edge.source.id)
-                  }
-                ,  "#FF7D7D"],
-            ]
+            edgeCssAttributes: {
+                blue  : function(edge){return (edge.target.pred === edge.source.id)}
+            },
         }),
 
         new Vamonos.Widget.Error({
@@ -220,13 +226,13 @@ var myviz = new Vamonos.Visualizer({
         main: function(_){
             with (this) {
 
-                // ResidualVtx :: Helper function that gets the equivalent 
+                // ResidualVtx :: Helper function that gets the equivalent
                 // vtx from the residual graph
                 var ResidualVtx = function(vtx) {
                     return G_f.vertex( G_f.prefix + vtx.id );
                 }
 
-                // UpdateResidualEdge :: helper function that updates the 
+                // UpdateResidualEdge :: helper function that updates the
                 // residual graph from an edge in the main one
                 var UpdateResidualEdge = function(e){
                     var uf = ResidualVtx(e.source);
@@ -241,7 +247,7 @@ var myviz = new Vamonos.Visualizer({
                         else
                             G_f.addEdge(uf,vf,{f:val});
                     } else {
-                        if (ef) 
+                        if (ef)
                             G_f.removeEdge(uf,vf);
                     }
                     // back edge
@@ -269,11 +275,9 @@ _(3);           G_f = ResidualGraph(G);
 
                 var done = false;
                 i = 0;
-                while (_(4), !done) {
-                    p = BFS(G_f,s_f,t_f);
-_(5);               if (!p.length) { done = true }
+                while (_(4), p = BFS(G_f,s_f,t_f), p.length) {
                     // get the flow for each edge on the path
-                    var flows = p.map(function(e){ return e.f });
+_(5);               var flows = p.map(function(e){ return e.f });
                     // cfp is the min flow for each edge on the path
                     cfp = Math.min.apply(null, flows);
                     // augment the flow in G along each edge of the path
@@ -297,7 +301,7 @@ _(10);                      e.f = e.f - cfp;
                     i++;
                 }
 _(11);          global.matches = 0;
-                G.eachNeighbor(s, function(u){ 
+                G.eachNeighbor(s, function(u){
                     e = G.edge(s,u);
                     global.matches += e.f;
                 })
@@ -344,7 +348,7 @@ var ResidualGraph = function(G){
 
 var BFS = function(G,s,t){
     var Q = [];
-    G.eachNeighbor(s, function(u){ 
+    G.eachNeighbor(s, function(u){
         u.pred = s.id;
         Q.push(u);
     });

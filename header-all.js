@@ -7,14 +7,14 @@
  * Licenced under MIT
  * http://www.opensource.org/licenses/mit-license.php
  *
- * Version: 1.2.0
- * Released: 2013-12-12
+ * Version: 1.2.1
+ * Released: 2014-01-13
  *
  * This file includes dependencies:
  *
- *      jQuery          1.10.1
+ *      jQuery          2.0.3
  *      jQuery UI       1.10.3
  *      jQuery.qtip     1.0.0-rc3
- *      jsPlumb         1.4.1
+ *      jsPlumb         1.5.5
  *
  */

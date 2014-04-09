@@ -1,4 +1,5 @@
 <html><head>
+    <title>Rod-Cutting Quiz</title>
 
     <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
 
@@ -89,12 +90,6 @@
             </div>
         </td><td class="variable-widgets">
             <table class="variable-widgets">
-                <tr><td><div id="k-var"></div></td>
-                    <td><div id="k"></div></td>
-                </tr>
-                <tr><td><div id="i-var"></div></td>
-                    <td><div id="i"></div></td>
-                </tr>
                 <tr><td><div id="price-var"></div></td>
                     <td><div id="price"></div></td>
                 </tr>
@@ -128,6 +123,7 @@ var myviz = new Vamonos.Visualizer({
             ignoreIndexZero: true,
             cssRules: [[">", "k", "shaded"]],
             showIndices: ["i", "k"],
+            firstCellBlank: true,
         }),
 
         new Vamonos.Widget.VarName({
@@ -160,27 +156,6 @@ var myviz = new Vamonos.Visualizer({
             cellFormat: function(x) { return x ? "["+x.join(",")+"]" : "" }
         }),
 
-        new Vamonos.Widget.VarName({
-            container: "i-var",
-            varName: "i",
-            watching: true,
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "i",
-            varName: "i",
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "k-var",
-            varName: "k",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "k",
-            varName: "k",
-        }),
-
         new Vamonos.Widget.Pseudocode("pseudocode"),
 
         new Vamonos.Widget.Controls({
@@ -188,7 +163,7 @@ var myviz = new Vamonos.Visualizer({
             expandWidth: true,
             slider: false,
         }),
-        
+
         new Vamonos.Widget.UserQuiz({
             condition: function(frame) {
                 return frame.k > 3 && frame._nextLine == 7 && frame.i == 1;
@@ -220,7 +195,6 @@ _(4);           global.opt[k] = 0;
 _(5);           global.sol[k] = null;
 _(6);           for (i=1; i<=k; _(6), i++) {
 _(7);               if (global.opt[k] < global.opt[k-i] + price[i]) {
-                        console.log("got here" + i);
 _(8);                   global.opt[k] = global.opt[k-i] + price[i];
 _(9);                   global.sol[k] = global.sol[k-i].concat([i]);
                     }

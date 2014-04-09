@@ -1,4 +1,5 @@
 <html><head>
+    <title>Prims's Minimum Spanning Tree</title>
 
     <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
 
@@ -7,26 +8,34 @@
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
     <style type="text/css">
-        .vertex {
-            width: 40;
-            height: 30;
-        }
+    .vertex {
+        width: 40;
+        height: 30;
+    }
 
-        .vertex-contents {
-            font-size: .8em;
-        }
+    .vertex-contents {
+        font-size: .8em;
+    }
 
-        .vertex-ne-label, .vertex-nw-label {
-            font-weight: bold;
-        }
+    .vertex-ne-label, .vertex-nw-label {
+        font-weight: bold;
+    }
 
-        .vertex-sw-label {
-            font-style: italic;
-        }
+    .vertex-sw-label {
+        font-style: italic;
+    }
 
-        body {
-            text-align: center;
-        }
+    path.red {
+        stroke: #bf906b;
+    }
+
+    path.blue {
+        stroke: #7a72ff;
+    }
+
+    body {
+        text-align: center;
+    }
     </style>
 
 </head><body>
@@ -62,10 +71,6 @@
                     <td><div id="graph"></div></td> </tr>
                 <tr><td><div id="q-var"></div></td>
                     <td><div id="queue"></div></td></tr>
-                <tr><td><div id="u-var"></div></td>
-                    <td><div id="u"></div></td> </tr>
-                <tr><td><div id="v-var"></div></td>
-                    <td><div id="v"></div></td>
                 </tr>
             </table>
 
@@ -74,34 +79,15 @@
 
 </body>
 <script type="text/javascript">
+
 var myviz = new Vamonos.Visualizer({
     widgets: [
         new Vamonos.Widget.Controls("controls"),
 
+        new Vamonos.Widget.Console(),
+
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode",
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "u-var",
-            varName: "u",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "u",
-            varName: "u",
-            attributes: ["name","key","pred"]
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "v-var",
-            varName: "v",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "v",
-            varName: "v",
-            attributes: ["name","key","pred"]
         }),
 
         new Vamonos.Widget.VarName({
@@ -114,7 +100,7 @@ var myviz = new Vamonos.Visualizer({
             varName: "Q",
             showLabel: false,
             displayOnly: true,
-            cellFormat: function (v) { 
+            cellFormat: function (v) {
                 if (v) {
                     var key = (v.key == Infinity ? "\u221E" : v.key);
                     return v.name + " : " + key;
@@ -139,22 +125,17 @@ var myviz = new Vamonos.Visualizer({
                     edit: function(vtx){ return vtx.name },
                     display: function(vtx){ return vtx.key },
                 },
-                sw: { 
-                    edit: function(vtx){return ""}, 
-                    display: function(vtx){return vtx.name} 
-                },
                 ne: ['u','v'],
                 nw: ['r'],
             },
             edgeLabel: "w",
             defaultEdgeAttrs: { w: 1 },
-            colorEdges: [
-                ["u->v", "#FF7D7D"],
-                [ function(edge){
+            edgeCssAttributes: {
+                red  : "u->v",
+                blue : function(edge){
                     return (edge.target.pred === edge.source.name)
                         || (edge.source.pred === edge.target.name) }
-                , "#276CFF" ],
-            ],
+            },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: false,
                 prefix: "",
@@ -211,8 +192,8 @@ var myviz = new Vamonos.Visualizer({
         with (this) {
             G.eachVertex(function(vtx){
 _(1);           u = vtx;
-_(2);           u.key = Infinity; 
-_(3);           u.pred = undefined; 
+_(2);           u.key = Infinity;
+_(3);           u.pred = undefined;
             });
 _(4);       r.key = 0;
 _(5);       Q = new Vamonos.DataStructure.Queue({
@@ -232,7 +213,7 @@ _(11);                  v.key = G.edge(u,v).w;
                         Q.sort();
                     }
                 })
-                
+
             }
         }
     },

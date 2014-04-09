@@ -1,4 +1,5 @@
 <html><head>
+    <title>Max Flow</title>
 
     <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
 
@@ -7,30 +8,38 @@
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
     <style type="text/css">
-        .vertex {
-            width: 40;
-            height: 30;
-        }
+    .vertex {
+        width: 40;
+        height: 30;
+    }
 
-        .vertex-contents {
-            font-size: .8em;
-        }
+    .vertex-contents {
+        font-size: .8em;
+    }
 
-        .vertex-sw-label {
-            font-style: italic;
-        }
+    .vertex-sw-label {
+        font-style: italic;
+    }
 
-        .vertex-ne-label, .vertex-nw-label {
-            font-weight: bold;
-        }
+    .vertex-ne-label, .vertex-nw-label {
+        font-weight: bold;
+    }
 
-        .vertex-contents {
-            font-weight: bold;
-        }
+    text.vertex-contents {
+        font-weight: bold;
+    }
 
-        body {
-            text-align: center;
-        }
+    path.green {
+        stroke: #92E894;
+    }
+
+    path.red {
+        stroke: #FF7D7D;
+    }
+
+    body {
+        text-align: center;
+    }
     </style>
 
 </head><body>
@@ -48,8 +57,7 @@
                     for each edge (u,v) &in; G.E
                         (u,v).f = 0
                     G<sub>f</sub> = ResidualGraph(G)
-                    while there is an augmenting path in G
-                        p = AugmentingPath(G,s,t)
+                    while p = AugmentingPath(G,s,t)
                         c<sub><i>f</i></sub>(p) = min { c<sub><i>f</i></sub>(u,v) : (u,v) &in; p }
                         for each edge (u,v) in p
                             if (u,v) &in; G.E
@@ -87,6 +95,7 @@ var i = 0;
 
 var myviz = new Vamonos.Visualizer({
     widgets: [
+
         new Vamonos.Widget.Controls("controls"),
 
         new Vamonos.Widget.Pseudocode({
@@ -100,7 +109,7 @@ var myviz = new Vamonos.Visualizer({
             inputVar: true,
         }),
 
-        new Vamonos.Widget.Graph({
+        window.g = new Vamonos.Widget.Graph({
             varName: "G",
             container: "graph-g",
             inputVars: {
@@ -121,17 +130,28 @@ var myviz = new Vamonos.Visualizer({
                 },
             },
             defaultEdgeAttrs: { c: 1 },
-            colorEdges: [
-                ["u->v", "#92E894"],
-                [ function(e){ if (e.f !== undefined && (e.f > 0)) return true; }, 
-                  function(e){ 
-                      var percent = e.f / e.c;
-                      var s = 255 * (1 - percent);
-                      var color = Vamonos.rgbToHex(s,s,255);
-                      var width = 2 + e.f;
-                      return [color,width];
-                  }
-                ],
+            edgeCssAttributes: { green: "u->v" },
+            styleEdges: [
+                function(e){
+                    if (e.f !== undefined && (e.f > 0)) {
+                        var r = 96,
+                            g = 127,
+                            b = 255,
+                            scale = d3.scale.linear()
+                                      .domain([0, e.c])
+                                      .range([255, r]),
+                            color = Vamonos.rgbToHex(scale(e.f), scale(e.f), b);
+                        return ["stroke", color];
+                    }
+                },
+                function(e){
+                    if (e.f !== undefined && (e.f > 0)) {
+                        var scale = d3.scale.linear()
+                                      .domain([0, 5])
+                                      .range([2, 8]);
+                        return ["stroke-width", scale(e.f)];
+                    }
+                },
             ],
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: true,
@@ -183,12 +203,9 @@ var myviz = new Vamonos.Visualizer({
                 nw   : ["s_f"],
                 ne   : ["t_f"],
             },
-            colorEdges: [
-                [ function(edge){
-                    return (edge.target.pred === edge.source.id)
-                  }
-                ,  "#FF7D7D"],
-            ]
+            edgeCssAttributes: {
+                red : function(edge){return (edge.target.pred === edge.source.id)},
+            },
         }),
 
         new Vamonos.Widget.Error({
@@ -210,13 +227,13 @@ var myviz = new Vamonos.Visualizer({
         main: function(_){
             with (this) {
 
-                // ResidualVtx :: Helper function that gets the equivalent 
+                // ResidualVtx :: Helper function that gets the equivalent
                 // vtx from the residual graph
                 var ResidualVtx = function(vtx) {
                     return G_f.vertex( G_f.prefix + vtx.id );
                 }
 
-                // UpdateResidualEdge :: helper function that updates the 
+                // UpdateResidualEdge :: helper function that updates the
                 // residual graph from an edge in the main one
                 var UpdateResidualEdge = function(e){
                     var uf = ResidualVtx(e.source);
@@ -231,7 +248,7 @@ var myviz = new Vamonos.Visualizer({
                         else
                             G_f.addEdge(uf,vf,{f:val});
                     } else {
-                        if (ef) 
+                        if (ef)
                             G_f.removeEdge(uf,vf);
                     }
                     // back edge
@@ -259,25 +276,23 @@ _(3);           G_f = ResidualGraph(G);
 
                 var done = false;
                 i = 0;
-                while (_(4), !done) {
-                    p = BFS(G_f,s_f,t_f);
-_(5);               if (!p.length) { done = true }
-_(6);               // get the flow for each edge on the path
+                while (_(4), p = BFS(G_f,s_f,t_f), p.length) {
+_(5);               // get the flow for each edge on the path
                     var flows = p.map(function(e){ return e.f });
                     // cfp is the min flow for each edge on the path
                     cfp = Math.min.apply(null, flows);
                     // augment the flow in G along each edge of the path
                     p.map(function(pEdge){
-_(7);                   u = G.vertex(pEdge.source.oldId);
+_(6);                   u = G.vertex(pEdge.source.oldId);
                         v = G.vertex(pEdge.target.oldId);
                         uf = ResidualVtx(u);
                         vf = ResidualVtx(v);
                         e = G.edge(u,v);
-                        if (_(8), e) {
-_(9);                       e.f = e.f + cfp;
+                        if (_(7), e) {
+_(8);                       e.f = e.f + cfp;
                         } else {
-_(10);                      e = G.edge(v,u);
-_(11);                      e.f = e.f - cfp;
+_(9);                       e = G.edge(v,u);
+_(10);                      e.f = e.f - cfp;
                         }
                         // update the residual graph
                         UpdateResidualEdge(e);
@@ -286,8 +301,8 @@ _(11);                      e.f = e.f - cfp;
                     u = v = undefined;
                     i++;
                 }
-_(12);          global.maxflow = 0;
-                G.eachNeighbor(s, function(u){ 
+_(11);          global.maxflow = 0;
+                G.eachNeighbor(s, function(u){
                     e = G.edge(s,u);
                     global.maxflow += e.f;
                 })
@@ -334,7 +349,7 @@ var ResidualGraph = function(G){
 
 var BFS = function(G,s,t){
     var Q = [];
-    G.eachNeighbor(s, function(u){ 
+    G.eachNeighbor(s, function(u){
         u.pred = s.id;
         Q.push(u);
     });

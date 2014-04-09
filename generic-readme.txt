@@ -4,8 +4,8 @@
 
                        http://rosulek.github.io/vamonos
 
-                                Version: 1.2.0
-                             Released: 12-12-2013
+                                Version: 1.2.1
+                             Released: 1-13-2014
 
                               Licenced under MIT
                 http://www.opensource.org/licenses/mit-license.php

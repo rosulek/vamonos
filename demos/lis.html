@@ -1,4 +1,5 @@
 <html><head>
+    <title>Longest Increasing Subsequence</title>
 
     <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
 
@@ -42,10 +43,10 @@
                 <tr><td><div id="A-var"></div></td>
                     <td><div id="A"></div></td>
                 </tr>
-                <tr><td><div id="sol-var"></div></td>
-                    <td><div id="sol"></div></td></tr>
                 <tr><td><div id="opt-var"></div></td>
                     <td><div id="opt"></div></td></tr>
+                <tr><td><div id="sol-var"></div></td>
+                    <td><div id="sol"></div></td></tr>
                 </tr>
                 <tr><td><div id="best-var"></div></td>
                     <td><div id="best"></div></td>
@@ -74,6 +75,7 @@ var myviz = new Vamonos.Visualizer({
             ignoreIndexZero: true,
             cssRules: [[">", "k", "shaded"]],
             showIndices: ["i", "k"],
+            firstCellBlank: true,
         }),
 
         new Vamonos.Widget.VarName({

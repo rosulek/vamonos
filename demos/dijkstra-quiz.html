@@ -1,5 +1,5 @@
 <html><head>
-    <title>Dijkstra's Algorithm</title>
+    <title>Dijkstra's Algorithm Quiz</title>
 
     <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
 
@@ -17,8 +17,19 @@
     }
 
     .vertex-sw-label {
-        font-style: italic;
         font-size: .8em;
+        font-family: serif;
+    }
+
+    ellipse.done {
+        fill: #bbb;
+    }
+
+    ellipse.ok {
+        -webkit-box-shadow: 0px 0px 10px yellow;
+        -moz-box-shadow: 0px 0px 10px yellow;
+        box-shadow: 0px 0px 10px yellow;
+        fill: yellow;
     }
 
     path.green {
@@ -29,8 +40,18 @@
         stroke: #FF7D7D;
     }
 
-    ellipse.vertex.done {
-        fill: #bbb;
+    span.bad {
+        color: red;
+        font-weight: bold;
+    }
+
+    span.good {
+        color: blue;
+        font-weight: bold;
+    }
+
+    text.color-black, text.color-gray {
+        color: white;
     }
 
     body {
@@ -54,6 +75,7 @@
                         u.d = &#x221E;
                         u.pred = null
                         u.done = false
+                        u.timesRelaxed = 0
                     s.d = 0
                     Q = G.V
                     while Q &ne; &empty;
@@ -67,6 +89,7 @@
                     if u.d + G.edge(u,v).w &lt; v.d
                         v.d = u.d + G.edge(u,v).w
                         v.pred = u
+                        v.timesRelaxed += 1
                 </div>
 
             </div>
@@ -83,6 +106,10 @@
         </td></tr>
 
     </table>
+    <p>
+        Create a graph where a vertex gets relaxed at least 5 times.
+    </p>
+    <div id="result"></div>
 </body>
 <script type="text/javascript">
 var myviz = new Vamonos.Visualizer({
@@ -103,11 +130,13 @@ var myviz = new Vamonos.Visualizer({
             }
         }),
 
-        new Vamonos.Widget.Pseudocode("pseudocode-main"),
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-main",
+            breakpoints: [11],
+        }),
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-relax",
-            breakpoints: "all",
             procedureName: "relax",
         }),
 
@@ -121,7 +150,31 @@ var myviz = new Vamonos.Visualizer({
             container: "q-var",
             varName: "global::Q",
             displayName: "Q",
-            watching: true,
+        }),
+
+        new Vamonos.Widget.ResultProperty({
+            G: function(G){
+                var vs = G.getVertices();
+                var ok = undefined;
+                var text = "";
+                for (var i = 0; i < vs.length; i++) {
+                    if (vs[i].timesRelaxed !== undefined && vs[i].timesRelaxed >= 5) {
+                        ok = vs[i];
+                        break;
+                    }
+                }
+                if (ok !== undefined) {
+                    text = "<span class='good'>" +
+                           "Great job! Vertex " + ok.name +
+                           " was relaxed " + ok.timesRelaxed + " times." +
+                           "</span>";
+                } else {
+                    text = "<span class='bad'>" +
+                           "No vertex relaxed 5 times. Try again!" +
+                           "</span>";
+                }
+                $("#result").html(text);
+            },
         }),
 
         new Vamonos.Widget.Graph({
@@ -140,6 +193,11 @@ var myviz = new Vamonos.Visualizer({
             },
             vertexCssAttributes: {
                 done: true,
+                ok: function(vtx){
+                    if (vtx.timesRelaxed !== undefined && vtx.timesRelaxed >= 5) {
+                        return "ok"
+                    }
+                }
             },
             edgeLabel: "w",
             defaultEdgeAttrs: { w: 1 },
@@ -153,7 +211,6 @@ var myviz = new Vamonos.Visualizer({
             },
 
             defaultGraph: new Vamonos.DataStructure.Graph({
-                //directed: true,
                 vertices: [
                     {id: "v0", x: 17,  y: 10},
                     {id: "v1", x: 98,  y: 10},
@@ -186,14 +243,22 @@ var myviz = new Vamonos.Visualizer({
         main: function(_){
             with (this) {
                 G.eachVertex(function(vtx){
-_(1);               u = vtx;
-_(2);               u.d = Infinity;
-_(3);               u.pred = undefined;
-_(4);               u.done = false;
+                    _(1);
+                    u = vtx;
+                    _(2);
+                    u.d = Infinity;
+                    _(3);
+                    u.pred = undefined;
+                    _(4);
+                    u.done = false;
+                    _(5);
+                    u.timesRelaxed = 0;
                 });
 
-_(5);           s.d = 0;
-_(6);           global.Q = new Vamonos.DataStructure.Queue({
+                _(5);
+                s.d = 0;
+                _(6);
+                global.Q = new Vamonos.DataStructure.Queue({
                     initialArray: G.getVertices(),
                     comparator: function(a,b){ return a.d - b.d },
                 });
@@ -213,9 +278,14 @@ _(11);                  relax({u:u,v:v,G:G});
 
         relax: function(_){
             with (this) {
-                if (_(1), u.d + G.edge(u,v).w < v.d) {
-_(2);               v.d = u.d + G.edge(u,v).w; global.Q.sort();
-_(3);               v.pred = u.name;
+                if (_(1), u.d + (+G.edge(u,v).w) < v.d) {
+                    _(2);
+                    v.d = u.d + (+G.edge(u,v).w); global.Q.sort();
+                    console.log(v.d);
+                    _(3);
+                    v.pred = u.name;
+                    _(4);
+                    v.timesRelaxed += 1;
                 }
             }
         }

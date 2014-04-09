@@ -3,8 +3,8 @@ class VarDisplay
     @description = "VarDisplay allows viewing of the contents of variables, and " +
         "if they are objects, their attributes."
 
-    @spec = 
-        container: 
+    @spec =
+        container:
             type: ["String", "jQuery Selector"]
             description:
                 "The id or a jQuery selector of the div in which this widget " +
@@ -15,16 +15,16 @@ class VarDisplay
         attributes:
             type: "Array"
             defaultValue: undefined
-            description: 
+            description:
                 "if the variable is an object, an array of strings representing " +
                 "which object attributes to show"
         showChanges:
             type: ["String", "Array"]
             defaultValue: "next"
-            description: 
+            description:
                 "type of frame shifts to highlight changes at, can be multiple " +
                 "types with an array of strings"
-    
+
     constructor: (args) ->
 
         Vamonos.handleArguments
@@ -38,9 +38,8 @@ class VarDisplay
     event: (event, options...) -> switch event
         when "setup"
             [@viz] = options
-
             @viz.registerVariable(@varName)
-        
+
         when "editStart"
             @container.empty()
 
@@ -53,7 +52,7 @@ class VarDisplay
 
     showVars: (frame, type) ->
         if not frame[@varName]?
-            newstr = "-" 
+            newstr = "-"
         else if @attributes?
             if type in @showChanges
                 newstr = Vamonos.formatObject(frame[@varName], @attributes, @oldval)
@@ -65,12 +64,12 @@ class VarDisplay
 
         oldstr = @container.html()
 
-        if newstr isnt oldstr 
+        if newstr isnt oldstr
             if type in @showChanges
                 if @dontShowChange
                     @container.removeClass("changed")
                 else
-                    @container.addClass("changed") 
+                    @container.addClass("changed")
                 @container.html(newstr)
                 dup = @container.clone()
                 @container.replaceWith( dup )
@@ -84,12 +83,12 @@ class VarDisplay
             @container.children().removeClass("changed")
 
         @dontShowChange = undefined
-        @oldval = frame[@varName] ? { dummyObj: true } 
+        @oldval = frame[@varName] ? { dummyObj: true }
 
     # maintains consistent size
     adjustHeight: () ->
         if @container.height() > (@maxHeight ? 0)
-            @maxHeight = @container.height() 
+            @maxHeight = @container.height()
         else
             @container.css("min-height",@maxHeight)
 

@@ -19,6 +19,7 @@ vamonos/
 │                               : import necessary dependencies themselves.
 │
 └── deps/
+    ├── d3.js
     ├── jquery-jsplumb.js
     ├── jquery.min.js
     ├── jquery-qtip.min.js
@@ -51,6 +52,70 @@ We also recommend deconstructing some of our pre-made demos, available at:
 ================================================================================
                              Version History
 ================================================================================
+
+v1.2.1 : released 1-13-2014
+---------------------------
+
+New Demos
+    * Stoogesort 
+    * Bellman-Ford Shortest Path 
+    * Krustal's Minimum Spanning Tree 
+    * Strongly Connected Components 
+
+New Features
+    * Created disjoint set data structure
+    * Visualizer: maxCallStackSnapshotDepth: set the max depth that 
+      callstack snapshots will be taken at when it is set as a watchvar
+    * Graph data structure - eachVertexBy and eachEdgeBy can take custom 
+      comparators
+    * Graph vertexCssAttributes can take a function
+    * Added tablet support
+
+Bug Fixes
+    * Graph gets hidden instead of tore down when it goes out of scope
+    * Edges in directed graphs reuse the jsplumb connection when 
+      switching direction
+    * Added Vamonos.createNColorClasses
+    * API: Show default values that are functions as `[function]` instead
+      of `undefined`.
+    * Removed extra spin through loop in maxflow and bipartite matching
+      demos.
+    * The setup event sends widgets a callback that they call when they 
+      are done setting up. this is to allow jsPlumb to load 
+      asynchronously.
+    * Fixed: Creating a potential edge that needed a new connection would 
+      cause all the endpoints on the source vertex to flip 180 degrees
+    * Cloned undirected graphs had edges that weren't accessible from
+      both edge(source,target) and edge(target,source)
+    * Updated jsPlumb to 1.5.5 and jQuery to 2.0.3
+
+
+v1.2.0 : released 12-14-2013
+----------------------------
+
+Breaking Changes:
+    * Graph: edgeLabel is no longer used for setting default edge attr values
+
+Changes:
+    * created a page that lists all of our demos - demos/index.html
+    * mergesort demo
+    * dialed in ford-fulkerson
+    * api is sorted alphabetically
+    * new array "showCellNumber" option - now you can turn off the
+      numbers above each array element (nice for queues)
+    * pseudocode uses monospace font
+    * subscript available in VarName and Graph variables as "name_sub"
+    * demos got prettier
+
+Bugfixes:
+    * VarDisplay and Array maintain consistent height
+    * arrays that ignore index zero can come in and out of scope
+    * graph has 'showChanges' option
+    * graph now prevents creation of nodes outside graph container
+    * going to display mode after a graph element was selected caused
+      strange resizing of graph
+    * bidirectional edges in directed graphs got some fixes
+
 
 v1.1.0 : released 11-14-2013
 ----------------------------

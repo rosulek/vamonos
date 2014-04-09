@@ -3,23 +3,23 @@ class UserQuiz
     @spec =
         question:
             type: ["String", "Function"]
-            description: 
+            description:
                 "either a string or a function that takes a frame and returns a " +
-                "string" 
+                "string"
         answer:
             type: ["String", "Function"]
-            description: 
+            description:
                 "either a string or a function that takes a frame and returns a " +
-                "string" 
+                "string"
         condition:
             type: "Function"
-            description: 
+            description:
                 "a function taking the current frame, returning a boolean, " +
                 "used to determine when to ask a question"
         title:
             type: ["String", "Function"]
             defaultValue: undefined
-            description: 
+            description:
                 "the title of the quiz. either as a plain string or as a function " +
                 "that takes the current frame as an argument and returns a string."
 
@@ -54,8 +54,8 @@ class UserQuiz
     event: (event, options...) -> switch event
         when "setup"
             [@visualizer] = options
-            $("body").append(@$dialog)  
-    
+            $("body").append(@$dialog)
+
         when "displayStart"
             @currentAnswer = null
             @currentFrame  = null
@@ -100,7 +100,7 @@ class UserQuiz
             setTimeout(
                 ( => @$dialog.dialog("close"); @visualizer.frozen = false),
                 1000)
-            
+
         else
             @$feedback.addClass("wrong-answer")
             @$feedback.html("&#x2717; Sorry, that's not right!")

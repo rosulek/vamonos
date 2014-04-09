@@ -14,11 +14,11 @@ class CallStack
         procedureNames:
             type: "Object"
             defaultValue: {}
-            description: 
+            description:
                 "an object mapping procedure names (those in the Visualizer's " +
                 "'algorithm' argument) to their fully capitalized and formatted " +
                 "display forms."
-            example:  
+            example:
                     "procedureNames: {\n" +
                     "    main: \"DFS\",\n" +
                     "    visit: \"DFS-Visit\",\n" +
@@ -34,7 +34,7 @@ class CallStack
         ignoreMain:
             type: "Boolean"
             defaultValue: false
-            description: 
+            description:
                 "CallStack will not display calls to the `main` procedure when set. " +
                 "This is useful when you'd like to use `main` to set variables, or " +
                 "do other useful housekeeping."
@@ -44,6 +44,16 @@ class CallStack
             description:
                 "An array of argument names `\['arg1','arg2'\]` that should only " +
                 "show their name in the Call Stack."
+        formatArgumentValues:
+            type: "Object"
+            defaultValue: {}
+            description:
+                "A mapping of arg-names to functions of arg-values to strings"
+        formatReturnValue:
+            type: "Object"
+            defaultValue: {}
+            description: "A mapping of proc names to functions from a " +
+                "return-value to a string"
 
     constructor: (args) ->
 
@@ -108,13 +118,13 @@ class CallStack
         newScrollTop = @$inner.scrollTop() - @$inner.offset().top \
                      - @$inner.height() + tgt.height() \
                      + tgt.offset().top + 1
-                    
+
         if type in @animate and newScrollTop > 0
             @$inner.animate { scrollTop: newScrollTop }, 500, =>
                 while stack.length < @$argRows.length
                     @$argRows.pop().remove()
                     @$procRows.pop().remove()
-        else 
+        else
             while stack.length < @$argRows.length
                 @$argRows.pop().remove()
                 @$procRows.pop().remove()
@@ -137,19 +147,25 @@ class CallStack
         r = (for k,v of scope.args when not /^_/.test(k)
             if k in @ignoreArgumentValues
                 k
+            else if k of @formatArgumentValues
+                "#{k}=#{ @formatArgumentValues[k](v) }"
             else if v.constructor.name is 'Array'
                 "#{k}=#{k}"
             else
-                "#{k}=#{Vamonos.rawToTxt(v)}" 
+                "#{k}=#{Vamonos.rawToTxt(v)}"
         )
-            
-            
+
+
         return r.join(",") + "<span class='callstack-arrow'>&darr;</span>"
 
     retStr: (scope) ->
         return "&nbsp;" unless "returnValue" of scope
-        ret = Vamonos.arrayify(scope.returnValue)
-        "<span class='callstack-arrow'>&uarr;</span>" + (Vamonos.rawToTxt(r) for r in ret).join(",")
+        if scope.procName of @formatReturnValue
+            s = @formatReturnValue[scope.procName](scope.returnValue)
+        else
+            ret = Vamonos.arrayify(scope.returnValue)
+            s = (Vamonos.rawToTxt(r) for r in ret).join(",")
+        return "<span class='callstack-arrow'>&uarr;</span>" + s
 
 
 @Vamonos.export { Widget: { CallStack } }

@@ -14,7 +14,7 @@ class QTipTutorial
     @spec =
         states:
             type: "Array"
-            description: 
+            description:
                 "array of objects of the format `{ target, dir, tooltip }` where " +
                 "target is a jQuery selector for where you want the tooltip to " +
                 "appear, tooltip is the message to be displayed."
@@ -41,8 +41,6 @@ class QTipTutorial
         @$tipNextLink.on("click.qtiptutorial", => @nextState() )
 
 
-    setup: () ->
-
     doState: (newStateIndex) ->
         @$currTarget.qtip("destroy") if @$currTarget?
         return if newStateIndex < 0
@@ -66,7 +64,6 @@ class QTipTutorial
             content:  @$tipContents
         })
 
-    event: ->
     setup: ->
 
     nextState: ->
@@ -74,7 +71,7 @@ class QTipTutorial
 
     prevState: ->
         @doState(@currStateIndex - 1);
-    
+
     stop: ->
         @doState(-1)
 

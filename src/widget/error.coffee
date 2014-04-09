@@ -1,4 +1,3 @@
-
 class Error
 
     @description = """
@@ -6,17 +5,17 @@ class Error
         The visualization will not change to DisplayMode unless all conditions
         are met.
         """
-    
-    @spec = 
+
+    @spec =
         conditions:
             type: "Array"
-            description: 
+            description:
                 "a list of functions that take a viz object and return " +
                 "a string saying what went wrong."
             example: """
                 new Vamonos.Widget.Error({
                     conditions: [
-                        function(viz){ 
+                        function(viz){
                             var s = viz.getVariable("s");
                             var t = viz.getVariable("t");
                             if (s.id === t.id) {
@@ -33,8 +32,10 @@ class Error
             widgetObject   : this
             givenArgs      : args
 
-    event: (event, options...) -> 
-        if event is 'checkErrors'
+    event: (event, options...) ->
+        if event is 'setup'
+            [viz] = options
+        else if event is 'checkErrors'
             [viz] = options
             s = ""
             s += c(viz) ? "" for c in @conditions
