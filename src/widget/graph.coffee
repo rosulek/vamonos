@@ -115,8 +115,11 @@ class Graph extends this.Vamonos.Widget.GraphDisplay
                 if inp[varName]?.type is "Vertex"
                     @inputVars[varName] = @theGraph.vertex( inp[varName] )
 
-    startEditing: ->
+    redraw: ->
         @draw(@theGraph, @inputVars)
+
+    startEditing: ->
+        @redraw()
         if @editable
             @setEditBindings()
 
@@ -146,7 +149,7 @@ class Graph extends this.Vamonos.Widget.GraphDisplay
 
     addVertex: (vertex) ->
         newv = @theGraph.addVertex(vertex)
-        @draw(@theGraph, @inputVars)
+        @redraw()
         @setEditBindings()
         @selectVertexById(newv.id)
 
@@ -166,7 +169,7 @@ class Graph extends this.Vamonos.Widget.GraphDisplay
             # set edgeLabel default values
             attrs[k] = v for k,v of @defaultEdgeAttrs
         @theGraph.addEdge(sourceId, targetId, attrs)
-        @draw(@theGraph, @inputVars)
+        @redraw()
         @setEditBindings()
 
     removeEdge: (sourceId, targetId) ->
@@ -277,14 +280,14 @@ class Graph extends this.Vamonos.Widget.GraphDisplay
         return unless sourceId isnt vid
         @removePotentialEdge()
         @potentialEdge = @theGraph.addEdge(sourceId, vid, { _potential: true })
-        @draw(@theGraph, @inputVars)
+        @redraw()
 
     removePotentialEdge: =>
         return unless @potentialEdge?
         e = @potentialEdge
         @theGraph.removeEdge(e.source.id, e.target.id)
         delete @potentialEdge
-        @draw(@theGraph, @inputVars)
+        @redraw()
 
     openDrawer: ->
         type = @selected()
@@ -301,7 +304,7 @@ class Graph extends this.Vamonos.Widget.GraphDisplay
                     $b = $("<button>", { text: vName, title: "Set #{vName}=#{vtx.name}" })
                     $b.on "click.vamonos-graph", (e) =>
                         inputVars[v] = vtx
-                        ths.draw(theGraph, inputVars)
+                        ths.redraw()
                     buttons.push($b)
 
             buttons.push($("<button>", {text: "del", title: "Delete #{vtx.name}"})
@@ -327,7 +330,7 @@ class Graph extends this.Vamonos.Widget.GraphDisplay
                         .on("click", =>
                             update = (newVal) ->
                                 edge[attrName] = +newVal
-                                ths.draw(theGraph, inputVars)
+                                ths.redraw()
                                 $label.removeClass("active")
                                 return newVal
                             $label.addClass("active")
@@ -336,6 +339,14 @@ class Graph extends this.Vamonos.Widget.GraphDisplay
                     buttons.push($label)
 
                 continue
+            buttons.push(
+                $("<button>", {
+                    text: "col",
+                    title: "Collapse #{edge.source.name}->#{edge.target.name}"
+                }).on "click.vamonos-graph", (e) =>
+                    @theGraph.collapse(edge.source.id, edge.target.id)
+                    @startEditing()
+            )
             buttons.push(
                 $("<button>", {
                     text: "del",

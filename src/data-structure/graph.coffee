@@ -290,8 +290,6 @@ class Graph
             "edges take the min weight. only works on undirected graphs."
     collapse: (sourceId, targetId) ->
         throw "collapse called on directed graph" if @directed
-        @collapsedVertices ?= {}
-        @collapsedEdges    ?= {}
         v1 = @vertex(sourceId)
         v2 = @vertex(targetId)
         return unless v1? and v2?
@@ -301,57 +299,59 @@ class Graph
             id: v1.id + v2.id
             x: Math.floor((v1.x + v2.x) / 2)
             y: Math.floor((v1.y + v2.y) / 2)
-        @collapsedVertices[newVtx.id] = [v1,v2]
-        affectedEdges = @outgoingEdges(v1).map((e) -> e.source = newVtx; e)
-        @outgoingEdges(v2).map (e) ->
-            e.source = newVtx
-            affectedEdges.push(e) unless e in affectedEdges
+        @outgoingEdges(v1).map (e) =>
+            @removeEdge(e.source, e.target)
+            @addEdge(newVtx, e.target, e)
+        console.log "hi"
+        @outgoingEdges(v2).map (e) =>
+            @removeEdge(e.source.id, e.target.id)
+            @addEdge(newVtx, e.target, e)
         @removeVertex(v1)
         @removeVertex(v2)
-        for outEdge in affectedEdges
-            sid = outEdge.source.id
-            tid = outEdge.target.id
-            if sid is v1.id or sid is v2.id
-                target = tid
-            else
-                target = sid
-            continue unless @vertex(target)
-            existingEdge = @edge(newVtx,target)
-            if not existingEdge?
-                @addEdge(newVtx, target, outEdge)
-            else if outEdge.w < existingEdge.w
-                @removeEdge(newVtx,target)
-                @addEdge(newVtx, target, outEdge)
-        @collapsedEdges[newVtx.id] = affectedEdges
+        # for outEdge in affectedEdges
+        #     sid = outEdge.source.id
+        #     tid = outEdge.target.id
+        #     if sid is v1.id or sid is v2.id
+        #         target = tid
+        #     else
+        #         target = sid
+        #     continue unless @vertex(target)
+        #     existingEdge = @edge(newVtx,target)
+        #     if not existingEdge?
+        #         @addEdge(newVtx, target, outEdge)
+        #     else if outEdge.w < existingEdge.w
+        #         @removeEdge(newVtx,target)
+        #         @addEdge(newVtx, target, outEdge)
+        # @collapsedEdges[newVtx.id] = affectedEdges
 
 
-    collapseEdgesBy: (attr, func) ->
-        while e = @nextEdgeMatching(attr)
-            func(e)
-            @collapse(e)
+    # collapseEdgesBy: (attr, func) ->
+    #     while e = @nextEdgeMatching(attr)
+    #         func(e)
+    #         @collapse(e)
 
-    nextEdgeMatching: (attr) ->
-        edges = @getEdges()
-        edges.reduce((a,b) -> if a?[attr] then a else if b[attr] then b) if edges.length
+    # nextEdgeMatching: (attr) ->
+    #     edges = @getEdges()
+    #     edges.reduce((a,b) -> if a?[attr] then a else if b[attr] then b) if edges.length
 
-    uncollapse: (vtx) ->
-        return unless @collapsedEdges?[vtx.id]? and @collapsedVertices?[vtx.id]?
-        savedVertices = @collapsedVertices[vtx.id]
-        savedEdges    = @collapsedEdges[vtx.id]
-        console.log savedVertices
-        console.log savedEdges
-        restoredVertices = for v in savedVertices
-            console.log "adding #{v.name}"
-            @addVertex(v)
-        for edge in savedEdges
-            @addEdge(edge.source, edge.target, edge)
-        @removeVertex(vtx)
-        delete @collapsedVertices[vtx.id]
-        delete @collapsedEdges[vtx.id]
-        return restoredVertices
+    # uncollapse: (vtx) ->
+    #     return unless @collapsedEdges?[vtx.id]? and @collapsedVertices?[vtx.id]?
+    #     savedVertices = @collapsedVertices[vtx.id]
+    #     savedEdges    = @collapsedEdges[vtx.id]
+    #     console.log savedVertices
+    #     console.log savedEdges
+    #     restoredVertices = for v in savedVertices
+    #         console.log "adding #{v.name}"
+    #         @addVertex(v)
+    #     for edge in savedEdges
+    #         @addEdge(edge.source, edge.target, edge)
+    #     @removeVertex(vtx)
+    #     delete @collapsedVertices[vtx.id]
+    #     delete @collapsedEdges[vtx.id]
+    #     return restoredVertices
 
-    getCollapsedVertices: ->
-        @getVertices().filter((v) => @collapsedVertices?[v.id] and @collapsedEdges?[v.id])
+    # getCollapsedVertices: ->
+    #     @getVertices().filter((v) => @collapsedVertices?[v.id] and @collapsedEdges?[v.id])
 
     # ------------ utility ----------- #
 

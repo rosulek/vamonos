@@ -88,13 +88,13 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode",
+            breakpoints: [11],
         }),
 
         new Vamonos.Widget.VarName({
             container: "g-var",
             varName: "G",
             inputVar: true,
-            watching: true,
         }),
 
         new Vamonos.Widget.Graph({
@@ -168,7 +168,7 @@ var myviz = new Vamonos.Visualizer({
 
     algorithm: function(_){
         with (this) {
-            try {
+            /* try { */
                 while (_(1), G.getVertices().length > 1) {
                     // label min outgoing edge for each vertex
                     G.eachVertex(function(vtx1){
@@ -196,7 +196,6 @@ var myviz = new Vamonos.Visualizer({
                         u = undefined;
                     });
                     G.eachEdge(function(e){
-                        if (!G.edge(e.source.id, e.target.id)) return;
                         _(9);
                         u = G.vertex(e.source);
                         v = G.vertex(e.target);
@@ -208,13 +207,13 @@ var myviz = new Vamonos.Visualizer({
                 }
             }
 
-            catch (e) {
-                if (e === "disconnected graph")
-                    return;
-                else
-                    throw e;
+            /* catch (e) {
+            if (e === "disconnected graph")
+            return;
+            else
+            throw e;
             }
-        }
+            } */
     },
 });
 
