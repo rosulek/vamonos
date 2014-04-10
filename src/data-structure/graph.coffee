@@ -288,12 +288,12 @@ class Graph
             "vertex names are concatenations of the collapsed vertices' " +
             "names, vertices' positions are averaged, and overlapping " +
             "edges take the min weight. only works on undirected graphs."
-    collapse: (edge) ->
+    collapse: (sourceId, targetId) ->
         throw "collapse called on directed graph" if @directed
         @collapsedVertices ?= {}
         @collapsedEdges    ?= {}
-        v1 = edge.source
-        v2 = edge.target
+        v1 = @vertex(sourceId)
+        v2 = @vertex(targetId)
         return unless v1? and v2?
         console.log "collapse #{v1.name}-#{v2.name}"
         newVtx = @addVertex
@@ -302,8 +302,10 @@ class Graph
             x: Math.floor((v1.x + v2.x) / 2)
             y: Math.floor((v1.y + v2.y) / 2)
         @collapsedVertices[newVtx.id] = [v1,v2]
-        affectedEdges = @outgoingEdges(v1)
-        @outgoingEdges(v2).map (e) -> affectedEdges.push(e) unless e in affectedEdges
+        affectedEdges = @outgoingEdges(v1).map((e) -> e.source = newVtx; e)
+        @outgoingEdges(v2).map (e) ->
+            e.source = newVtx
+            affectedEdges.push(e) unless e in affectedEdges
         @removeVertex(v1)
         @removeVertex(v2)
         for outEdge in affectedEdges
