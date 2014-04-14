@@ -144,7 +144,7 @@ class Graph extends this.Vamonos.Widget.GraphDisplay
         @viz.allowExport(@varName)
 
     verifyInputVarsSet: () ->
-        s = ("#{ @varName } says: please set #{k}!" for k, v of @inputVars when not v?).join('\n')
+        s = ("#{ @varName } says: please set #{k}!" for k, v of @inputVars when not @theGraph.vertex(v)?).join('\n')
         return s if s.length
 
     addVertex: (vertex) ->
@@ -344,7 +344,7 @@ class Graph extends this.Vamonos.Widget.GraphDisplay
                     text: "col",
                     title: "Collapse #{edge.source.name}->#{edge.target.name}"
                 }).on "click.vamonos-graph", (e) =>
-                    @theGraph.collapse(edge.source.id, edge.target.id)
+                    @theGraph.collapse(edge)
                     @startEditing()
             )
             buttons.push(

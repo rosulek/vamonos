@@ -94,7 +94,6 @@ class Graph
         @removeEdge(e.source.id, e.target.id) for e in affectedEdges
         delete @vertices[vtx.id]
 
-
     @interface.getVertices = description: "returns an array of all vertices"
     getVertices: () ->
         vtx for vid, vtx of @vertices
@@ -164,7 +163,28 @@ class Graph
     edge: (source, target) ->
         sourceId = @idify(source)
         targetId = @idify(target)
-        @edges[sourceId]?[targetId] or not @directed and @edges[targetId]?[sourceId]
+        if @directed
+            @edges[sourceId]?[targetId]
+        else
+            @edges[sourceId]?[targetId] ? @edges[targetId]?[sourceId]
+
+    modifyEdgeSource: (edge, newSource) =>
+        newSourceId = @idify(newSource)
+        delete @edges[edge.source.id][edge.target.id]
+        (@edges[newSourceId] ?= {})[edge.target.id] = edge
+        if not @directed
+            delete @edges[edge.target.id][edge.source.id]
+            (@edges[edge.target.id] ?= {})[newSourceId] = edge
+        edge.source = @vertex(newSourceId)
+
+    modifyEdgeTarget: (edge, newTarget) =>
+        newTargetId = @idify(newTarget)
+        delete @edges[edge.source.id][edge.target.id]
+        @edges[edge.source.id][newTargetId] = edge
+        if not @directed
+            delete @edges[edge.target.id][edge.source.id]
+            (@edges[newTargetId] ?= {})[edge.source.id] = edge
+        edge.target = @vertex(newTargetId)
 
     @interface.edgeId =
         args: [["e", "an edge object"]]
@@ -211,7 +231,6 @@ class Graph
         delete @edges[sourceId]?[targetId]
         delete @edges[targetId]?[sourceId] unless @directed
         edge
-
 
     @interface.getEdges = description: "returns an array of all edges in the graph"
     getEdges: ->
@@ -283,56 +302,63 @@ class Graph
     # ------------ edge collapsing and uncollapsing --------- #
 
     @interface.collapse =
-        args: [["e", "an edge of the graph to collapse"]]
+        args: [["e", "an edge of the graph to collapse"]
+              ,["overlapFunc", "a function taking two edges and returning one of them"]]
         description: "collapses `e`, creating a new vertex. By default " +
             "vertex names are concatenations of the collapsed vertices' " +
             "names, vertices' positions are averaged, and overlapping " +
-            "edges take the min weight. only works on undirected graphs."
-    collapse: (sourceId, targetId) ->
-        throw "collapse called on directed graph" if @directed
-        v1 = @vertex(sourceId)
-        v2 = @vertex(targetId)
-        return unless v1? and v2?
+            "edges take the min weight. only works on undirected graphs. " +
+            "`overlapFunc` is an optional parameter for a function that " +
+            "decides what to do with overlapping edges after a collapse. " +
+            "By default overlapFunc keeps the edge with least `w`."
+    collapse: (edge, overlapFunc) ->
+        throw "collapse: called on directed graph" if @directed
+        v1 = @vertex(edge.source)
+        v2 = @vertex(edge.target)
+        throw "collapse: undefined edge" unless v1? and v2?
+
+        overlapFunc ?= (e1,e2) -> if e1.w <= e2.w then e1 else e2
+
         console.log "collapse #{v1.name}-#{v2.name}"
         newVtx = @addVertex
             name: (v1.name + v2.name).split("").sort().join("")
             id: v1.id + v2.id
             x: Math.floor((v1.x + v2.x) / 2)
             y: Math.floor((v1.y + v2.y) / 2)
-        @outgoingEdges(v1).map (e) =>
-            @removeEdge(e.source, e.target)
-            @addEdge(newVtx, e.target, e)
-        console.log "hi"
-        @outgoingEdges(v2).map (e) =>
-            @removeEdge(e.source.id, e.target.id)
-            @addEdge(newVtx, e.target, e)
+
+        alterEdge = (vid, edge) =>
+            if edge.source.id is vid
+                @modifyEdgeSource(edge, newVtx)
+            if edge.target.id is vid
+                @modifyEdgeTarget(edge, newVtx)
+
+        # unnamedFunc = (vid, edge) =>
+        #     if edge.source.id is vid
+        #         existingEdge = @edge(newVtx, edge.target)
+        #         if existingEdge
+        #             choice = overlapFunc(edge, existingEdge)
+        #             @removeEdge(newVtx, edge.target)
+        #             @addEdge(newVtx, edge.target, choice)
+        #         else
+        #             @addEdge(newVtx, edge.target, edge)
+        #     if edge.target.id is vid
+        #         existingEdge = @edge(edge.source, newVtx)
+        #         if existingEdge
+        #             choice = overlapFunc(edge, existingEdge)
+        #             @removeEdge(edge.source, newVtx)
+        #             @addEdge(edge.source, newVtx, choice)
+        #         else
+        #             @addEdge(edge.source, newVtx, edge)
+
+        for edge in @getEdges()
+            alterEdge(v1.id, edge)
+            alterEdge(v2.id, edge)
+
         @removeVertex(v1)
         @removeVertex(v2)
-        # for outEdge in affectedEdges
-        #     sid = outEdge.source.id
-        #     tid = outEdge.target.id
-        #     if sid is v1.id or sid is v2.id
-        #         target = tid
-        #     else
-        #         target = sid
-        #     continue unless @vertex(target)
-        #     existingEdge = @edge(newVtx,target)
-        #     if not existingEdge?
-        #         @addEdge(newVtx, target, outEdge)
-        #     else if outEdge.w < existingEdge.w
-        #         @removeEdge(newVtx,target)
-        #         @addEdge(newVtx, target, outEdge)
-        # @collapsedEdges[newVtx.id] = affectedEdges
 
-
-    # collapseEdgesBy: (attr, func) ->
-    #     while e = @nextEdgeMatching(attr)
-    #         func(e)
-    #         @collapse(e)
-
-    # nextEdgeMatching: (attr) ->
-    #     edges = @getEdges()
-    #     edges.reduce((a,b) -> if a?[attr] then a else if b[attr] then b) if edges.length
+        for edge in @getEdges()
+            @removeEdge(edge.source, edge.target) if edge.source is edge.target
 
     # uncollapse: (vtx) ->
     #     return unless @collapsedEdges?[vtx.id]? and @collapsedVertices?[vtx.id]?

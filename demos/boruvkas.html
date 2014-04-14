@@ -88,7 +88,7 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode",
-            breakpoints: [11],
+            breakpoints: [8,11],
         }),
 
         new Vamonos.Widget.VarName({
@@ -110,9 +110,7 @@ var myviz = new Vamonos.Visualizer({
             vertexCssAttributes: { _error: true },
             edgeCssAttributes: {
                 red  : "u<->v",
-                blue : function(edge) {
-                    return (edge.target.pred === edge.source.name)
-                        || (edge.source.pred === edge.target.name) }
+                blue : function(edge){ return edge.inMST },
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: false,
@@ -129,38 +127,22 @@ var myviz = new Vamonos.Visualizer({
                     { x: 104, y: 0, id: 'v10' },
                 ],
                 edges: [
-                    { source: 'v1', target: 'v0', w: 6 },
-                    { source: 'v0', target: 'v6', w: 9 },
-                    { source: 'v0', target: 'v4', w: 3 },
-                    { source: 'v1', target: 'v0', w: 6 },
-                    { source: 'v4', target: 'v1', w: 4 },
-                    { source: 'v5', target: 'v1', w: 2 },
-                    { source: 'v9', target: 'v1', w: 5 },
-                    { source: 'v10', target: 'v1', w: 4 },
-                    { source: 'v0', target: 'v6', w: 9 },
-                    { source: 'v7', target: 'v6', w: 8 },
-                    { source: 'v6', target: 'v4', w: 9 },
-                    { source: 'v6', target: 'v8', w: 18 },
-                    { source: 'v0', target: 'v4', w: 3 },
-                    { source: 'v4', target: 'v1', w: 4 },
-                    { source: 'v4', target: 'v5', w: 2 },
-                    { source: 'v6', target: 'v4', w: 9 },
-                    { source: 'v4', target: 'v5', w: 2 },
-                    { source: 'v5', target: 'v1', w: 2 },
-                    { source: 'v5', target: 'v7', w: 8 },
-                    { source: 'v5', target: 'v7', w: 8 },
-                    { source: 'v7', target: 'v6', w: 8 },
-                    { source: 'v8', target: 'v7', w: 10 },
-                    { source: 'v7', target: 'v9', w: 9 },
-                    { source: 'v6', target: 'v8', w: 18 },
-                    { source: 'v8', target: 'v7', w: 10 },
-                    { source: 'v8', target: 'v9', w: 3 },
-                    { source: 'v8', target: 'v10', w: 4 },
-                    { source: 'v7', target: 'v9', w: 9 },
-                    { source: 'v8', target: 'v9', w: 3 },
-                    { source: 'v9', target: 'v1', w: 5 },
-                    { source: 'v8', target: 'v10', w: 4 },
-                    { source: 'v10', target: 'v1', w: 4 },
+                    { source: 'v0', target: 'v4',  w: 3  },
+                    { source: 'v0', target: 'v6',  w: 9  },
+                    { source: 'v1', target: 'v0',  w: 6  },
+                    { source: 'v4', target: 'v1',  w: 4  },
+                    { source: 'v4', target: 'v5',  w: 2  },
+                    { source: 'v5', target: 'v1',  w: 6  },
+                    { source: 'v5', target: 'v7',  w: 10 },
+                    { source: 'v6', target: 'v4',  w: 9  },
+                    { source: 'v6', target: 'v8',  w: 18 },
+                    { source: 'v7', target: 'v6',  w: 8  },
+                    { source: 'v7', target: 'v9',  w: 9  },
+                    { source: 'v8', target: 'v10', w: 4  },
+                    { source: 'v8', target: 'v7',  w: 10 },
+                    { source: 'v8', target: 'v9',  w: 3  },
+                    { source: 'v9', target: 'v1',  w: 5  },
+                    { source: 'v10', target: 'v1', w: 5  },
                 ]
             }),
         })
@@ -169,51 +151,58 @@ var myviz = new Vamonos.Visualizer({
     algorithm: function(_){
         with (this) {
             /* try { */
-                while (_(1), G.getVertices().length > 1) {
-                    // label min outgoing edge for each vertex
-                    G.eachVertex(function(vtx1){
-                        u = vtx1;
-                        _(2);
-                        minEdge = { w: Infinity, nada: true }
-                        G.eachNeighbor(u, function(vtx2){
-                            _(3);
-                            v = vtx2;
-                            var e = G.edge(u,v);
-                            if (_(4), e.w < minEdge.w) {
-                                _(5);
-                                minEdge = e;
-                            }
-                            v = undefined;
-                        });
-                        if (_(6), minEdge.nada) {
-                            _(7);
-                            u._error = true;
-                            throw "disconnected graph"
+            while (_(1), G.getVertices().length > 1) {
+                // label min outgoing edge for each vertex
+                collapseEdges = [];
+                G.eachVertex(function(vtx1){
+                    u = vtx1;
+                    _(2);
+                    minEdge = { w: Infinity, nada: true }
+                    G.eachNeighbor(u, function(vtx2){
+                        _(3);
+                        v = vtx2;
+                        var e = G.edge(u,v);
+                        if (_(4), e.w < minEdge.w) {
+                            _(5);
+                            minEdge = e;
                         }
-                        _(8);
-                        minEdge.inMST = true;
-                        //G.edge(minEdge.source, minEdge.target).inMST = true;
-                        u = undefined;
+                        v = undefined;
                     });
-                    G.eachEdge(function(e){
+                    if (_(6), minEdge.nada) {
+                        _(7);
+                        u._error = true;
+                        /* throw "disconnected graph" */
+                    }
+                    _(8);
+                    minEdge.inMST = true;
+                    collapseEdges.push(minEdge);
+                    //G.edge(minEdge.source, minEdge.target).inMST = true;
+                    u = undefined;
+                });
+
+                collapseEdges.map(function(e){
+                    if (!e.source || !e.target) {
+                        return;
+                    } else if (e.source.id === e.target.id) {
+                        G.removeEdge(e.source, e.target);
+                    } else {
                         _(9);
                         u = G.vertex(e.source);
                         v = G.vertex(e.target);
-                        if (_(10), e.inMST) {
-                            _(11);
-                            G.collapse(e);
-                        }
-                    });
-                }
+                        _(11);
+                        G.collapse(e);
+                    }
+                });
             }
+        }
 
-            /* catch (e) {
-            if (e === "disconnected graph")
-            return;
-            else
-            throw e;
-            }
-            } */
+        /* catch (e) {
+        if (e === "disconnected graph")
+        return;
+        else
+        throw e;
+        }
+        } */
     },
 });
 

@@ -396,8 +396,8 @@ class GraphDisplay
         midy = ( e.source.y + e.target.y ) / 2
         [dx, dy] = @dvector([e.source.x,e.source.y], [e.target.x,e.target.y])
         [_, [lx,ly]] = @perpendicularPoints([midx,midy], dx, dy, @arrowWidth * 1.5)
-        e._labelx = lx
-        e._labely = ly
+        e._labelx = if lx is lx then lx
+        e._labely = if ly is ly then ly
         return "M #{ e.source.x } #{ e.source.y } " +
                "L #{ e.target.x } #{ e.target.y } "
 
