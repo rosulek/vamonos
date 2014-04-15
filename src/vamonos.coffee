@@ -60,6 +60,9 @@
         unless ignoreExtraArgs
             @warn(widgetName, "unused argument \"#{arg}\"") for arg of givenArgs
 
+    # for use within the algorithm - this object is caught by the runAlgorithm
+    # method in Visualizer. It causes the visualizer to take another snapshot
+    # with "error" reason.
     error: (string) ->
         throw { type: "VamonosError", content: string }
 

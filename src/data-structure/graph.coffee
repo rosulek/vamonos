@@ -190,7 +190,7 @@ class Graph
         args: [["e", "an edge object"]]
         description: "returns a string identifying `e`"
     edgeId: (e) =>
-        e.source.id + (if @directed then "-arr-" else "-bi-") + e.target.id
+        e.source.id + "-" + e.target.id
 
     @interface.addEdge =
         args: [
