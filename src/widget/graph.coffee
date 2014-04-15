@@ -346,7 +346,7 @@ class Graph extends this.Vamonos.Widget.GraphDisplay
                 }).on "click.vamonos-graph", (e) =>
                     @theGraph.collapse(edge)
                     @startEditing()
-            )
+            ) if not @theGraph.directed
             buttons.push(
                 $("<button>", {
                     text: "del",

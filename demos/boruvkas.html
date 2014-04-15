@@ -30,6 +30,7 @@
 
     path.red {
         stroke: #bf906b;
+        filter: url(#shadow-blue);
     }
 
     path.blue {
@@ -109,8 +110,8 @@ var myviz = new Vamonos.Visualizer({
             defaultEdgeAttrs: { w: 1 },
             vertexCssAttributes: { _error: true },
             edgeCssAttributes: {
-                red  : "u<->v",
                 blue : function(edge){ return edge.inMST },
+                red  : "u<->v",
             },
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: false,
@@ -128,7 +129,7 @@ var myviz = new Vamonos.Visualizer({
                 ],
                 edges: [
                     { source: 'v0', target: 'v4',  w: 3  },
-                    { source: 'v0', target: 'v6',  w: 9  },
+                    { source: 'v0', target: 'v6',  w: 10 },
                     { source: 'v1', target: 'v0',  w: 6  },
                     { source: 'v4', target: 'v1',  w: 4  },
                     { source: 'v4', target: 'v5',  w: 2  },
@@ -153,7 +154,6 @@ var myviz = new Vamonos.Visualizer({
             /* try { */
             while (_(1), G.getVertices().length > 1) {
                 // label min outgoing edge for each vertex
-                collapseEdges = [];
                 G.eachVertex(function(vtx1){
                     u = vtx1;
                     _(2);
@@ -175,24 +175,33 @@ var myviz = new Vamonos.Visualizer({
                     }
                     _(8);
                     minEdge.inMST = true;
-                    collapseEdges.push(minEdge);
                     //G.edge(minEdge.source, minEdge.target).inMST = true;
                     u = undefined;
                 });
 
-                collapseEdges.map(function(e){
-                    if (!e.source || !e.target) {
-                        return;
-                    } else if (e.source.id === e.target.id) {
-                        G.removeEdge(e.source, e.target);
-                    } else {
-                        _(9);
-                        u = G.vertex(e.source);
-                        v = G.vertex(e.target);
-                        _(11);
-                        G.collapse(e);
-                    }
-                });
+
+
+                while (e = collapsableEdge(G)) {
+                    _(9);
+                    u = G.vertex(e.source);
+                    v = G.vertex(e.target);
+                    _(11);
+                    G.collapse(e);
+                }
+
+                /* collapseEdges.map(function(e){
+                if (!G.vertex(e.source) || !G.vertex(e.target)) {
+                return;
+                } else if (e.source.id === e.target.id) {
+                G.removeEdge(e.source, e.target);
+                } else {
+                _(9);
+                u = G.vertex(e.source);
+                v = G.vertex(e.target);
+                _(11);
+                G.collapse(e);
+                }
+                }); */
             }
         }
 
@@ -205,6 +214,13 @@ var myviz = new Vamonos.Visualizer({
         } */
     },
 });
+
+function collapsableEdge(G){
+    var es = G.getEdges();
+    for (var i = 0; i < es.length; i++) {
+        if (es[i].inMST) return es[i];
+    }
+}
 
 </script>
 </html>

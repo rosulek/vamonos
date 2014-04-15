@@ -192,6 +192,13 @@ class GraphDisplay
 
         @createShadowFilter
             svg: @svg
+            id: "shadow-blue"
+            red: 0.0
+            green: 0.0
+            blue: 0.9
+
+        @createShadowFilter
+            svg: @svg
             id: "shadow"
             red: 0
             green: 0

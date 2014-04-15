@@ -316,10 +316,10 @@ class Graph
         v1 = @vertex(edge.source)
         v2 = @vertex(edge.target)
         throw "collapse: undefined edge" unless v1? and v2?
+        console.log "collapse #{v1.name}-#{v2.name}"
 
         overlapFunc ?= (e1,e2) -> if e1.w <= e2.w then e1 else e2
 
-        console.log "collapse #{v1.name}-#{v2.name}"
         newVtx = @addVertex
             name: (v1.name + v2.name).split("").sort().join("")
             id: v1.id + v2.id
@@ -328,17 +328,29 @@ class Graph
 
         alterEdge = (vid, edge) =>
             if edge.source.id is vid
-                @modifyEdgeSource(edge, newVtx)
+                existingEdge = @edge(newVtx, edge.target)
+                if existingEdge
+                    choice = overlapFunc(edge, existingEdge)
+                    @removeEdge(newVtx, edge.target)
+                    @addEdge(newVtx, edge.target, choice)
+                else
+                    @modifyEdgeSource(edge, newVtx)
             if edge.target.id is vid
-                @modifyEdgeTarget(edge, newVtx)
+                existingEdge = @edge(edge.source, newVtx)
+                if existingEdge
+                    choice = overlapFunc(edge, existingEdge)
+                    @removeEdge(edge.source, newVtx)
+                    @addEdge(edge.source, newVtx, choice)
+                else
+                    @modifyEdgeTarget(edge, newVtx)
 
         # unnamedFunc = (vid, edge) =>
         #     if edge.source.id is vid
         #         existingEdge = @edge(newVtx, edge.target)
         #         if existingEdge
         #             choice = overlapFunc(edge, existingEdge)
-        #             @removeEdge(newVtx, edge.target)
-        #             @addEdge(newVtx, edge.target, choice)
+                    # @removeEdge(newVtx, edge.target)
+                    # @addEdge(newVtx, edge.target, choice)
         #         else
         #             @addEdge(newVtx, edge.target, edge)
         #     if edge.target.id is vid
