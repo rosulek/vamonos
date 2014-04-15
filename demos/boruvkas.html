@@ -21,7 +21,8 @@
     }
 
     .vertex._error {
-        stroke: red;
+        stroke: #ff7676;
+        stroke-width: 3;
     }
 
     body {
@@ -29,7 +30,6 @@
     }
 
     path.red {
-        stroke: #bf906b;
         filter: url(#shadow-blue);
     }
 
@@ -62,10 +62,10 @@
                                     best = (u,v)
                             if best = null
                                 error "disconnected graph"
-                            best.inMST = True
-                        for each (u,v) &in; G.E
-                            if (u,v).inMST
-                                Collapse(u,v)
+                            else
+                                best.inMST = True
+                        for each (u,v) &in; G.E s.t. (u,v).inMST
+                            Collapse(u,v)
                 </div>
             </div>
 
@@ -85,11 +85,13 @@
 <script type="text/javascript">
 var myviz = new Vamonos.Visualizer({
     widgets: [
+        new Vamonos.Widget.Console(),
+
         new Vamonos.Widget.Controls("controls"),
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode",
-            breakpoints: [8,11],
+            breakpoints: [9,10,11],
         }),
 
         new Vamonos.Widget.VarName({
@@ -151,9 +153,7 @@ var myviz = new Vamonos.Visualizer({
 
     algorithm: function(_){
         with (this) {
-            /* try { */
             while (_(1), G.getVertices().length > 1) {
-                // label min outgoing edge for each vertex
                 G.eachVertex(function(vtx1){
                     u = vtx1;
                     _(2);
@@ -171,47 +171,26 @@ var myviz = new Vamonos.Visualizer({
                     if (_(6), minEdge.nada) {
                         _(7);
                         u._error = true;
-                        /* throw "disconnected graph" */
+                        Vamonos.error("disconnected graph");
+                    } else {
+                        _(8);
+                        _(9);
+                        minEdge.inMST = true;
                     }
-                    _(8);
-                    minEdge.inMST = true;
-                    //G.edge(minEdge.source, minEdge.target).inMST = true;
                     u = undefined;
                 });
 
-
-
                 while (e = collapsableEdge(G)) {
-                    _(9);
+                    _(8);
                     u = G.vertex(e.source);
                     v = G.vertex(e.target);
-                    _(11);
+                    _(9);
                     G.collapse(e);
                 }
 
-                /* collapseEdges.map(function(e){
-                if (!G.vertex(e.source) || !G.vertex(e.target)) {
-                return;
-                } else if (e.source.id === e.target.id) {
-                G.removeEdge(e.source, e.target);
-                } else {
-                _(9);
-                u = G.vertex(e.source);
-                v = G.vertex(e.target);
-                _(11);
-                G.collapse(e);
-                }
-                }); */
             }
         }
 
-        /* catch (e) {
-        if (e === "disconnected graph")
-        return;
-        else
-        throw e;
-        }
-        } */
     },
 });
 

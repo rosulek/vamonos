@@ -73,17 +73,23 @@ class Pseudocode
     render: (frame) ->
         @clear()
         return unless @procedureName is frame._procName
-        next = frame._nextLine
-        prev = frame._prevLine
+        next  = frame._nextLine
+        prev  = frame._prevLine
         @addClassToLine(prev, "pseudocode-previous") if prev?
         @addClassToLine(next, "pseudocode-next")     if next?
 
         if frame._snapshotReasons.breakpoint?
             @getLine(frame._nextLine).find("div.pseudocode-breakpoint").addClass("pseudocode-active-breakpoint")
 
+        if frame._snapshotReasons.error?
+            @$tbl.find("tr").removeClass("pseudocode-next")
+            @$tbl.find("tr").removeClass("pseudocode-previous")
+            @addClassToLine(next, "pseudocode-error")
+
     clear: () ->
         @$tbl.find("tr").removeClass("pseudocode-next")
         @$tbl.find("tr").removeClass("pseudocode-previous")
+        @$tbl.find("tr").removeClass("pseudocode-error")
         @$tbl.find("div.pseudocode-breakpoint").removeClass("pseudocode-active-breakpoint")
 
     addClassToLine: (n, klass) ->

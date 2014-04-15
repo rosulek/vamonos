@@ -344,24 +344,6 @@ class Graph
                 else
                     @modifyEdgeTarget(edge, newVtx)
 
-        # unnamedFunc = (vid, edge) =>
-        #     if edge.source.id is vid
-        #         existingEdge = @edge(newVtx, edge.target)
-        #         if existingEdge
-        #             choice = overlapFunc(edge, existingEdge)
-                    # @removeEdge(newVtx, edge.target)
-                    # @addEdge(newVtx, edge.target, choice)
-        #         else
-        #             @addEdge(newVtx, edge.target, edge)
-        #     if edge.target.id is vid
-        #         existingEdge = @edge(edge.source, newVtx)
-        #         if existingEdge
-        #             choice = overlapFunc(edge, existingEdge)
-        #             @removeEdge(edge.source, newVtx)
-        #             @addEdge(edge.source, newVtx, choice)
-        #         else
-        #             @addEdge(edge.source, newVtx, edge)
-
         for edge in @getEdges()
             alterEdge(v1.id, edge)
             alterEdge(v2.id, edge)
@@ -369,6 +351,7 @@ class Graph
         @removeVertex(v1)
         @removeVertex(v2)
 
+        # remove self-loops
         for edge in @getEdges()
             @removeEdge(edge.source, edge.target) if edge.source is edge.target
 

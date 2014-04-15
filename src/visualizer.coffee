@@ -211,6 +211,9 @@ class Visualizer
         if n is "end"
             (reasons ?= {}).procReturned = "main"
 
+        if n.type is "VamonosError"
+            (reasons ?= {}).error = n.content
+
         return reasons
 
     # returns whether the callstack has been set as a watchvar, and whether the
@@ -317,18 +320,23 @@ class Visualizer
             $("body").removeClass("processing")
         catch err
             $("body").removeClass("processing")
-            switch err
-                when "too many frames"
-                    alert("Too many frames. You may have an infinite loop, or you may " +
-                          "want to consider setting fewer breakpoints. " +
-                          "Visualization has been truncated to the first " +
-                          "#{@maxFrames} frames.")
-                when "too many lines"
-                    alert("Your algorithm has executed for over 10000 instructions. " +
-                          "You may have an infinite loop. " +
-                          "Visualization has been truncated.")
-                else
-                    throw err
+            if (err.type is "VamonosError")
+                # mark last pseudocode line somehow
+                @line(err)
+                # @frames[@frames.length - 1]._error = true
+            else
+                switch err
+                    when "too many frames"
+                        alert("Too many frames. You may have an infinite loop, or you may " +
+                              "want to consider setting fewer breakpoints. " +
+                              "Visualization has been truncated to the first " +
+                              "#{@maxFrames} frames.")
+                    when "too many lines"
+                        alert("Your algorithm has executed for over 10000 instructions. " +
+                              "You may have an infinite loop. " +
+                              "Visualization has been truncated.")
+                    else
+                        throw err
 
 
         @frameNumber = 0

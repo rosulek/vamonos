@@ -410,6 +410,18 @@ tr.pseudocode-active {
     }
 }
 
+tr.pseudocode-error {
+    td.pseudocode-text, td.pseudocode-comment  {
+        background-color: @pseudocode-breakpoint-color;
+    }
+    td.pseudocode-line-number {
+        background-color: multiply(@pseudocode-breakpoint-color, @pseudocode-line-number-bg-color);
+    }
+    td.pseudocode-gutter {
+        background-color: multiply(@pseudocode-breakpoint-color, @pseudocode-gutter-color, 50%);
+    }
+}
+
 
 /////////////////////////
 // GRAPHS

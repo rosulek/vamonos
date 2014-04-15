@@ -60,6 +60,9 @@
         unless ignoreExtraArgs
             @warn(widgetName, "unused argument \"#{arg}\"") for arg of givenArgs
 
+    error: (string) ->
+        throw { type: "VamonosError", content: string }
+
     arrayToNum: (array) ->
         unless array? and array.constructor.name is 'Array'
             console.log "Vamonos.arrayToNum got non-array input", array
