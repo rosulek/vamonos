@@ -37,6 +37,10 @@
         stroke: #7a72ff;
     }
 
+    path.faint {
+        stroke: #ececec;
+    }
+
     body {
         text-align: center;
     }
@@ -63,7 +67,7 @@
                             if best = null
                                 error "disconnected graph"
                             else
-                                best.inMST = True
+                                add best to MST
                         for each (u,v) &in; G.E s.t. (u,v).inMST
                             Collapse(u,v)
                 </div>
@@ -163,6 +167,10 @@ var myviz = new Vamonos.Visualizer({
                 /* sw: function(vtx){ return vtx.id }, */
             },
             edgeLabel: "w",
+            edgeCssAttributes: {
+                faint: function(e){ return e.faint },
+                blue : function(e){ return e.inMST },
+            }
         }),
     ],
 
@@ -170,8 +178,10 @@ var myviz = new Vamonos.Visualizer({
         with (this) {
             G.eachEdge(function(e){ e.originally = G.edgeId(e) })
             // set up G_mst
-            global.G_mst = new Vamonos.DataStructure.Graph({ prefix: "mst" }),
-            G.eachVertex(function(vtx){ global.G_mst.addVertex(vtx) })
+            global.G_mst = Vamonos.clone(G);
+            global.G_mst.eachEdge(function(e){ e.faint = true });
+            /* global.G_mst = new Vamonos.DataStructure.Graph({ prefix: "mst" }), */
+            /* G.eachVertex(function(vtx){ global.G_mst.addVertex(vtx) }) */
             while (_(1), G.getVertices().length > 1) {
                 G.eachVertex(function(vtx1){
                     u = vtx1;
@@ -195,19 +205,21 @@ var myviz = new Vamonos.Visualizer({
                         _(8);
                         _(9);
                         minEdge.inMST = true;
+                        var sourceId = minEdge.originally.split("-")[0];
+                        var targetId = minEdge.originally.split("-")[1];
+                        e = global.G_mst.edge(sourceId, targetId);
+                        e.faint = false;
+                        e.inMST = true;
                     }
                     u = undefined;
                 });
 
                 while (e = collapsableEdge(G)) {
-                    _(8);
+                    _(10);
                     u = G.vertex(e.source);
                     v = G.vertex(e.target);
-                    _(9);
+                    _(11);
                     G.collapse(e);
-                    var sourceId = e.originally.split("-")[0];
-                    var targetId = e.originally.split("-")[1];
-                    global.G_mst.addEdge(sourceId, targetId, e);
                 }
 
             }

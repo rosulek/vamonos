@@ -550,6 +550,15 @@ class GraphDisplay
                 target.html((d) => Vamonos.rawToTxt(style[@mode](d)))
             else
                 target.text("")
+
+            # if vertex contents width is greater than vertexWidth * 2, change parent's width
+            if type is "inner"
+                w = target.node()?.getComputedTextLength()
+                if w?
+                    if w + 10 > @vertexWidth
+                        v = d3.select(target.node().parentNode).select("ellipse")
+                        v.attr("rx", (w / 2) + 5)
+
         return sel
 
     createEdgeLabels: () =>
