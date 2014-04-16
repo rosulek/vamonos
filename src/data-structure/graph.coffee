@@ -316,7 +316,6 @@ class Graph
         v1 = @vertex(edge.source)
         v2 = @vertex(edge.target)
         throw "collapse: undefined edge" unless v1? and v2?
-        console.log "collapse #{v1.name}-#{v2.name}"
 
         overlapFunc ?= (e1,e2) -> if e1.w <= e2.w then e1 else e2
 
@@ -354,25 +353,6 @@ class Graph
         # remove self-loops
         for edge in @getEdges()
             @removeEdge(edge.source, edge.target) if edge.source is edge.target
-
-    # uncollapse: (vtx) ->
-    #     return unless @collapsedEdges?[vtx.id]? and @collapsedVertices?[vtx.id]?
-    #     savedVertices = @collapsedVertices[vtx.id]
-    #     savedEdges    = @collapsedEdges[vtx.id]
-    #     console.log savedVertices
-    #     console.log savedEdges
-    #     restoredVertices = for v in savedVertices
-    #         console.log "adding #{v.name}"
-    #         @addVertex(v)
-    #     for edge in savedEdges
-    #         @addEdge(edge.source, edge.target, edge)
-    #     @removeVertex(vtx)
-    #     delete @collapsedVertices[vtx.id]
-    #     delete @collapsedEdges[vtx.id]
-    #     return restoredVertices
-
-    # getCollapsedVertices: ->
-    #     @getVertices().filter((v) => @collapsedVertices?[v.id] and @collapsedEdges?[v.id])
 
     # ------------ utility ----------- #
 

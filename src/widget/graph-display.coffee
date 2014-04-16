@@ -551,13 +551,14 @@ class GraphDisplay
             else
                 target.text("")
 
-            # if vertex contents width is greater than vertexWidth * 2, change parent's width
+            # expand the ellipse's width if the inner contents text is bigger
             if type is "inner"
-                w = target.node()?.getComputedTextLength()
-                if w?
-                    if w + 10 > @vertexWidth
-                        v = d3.select(target.node().parentNode).select("ellipse")
-                        v.attr("rx", (w / 2) + 5)
+                vw = @vertexWidth
+                target.each (d) ->
+                    w = this.getComputedTextLength()
+                    if w + 10 > vw
+                        v = this.parentNode.children[0]
+                        v.setAttribute("rx", (w / 2) + 10)
 
         return sel
 
