@@ -34,38 +34,35 @@ class Graph extends this.Vamonos.Widget.GraphDisplay
             defaultValue: undefined
             description: "A mapping of attribute names to default values for " +
                 "new edges created in edit mode."
+        editableEdgeAttrs:
+            type: "Boolean"
+            defaultValue: true
+            description: "whether edge attributes are modifiable in edit mode."
 
-    constructor: (@_args) ->
+    constructor: (args) ->
 
         Vamonos.handleArguments
             widgetObject   : this
-            givenArgs      : @_args
+            givenArgs      : args
             ignoreExtraArgs: true
 
         @showChanges = Vamonos.arrayify(@showChanges)
 
-        delete @_args[a] for a in [
-            "defaultEdgeAttrs"
-            "showChanges"
-            "varName"
-            "defaultGraph"
-            "inputVars"
-            "editable"
-        ]
+        delete args[argName] for argName of Vamonos.Widget.Graph.spec
 
         if @editable
             @theGraph = @defaultGraph ? new Vamonos.DataStructure.Graph()
             @inputVars[k] = @theGraph.vertex(v) for k,v of @inputVars
         else
-            @_args.minX      ?= 0
-            @_args.minY      ?= 0
-            @_args.resizable ?= false
+            args.minX      ?= 0
+            args.minY      ?= 0
+            args.resizable ?= false
 
-        (@_args.edgeCssAttributes ?= {}).potential ?= (edge) -> edge._potential
-        (@_args.edgeCssAttributes ?= {}).selected  ?= (edge) -> edge._selected
+        (args.edgeCssAttributes ?= {}).potential ?= (edge) -> edge._potential
+        (args.edgeCssAttributes ?= {}).selected  ?= (edge) -> edge._selected
 
-        @edgeLabel = @_args.edgeLabel?.edit ? @_args.edgeLabel
-        super(@_args)
+        @edgeLabel = args.edgeLabel?.edit ? args.edgeLabel
+        super(args)
 
     event: (event, options...) -> switch event
         when "setup"
@@ -321,24 +318,21 @@ class Graph extends this.Vamonos.Widget.GraphDisplay
             nametag  = edge.source.name + "&nbsp;" + arr + "&nbsp;" + edge.target.name
             label = "edge&nbsp;&nbsp;#{nametag}&nbsp;&nbsp;"
             buttons = []
-            for attrName, defaultVal of @defaultEdgeAttrs
-                do (edge, attrName, buttons, ths = @, inputVars = @inputVars, theGraph = @theGraph) ->
-
-                    $val = $("<span>", { text: edge[attrName] })
-                    $label = $("<div>", { text: "#{attrName} = ", class: "editable-attr" })
-                        .append($val)
-                        .on("click", =>
-                            update = (newVal) ->
-                                edge[attrName] = +newVal
-                                ths.redraw()
-                                $label.removeClass("active")
-                                return newVal
-                            $label.addClass("active")
-                            Vamonos.editableValue($val, ((e)->e.text()), update))
-
-                    buttons.push($label)
-
-                continue
+            if @editableEdgeAttrs
+                for attrName, defaultVal of @defaultEdgeAttrs
+                    do (edge, attrName, buttons, ths = @, inputVars = @inputVars, theGraph = @theGraph) ->
+                        $val = $("<span>", { text: edge[attrName] })
+                        $label = $("<div>", { text: "#{attrName} = ", class: "editable-attr" })
+                            .append($val)
+                            .on("click", =>
+                                update = (newVal) ->
+                                    edge[attrName] = +newVal
+                                    ths.redraw()
+                                    $label.removeClass("active")
+                                    return newVal
+                                $label.addClass("active")
+                                Vamonos.editableValue($val, ((e)->e.text()), update))
+                        buttons.push($label)
             buttons.push(
                 $("<button>", {
                     text: "col",
