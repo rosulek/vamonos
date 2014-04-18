@@ -284,6 +284,16 @@ tr.pseudocode-active td.pseudocode-line-number {
 tr.pseudocode-active td.pseudocode-gutter {
   background-color: #dadaa2;
 }
+tr.pseudocode-error td.pseudocode-text,
+tr.pseudocode-error td.pseudocode-comment {
+  background-color: #ffbbbb;
+}
+tr.pseudocode-error td.pseudocode-line-number {
+  background-color: #eeafaf;
+}
+tr.pseudocode-error td.pseudocode-gutter {
+  background-color: #dda2a2;
+}
 .graph-inner-container {
   position: absolute;
   width: inherit;
