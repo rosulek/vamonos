@@ -64,6 +64,8 @@ class QTipTutorial
             content:  @$tipContents
         })
 
+    event: ->
+
     setup: ->
 
     nextState: ->

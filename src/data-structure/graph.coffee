@@ -347,6 +347,12 @@ class Graph
             alterEdge(v1.id, edge)
             alterEdge(v2.id, edge)
 
+        # save v1 and v2 along with the vertex they collapse to for
+        # the graph widget to use for animations
+        (@recentlyCollapsed ?= {})
+        @recentlyCollapsed[v1.id] = newVtx
+        @recentlyCollapsed[v2.id] = newVtx
+
         @removeVertex(v1)
         @removeVertex(v2)
 
@@ -367,6 +373,7 @@ class Graph
         })
         @eachVertex (v) -> r.addVertex(v)
         @eachEdge (e) -> r.addEdge(e.source, e.target, e)
+        r.recentlyCollapsed = Vamonos.clone(@recentlyCollapsed)
         return r
 
     @interface.toString =

@@ -205,7 +205,6 @@ var myviz = new Vamonos.Visualizer({
                         minEdge.inMST = true;
                         var sourceId = minEdge.originally.split("--")[0];
                         var targetId = minEdge.originally.split("--")[1];
-                        console.log(sourceId, targetId);
                         e = global.G_mst.edge(sourceId, targetId);
                         e.faint = false;
                         e.inMST = true;

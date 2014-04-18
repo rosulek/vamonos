@@ -503,9 +503,22 @@ class GraphDisplay
             .attr("ry", @vertexHeight / 2)
         enter.call(@createVertexLabels)
             .call(@updateVertexClasses)
+
+        ths = @
+        maybeAnimateRemoval = (vtx) ->
+            sel = d3.select(this)
+            if ths.currentGraph.recentlyCollapsed?[vtx.id]?
+                sel.transition()
+                    .attr("transform", trans(ths.currentGraph.recentlyCollapsed[vtx.id]))
+                    .remove()
+            else
+                sel.remove()
+
         # exit
         vertices.exit()
-            .remove()
+            .each(maybeAnimateRemoval)
+
+
 
     createVertexLabels: (vertexGroup) =>
         x = @vertexWidth / 2
