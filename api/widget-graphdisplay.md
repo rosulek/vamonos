@@ -21,6 +21,12 @@ GraphDisplay provides display functionality to widgets that might not need to us
 
 
 
+ * **animateEdgeFlips** :: *Boolean* -- default value: `false`
+
+    whether edges flip ostentatiously when they switch source and target
+
+
+
  * **arrowLength** :: *Number* -- default value: `6`
 
     the length of arrows in directed graphs
@@ -106,6 +112,12 @@ GraphDisplay provides display functionality to widgets that might not need to us
  * **resizable** :: *Boolean* -- default value: `true`
 
     whether the graph widget is resizable
+
+
+
+ * **showVertexChanges** :: *Boolean* -- default value: `true`
+
+    whether to flash vertices that have changed attributes
 
 
 
