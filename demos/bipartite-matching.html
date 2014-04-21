@@ -186,6 +186,7 @@ var myviz = new Vamonos.Visualizer({
                     { source: 'v5',  target: 'v11', c: 1 },
                 ]
             }),
+            animateEdgeFlips: true,
         }),
 
         new Vamonos.Widget.VarName({
@@ -197,7 +198,6 @@ var myviz = new Vamonos.Visualizer({
             varName: "G_f",
             container: "graph-gf",
             editable: false,
-            showChanges: [],
             vertexLabels: {
                 inner: function(vtx){return vtx.name},
                 nw   : ["s_f"],
@@ -206,6 +206,8 @@ var myviz = new Vamonos.Visualizer({
             edgeCssAttributes: {
                 blue  : function(edge){return (edge.target.pred === edge.source.id)}
             },
+            animateEdgeFlips: true,
+            showVertexChanges: false,
         }),
 
         new Vamonos.Widget.Error({

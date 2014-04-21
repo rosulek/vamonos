@@ -128,6 +128,10 @@ class GraphDisplay
             type: "Boolean"
             defaultValue: true
             description: "whether vertices will get the css class 'changed' when they are modified"
+        showVertexChanges:
+            type: "Boolean"
+            defaultValue: true
+            description: "whether to flash vertices that have changed attributes"
         vertexWidth:
             type: "Number"
             defaultValue: 40
@@ -156,6 +160,11 @@ class GraphDisplay
             defaultValue: true
             description: "whether the positions resulting from dragging " +
                 "vertices are persistent across frames in display mode."
+
+        animateEdgeFlips:
+            type: "Boolean"
+            defaultValue: false
+            description: "whether edges flip ostentatiously when they switch source and target"
 
     constructor: (args) ->
 
@@ -352,6 +361,48 @@ class GraphDisplay
     stopDragging: () ->
         @inner.selectAll("g.vertex").on("mousedown.drag", null)
 
+    updateVertices: () ->
+        id = (vtx) -> return vtx.id
+        trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
+        # update
+        vertices = @inner.selectAll("g.vertex")
+            .data(@currentGraph.getVertices(), id)
+            .attr("transform", trans)
+            .call(@updateVertexLabels)
+            .call(@updateVertexClasses)
+        # enter
+        enter = vertices.enter()
+            .append("g")
+            .attr("transform", trans)
+            .attr("class", "vertex")
+            .attr("id", (d) -> d.id)
+        enter.append("ellipse")
+            .attr("class", "vertex")
+            .attr("cx", 0)
+            .attr("cy", 0)
+            .attr("rx", @vertexWidth  / 2)
+            .attr("ry", @vertexHeight / 2)
+        enter.call(@createVertexLabels)
+            .call(@updateVertexClasses)
+
+        ths = @
+        maybeAnimateRemoval = (vtx) ->
+            sel = d3.select(this)
+            if ths.currentGraph.recentlyCollapsed?[vtx.id]?
+                colVtx = ths.currentGraph.recentlyCollapsed[vtx.id]
+                collapsedSel = d3.select("#" + colVtx.id)
+                collapsedSel.style("visibility", "hidden")
+                sel.transition()
+                    .attr("transform", trans(colVtx))
+                    .remove()
+                    .each("end", () -> collapsedSel.style("visibility", "visible"))
+            else
+                sel.remove()
+
+        # exit
+        vertices.exit()
+            .each(maybeAnimateRemoval)
+
     updateEdges: () ->
         # update #
         edges = @inner.selectAll("path.edge")
@@ -371,7 +422,29 @@ class GraphDisplay
             .call(@updateEdgeClasses)
             .call(@updateEdgeStyles)
         # exit #
-        edges.exit().remove()
+
+        ths = @
+        maybeFlipAndRemove = (edge) ->
+            sel = d3.select(this)
+            otherEdge = ths.currentGraph.edge(edge.target, edge.source)
+            console.log ths.highlightChanges
+            if ths.animateEdgeFlips and ths.highlightChanges and otherEdge
+                otherSel = d3.select("#" + ths.currentGraph.edgeId(otherEdge))
+                otherSel.style("visibility", "hidden")
+                x = (edge.source.x + edge.target.x) / 2
+                y = (edge.source.y + edge.target.y) / 2
+                tween = () ->
+                    d3.interpolateString("rotate(0, #{x}, #{y})", "rotate(-180, #{x}, #{y})")
+                sel.transition()
+                    # .duration(1000)
+                    .attrTween("transform", tween)
+                    .remove()
+                    .each("end", () -> otherSel.style("visibility", "visible"))
+            else
+                sel.remove()
+
+        edges.exit()
+            .each(maybeFlipAndRemove)
         @updateEdgeLabels()
 
     # dispatches to genStraightPath or genCurvyPath depending on whether
@@ -479,44 +552,6 @@ class GraphDisplay
         b = @vertexHeight / 2 + 5
         thingy = a * b / Math.sqrt( sq(a) * sq(dy) + sq(b) * sq(dx) )
         return [thingy * dx + x1, thingy * dy + y1 ]
-
-    updateVertices: () ->
-        id = (vtx) -> return vtx.id
-        trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
-        # update
-        vertices = @inner.selectAll("g.vertex")
-            .data(@currentGraph.getVertices(), id)
-            .attr("transform", trans)
-            .call(@updateVertexLabels)
-            .call(@updateVertexClasses)
-        # enter
-        enter = vertices.enter()
-            .append("g")
-            .attr("transform", trans)
-            .attr("class", "vertex")
-            .attr("id", (d) -> d.id)
-        enter.append("ellipse")
-            .attr("class", "vertex")
-            .attr("cx", 0)
-            .attr("cy", 0)
-            .attr("rx", @vertexWidth  / 2)
-            .attr("ry", @vertexHeight / 2)
-        enter.call(@createVertexLabels)
-            .call(@updateVertexClasses)
-
-        ths = @
-        maybeAnimateRemoval = (vtx) ->
-            sel = d3.select(this)
-            if ths.currentGraph.recentlyCollapsed?[vtx.id]?
-                sel.transition()
-                    .attr("transform", trans(ths.currentGraph.recentlyCollapsed[vtx.id]))
-                    .remove()
-            else
-                sel.remove()
-
-        # exit
-        vertices.exit()
-            .each(maybeAnimateRemoval)
 
 
 
@@ -668,6 +703,7 @@ class GraphDisplay
             .data((d) -> [d])
             .classed("changed", (vertex) =>
                 return @highlightChanges and
+                       @showVertexChanges and
                        @mode is 'display' and
                        @vertexChanged(vertex)
             )
