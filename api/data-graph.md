@@ -73,10 +73,12 @@ adds an edge from `source` to `target` with attributes copied from `attrs`
 
 adds `vtx` to the graph
 
-## **collapse**(`e`)
+## **collapse**(`e`, `overlapFunc`)
  * `e`: an edge of the graph to collapse
 
-collapses `e`, creating a new vertex. By default vertex names are concatenations of the collapsed vertices' names, vertices' positions are averaged, and overlapping edges take the min weight. only works on undirected graphs.
+ * `overlapFunc`: a function taking two edges and returning one of them
+
+collapses `e`, creating a new vertex. By default vertex names are concatenations of the collapsed vertices' names, vertices' positions are averaged, and overlapping edges take the min weight. only works on undirected graphs. `overlapFunc` is an optional parameter for a function that decides what to do with overlapping edges after a collapse. By default overlapFunc keeps the edge with least `w`.
 
 ## **eachEdge**(`f`)
  * `f`: a function taking an edge

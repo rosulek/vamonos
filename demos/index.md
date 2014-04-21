@@ -37,6 +37,7 @@ subheader: Dynamic algorithm visualization in the browser
    * [Bellman-Ford algorithm](bellman-ford.html)
    * [Prim's MST algorithm](prims.html)
    * [Kruskal's MST algorithm](kruskals.html)
+   * [Boruvka's MST algorithm](boruvkas.html)
    * [Strongly Connected Components](scc.html)
    * [Ford-Fulkerson Max Flow](max-flow.html)
    * [Ford-Fulkerson Bipartite Matching](bipartite-matching.html)

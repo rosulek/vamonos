@@ -172,7 +172,7 @@ var myviz = new Vamonos.Visualizer({
                     v = G.vertex(e.target);
                     if (_(11), u.d + e.w < v.d) {
                         _(12); e.error = true;
-                        return;
+                        Vamonos.error("negative-weight cycle");
                     }
                 }
             }

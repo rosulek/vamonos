@@ -1,0 +1,237 @@
+<html><head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="../lib/vamonos-demos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <style type="text/css">
+    .vertex-contents {
+        font-size: .8em;
+    }
+
+    .vertex-ne-label, .vertex-nw-label {
+        font-weight: bold;
+    }
+
+    .vertex-sw-label {
+        font-style: italic;
+    }
+
+    .vertex._error {
+        stroke: #ff7676;
+        stroke-width: 3;
+    }
+
+    body {
+        text-align: center;
+    }
+
+    path.red {
+        filter: url(#shadow-blue);
+    }
+
+    path.blue {
+        stroke: #7a72ff;
+    }
+
+    path.faint {
+        stroke: #ececec;
+    }
+
+    body {
+        text-align: center;
+    }
+
+    </style>
+
+</head><body>
+
+    <h1>Borůvka's Minimum Spanning Tree</h1>
+
+    <table class="vamonos">
+
+        <tr><td class="pseudocode-and-controls">
+
+            <div id="controls"></div>
+
+            <div class="pseudocode-procedures">
+                <div id="pseudocode" title="MST-Boruvka(G)">
+                    while |G.V| &gt; 1
+                        for each u &in; G.V
+                            for each v &in; G.V s.t. (u,v) &in; G.E
+                                if (u,v).w &lt; best.w
+                                    best = (u,v)
+                            if best = null
+                                error "disconnected graph"
+                            else
+                                add best to MST
+                        for each (u,v) &in; G.E s.t. (u,v).inMST
+                            Collapse(u,v)
+                </div>
+            </div>
+
+        </td><td class="variable-widgets">
+
+            <table class="variable-widgets">
+                <tr><td><div id="g-var"></div></td>
+                    <td><div id="g"></div></td> </tr>
+                <tr><td><div id="gmst-var"></div></td>
+                    <td><div id="gmst"></div></td> </tr>
+            </table>
+
+        </td></tr>
+    </table>
+
+</body>
+<script type="text/javascript">
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+        new Vamonos.Widget.Controls("controls"),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode",
+            breakpoints: [9,10,11],
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "g-var",
+            varName: "G",
+            inputVar: true,
+        }),
+
+        new Vamonos.Widget.Graph({
+            container: "g",
+            varName: "G",
+            vertexLabels: {
+                inner: function(vtx){ return vtx.name },
+                ne: ['u','v'],
+                /* sw: function(vtx){ return vtx.id }, */
+            },
+            edgeLabel: "w",
+            defaultEdgeAttrs: { w: 1 },
+            vertexCssAttributes: { _error: true },
+            edgeCssAttributes: {
+                blue : function(edge){ return edge.inMST },
+                red  : "u<->v",
+            },
+            defaultGraph: new Vamonos.DataStructure.Graph({
+                directed: false,
+                prefix: "",
+                vertices: [
+                    { id: 'v0', x: 10, y: 187 },
+                    { id: 'v1', x: 4, y: 13 },
+                    { x: 87, y: 156, id: 'v4' },
+                    { x: 94, y: 87, id: 'v5' },
+                    { x: 207, y: 195, id: 'v6' },
+                    { x: 160, y: 124, id: 'v7' },
+                    { x: 223, y: 26, id: 'v8' },
+                    { x: 151, y: 53, id: 'v9' },
+                    { x: 104, y: 0, id: 'v10' },
+                ],
+                edges: [
+                    { source: 'v0', target: 'v4',  w: 3  },
+                    { source: 'v0', target: 'v6',  w: 10 },
+                    { source: 'v1', target: 'v0',  w: 6  },
+                    { source: 'v4', target: 'v1',  w: 4  },
+                    { source: 'v4', target: 'v5',  w: 2  },
+                    { source: 'v5', target: 'v1',  w: 6  },
+                    { source: 'v5', target: 'v7',  w: 10 },
+                    { source: 'v6', target: 'v4',  w: 9  },
+                    { source: 'v6', target: 'v8',  w: 18 },
+                    { source: 'v7', target: 'v6',  w: 8  },
+                    { source: 'v7', target: 'v9',  w: 9  },
+                    { source: 'v8', target: 'v10', w: 4  },
+                    { source: 'v8', target: 'v7',  w: 10 },
+                    { source: 'v8', target: 'v9',  w: 3  },
+                    { source: 'v9', target: 'v1',  w: 5  },
+                    { source: 'v10', target: 'v1', w: 5  },
+                ]
+            }),
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "gmst-var",
+            varName: "G_mst",
+            inputVar: false,
+        }),
+
+        new Vamonos.Widget.Graph({
+            container: "gmst",
+            editable: false,
+            varName: "G_mst",
+            vertexLabels: {
+                inner: function(vtx){ return vtx.name },
+                /* sw: function(vtx){ return vtx.id }, */
+            },
+            edgeLabel: "w",
+            edgeCssAttributes: {
+                faint: function(e){ return e.faint },
+                blue : function(e){ return e.inMST },
+            }
+        }),
+    ],
+
+    algorithm: function(_){
+        with (this) {
+            G.eachEdge(function(e){ e.originally = G.edgeId(e) })
+            // set up G_mst
+            global.G_mst = G.clone();
+            global.G_mst.eachEdge(function(e){ e.faint = true });
+            while (_(1), G.getVertices().length > 1) {
+                G.eachVertex(function(vtx1){
+                    u = vtx1;
+                    _(2);
+                    minEdge = { w: Infinity, nada: true }
+                    G.eachNeighbor(u, function(vtx2){
+                        _(3);
+                        v = vtx2;
+                        var e = G.edge(u,v);
+                        if (_(4), e.w < minEdge.w) {
+                            _(5);
+                            minEdge = e;
+                        }
+                        v = undefined;
+                    });
+                    if (_(6), minEdge.nada) {
+                        _(7);
+                        u._error = true;
+                        Vamonos.error("disconnected graph");
+                    } else {
+                        _(8);
+                        _(9);
+                        minEdge.inMST = true;
+                        var sourceId = minEdge.originally.split("--")[0];
+                        var targetId = minEdge.originally.split("--")[1];
+                        e = global.G_mst.edge(sourceId, targetId);
+                        e.faint = false;
+                        e.inMST = true;
+                    }
+                    u = undefined;
+                });
+
+                while (e = collapsableEdge(G)) {
+                    _(10);
+                    u = G.vertex(e.source);
+                    v = G.vertex(e.target);
+                    _(11);
+                    G.collapse(e);
+                }
+
+            }
+        }
+
+    },
+});
+
+function collapsableEdge(G){
+    var es = G.getEdges();
+    for (var i = 0; i < es.length; i++) {
+        if (es[i].inMST) return es[i];
+    }
+}
+
+</script>
+</html>

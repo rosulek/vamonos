@@ -108,6 +108,12 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
 
 
 
+ * **editableEdgeAttrs** :: *Boolean* -- default value: `true`
+
+    whether edge attributes are modifiable in edit mode.
+
+
+
  * **highlightChanges** :: *Boolean* -- default value: `true`
 
     whether vertices will get the css class 'changed' when they are modified
