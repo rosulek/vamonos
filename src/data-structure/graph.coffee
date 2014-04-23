@@ -63,7 +63,7 @@ class Graph
         args: [["vtx", "a vertex object"]]
         description: "adds `vtx` to the graph"
     addVertex: (vtx = {}) ->
-        return vtx.id if @vertices[vtx.id]?
+        return @vertices[vtx.id] if @vertices[vtx.id]?
         newVtx = {}
         newVtx.type = 'Vertex'
         if vtx.name?
@@ -119,8 +119,8 @@ class Graph
     @interface.nextVertexId = description: "returns an unused vertex id"
     nextVertexId: () ->
         @_customVertexNum ?= 0
+        newId = "#{@prefix ? "custom-"}vertex-#{@_customVertexNum++}"
         for existingVtx in @getVertices()
-            newId = "#{@prefix ? "custom-"}vertex-#{@_customVertexNum++}"
             if existingVtx.id == newId
                 return @nextVertexId()
         return newId
