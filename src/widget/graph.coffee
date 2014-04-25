@@ -187,7 +187,7 @@ class Graph extends this.Vamonos.Widget.GraphDisplay
                 sourceId = @selectedVertex?.attr("id")
                 targetId = d3.event.target.__data__.id
                 # if a vertex is selected and there is no (actual) edge already
-                if sourceId? and @theGraph.edge(sourceId, targetId)._potential?
+                if sourceId? and @theGraph?.edge(sourceId, targetId)._potential?
                     @addEdge(sourceId, targetId)
                 else if sourceId is targetId
                     @deselect()
@@ -211,8 +211,9 @@ class Graph extends this.Vamonos.Widget.GraphDisplay
                 @deselect()
                 @closeDrawer()
             else # create new vertex
-                x = e.offsetX - @containerMargin
-                y = e.offsetY - @containerMargin
+                # offsetX and offsetY are undefined in firefox
+                x = (e.offsetX ? e.pageX - @$outer.offset().left) - @containerMargin
+                y = (e.offsetY ? e.pageY - @$outer.offset().top)  - @containerMargin
                 @addVertex({x:x, y:y})
 
     unsetEditBindings: ->

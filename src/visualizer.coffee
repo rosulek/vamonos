@@ -32,7 +32,7 @@ class Visualizer
                 "will be taken at when it is set as a watchVar."
         exportAfterEditMode:
             type: "Boolean"
-            defaultValue: true
+            defaultValue: false
             description: "whether the visualizer will update the location with " +
                 "the updated input after leaving edit mode every time"
 
@@ -297,7 +297,7 @@ class Visualizer
 
         @initializeStash()
         @tellWidgets("editStop") if @mode is "edit"
-        @export()
+        @export() if @exportAfterEditMode
 
         @mode = "running"
 

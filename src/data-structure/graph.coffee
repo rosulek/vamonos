@@ -147,7 +147,7 @@ class Graph
         @availableNames.shift()
 
     _initAvailableNames: () ->
-        @availableNames ?= "abcdefghijklmnopqrstuvwxyz".split("")
+        @availableNames ?= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789".split("")
 
     # ---------- edge functions ----------- #
 

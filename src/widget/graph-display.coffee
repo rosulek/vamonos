@@ -160,11 +160,17 @@ class GraphDisplay
             defaultValue: true
             description: "whether the positions resulting from dragging " +
                 "vertices are persistent across frames in display mode."
-
         animateEdgeFlips:
             type: "Boolean"
             defaultValue: false
             description: "whether edges flip ostentatiously when they switch source and target"
+
+        background:
+            type: "Object"
+            defaultValue: undefined
+            description: "an image to use as the background of the graph. " +
+                "Args come in as an object `{ source: STRING, callback: OPTIONAL-FUNCTION }`. " +
+                "If callback is provided, it must be a function taking a d3 selector."
 
     constructor: (args) ->
 
@@ -221,6 +227,13 @@ class GraphDisplay
         @_savey = {}
 
     initializeInner: () ->
+        if @background?
+            img = @svg.append("image")
+                .attr("xlink:href", @background.source)
+                # .attr("x", 0)
+                # .attr("y", 0)
+            if @background.callback?
+                @background.callback(img)
         @svg.append("g")
             .attr("transform", "translate(" +
                 [ @containerMargin ,
@@ -339,20 +352,30 @@ class GraphDisplay
     startDragging: (graph) ->
         trans = (d) -> "translate(" + [ d.x, d.y ] + ")"
         ths = @
-        dragmove = (d) ->
+        dragstart = (d) ->
             parent = this.parentNode
             ref = parent.querySelector(".graph-label")
             parent.insertBefore(this, ref)
+            this.className += "vertex-drag"
+            this.style.filter = "url(#shadow)"
+        dragmove = (d) ->
+            # using "dragstart" event conflicted with click handling
+            # when selecting vertices
+            unless dragmove.initialized
+               dragstart.call(this, d)
+               dragmove.initialized = true
             d.x = d3.event.x
             d.y = d3.event.y
-            d3.select(this).attr('transform', trans)
-                .classed("vertex-drag", true)
+            this.setAttribute("transform", trans(d))
             ths.inner.selectAll("path.edge").call(ths.genPath)
             ths.updateEdgeLabels()
         drag = d3.behavior.drag()
             .on("drag", dragmove)
             .on "dragend", (d) ->
-                d3.select(this).classed("vertex-drag", null)
+                dragmove.initialized = false
+                d3.select(this)
+                    .classed("vertex-drag", null)
+                    .style("filter", null)
                 if ths.persistentDragging and ths.mode is 'display'
                     ths._savex[d.id] = d.x
                     ths._savey[d.id] = d.y
@@ -426,20 +449,22 @@ class GraphDisplay
         ths = @
         maybeFlipAndRemove = (edge) ->
             sel = d3.select(this)
-            otherEdge = ths.currentGraph.edge(edge.target, edge.source)
-            console.log ths.highlightChanges
-            if ths.animateEdgeFlips and ths.highlightChanges and otherEdge
-                otherSel = d3.select("#" + ths.currentGraph.edgeId(otherEdge))
-                otherSel.style("visibility", "hidden")
-                x = (edge.source.x + edge.target.x) / 2
-                y = (edge.source.y + edge.target.y) / 2
-                tween = () ->
-                    d3.interpolateString("rotate(0, #{x}, #{y})", "rotate(-180, #{x}, #{y})")
-                sel.transition()
-                    # .duration(1000)
-                    .attrTween("transform", tween)
-                    .remove()
-                    .each("end", () -> otherSel.style("visibility", "visible"))
+            if ths.animateEdgeFlips and ths.highlightChanges
+                otherEdge = ths.currentGraph.edge(edge.target, edge.source)
+                if otherEdge
+                    otherSel = d3.select("#" + ths.currentGraph.edgeId(otherEdge))
+                    otherSel.style("visibility", "hidden")
+                    x = (edge.source.x + edge.target.x) / 2
+                    y = (edge.source.y + edge.target.y) / 2
+                    tween = () ->
+                        d3.interpolateString("rotate(0, #{x}, #{y})", "rotate(-180, #{x}, #{y})")
+                    sel.transition()
+                        # .duration(1000)
+                        .attrTween("transform", tween)
+                        .remove()
+                        .each("end", () -> otherSel.style("visibility", "visible"))
+                else
+                    sel.remove()
             else
                 sel.remove()
 
@@ -552,8 +577,6 @@ class GraphDisplay
         b = @vertexHeight / 2 + 5
         thingy = a * b / Math.sqrt( sq(a) * sq(dy) + sq(b) * sq(dx) )
         return [thingy * dx + x1, thingy * dy + y1 ]
-
-
 
     createVertexLabels: (vertexGroup) =>
         x = @vertexWidth / 2
@@ -689,9 +712,9 @@ class GraphDisplay
                 if res?.length == 2
                     [attr, val] = res
                     styles.push attr
-                    d3.select(this).style(attr, val)
+                    this.style[attr] = val
                 else
-                    d3.select(this).style(attr, null) for attr in styles
+                    this.style[attr] = null for attr in styles
 
     # this will be cleaner should I find a way to have ellipses and
     # text svg elements inherit classes from their groups. otherwise
