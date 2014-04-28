@@ -371,7 +371,6 @@ g.editable-vertex:hover ellipse {
   stroke-width: 3;
 }
 .vertex.vertex-drag {
-  filter: url(#shadow);
   cursor: move;
 }
 .vertex.changed .vertex-nw-label,

@@ -39,6 +39,12 @@ GraphDisplay provides display functionality to widgets that might not need to us
 
 
 
+ * **background** :: *Object* -- optional
+
+    an image to use as the background of the graph. Args come in as an object `{ source: STRING, callback: OPTIONAL-FUNCTION }`. If callback is provided, it must be a function taking a d3 selector.
+
+
+
  * **bezierCurviness** :: *Number* -- default value: `15`
 
     the curviness of bezier curves in this graph

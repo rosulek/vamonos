@@ -29,7 +29,7 @@ namespaces and variables, and runs the simulation itself.
 
 
 
- * **exportAfterEditMode** :: *Boolean* -- default value: `true`
+ * **exportAfterEditMode** :: *Boolean* -- default value: `false`
 
     whether the visualizer will update the location with the updated input after leaving edit mode every time
 
