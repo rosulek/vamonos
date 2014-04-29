@@ -34,6 +34,11 @@ class Graph extends this.Vamonos.Widget.GraphDisplay
             defaultValue: undefined
             description: "A mapping of attribute names to default values for " +
                 "new edges created in edit mode."
+        defaultVertexAttrs:
+            type: "Object"
+            defaultValue: undefined
+            description: "A mapping of attribute names to default values for " +
+                "new vertices created in edit mode."
         editableEdgeAttrs:
             type: "Boolean"
             defaultValue: true
@@ -86,13 +91,17 @@ class Graph extends this.Vamonos.Widget.GraphDisplay
             @mode = "display"
 
         when "displayStop"
+            @clearDisplay()
             unless @editable
-                @clearDisplay()
+                @updateVariables()
 
         when "editStart"
             if @editable
                 @mode = "edit"
                 @startEditing()
+            else if @background?
+                @mode = "edit"
+                @draw()
 
         when "editStop"
             if @editable
@@ -132,7 +141,7 @@ class Graph extends this.Vamonos.Widget.GraphDisplay
         @viz.registerVariable(key) for key of @inputVars
 
     updateVariables: ->
-        graph = Vamonos.clone(@theGraph)
+        graph = Vamonos.clone(@theGraph ? @defaultGraph)
         @viz.setVariable(@varName, graph)
         for k, v of @inputVars
             if v?
@@ -211,10 +220,12 @@ class Graph extends this.Vamonos.Widget.GraphDisplay
                 @deselect()
                 @closeDrawer()
             else # create new vertex
+                attrs = {}
+                attrs[k] = v for k, v of @defaultVertexAttrs
                 # offsetX and offsetY are undefined in firefox
-                x = (e.offsetX ? e.pageX - @$outer.offset().left) - @containerMargin
-                y = (e.offsetY ? e.pageY - @$outer.offset().top)  - @containerMargin
-                @addVertex({x:x, y:y})
+                attrs.x = (e.offsetX ? e.pageX - @$outer.offset().left) - @containerMargin
+                attrs.y = (e.offsetY ? e.pageY - @$outer.offset().top)  - @containerMargin
+                @addVertex(attrs)
 
     unsetEditBindings: ->
         @$outer.off("click.vamonos-graph")
@@ -304,6 +315,26 @@ class Graph extends this.Vamonos.Widget.GraphDisplay
                         inputVars[v] = vtx
                         ths.redraw()
                     buttons.push($b)
+
+            if @defaultVertexAttrs?
+                for attr, defVal of @defaultVertexAttrs
+                    do (attr, ths = @) =>
+                        if vtx[attr]?
+                            buttons.push($("<button>", {text: "unset #{attr}" })
+                                .on "click.vamonos-graph", (e) =>
+                                    console.log "unset #{attr}"
+                                    vtx[attr] = undefined
+                                    ths.redraw()
+                                    ths.openDrawer()
+                                    )
+                        else
+                            buttons.push($("<button>", {text: "set #{attr}" })
+                                .on "click.vamonos-graph", (e) =>
+                                    console.log "set #{attr}"
+                                    vtx[attr] = true
+                                    ths.redraw()
+                                    ths.openDrawer()
+                                    )
 
             buttons.push($("<button>", {text: "del", title: "Delete #{vtx.name}"})
                     .on "click.vamonos-graph", (e) =>

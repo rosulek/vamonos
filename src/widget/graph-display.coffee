@@ -170,7 +170,15 @@ class GraphDisplay
             defaultValue: undefined
             description: "an image to use as the background of the graph. " +
                 "Args come in as an object `{ source: STRING, callback: OPTIONAL-FUNCTION }`. " +
-                "If callback is provided, it must be a function taking a d3 selector."
+                "If callback is provided, it must be a function taking a d3 selector." +
+                "You can specify seperate images for edit and display mode by providing " +
+                "an object such as `{ display: { source: STRING, callback: OPTIONAL-FUNCTION } " +
+                "edit: { source: STRING, callback: OPTIONAL-FUNCTION }`"
+
+        fadeIn:
+            type: "Boolean"
+            defaultValue: false
+            description: "whether new things fade in, and deleted things fade out"
 
     constructor: (args) ->
 
@@ -227,17 +235,38 @@ class GraphDisplay
         @_savey = {}
 
     initializeInner: () ->
-        if @background?
-            img = @svg.append("image")
-                .attr("xlink:href", @background.source)
-                # .attr("x", 0)
-                # .attr("y", 0)
-            if @background.callback?
-                @background.callback(img)
         @svg.append("g")
             .attr("transform", "translate(" +
                 [ @containerMargin ,
                   @containerMargin ] + ")")
+
+    setBackground: () ->
+        return if @_bgmode is @mode
+        if @_existingbg?
+            @_existingbg
+                .style("opacity", 1)
+                .transition()
+                .duration(400)
+                .style("opacity", 0)
+                .remove()
+
+        make_bg = (source, callback) =>
+            @_existingbg = @svg.insert("image", "defs")
+                .attr("xlink:href", source)
+            @_existingbg.style("opacity", 0)
+                .transition()
+                .duration(400)
+                .style("opacity", 1)
+            if callback?
+                callback(@_existingbg)
+
+        if @background?
+            if @background[@mode]?
+                return unless @background[@mode].source?
+                make_bg(@background[@mode].source, @background[@mode].callback)
+            else if @background.source?
+                make_bg(@background.source, @background.callback)
+            @_bgmode = @mode
 
     createShadowFilter: ({ svg, id, red, green, blue, dx, dy }) ->
         dx ?= 0
@@ -282,6 +311,8 @@ class GraphDisplay
         # we need to set it to "display". this is so that edge and
         # vertex labels and classes know what to show.
         @mode ?= "display"
+        @setBackground()
+        return unless graph?
         @directed = graph.directed # convenience
         # remove all the changed vertex highlighting from previous frame
         @inner.selectAll(".changed").classed("changed", null)
@@ -319,16 +350,13 @@ class GraphDisplay
             max_x = Math.max(xVals..., @minX)
             max_y = Math.max(yVals..., @minY)
         else
-            max_x = 0
-            max_y = 0
+            max_x = @minX ? 0
+            max_y = @minY ? 0
         if animate
             @$outer.animate({width: max_x, height: max_y}, 500)
         else
             @$outer.width(max_x)
             @$outer.height(max_y)
-        # if @resizable
-        #     @$outer.resizable("option", "minWidth", max_x)
-        #     @$outer.resizable("option", "minHeight", max_y)
 
     hideGraph: () ->
         @$outer.hide()
@@ -342,7 +370,14 @@ class GraphDisplay
         if @persistentDragging
             @_savex = {} # _savex and _savey are for saving the
             @_savey = {} # dragged positions of vertices across frames.
-        @inner.remove()
+        if @fadeIn
+            @inner.style("opacity", 1)
+                .transition()
+                .duration(700)
+                .style("opacity", 0)
+                .remove()
+        else
+            @inner.remove()
         @inner = @initializeInner()
         @currentGraph = undefined
         @previousGraph = undefined
@@ -399,6 +434,11 @@ class GraphDisplay
             .attr("transform", trans)
             .attr("class", "vertex")
             .attr("id", (d) -> d.id)
+        if @fadeIn
+            enter.style("opacity", 0)
+                .transition()
+                .duration(500)
+                .style("opacity", 1)
         enter.append("ellipse")
             .attr("class", "vertex")
             .attr("cx", 0)
@@ -419,6 +459,11 @@ class GraphDisplay
                     .attr("transform", trans(colVtx))
                     .remove()
                     .each("end", () -> collapsedSel.style("visibility", "visible"))
+            else if ths.fadeIn
+                sel.style("opacity", 1)
+                    .transition()
+                    .style("opacity", 0)
+                    .remove()
             else
                 sel.remove()
 
@@ -444,6 +489,11 @@ class GraphDisplay
         enter.call(@genPath)
             .call(@updateEdgeClasses)
             .call(@updateEdgeStyles)
+        if @fadeIn
+            enter.style("opacity", 0)
+                .transition()
+                .duration(500)
+                .style("opacity", 1)
         # exit #
 
         ths = @
@@ -459,7 +509,6 @@ class GraphDisplay
                     tween = () ->
                         d3.interpolateString("rotate(0, #{x}, #{y})", "rotate(-180, #{x}, #{y})")
                     sel.transition()
-                        # .duration(1000)
                         .attrTween("transform", tween)
                         .remove()
                         .each("end", () -> otherSel.style("visibility", "visible"))
@@ -711,7 +760,7 @@ class GraphDisplay
                 res = styleFunc(e)
                 if res?.length == 2
                     [attr, val] = res
-                    styles.push attr
+                    Vamonos.insertSet(attr, styles)
                     this.style[attr] = val
                 else
                     this.style[attr] = null for attr in styles
