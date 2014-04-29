@@ -40,6 +40,7 @@ subheader: Dynamic algorithm visualization in the browser
    * [Boruvka's MST algorithm](boruvkas.html)
    * [Strongly Connected Components](scc.html)
    * [Ford-Fulkerson Max Flow](max-flow.html)
+   * [Max Flow Railroad Example](max-flow-rail.html)
    * [Ford-Fulkerson Bipartite Matching](bipartite-matching.html)
 
 

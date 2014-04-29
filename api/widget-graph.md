@@ -52,7 +52,7 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
 
  * **background** :: *Object* -- optional
 
-    an image to use as the background of the graph. Args come in as an object `{ source: STRING, callback: OPTIONAL-FUNCTION }`. If callback is provided, it must be a function taking a d3 selector.
+    an image to use as the background of the graph. Args come in as an object `{ source: STRING, callback: OPTIONAL-FUNCTION }`. If callback is provided, it must be a function taking a d3 selector.You can specify seperate images for edit and display mode by providing an object such as `{ display: { source: STRING, callback: OPTIONAL-FUNCTION } edit: { source: STRING, callback: OPTIONAL-FUNCTION }`
 
 
 
@@ -77,6 +77,12 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
  * **defaultGraph** :: *Graph* -- optional
 
     the initial graph, as a Vamonos.DataStructure.Graph
+
+
+
+ * **defaultVertexAttrs** :: *Object* -- optional
+
+    A mapping of attribute names to default values for new vertices created in edit mode.
 
 
 
@@ -123,6 +129,12 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
  * **editableEdgeAttrs** :: *Boolean* -- default value: `true`
 
     whether edge attributes are modifiable in edit mode.
+
+
+
+ * **fadeIn** :: *Boolean* -- default value: `false`
+
+    whether new things fade in, and deleted things fade out
 
 
 

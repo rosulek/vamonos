@@ -1,0 +1,484 @@
+<html><head>
+    <title>Max Flow</title>
+
+    <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="../lib/vamonos-demos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <style type="text/css">
+    .vertex {
+        width: 40;
+        height: 30;
+    }
+
+    .vertex-contents {
+        font-size: .8em;
+    }
+
+    .vertex-sw-label {
+        font-style: italic;
+    }
+
+    .vertex-ne-label, .vertex-nw-label {
+        font-weight: bold;
+    }
+
+    text.vertex-contents {
+        font-weight: bold;
+    }
+
+    path.green {
+        stroke: #92E894;
+    }
+
+    path.red {
+        stroke: #FF7D7D;
+    }
+
+    path.flow {
+        stroke: rgb(210, 210, 255);
+    }
+
+    path.saturated {
+        stroke: #7A72FF;
+    }
+
+    ellipse.isSource {
+        stroke: #92E894;
+        stroke-width: 3;
+    }
+
+    ellipse.isSink {
+        stroke: #FF7D7D;
+        stroke-width: 3;
+    }
+
+    body {
+        text-align: center;
+        background: white;
+    }
+    </style>
+
+</head><body>
+
+    <div id="controls"></div>
+    <div id="graph-g"></div>
+
+</body>
+<script type="text/javascript">
+
+var i = 0;
+
+var myviz = new Vamonos.Visualizer({
+    widgets: [
+        new Vamonos.Widget.Controls({
+            container: "controls",
+            fullscreen: true,
+        }),
+
+        new Vamonos.Widget.Graph({
+            varName: "G",
+            container: "graph-g",
+            editable: false,
+            resizable: false,
+            fadeIn: true,
+            vertexLabels: {
+                inner: function(vtx){return vtx.name},
+                sw   : ["u", "v"],
+                /* se   : function(vtx){ return vtx.id }, */
+            },
+            edgeLabel: {
+                edit: 'c',
+                display: function(e){
+                    return (e.f !== undefined ? e.f : "-") + "/"
+                    + (e.c !== undefined ? e.c : "-");
+                },
+            },
+            defaultEdgeAttrs: { c: 1 },
+            defaultVertexAttrs: {
+                isSource : false,
+                isSink   : false,
+            },
+            edgeCssAttributes: {
+                green: "u->v",
+                saturated: function(edge){ return edge.f === edge.c },
+                flow: function(edge){ return edge.f > 0 && edge.f < edge.c },
+            },
+            vertexCssAttributes: {
+                isSource : true,
+                isSink   : true,
+            },
+            styleEdges: [
+                function(e){
+                    if (e.f !== undefined && (e.f > 0)) {
+                        var scale = d3.scale.linear()
+                                            .domain([0, 50])
+                                            .range([2, 8]);
+                        return ["stroke-width", scale(e.f)];
+                    }
+                },
+            ],
+
+            background: {
+                display: {
+                    source: "rail-noedges.jpg",
+                    callback: function(sel){ sel.attr("height", 800).attr("width", 1200) }
+                },
+                edit: {
+                    source: "rail-original.jpg",
+                    callback: function(sel){ sel.attr("height", 800).attr("width", 1200) }
+                }
+            },
+
+            vertexWidth: 33,
+            vertexHeight: 33,
+            minX: 1200,
+            minY: 800,
+
+            defaultGraph: new Vamonos.DataStructure.Graph({
+                directed: false,
+                prefix: "",
+                vertices: [
+                    { name: '1', id: 'v29', x: 438, y: 488 },
+                    { name: 'e', id: 'v4', x: 817, y: 172, isSource: true },
+                    { name: 'y', id: 'v24', x: 746, y: 372 },
+                    { name: 'x', id: 'v23', x: 641, y: 313 },
+                    { name: 'w', id: 'v22', x: 565, y: 319 },
+                    { name: 'v', id: 'v21', x: 592, y: 394 },
+                    { name: 'u', id: 'v20', x: 584, y: 468 },
+                    { name: 't', id: 'v19', x: 554, y: 529 },
+                    { name: 's', id: 'v18', x: 549, y: 730, isSource: true },
+                    { name: 'A', id: 'v26', x: 447, y: 327 },
+                    { name: 'B', id: 'v27', x: 438, y: 396 },
+                    { name: 'C', id: 'v38', x: 271, y: 314, isSink: true },
+                    { name: 'D', id: 'v39', x: 274, y: 439 },
+                    { name: 'E', id: 'v40', x: 197, y: 496, isSink: true },
+                    { name: 'F', id: 'v41', x: 174, y: 367, isSink: true },
+                    { name: 'G', id: 'v42', x: 183, y: 583, isSink: true },
+                    { name: 'H', id: 'v43', x: 118, y: 627, isSink: true },
+                    { name: 'a', id: 'v0', x: 704, y: 7, isSource: true },
+                    { name: 'b', id: 'v1', x: 580, y: 43 },
+                    { name: 'c', id: 'v2', x: 550, y: 156 },
+                    { name: 'd', id: 'v3', x: 715, y: 173, isSource: true },
+                    { name: 'z', id: 'v25', x: 472, y: 237 },
+                    { name: 'f', id: 'v5', x: 918, y: 181, isSource: true },
+                    { name: 'g', id: 'v6', x: 768, y: 256 },
+                    { name: 'h', id: 'v7', x: 832, y: 312 },
+                    { name: 'i', id: 'v8', x: 904, y: 335 },
+                    { name: 'j', id: 'v9', x: 989, y: 327, isSource: true },
+                    { name: 'k', id: 'v10', x: 1004, y: 518, isSource: true },
+                    { name: 'l', id: 'v11', x: 1069, y: 586, isSource: true },
+                    { name: 'm', id: 'v12', x: 975, y: 614 },
+                    { name: 'n', id: 'v13', x: 870, y: 665 },
+                    { name: 'o', id: 'v14', x: 902, y: 569 },
+                    { name: 'p', id: 'v15', x: 737, y: 484 },
+                    { name: 'q', id: 'v16', x: 775, y: 575 },
+                    { name: 'r', id: 'v17', x: 705, y: 629, isSource: true },
+                    { name: '3', id: 'v31', x: 363, y: 656 },
+                    { name: '4', id: 'v32', x: 263, y: 597 },
+                    { name: '5', id: 'v33', x: 294, y: 531 },
+                    { name: '6', id: 'v34', x: 357, y: 467 },
+                    { name: '7', id: 'v35', x: 354, y: 395 },
+                    { name: '8', id: 'v36', x: 363, y: 318 },
+                    { name: '9', id: 'v37', x: 265, y: 382 },
+                    { name: '2', id: 'v30', x: 425, y: 563 },
+                ],
+
+                edges: [
+                    { source: 'v0', target: 'v5', c: 30 },
+                    { source: 'v0', target: 'v3', c: 28 },
+                    { source: 'v0', target: 'v1', c: 6 },
+                    { source: 'v0', target: 'v2', c: 12 },
+                    { source: 'v9', target: 'v5', c: 24 },
+                    { source: 'v8', target: 'v5', c: 30 },
+                    { source: 'v5', target: 'v7', c: 24 },
+                    { source: 'v5', target: 'v6', c: 30 },
+                    { source: 'v5', target: 'v4', c: 6 },
+                    { source: 'v4', target: 'v3', c: 6 },
+                    { source: 'v2', target: 'v3', c: 2 },
+                    { source: 'v3', target: 'v23', c: 34 },
+                    { source: 'v1', target: 'v2', c: 8 },
+                    { source: 'v2', target: 'v23', c: 24 },
+                    { source: 'v2', target: 'v25', c: 20 },
+                    { source: 'v9', target: 'v10', c: 24 },
+                    { source: 'v8', target: 'v9', c: 38 },
+                    { source: 'v7', target: 'v8', c: 24 },
+                    { source: 'v8', target: 'v14', c: 30 },
+                    { source: 'v6', target: 'v7', c: 16 },
+                    { source: 'v7', target: 'v24', c: 52 },
+                    { source: 'v7', target: 'v15', c: 34 },
+                    { source: 'v7', target: 'v14', c: 34 },
+                    { source: 'v4', target: 'v6', c: 4 },
+                    { source: 'v6', target: 'v23', c: 54 },
+                    { source: 'v23', target: 'v24', c: 41 },
+                    { source: 'v23', target: 'v22', c: 30 },
+                    { source: 'v23', target: 'v21', c: 30 },
+                    { source: 'v25', target: 'v22', c: 32 },
+                    { source: 'v26', target: 'v25', c: 36 },
+                    { source: 'v11', target: 'v10', c: 44 },
+                    { source: 'v11', target: 'v14', c: 40 },
+                    { source: 'v12', target: 'v14', c: 30 },
+                    { source: 'v14', target: 'v13', c: 40 },
+                    { source: 'v16', target: 'v14', c: 10 },
+                    { source: 'v14', target: 'v15', c: 10 },
+                    { source: 'v24', target: 'v15', c: 38 },
+                    { source: 'v24', target: 'v21', c: 12 },
+                    { source: 'v15', target: 'v20', c: 34 },
+                    { source: 'v15', target: 'v19', c: 28 },
+                    { source: 'v15', target: 'v17', c: 4 },
+                    { source: 'v16', target: 'v15', c: 50 },
+                    { source: 'v21', target: 'v22', c: 22 },
+                    { source: 'v22', target: 'v26', c: 32 },
+                    { source: 'v20', target: 'v21', c: 17 },
+                    { source: 'v21', target: 'v26', c: 2 },
+                    { source: 'v21', target: 'v27', c: 36 },
+                    { source: 'v27', target: 'v26', c: 33 },
+                    { source: 'v26', target: 'v36', c: 30 },
+                    { source: 'v11', target: 'v12', c: 48 },
+                    { source: 'v12', target: 'v13', c: 28 },
+                    { source: 'v13', target: 'v16', c: 44 },
+                    { source: 'v17', target: 'v16', c: 16 },
+                    { source: 'v20', target: 'v19', c: 28 },
+                    { source: 'v20', target: 'v27', c: 17 },
+                    { source: 'v18', target: 'v19', c: 8 },
+                    { source: 'v17', target: 'v19', c: 2 },
+                    { source: 'v19', target: 'v29', c: 29 },
+                    { source: 'v19', target: 'v30', c: 10 },
+                    { source: 'v19', target: 'v31', c: 5 },
+                    { source: 'v18', target: 'v17', c: 14 },
+                    { source: 'v29', target: 'v27', c: 20 },
+                    { source: 'v27', target: 'v36', c: 17 },
+                    { source: 'v27', target: 'v35', c: 36 },
+                    { source: 'v34', target: 'v27', c: 16 },
+                    { source: 'v36', target: 'v35', c: 20 },
+                    { source: 'v37', target: 'v36', c: 29 },
+                    { source: 'v36', target: 'v38', c: 23 },
+                    { source: 'v18', target: 'v31', c: 19 },
+                    { source: 'v30', target: 'v29', c: 6 },
+                    { source: 'v29', target: 'v34', c: 24 },
+                    { source: 'v31', target: 'v30', c: 20 },
+                    { source: 'v30', target: 'v33', c: 24 },
+                    { source: 'v31', target: 'v32', c: 16 },
+                    { source: 'v35', target: 'v34', c: 37 },
+                    { source: 'v35', target: 'v37', c: 60 },
+                    { source: 'v35', target: 'v39', c: 25 },
+                    { source: 'v34', target: 'v33', c: 27 },
+                    { source: 'v39', target: 'v34', c: 53 },
+                    { source: 'v33', target: 'v32', c: 13 },
+                    { source: 'v33', target: 'v39', c: 3 },
+                    { source: 'v33', target: 'v40', c: 23 },
+                    { source: 'v32', target: 'v40', c: 10 },
+                    { source: 'v32', target: 'v42', c: 14 },
+                    { source: 'v32', target: 'v43', c: 10 },
+                    { source: 'v39', target: 'v37', c: 19 },
+                    { source: 'v37', target: 'v38', c: 16 },
+                    { source: 'v37', target: 'v41', c: 49 },
+                    { source: 'v38', target: 'v41', c: 16 },
+                    { source: 'v40', target: 'v39', c: 10 },
+                    { source: 'v39', target: 'v41', c: 32 },
+                    { source: 'v42', target: 'v40', c: 2 },
+                    { source: 'v40', target: 'v41', c: 19 },
+                    { source: 'v43', target: 'v42', c: 8 },
+                ]
+            }),
+        }),
+
+    ],
+
+    algorithm: {
+
+        main: function(_){
+            with (this) {
+
+                this.G_f = new Vamonos.DataStructure.Graph();
+                this.Gprime = undirected2directed(G);
+
+                Gprime.eachEdge(function(e){ e.f = 0 });
+                maxX = 0;
+                ys = [];
+                G.eachVertex(function(v){ if (v.x > maxX) maxX = v.x });
+                G.eachVertex(function(v){ ys.push( v.y ) });
+                avgY = ys.reduce(function(a,y){ return a + y }) / ys.length;
+
+                s = Gprime.addVertex({x:maxX + 40, y: avgY});
+                t = Gprime.addVertex({x:10, y:avgY});
+
+                Gprime.eachVertex(function(u){
+                    if (u.isSource) Gprime.addEdge(s, u, { c: Infinity, f: 0 });
+                    if (u.isSink)   Gprime.addEdge(u, t, { c: Infinity, f: 0 });
+                });
+
+                _(3);
+                G_f = ResidualGraph(Gprime);
+                s_f = ResidualVtx(G_f, s);
+                t_f = ResidualVtx(G_f, t);
+
+                var done = false;
+                i = 0;
+                while (_(4), p = BFS(G_f,s_f,t_f), p.length) {
+                    _(5);
+                    // get the flow for each edge on the path
+                    var flows = p.map(function(e){ return e.f });
+                    // cfp is the min flow for each edge on the path
+                    cfp = Math.min.apply(null, flows);
+                    // augment the flow in G along each edge of the path
+                    p.map(function(pEdge){
+                        _(6);
+                        u = Gprime.vertex(pEdge.source.oldId);
+                        v = Gprime.vertex(pEdge.target.oldId);
+                        uf = ResidualVtx(G_f, u);
+                        vf = ResidualVtx(G_f, v);
+                        eprime = Gprime.edge(u,v);
+                        e = G.edge(u,v);
+                        if (_(7), eprime) {
+                            _(8);
+                            eprime.f = eprime.f + cfp;
+                            if (e) {
+                                e.f = eprime.f;
+                            }
+                        } else {
+_(9);                       eprime = Gprime.edge(v,u);
+_(10);                      eprime.f = eprime.f - cfp;
+                            if (e) {
+                                e.f = eprime.f;
+                            }
+                        }
+                        // update the residual graph
+                        UpdateResidualEdge(G_f, eprime);
+                        delete vf.pred;
+                    });
+                    u = v = undefined;
+                    i++;
+                }
+            }
+        },
+    }
+});
+
+var ResidualGraph = function(G){
+    var newG = new Vamonos.DataStructure.Graph({
+        directed: true,
+        prefix: "gf-",
+    });
+
+    G.eachVertex(function(vtx){
+        newG.addVertex({
+            x: vtx.x,
+            y: vtx.y,
+            name: vtx.name,
+            oldId: vtx.id,
+            id: newG.prefix + vtx.id
+        });
+    });
+
+    newG.eachVertex(function(u){
+        newG.eachVertex(function(v){
+            if (u.id === v.id) { return }
+            if (e = G.edge(u.oldId,v.oldId)) {
+                var val = e.c - e.f;
+                if (val > 0) {
+                    ef = newG.addEdge(u,v);
+                    ef.f = val;
+                }
+            } else if (e = G.edge(v.oldId,u.oldId)) {
+                if (e.f > 0) {
+                    ef = newG.addEdge(u,v);
+                    ef.f = e.f;
+                }
+            }
+        });
+    });
+    return newG;
+};
+
+// residualVtx :: Helper function that gets the equivalent
+// vtx from the residual graph
+var ResidualVtx = function(G_f, vtx) {
+    return G_f.vertex( G_f.prefix + vtx.id );
+}
+
+// UpdateResidualEdge :: helper function that updates the
+// residual graph from an edge in the main one
+var UpdateResidualEdge = function(G_f, e){
+    var uf = ResidualVtx(G_f, e.source);
+    var vf = ResidualVtx(G_f, e.target);
+    var ef = G_f.edge(uf,vf);
+    var bf = G_f.edge(vf,uf);
+    // forward edge
+    var val = e.c - e.f;
+    if (val > 0) {
+        if (ef)
+        ef.f = val
+        else
+        G_f.addEdge(uf,vf,{f:val});
+    } else {
+        if (ef)
+        G_f.removeEdge(uf,vf);
+    }
+    // back edge
+    if (e.f > 0) {
+        if (bf)
+        bf.f = e.f
+        else
+        G_f.addEdge(vf,uf,{f:e.f});
+    } else {
+        if (bf) G_f.removeEdge(vf,uf);
+    }
+};
+
+var BFS = function(G,s,t){
+    var Q = [];
+    G.eachNeighbor(s, function(u){
+        u.pred = s.id;
+        Q.push(u);
+    });
+    s.pred = false;
+    var done = false;
+    while (!done && Q.length) {
+        var u = Q.shift();
+        var neighbors = G.neighbors(u);
+        for (var i = 0; i < neighbors.length; i++) {
+            var v = neighbors[i];
+            if (v.pred !== undefined) continue;
+            v.pred = u.id;
+            if (v == t) {
+                done = true;
+                break;
+            }
+            Q.push(v);
+        }
+    }
+    var path = [];
+    var inPath = {};
+    var u = t;
+    while (u) {
+        var e = G.edge(u.pred, u.id);
+        if (e) {
+            path.unshift(e);
+            inPath[u.id] = true;
+        }
+        u = G.vertex(u.pred);
+    }
+    G.eachVertex(function(v){
+        if (!inPath[v.id]) delete v.pred;
+    });
+    return path;
+};
+
+function undirected2directed(G){
+    var gprime = new Vamonos.DataStructure.Graph({ directed: true });
+    G.eachVertex(function(vtx){ gprime.addVertex(vtx) });
+    G.eachEdge(function(edge){
+        gprime.addEdge(edge.source, edge.target, edge);
+        gprime.addEdge(edge.target, edge.source, edge);
+    });
+    return gprime;
+}
+
+myviz.setBreakpoint(4, "main");
+/* myviz.widgets.mode = "edit"; */
+/* myviz.widgets[1].draw() */
+
+</script></html>

@@ -41,7 +41,7 @@ GraphDisplay provides display functionality to widgets that might not need to us
 
  * **background** :: *Object* -- optional
 
-    an image to use as the background of the graph. Args come in as an object `{ source: STRING, callback: OPTIONAL-FUNCTION }`. If callback is provided, it must be a function taking a d3 selector.
+    an image to use as the background of the graph. Args come in as an object `{ source: STRING, callback: OPTIONAL-FUNCTION }`. If callback is provided, it must be a function taking a d3 selector.You can specify seperate images for edit and display mode by providing an object such as `{ display: { source: STRING, callback: OPTIONAL-FUNCTION } edit: { source: STRING, callback: OPTIONAL-FUNCTION }`
 
 
 
@@ -88,6 +88,12 @@ GraphDisplay provides display functionality to widgets that might not need to us
 >     edgeLabel: { display: 'w', edit: function(e){ return e.w } },
 >     edgeLabel: 'w',
 >     edgeLabel: function(e){ return e.w + "!" },
+
+
+
+ * **fadeIn** :: *Boolean* -- default value: `false`
+
+    whether new things fade in, and deleted things fade out
 
 
 
