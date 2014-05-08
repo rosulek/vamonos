@@ -647,7 +647,7 @@ class GraphDisplay
 
     updateVertexLabels: (sel) =>
         for type, style of @vertexLabels
-            target = sel.selectAll("text." + switch type
+            target = sel.select("text." + switch type
                 when "inner" then "vertex-contents"
                 when "ne"    then "vertex-ne-label"
                 when "nw"    then "vertex-nw-label"
@@ -656,18 +656,19 @@ class GraphDisplay
                 else
                     throw Error "GraphDisplay '#{ @varName }': no vertex label \"#{ type }\""
             )
-            target.data((d) -> [d])
+            # target.data((d) -> [d])
+
             if style.constructor.name is "Function"
-                target.html((d) => Vamonos.rawToTxt(style(d)))
+                target.text((d) => Vamonos.rawToTxt(style(d)))
             else if style.constructor.name is "Array"
-                target.html (d) =>
+                target.text (d) =>
                     res = []
                     for v in style when @currentFrame[v]?.id is d.id
                         res.push(Vamonos.resolveSubscript(Vamonos.removeNamespace(v)))
                     return res.join(",")
             else if (style.constructor.name is "Object" and
                      style[@mode]?.constructor.name is "Function")
-                target.html((d) => Vamonos.rawToTxt(style[@mode](d)))
+                target.text((d) => Vamonos.rawToTxt(style[@mode](d)))
             else
                 target.text("")
 
@@ -677,8 +678,8 @@ class GraphDisplay
                 target.each (d) ->
                     w = this.getComputedTextLength()
                     if w + 10 > vw
-                        v = this.parentNode.children[0]
-                        v.setAttribute("rx", (w / 2) + 10)
+                        v = this?.parentNode?.children?[0]
+                        v?.setAttribute("rx", (w / 2) + 10)
 
         return sel
 

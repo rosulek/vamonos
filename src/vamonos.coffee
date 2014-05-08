@@ -105,7 +105,8 @@
         nameMatches = name.match(/(.+)_(.+)/)
         return name unless nameMatches?
         [_,lname,subscript] = nameMatches
-        return "#{ lname }<sub>#{ subscript }</sub> "
+        # return "#{ lname }<sub>#{ subscript }</sub> "
+        return "#{ lname }"
 
     formatObject: (object, attributes = [], prevObj) ->
         if prevObj? and object.name? and object.name isnt prevObj.name
