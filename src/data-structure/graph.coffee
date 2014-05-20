@@ -70,8 +70,8 @@ class Graph
             @removeVertexName(vtx.name)
             newVtx.name = vtx.name
         else
-            newVtx.name = vtx.name ? @nextVertexName()
-        newVtx.id   = vtx.id ? @nextVertexId()
+            newVtx.name = @nextVertexName()
+        newVtx.id = vtx.id ? @nextVertexId()
         @vertices[newVtx.id] = newVtx
         for k, v of vtx when k not in ['type','name','id']
             if v?.type is 'Vertex'
@@ -129,9 +129,24 @@ class Graph
         args: [["n", "string"]]
         description: "adds `n` to the list of available vertex names"
     returnVertexName: (n) ->
+        customSort = (a,b) ->
+            lower   = (x) -> /[a-z]/.test(x)
+            capital = (x) -> /[A-Z]/.test(x)
+            number  = (x) -> /[0-9]/.test(x)
+            sameType = (a,b) ->
+                lower(a) and lower(b) or
+                capital(a) and capital(b) or
+                number(a) and number(b)
+            if sameType(a,b)
+                if a == b then 0 else if a < b then -1 else 1
+            else
+                if lower(a) then -1
+                else if lower(b) then 1
+                else if capital(a) then -1
+                else 1
         @_initAvailableNames()
         @availableNames.unshift(n)
-        @availableNames.sort()
+        @availableNames.sort(customSort)
 
     @interface.removeVertexName =
         args: [["name"]]
