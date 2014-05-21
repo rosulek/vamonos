@@ -81,7 +81,7 @@
 
         <p>
             We could implement this. By the way, we use 1-indexed arrays, so we can have a neat base
-            case of 0.
+            case of 0. We also do this to complicate programming!
         </p>
 
         <div class='center'>
@@ -89,6 +89,13 @@
             <tr><td class="pseudocode-and-controls">
                 <div id="controls-l"></div>
                 <div class="pseudocode-procedures">
+                    <div id="pseudocode-l-caller" title="LIS(A)">
+                        R = []
+                        for i = 0 upto A.length
+                            v = L(A,i)
+                            R.push(v)
+                        return max(R)
+                    </div>
                     <div id="pseudocode-l" title="L(A,n):">
                         if n = 0
                             return 0
@@ -97,13 +104,16 @@
                             for all j such that A[j] < A[n]
                                 v = L(A,j)
                                 M.push(v)
-                            return max(M)
+                            return 1 + max(M)
                     </div>
                 </div>
             </td><td class="variable-widgets">
                 <table class="variable-widgets">
                     <tr><td><div id="A-var-l"></div></td>
                         <td><div id="A-l"></div></td>
+                    </tr>
+                    <tr><td><div id="R-var-l"></div></td>
+                        <td><div id="R-l"></div></td>
                     </tr>
                     <tr><td><div id="stack-var-l"></div></td>
                         <td><div id="stack-l"></div></td></tr>
@@ -115,7 +125,8 @@
 
         <h3>Overlapping Subproblems</h3>
         <p>
-            Work we can avoid!
+            Work we can avoid! Maybe I can dynamically analyze the number of times L gets called
+            with the same input.
         </p>
 
         <div class='center'>
@@ -162,6 +173,10 @@ var myviz1 = new Vamonos.Visualizer({
         new Vamonos.Widget.Console(),
 
         new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-l-caller",
+        }),
+
+        new Vamonos.Widget.Pseudocode({
             container: "pseudocode-l",
         }),
 
@@ -179,10 +194,23 @@ var myviz1 = new Vamonos.Visualizer({
             ignoreIndexZero: true,
             cssRules: [[">", "j", "shaded"]],
             showIndices: ["n", "j"],
+            showCellNumber: false,
         }),
 
-        new Vamonos.Widget.Hardcoded({
-            n: myviz1_array.length,
+        new Vamonos.Widget.VarName({
+            container: "R-var-l",
+            varName: "main::R",
+            displayName: "R",
+            watching: true,
+            showCellNumber: false,
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "R-l",
+            varName: "main::R",
+            ignoreIndexZero: true,
+            displayOnly: true,
+            showIndices: ["i"],
         }),
 
         new Vamonos.Widget.VarName({
@@ -194,37 +222,60 @@ var myviz1 = new Vamonos.Visualizer({
 
         new Vamonos.Widget.CallStack({
             container: "stack-l",
-            procedureNames: {main: "L"},
+            procedureNames: {
+                main: "LIS",
+                l: "L",
+            },
         }),
 
     ],
 
-    algorithm: function(_){
-        with (this) {
-            if (_(1), n === 0) {
-                _(2);
-                return 0
-            }
-            _(3);
-            _(4);
-            var M = [];
-            for (var i = n - 1; i > 0; i--) {
-                if (A[i] >= A[n]) continue;
+    algorithm: {
+        main: function(_){
+            with (this) {
+                _(1);
+                R = [0];
+                for (i = 1; _(2), i < A.length; i++) {
+                    _(3);
+                    var v = l({ A:A, n:i });
+                    _(4);
+                    R.push(v);
+                }
                 _(5);
-                j = i;
-                _(6);
-                var v = main({ A: A, n: j });
-                _(7);
-                M.push(v);
+                return Math.max.apply(this, R);
             }
-            _(8);
-            if (M.length) {
-                return Math.max.apply(this, M);
-            } else {
-                return 0;
+        },
+
+        l: function(_){
+            with (this) {
+                if (_(1), n === 0) {
+                    _(2);
+                    return 0
+                }
+                _(3);
+                _(4);
+                var M = [];
+                for (var i = n - 1; i >= 0; i--) {
+                    if (A[i] >= A[n]) continue;
+                    _(5);
+                    j = i;
+                    _(6);
+                    var v = l({ A: A, n: j });
+                    _(7);
+                    M.push(v);
+                }
+                _(8);
+                console.log(M);
+                if (A[n] === undefined) {
+                    return Math.max.apply(this, M);
+                } else if (M.length) {
+                    return 1 + Math.max.apply(this, M);
+                } else {
+                    return 1;
+                }
             }
-        }
-    },
+        },
+    }
 });
 
 
