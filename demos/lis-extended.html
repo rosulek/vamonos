@@ -21,6 +21,28 @@
     h1, h2, h3, h4, h5, h6 {
         text-align: center;
     }
+
+    table.results {
+        margin-left: auto;
+        margin-right: auto;
+        border: 1px solid black;
+        border-radius: 5px;
+        box-shadow: 5px 10px 10px #aaa;
+    }
+
+    th.results.n {
+        border-right: 1px dotted black;
+    }
+
+    td.results.n {
+        border-right: 1px dotted black;
+    }
+
+    td.results {
+        border-top: 1px dotted black;
+        text-align: right;
+    }
+
     </style>
 
 </head><body>
@@ -125,8 +147,15 @@
 
         <h3>Overlapping Subproblems</h3>
         <p>
-            Work we can avoid! Maybe I can dynamically analyze the number of times L gets called
-            with the same input.
+            The problem with this implementation is that it calls <i>L</i> many times with the same <i>n</i>.
+        </p>
+
+        <div id="l-results"></div>
+
+        <h3>Dynamic Programming</h3>
+
+        <p>
+            So how do we transform it into a bottom-up computation?
         </p>
 
         <div class='center'>
@@ -167,6 +196,34 @@
 <script type="text/javascript">
 
 var myviz1_array = [0, 3,1,4,1,5,9,2,6,5];
+
+function pushResults(){
+    var $table = $("<table>", { class: "results" } );
+    var $row = $("<tr>");
+    $row.append($("<th>", { text: "n", class: "results n" }));
+    $row.append($("<th>", { text: "times called", class: "results" }));
+    $table.append($row);
+    for (var n in l_called_on.results) {
+        if (l_called_on.results.hasOwnProperty(n)) {
+            var val = l_called_on.results[n];
+            var $row = $("<tr>");
+            $row.append($("<td>", { text: n, class: "results n" }));
+            $row.append($("<td>", { text: val, class: "results" }));
+            $table.append($row);
+        }
+    }
+    $("div#l-results").html($table);
+}
+
+function l_called_on(n){
+    var elem = l_called_on.results[n];
+    if (elem === undefined) l_called_on.results[n] = 0;
+    l_called_on.results[n] += 1;
+}
+
+function l_called_on_init() {
+    l_called_on.results = {};
+}
 
 var myviz1 = new Vamonos.Visualizer({
     widgets: [
@@ -233,6 +290,7 @@ var myviz1 = new Vamonos.Visualizer({
     algorithm: {
         main: function(_){
             with (this) {
+                l_called_on_init();
                 _(1);
                 R = [0];
                 for (i = 1; _(2), i < A.length; i++) {
@@ -242,12 +300,14 @@ var myviz1 = new Vamonos.Visualizer({
                     R.push(v);
                 }
                 _(5);
+                pushResults();
                 return Math.max.apply(this, R);
             }
         },
 
         l: function(_){
             with (this) {
+                l_called_on(n);
                 if (_(1), n === 0) {
                     _(2);
                     return 0
@@ -275,7 +335,9 @@ var myviz1 = new Vamonos.Visualizer({
                 }
             }
         },
-    }
+    },
+
+    autoStart: true,
 });
 
 
