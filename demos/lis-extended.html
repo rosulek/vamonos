@@ -83,7 +83,7 @@
             href="https://en.wikipedia.org/wiki/Optimal_substructure">optimal substructure</a>.  If
             we know the longest increasing subsequence of the list ending with A[i-1], we can easily
             compute the longest increasing subsequence of A[i]. We can create a recursive function L
-            to calculate the LIS recursively.
+            to calculate this recursively.
         </p>
 
         <p class='caption' align='center'>
@@ -118,13 +118,13 @@
                             R.push(v)
                         return max(R)
                     </div>
-                    <div id="pseudocode-l" title="L(A,n):">
+                    <div id="pseudocode-l" title="L(n):">
                         if n = 0
                             return 0
                         else
                             M = []
                             for all j such that A[j] < A[n]
-                                v = L(A,j)
+                                v = L(j)
                                 M.push(v)
                             return 1 + max(M)
                     </div>
@@ -147,10 +147,18 @@
 
         <h3>Overlapping Subproblems</h3>
         <p>
-            The problem with this implementation is that it calls <i>L</i> many times with the same <i>n</i>.
+            The problem with this implementation is that it calls L many times with the same valued
+            n. In fact, in the worst case, there will be n! overlapping subproblems - we tend to
+            call this O(2<sup>n</sup>).
         </p>
 
         <div id="l-results"></div>
+
+        <p>
+            You could try <button onclick="double_input();">doubling the input</button>. Warning
+            - our system will truncate to the first million lines or 1,000 frames, whichever comes
+            first. I would recommend turning off breakpoints for long input.
+        </p>
 
         <h3>Dynamic Programming</h3>
 
@@ -195,8 +203,6 @@
 </body>
 <script type="text/javascript">
 
-var myviz1_array = [0, 3,1,4,1,5,9,2,6,5];
-
 function pushResults(){
     var $table = $("<table>", { class: "results" } );
     var $row = $("<tr>");
@@ -225,9 +231,24 @@ function l_called_on_init() {
     l_called_on.results = {};
 }
 
+function double_input() {
+    var oldA = myviz1.getVariable("A");
+    var newA = oldA.concat(oldA.slice(1));
+    myviz1.widgets[0].guts.arrayReset(newA);
+    myviz1.setVariable("A", newA);
+}
+
 var myviz1 = new Vamonos.Visualizer({
     widgets: [
-        new Vamonos.Widget.Console(),
+        new Vamonos.Widget.Array({
+            container: "A-l",
+            varName: "A",
+            defaultInput: [0, 3,1,4,1,5,9,2,6,5],
+            ignoreIndexZero: true,
+            cssRules: [[">", "j", "shaded"]],
+            showIndices: ["n", "j"],
+            showCellNumber: false,
+        }),
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-l-caller",
@@ -244,27 +265,16 @@ var myviz1 = new Vamonos.Visualizer({
             varName: "A",
         }),
 
-        new Vamonos.Widget.Array({
-            container: "A-l",
-            varName: "A",
-            defaultInput: myviz1_array,
-            ignoreIndexZero: true,
-            cssRules: [[">", "j", "shaded"]],
-            showIndices: ["n", "j"],
-            showCellNumber: false,
-        }),
-
         new Vamonos.Widget.VarName({
             container: "R-var-l",
-            varName: "main::R",
+            varName: "global::R",
             displayName: "R",
             watching: true,
-            showCellNumber: false,
         }),
 
         new Vamonos.Widget.Array({
             container: "R-l",
-            varName: "main::R",
+            varName: "global::R",
             ignoreIndexZero: true,
             displayOnly: true,
             showIndices: ["i"],
@@ -292,16 +302,17 @@ var myviz1 = new Vamonos.Visualizer({
             with (this) {
                 l_called_on_init();
                 _(1);
-                R = [0];
+                global.R = [0];
+                global.A = A;
                 for (i = 1; _(2), i < A.length; i++) {
                     _(3);
-                    var v = l({ A:A, n:i });
+                    var v = l({ n:i });
                     _(4);
-                    R.push(v);
+                    global.R.push(v);
                 }
                 _(5);
                 pushResults();
-                return Math.max.apply(this, R);
+                return Math.max.apply(this, global.R);
             }
         },
 
@@ -316,17 +327,16 @@ var myviz1 = new Vamonos.Visualizer({
                 _(4);
                 var M = [];
                 for (var i = n - 1; i >= 0; i--) {
-                    if (A[i] >= A[n]) continue;
+                    if (global.A[i] >= global.A[n]) continue;
                     _(5);
                     j = i;
                     _(6);
-                    var v = l({ A: A, n: j });
+                    var v = l({ n: j });
                     _(7);
                     M.push(v);
                 }
                 _(8);
-                console.log(M);
-                if (A[n] === undefined) {
+                if (global.A[n] === undefined) {
                     return Math.max.apply(this, M);
                 } else if (M.length) {
                     return 1 + Math.max.apply(this, M);
@@ -337,7 +347,7 @@ var myviz1 = new Vamonos.Visualizer({
         },
     },
 
-    autoStart: true,
+    maxFrames: 1000,
 });
 
 

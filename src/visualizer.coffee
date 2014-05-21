@@ -154,7 +154,7 @@ class Visualizer
 
     line: (n, relevantScope) ->
         throw "too many frames" if @frameNumber >= @maxFrames
-        throw "too many lines"  if ++@numCallsToLine > 10000
+        throw "too many lines"  if ++@numCallsToLine > 100000
 
         switch n
             when "call"
@@ -332,7 +332,7 @@ class Visualizer
                               "Visualization has been truncated to the first " +
                               "#{@maxFrames} frames.")
                     when "too many lines"
-                        alert("Your algorithm has executed for over 10000 instructions. " +
+                        alert("Your algorithm has executed for over 100000 instructions. " +
                               "You may have an infinite loop. " +
                               "Visualization has been truncated.")
                     else
