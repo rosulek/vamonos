@@ -23,8 +23,11 @@
     }
 
     table.results {
-        margin-left: auto;
-        margin-right: auto;
+        margin-left: 30px;
+        margin-right: 30px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        float: left;
         border: 1px solid black;
         border-radius: 5px;
         box-shadow: 5px 10px 10px #aaa;
@@ -145,25 +148,31 @@
         </table>
         </div>
 
+        <div id="l-results"></div>
         <h3>Overlapping Subproblems</h3>
         <p>
-            The problem with this implementation is that it calls L many times with the same valued
-            n. In fact, in the worst case, there will be n! overlapping subproblems - we tend to
-            call this O(2<sup>n</sup>).
+            The problem with this implementation is that it calls L many times with the same n.
+            That's the other incredient of a problem we can attack using dynamic programming: <a
+            href="https://en.wikipedia.org/wiki/Overlapping_subproblems">overlapping
+            subproblems</a>. In fact, in the worst case, there will be n factorial of them - we tend
+            to call that O(2<sup>n</sup>).
         </p>
 
-        <div id="l-results"></div>
 
         <p>
-            You could try <button onclick="double_input();">doubling the input</button>. Warning
-            - our system will truncate to the first million lines or 1,000 frames, whichever comes
-            first. I would recommend turning off breakpoints for long input.
+            You could try <button onclick="double_input();">doubling the size of the
+            input</button>. Whats the length of the smallest array to crash your browser? It took
+            me 15 seconds to calculate for n = 72.
         </p>
 
         <h3>Dynamic Programming</h3>
 
         <p>
-            So how do we transform it into a bottom-up computation?
+            Dynamic programming is easy! All we do is start from the bottom of the problem instead
+            of the top. We just use an array to keep track of the answers we've gotten already, and
+            refer to that instead of recursing. It certianly helps if you know the formal equation
+            of the problem (our L above), so I would recommend starting with that when you try
+            solving your own dynamic programming problems.
         </p>
 
         <div class='center'>
@@ -195,7 +204,9 @@
 
         <h3>Runtime Analysis</h3>
         <p>
-            Yep
+            Since we keep eliminate the subproblems, we end up with a linear runtime. Which is
+            awesome compared to the exponential one above. Maybe Mike can think of some more stuff
+            to say here.
         </p>
 
     </div>
@@ -232,10 +243,14 @@ function l_called_on_init() {
 }
 
 function double_input() {
+    myviz1.trigger("editMode");
+    /* myviz1.breakpoints = [];
+    myviz1.watchVars = []; */
     var oldA = myviz1.getVariable("A");
     var newA = oldA.concat(oldA.slice(1));
     myviz1.widgets[0].guts.arrayReset(newA);
     myviz1.setVariable("A", newA);
+    myviz1.runAlgorithm();
 }
 
 var myviz1 = new Vamonos.Visualizer({
@@ -284,7 +299,7 @@ var myviz1 = new Vamonos.Visualizer({
             container: "stack-var-l",
             varName: "_callstack",
             displayName: "Call Stack",
-            watching: true,
+            /* watching: true, */
         }),
 
         new Vamonos.Widget.CallStack({
@@ -347,7 +362,9 @@ var myviz1 = new Vamonos.Visualizer({
         },
     },
 
-    maxFrames: 1000,
+    autoStart: true,
+    maxFrames: 2000,
+    unbounded: true,
 });
 
 

@@ -35,6 +35,10 @@ class Visualizer
             defaultValue: false
             description: "whether the visualizer will update the location with " +
                 "the updated input after leaving edit mode every time"
+        unbounded:
+            type: "Boolean"
+            defaultValue: false
+            description: "whether there is a limit on how many lines an algorithm can take"
 
     constructor: (args) ->
 
@@ -154,7 +158,7 @@ class Visualizer
 
     line: (n, relevantScope) ->
         throw "too many frames" if @frameNumber >= @maxFrames
-        throw "too many lines"  if ++@numCallsToLine > 100000
+        throw "too many lines"  if not @unbounded and ++@numCallsToLine > 100000
 
         switch n
             when "call"
