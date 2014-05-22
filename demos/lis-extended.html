@@ -1,0 +1,428 @@
+<html><head>
+    <title>Longest Increasing Subsequence</title>
+
+    <meta id="meta" name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="../lib/vamonos-demos.css">
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <style type="text/css">
+
+    p.caption {
+        font-size: 20px;
+        font-family: monospace;
+    }
+
+    div.center {
+        text-align: center;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        text-align: center;
+    }
+
+    table.results {
+        margin-left: 30px;
+        margin-right: 30px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        float: left;
+        border: 1px solid black;
+        border-radius: 5px;
+        box-shadow: 5px 10px 10px #aaa;
+    }
+
+    th.results.n {
+        border-right: 1px dotted black;
+    }
+
+    td.results.n {
+        border-right: 1px dotted black;
+    }
+
+    td.results {
+        border-top: 1px dotted black;
+        text-align: right;
+    }
+
+    </style>
+
+</head><body>
+
+    <div id="main">
+        <div id="header">
+            <h1>Longest Increasing Subsequence</h1>
+        </div>
+
+        <h3>The Problem</h3>
+
+        <p>
+            You are given a list. Moving from left to right, you either take or skip each
+            element. You can only take an element if it is larger than the last element you took.
+            Find length of the longest list of elements you can take.
+        </p>
+
+        <h3>For Example</h3>
+
+        <p>
+            Given the list <code>[3, 1, 4, 1, 5, 9, 2, 6, 5]</code>, we can find some increasing lists
+            <code>[3, 4, 5, 9]</code>,
+            <code>[4, 5, 6]</code>,
+            <code>[2, 6]</code>,
+            and trivial ones like
+            <code>[3]</code>,
+            <code>[1]</code>,
+            <code>[4]</code>.
+            The empty list <code>[]</code> is also an increasing subsequence.
+            I'm pretty sure the longest list we can find has 4 elements. Anyway, that's not
+            the point. We want to use an algorithm!
+        </p>
+
+        <h3>To Formalize This</h3>
+
+        <p>
+            We can definitely break this up into smaller problems. That's what we call <a
+            href="https://en.wikipedia.org/wiki/Optimal_substructure">optimal substructure</a>.  If
+            we know the longest increasing subsequence of the list ending with A[i-1], we can easily
+            compute the longest increasing subsequence of A[i]. We can create a recursive function L
+            to calculate this recursively.
+        </p>
+
+        <p class='caption' align='center'>
+            <table>
+                <tr><td>
+                    L[0] =
+                </td><td>
+                    0
+                </td></tr>
+                <tr><td>
+                    L[n] =
+                </td><td>
+                    1 + max{ L[j]: for all j < n such that A[j] < A[n] }<br>
+                </td></tr>
+            </table>
+        </p>
+
+        <p>
+            We could implement this. By the way, we use 1-indexed arrays, so we can have a neat base
+            case of 0. We also do this to complicate programming!
+        </p>
+
+        <div class='center'>
+        <table class="vamonos">
+            <tr><td class="pseudocode-and-controls">
+                <div id="controls-l"></div>
+                <div class="pseudocode-procedures">
+                    <div id="pseudocode-l-caller" title="LIS(A)">
+                        R = []
+                        for i = 0 upto A.length
+                            v = L(A,i)
+                            R.push(v)
+                        return max(R)
+                    </div>
+                    <div id="pseudocode-l" title="L(n):">
+                        if n = 0
+                            return 0
+                        else
+                            M = []
+                            for all j such that A[j] < A[n]
+                                v = L(j)
+                                M.push(v)
+                            return 1 + max(M)
+                    </div>
+                </div>
+            </td><td class="variable-widgets">
+                <table class="variable-widgets">
+                    <tr><td><div id="A-var-l"></div></td>
+                        <td><div id="A-l"></div></td>
+                    </tr>
+                    <tr><td><div id="R-var-l"></div></td>
+                        <td><div id="R-l"></div></td>
+                    </tr>
+                    <tr><td><div id="stack-var-l"></div></td>
+                        <td><div id="stack-l"></div></td></tr>
+                    </tr>
+                </table>
+            </td></tr>
+        </table>
+        </div>
+
+        <div id="l-results"></div>
+        <h3>Overlapping Subproblems</h3>
+        <p>
+            The problem with this implementation is that it calls L many times with the same n.
+            That's the other incredient of a problem we can attack using dynamic programming: <a
+            href="https://en.wikipedia.org/wiki/Overlapping_subproblems">overlapping
+            subproblems</a>. In fact, in the worst case, there will be n factorial of them - we tend
+            to call that O(2<sup>n</sup>).
+        </p>
+
+
+        <p>
+            You could try <button onclick="double_input();">doubling the size of the
+            input</button>. Whats the length of the smallest array to crash your browser? It took
+            me 15 seconds to calculate for n = 72.
+        </p>
+
+        <h3>Dynamic Programming</h3>
+
+        <p>
+            Dynamic programming is easy! All we do is start from the bottom of the problem instead
+            of the top. We just use an array to keep track of the answers we've gotten already, and
+            refer to that instead of recursing. It certianly helps if you know the formal equation
+            of the problem (our L above), so I would recommend starting with that when you try
+            solving your own dynamic programming problems.
+        </p>
+
+        <div class='center'>
+        <table class="vamonos">
+            <tr><td class="pseudocode-and-controls">
+                <div id="controls"></div>
+                <div class="pseudocode-procedures">
+                    <div id="pseudocode" title="LIS(A):">
+                        L[0] = 0
+                        for n = 1 to A.length
+                            L[n] = 1
+                            for j = 1 to n-1
+                            if A[j] &lt; A[n] and L[n] &lt; L[j] + 1
+                                L[n] = L[j] + 1
+                    </div>
+                </div>
+            </td><td class="variable-widgets">
+                <table class="variable-widgets">
+                    <tr><td><div id="A-var"></div></td>
+                        <td><div id="A"></div></td>
+                    </tr>
+                    <tr><td><div id="L-var"></div></td>
+                        <td><div id="L"></div></td></tr>
+                    </tr>
+                </table>
+            </td></tr>
+        </table>
+        </div>
+
+        <h3>Runtime Analysis</h3>
+        <p>
+            Since we keep eliminate the subproblems, we end up with a linear runtime. Which is
+            awesome compared to the exponential one above. Maybe Mike can think of some more stuff
+            to say here.
+        </p>
+
+    </div>
+
+</body>
+<script type="text/javascript">
+
+function pushResults(){
+    var $table = $("<table>", { class: "results" } );
+    var $row = $("<tr>");
+    $row.append($("<th>", { text: "n", class: "results n" }));
+    $row.append($("<th>", { text: "times called", class: "results" }));
+    $table.append($row);
+    for (var n in l_called_on.results) {
+        if (l_called_on.results.hasOwnProperty(n)) {
+            var val = l_called_on.results[n];
+            var $row = $("<tr>");
+            $row.append($("<td>", { text: n, class: "results n" }));
+            $row.append($("<td>", { text: val, class: "results" }));
+            $table.append($row);
+        }
+    }
+    $("div#l-results").html($table);
+}
+
+function l_called_on(n){
+    var elem = l_called_on.results[n];
+    if (elem === undefined) l_called_on.results[n] = 0;
+    l_called_on.results[n] += 1;
+}
+
+function l_called_on_init() {
+    l_called_on.results = {};
+}
+
+function double_input() {
+    myviz1.trigger("editMode");
+    /* myviz1.breakpoints = [];
+    myviz1.watchVars = []; */
+    var oldA = myviz1.getVariable("A");
+    var newA = oldA.concat(oldA.slice(1));
+    myviz1.widgets[0].guts.arrayReset(newA);
+    myviz1.setVariable("A", newA);
+    myviz1.runAlgorithm();
+}
+
+var myviz1 = new Vamonos.Visualizer({
+    widgets: [
+        new Vamonos.Widget.Array({
+            container: "A-l",
+            varName: "A",
+            defaultInput: [0, 3,1,4,1,5,9,2,6,5],
+            ignoreIndexZero: true,
+            cssRules: [[">", "j", "shaded"]],
+            showIndices: ["n", "j"],
+            showCellNumber: false,
+        }),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-l-caller",
+        }),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-l",
+        }),
+
+        new Vamonos.Widget.Controls({ container: "controls-l" }),
+
+        new Vamonos.Widget.VarName({
+            container: "A-var-l",
+            varName: "A",
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "R-var-l",
+            varName: "global::R",
+            displayName: "R",
+            watching: true,
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "R-l",
+            varName: "global::R",
+            ignoreIndexZero: true,
+            displayOnly: true,
+            showIndices: ["i"],
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "stack-var-l",
+            varName: "_callstack",
+            displayName: "Call Stack",
+            /* watching: true, */
+        }),
+
+        new Vamonos.Widget.CallStack({
+            container: "stack-l",
+            procedureNames: {
+                main: "LIS",
+                l: "L",
+            },
+        }),
+
+    ],
+
+    algorithm: {
+        main: function(_){
+            with (this) {
+                l_called_on_init();
+                _(1);
+                global.R = [0];
+                global.A = A;
+                for (i = 1; _(2), i < A.length; i++) {
+                    _(3);
+                    var v = l({ n:i });
+                    _(4);
+                    global.R.push(v);
+                }
+                _(5);
+                pushResults();
+                return Math.max.apply(this, global.R);
+            }
+        },
+
+        l: function(_){
+            with (this) {
+                l_called_on(n);
+                if (_(1), n === 0) {
+                    _(2);
+                    return 0
+                }
+                _(3);
+                _(4);
+                var M = [];
+                for (var i = n - 1; i >= 0; i--) {
+                    if (global.A[i] >= global.A[n]) continue;
+                    _(5);
+                    j = i;
+                    _(6);
+                    var v = l({ n: j });
+                    _(7);
+                    M.push(v);
+                }
+                _(8);
+                if (global.A[n] === undefined) {
+                    return Math.max.apply(this, M);
+                } else if (M.length) {
+                    return 1 + Math.max.apply(this, M);
+                } else {
+                    return 1;
+                }
+            }
+        },
+    },
+
+    autoStart: true,
+    maxFrames: 2000,
+    unbounded: true,
+});
+
+
+var myviz2 = new Vamonos.Visualizer({
+    widgets: [
+
+        new Vamonos.Widget.VarName({
+            container: "A-var",
+            varName: "A",
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "A",
+            varName: "A",
+            defaultInput: [0, 3,1,4,1,5,9,2,6,5],
+            ignoreIndexZero: true,
+            cssRules: [[">", "j", "shaded"]],
+            showIndices: ["n", "j"],
+            firstCellBlank: true,
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "L-var",
+            varName: "global::L",
+            displayName: "L",
+            watching: true,
+        }),
+
+        new Vamonos.Widget.Array({
+            container: "L",
+            varName: "global::L",
+            displayOnly: true,
+            showIndices: ["n", "j"],
+        }),
+
+        new Vamonos.Widget.Pseudocode("pseudocode"),
+
+        new Vamonos.Widget.Controls({
+            container: "controls",
+            expandWidth: true,
+        }),
+    ],
+
+    algorithm: function (_) {
+        with (this) {
+_(1);       global.L = [0]
+_(2);       for (n = 1; n < A.length; _(2), n++) {
+_(3);           global.L[n] = 1;
+_(4);           for (j=1; j<n; _(4), j++) {
+_(5);               if (A[j] < A[n] && global.L[n] < global.L[j] + 1) {
+_(6);                   global.L[n] = global.L[j] + 1;
+                     }
+                }
+                j = undefined;
+            }
+            n = undefined;
+        }
+    }
+});
+</script>
+</html>

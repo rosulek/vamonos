@@ -49,14 +49,14 @@
     <p class='caption' align='center'>
         <table>
             <tr><td>
-                L[n] =
-            </td><td>
-                1 + max{ L[j]: for all j such that A[j] < A[n] }<br>
-            </td></tr>
-            <tr><td>
                 L[0] =
             </td><td>
                 0
+            </td></tr>
+            <tr><td>
+                L[n] =
+            </td><td>
+                1 + max{ L[j]: for all j < n such that A[j] < A[n] }<br>
             </td></tr>
         </table>
     </p>

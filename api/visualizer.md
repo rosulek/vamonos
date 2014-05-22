@@ -47,6 +47,12 @@ namespaces and variables, and runs the simulation itself.
 
 
 
+ * **unbounded** :: *Boolean* -- default value: `false`
+
+    whether there is a limit on how many lines an algorithm can take
+
+
+
  * **widgets** :: *Array* -- default value: `[]`
 
     a list of widgets for use in the visualization
