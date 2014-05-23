@@ -1,3 +1,8 @@
+<!-- TODO
+
+split it into slides  - html slide format heiroglyph
+
+-->
 <html><head>
     <title>Longest Increasing Subsequence</title>
 
@@ -44,6 +49,14 @@
     td.results {
         border-top: 1px dotted black;
         text-align: right;
+    }
+
+    span.quiz {
+        color: blue;
+    }
+
+    span.quizok {
+        color: green;
     }
 
     </style>
@@ -154,15 +167,9 @@
             The problem with this implementation is that it calls L many times with the same n.
             That's the other incredient of a problem we can attack using dynamic programming: <a
             href="https://en.wikipedia.org/wiki/Overlapping_subproblems">overlapping
-            subproblems</a>. In fact, in the worst case, there will be n factorial of them - we tend
-            to call that O(2<sup>n</sup>).
-        </p>
-
-
-        <p>
-            You could try <button onclick="double_input();">doubling the size of the
-            input</button>. Whats the length of the smallest array to crash your browser? It took
-            me 15 seconds to calculate for n = 72.
+            subproblems</a>. In fact, in the worst case, there will be O(2<sup>n</sup>) of
+            them. What is the worst case input? <span id="quiz" class="quiz">The current input is
+            not the worst-case input. Try changing it!</span>.
         </p>
 
         <h3>Dynamic Programming</h3>
@@ -214,6 +221,17 @@
 </body>
 <script type="text/javascript">
 
+Array.prototype.compare = function(testArr) {
+    if (this.length != testArr.length) return false;
+    for (var i = 0; i < testArr.length; i++) {
+        if (this[i].compare) {
+            if (!this[i].compare(testArr[i])) return false;
+        }
+        if (this[i] !== testArr[i]) return false;
+    }
+    return true;
+}
+
 function pushResults(){
     var $table = $("<table>", { class: "results" } );
     var $row = $("<tr>");
@@ -242,15 +260,20 @@ function l_called_on_init() {
     l_called_on.results = {};
 }
 
-function double_input() {
-    myviz1.trigger("editMode");
-    /* myviz1.breakpoints = [];
-    myviz1.watchVars = []; */
-    var oldA = myviz1.getVariable("A");
-    var newA = oldA.concat(oldA.slice(1));
-    myviz1.widgets[0].guts.arrayReset(newA);
-    myviz1.setVariable("A", newA);
-    myviz1.runAlgorithm();
+function quiz_check_input(A) {
+    var $elem = $("span#quiz")
+    var A = A.slice(1);
+    var B = A.slice(0).sort();
+    if (A.compare(B)) {
+        quiz_check_input.backup = $elem.text()
+        $elem.text("Yep. The worst-case is when A is sorted.")
+        $elem.removeClass("quiz");
+        $elem.addClass("quizok");
+    } else if (quiz_check_input.backup) {
+        $elem.removeClass("quizok");
+        $elem.addClass("quiz");
+        $elem.text(quiz_check_input.backup);
+    }
 }
 
 var myviz1 = new Vamonos.Visualizer({
@@ -262,7 +285,6 @@ var myviz1 = new Vamonos.Visualizer({
             ignoreIndexZero: true,
             cssRules: [[">", "j", "shaded"]],
             showIndices: ["n", "j"],
-            showCellNumber: false,
         }),
 
         new Vamonos.Widget.Pseudocode({
@@ -271,6 +293,7 @@ var myviz1 = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-l",
+            procedureName: "l_rec",
         }),
 
         new Vamonos.Widget.Controls({ container: "controls-l" }),
@@ -299,14 +322,14 @@ var myviz1 = new Vamonos.Visualizer({
             container: "stack-var-l",
             varName: "_callstack",
             displayName: "Call Stack",
-            /* watching: true, */
+            watching: true,
         }),
 
         new Vamonos.Widget.CallStack({
             container: "stack-l",
             procedureNames: {
                 main: "LIS",
-                l: "L",
+                l_rec: "L",
             },
         }),
 
@@ -316,12 +339,13 @@ var myviz1 = new Vamonos.Visualizer({
         main: function(_){
             with (this) {
                 l_called_on_init();
+                quiz_check_input(A);
                 _(1);
                 global.R = [0];
                 global.A = A;
                 for (i = 1; _(2), i < A.length; i++) {
                     _(3);
-                    var v = l({ n:i });
+                    var v = l_rec({ n:i });
                     _(4);
                     global.R.push(v);
                 }
@@ -331,7 +355,7 @@ var myviz1 = new Vamonos.Visualizer({
             }
         },
 
-        l: function(_){
+        l_rec: function(_){
             with (this) {
                 l_called_on(n);
                 if (_(1), n === 0) {
@@ -346,7 +370,7 @@ var myviz1 = new Vamonos.Visualizer({
                     _(5);
                     j = i;
                     _(6);
-                    var v = l({ n: j });
+                    var v = l_rec({ n: j });
                     _(7);
                     M.push(v);
                 }
@@ -362,10 +386,12 @@ var myviz1 = new Vamonos.Visualizer({
         },
     },
 
-    autoStart: true,
-    maxFrames: 2000,
+    maxFrames: 100000,
     unbounded: true,
 });
+
+myviz1.runAlgorithm();
+myviz1.trigger('editMode');
 
 
 var myviz2 = new Vamonos.Visualizer({

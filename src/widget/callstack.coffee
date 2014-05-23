@@ -133,11 +133,13 @@ class CallStack
 
 
     setArgRow: ($tr, scope) ->
+        return unless $tr.html?
         $tr.html("<td class='callstack-args'>" +
           "#{@argStr(scope)}</td><td class='callstack-return'>"  +
           "#{@retStr(scope)}</td>")
 
     setProcRow: ($tr, scope) ->
+        return unless $tr.html?
         procName = @procedureNames[scope.procName] ? scope.procName
         $tr.html("<td><td><div class='callstack-proc-container'><div class='callstack-proc'>#{procName}</div></div></td>")
         $tr.find("div.callstack-proc").addClass("callstack-returned") if "returnValue" of scope
