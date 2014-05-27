@@ -9,8 +9,16 @@ split it into slides  - html slide format heiroglyph
     <meta id="meta" name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" href="../lib/vamonos.css">
-    <link rel="stylesheet" href="../lib/vamonos-demos.css">
+    <!-- <link rel="stylesheet" href="../lib/vamonos-demos.css"> -->
+
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 
     <style type="text/css">
 
@@ -32,7 +40,7 @@ split it into slides  - html slide format heiroglyph
         margin-right: 30px;
         margin-top: 30px;
         margin-bottom: 30px;
-        float: left;
+        /* float: left; */
         border: 1px solid black;
         border-radius: 5px;
         box-shadow: 5px 10px 10px #aaa;
@@ -61,38 +69,87 @@ split it into slides  - html slide format heiroglyph
 
     </style>
 
-</head><body>
+    <script>
 
-    <div id="main">
-        <div id="header">
-            <h1>Longest Increasing Subsequence</h1>
+
+    $( function(){
+        $("div#tab2").hide();
+        $("div#tab3").hide();
+    });
+
+    function tab(n) {
+        var active = [1,2,3].filter(function(x){ return x !== n })
+        active.forEach(function(x){
+            $("li#tabbutt" + x).removeClass("active");
+            $("div#tab" + x).hide();
+        });
+        $("li#tabbutt" + n).addClass("active");
+        $("div#tab" + n).show();
+    }
+
+    </script>
+
+</head><body>
+    <!-- Static navbar -->
+    <div class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Longest Increasing Subsequence</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li id="tabbutt1" class="active"><a onclick="tab(1);">Introduction</a></li>
+                    <li id="tabbutt2"><a onclick="tab(2);">Recursive Solution</a></li>
+                    <li id="tabbutt3"><a onclick="tab(3);">DP Solution</a></li>
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+    </div>
+
+    <div id="tab1" class="container-fluid">
+
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-4">
+                <h3 id="introduction">The Problem</h3>
+
+                You are given a list. Moving from left to right, you either take or skip each
+                element. You can only take an element if it is larger than the last element you took.
+                Find length of the longest list of elements you can take.
+            </div>
+
+            <div class="col-sm-4">
+                <h3>For Example</h3>
+
+                Given the list <code>[3, 1, 4, 1, 5, 9, 2, 6, 5]</code>, we can find some increasing lists
+                <code>[3, 4, 5, 9]</code>,
+                <code>[4, 5, 6]</code>,
+                <code>[2, 6]</code>,
+                and trivial ones like
+                <code>[3]</code>,
+                <code>[1]</code>,
+                <code>[4]</code>.
+                The empty list <code>[]</code> is also an increasing subsequence.
+                I'm pretty sure the longest list we can find has 4 elements. Anyway, that's not
+                the point. We want to use an algorithm!
+            </div>
+            <div class="col-sm-2"></div>
         </div>
 
-        <h3>The Problem</h3>
+        <ul class="pager">
+            <li><a onclick="tab(2)">Next</a></li>
+        </ul>
 
-        <p>
-            You are given a list. Moving from left to right, you either take or skip each
-            element. You can only take an element if it is larger than the last element you took.
-            Find length of the longest list of elements you can take.
-        </p>
+    </div>
 
-        <h3>For Example</h3>
-
-        <p>
-            Given the list <code>[3, 1, 4, 1, 5, 9, 2, 6, 5]</code>, we can find some increasing lists
-            <code>[3, 4, 5, 9]</code>,
-            <code>[4, 5, 6]</code>,
-            <code>[2, 6]</code>,
-            and trivial ones like
-            <code>[3]</code>,
-            <code>[1]</code>,
-            <code>[4]</code>.
-            The empty list <code>[]</code> is also an increasing subsequence.
-            I'm pretty sure the longest list we can find has 4 elements. Anyway, that's not
-            the point. We want to use an algorithm!
-        </p>
-
-        <h3>To Formalize This</h3>
+    <div id="tab2" class="container-fluid">
+        <h3 id="recursive_solution">To Formalize This</h3>
 
         <p>
             We can definitely break this up into smaller problems. That's what we call <a
@@ -122,46 +179,35 @@ split it into slides  - html slide format heiroglyph
             case of 0. We also do this to complicate programming!
         </p>
 
-        <div class='center'>
-        <table class="vamonos">
-            <tr><td class="pseudocode-and-controls">
-                <div id="controls-l"></div>
-                <div class="pseudocode-procedures">
-                    <div id="pseudocode-l-caller" title="LIS(A)">
-                        R = []
-                        for i = 0 upto A.length
-                            v = L(A,i)
-                            R.push(v)
-                        return max(R)
-                    </div>
-                    <div id="pseudocode-l" title="L(n):">
-                        if n = 0
-                            return 0
-                        else
-                            M = []
-                            for all j such that A[j] < A[n]
-                                v = L(j)
-                                M.push(v)
-                            return 1 + max(M)
-                    </div>
-                </div>
-            </td><td class="variable-widgets">
-                <table class="variable-widgets">
-                    <tr><td><div id="A-var-l"></div></td>
-                        <td><div id="A-l"></div></td>
-                    </tr>
-                    <tr><td><div id="R-var-l"></div></td>
-                        <td><div id="R-l"></div></td>
-                    </tr>
-                    <tr><td><div id="stack-var-l"></div></td>
-                        <td><div id="stack-l"></div></td></tr>
-                    </tr>
-                </table>
-            </td></tr>
-        </table>
+        <div id="controls-l"></div>
+        <div class="pseudocode-procedures">
+            <div id="pseudocode-l-caller" title="LIS(A)">
+                R = []
+                for i = 0 upto A.length
+                v = L(A,i)
+                R.push(v)
+                return max(R)
+            </div>
+            <div id="pseudocode-l" title="L(n):">
+                if n = 0
+                return 0
+                else
+                M = []
+                for all j such that A[j] < A[n]
+                v = L(j)
+                M.push(v)
+                return 1 + max(M)
+            </div>
         </div>
+        <div id="A-var-l"></div>
+        <div id="A-l"></div>
+        <div id="R-var-l"></div>
+        <div id="R-l"></div>
+        <div id="stack-var-l"></div>
+        <div id="stack-l"></div>
 
         <div id="l-results"></div>
+
         <h3>Overlapping Subproblems</h3>
         <p>
             The problem with this implementation is that it calls L many times with the same n.
@@ -172,7 +218,15 @@ split it into slides  - html slide format heiroglyph
             not the worst-case input. Try changing it!</span>.
         </p>
 
-        <h3>Dynamic Programming</h3>
+        <ul class="pager">
+            <li><a onclick="tab(1)">Previous</a></li>
+            <li><a onclick="tab(3)">Next</a></li>
+        </ul>
+    </div>
+
+
+    <div id="tab3" class="container-fluid">
+        <h3 id="dp_solution">Dynamic Programming</h3>
 
         <p>
             Dynamic programming is easy! All we do is start from the bottom of the problem instead
@@ -183,30 +237,30 @@ split it into slides  - html slide format heiroglyph
         </p>
 
         <div class='center'>
-        <table class="vamonos">
-            <tr><td class="pseudocode-and-controls">
-                <div id="controls"></div>
-                <div class="pseudocode-procedures">
-                    <div id="pseudocode" title="LIS(A):">
-                        L[0] = 0
-                        for n = 1 to A.length
+            <table class="vamonos">
+                <tr><td class="pseudocode-and-controls">
+                    <div id="controls"></div>
+                    <div class="pseudocode-procedures">
+                        <div id="pseudocode" title="LIS(A):">
+                            L[0] = 0
+                            for n = 1 to A.length
                             L[n] = 1
                             for j = 1 to n-1
                             if A[j] &lt; A[n] and L[n] &lt; L[j] + 1
-                                L[n] = L[j] + 1
+                            L[n] = L[j] + 1
+                        </div>
                     </div>
-                </div>
-            </td><td class="variable-widgets">
-                <table class="variable-widgets">
-                    <tr><td><div id="A-var"></div></td>
-                        <td><div id="A"></div></td>
-                    </tr>
-                    <tr><td><div id="L-var"></div></td>
-                        <td><div id="L"></div></td></tr>
-                    </tr>
-                </table>
-            </td></tr>
-        </table>
+                </td><td class="variable-widgets">
+                    <table class="variable-widgets">
+                        <tr><td><div id="A-var"></div></td>
+                            <td><div id="A"></div></td>
+                        </tr>
+                        <tr><td><div id="L-var"></div></td>
+                            <td><div id="L"></div></td></tr>
+                </tr>
+                    </table>
+                </td></tr>
+            </table>
         </div>
 
         <h3>Runtime Analysis</h3>
@@ -216,6 +270,9 @@ split it into slides  - html slide format heiroglyph
             to say here.
         </p>
 
+        <ul class="pager">
+            <li><a onclick="tab(2)">Previous</a></li>
+        </ul>
     </div>
 
 </body>
