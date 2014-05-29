@@ -9,16 +9,14 @@ split it into slides  - html slide format heiroglyph
     <meta id="meta" name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" href="../lib/vamonos.css">
-    <!-- <link rel="stylesheet" href="../lib/vamonos-demos.css"> -->
 
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
 
 
-    <!-- bootstrap -->
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
 
     <style type="text/css">
 
@@ -35,36 +33,9 @@ split it into slides  - html slide format heiroglyph
         text-align: center;
     }
 
-    table.results {
-        margin-left: 30px;
-        margin-right: 30px;
-        margin-top: 30px;
-        margin-bottom: 30px;
-        /* float: left; */
-        border: 1px solid black;
-        border-radius: 5px;
-        box-shadow: 5px 10px 10px #aaa;
-    }
-
-    th.results.n {
-        border-right: 1px dotted black;
-    }
-
-    td.results.n {
-        border-right: 1px dotted black;
-    }
-
-    td.results {
-        border-top: 1px dotted black;
-        text-align: right;
-    }
-
-    span.quiz {
-        color: blue;
-    }
-
-    span.quizok {
-        color: green;
+    div.vamonos {
+        padding-left: 0px;
+        padding-right: 0px;
     }
 
     </style>
@@ -85,7 +56,10 @@ split it into slides  - html slide format heiroglyph
         });
         $("li#tabbutt" + n).addClass("active");
         $("div#tab" + n).show();
+
+        $("html, body").animate({ scrollTop: 0 }, "slow");
     }
+
 
     </script>
 
@@ -115,8 +89,7 @@ split it into slides  - html slide format heiroglyph
     <div id="tab1" class="container-fluid">
 
         <div class="row">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-4">
+            <div class="col-sm-4 col-sm-offset-2">
                 <h3 id="introduction">The Problem</h3>
 
                 You are given a list. Moving from left to right, you either take or skip each
@@ -139,7 +112,6 @@ split it into slides  - html slide format heiroglyph
                 I'm pretty sure the longest list we can find has 4 elements. Anyway, that's not
                 the point. We want to use an algorithm!
             </div>
-            <div class="col-sm-2"></div>
         </div>
 
         <ul class="pager">
@@ -149,74 +121,104 @@ split it into slides  - html slide format heiroglyph
     </div>
 
     <div id="tab2" class="container-fluid">
-        <h3 id="recursive_solution">To Formalize This</h3>
+        <div class="row">
+            <div class="col-sm-7 col-sm-offset-3">
+                <h3 id="recursive_solution">To Formalize This</h3>
 
-        <p>
-            We can definitely break this up into smaller problems. That's what we call <a
-            href="https://en.wikipedia.org/wiki/Optimal_substructure">optimal substructure</a>.  If
-            we know the longest increasing subsequence of the list ending with A[i-1], we can easily
-            compute the longest increasing subsequence of A[i]. We can create a recursive function L
-            to calculate this recursively.
-        </p>
+                <p>
+                    We can definitely break this up into smaller problems. That's what we call <a
+                    href="https://en.wikipedia.org/wiki/Optimal_substructure">optimal substructure</a>.  If
+                    we know the longest increasing subsequence of the list ending with A[i-1], we can easily
+                    compute the longest increasing subsequence of A[i]. We can create a recursive function L
+                    to calculate this recursively.
+                </p>
 
-        <p class='caption' align='center'>
-            <table>
-                <tr><td>
-                    L[0] =
-                </td><td>
-                    0
-                </td></tr>
-                <tr><td>
-                    L[n] =
-                </td><td>
-                    1 + max{ L[j]: for all j < n such that A[j] < A[n] }<br>
-                </td></tr>
-            </table>
-        </p>
+                <p class='caption' align='center'>
+                    <table>
+                        <tr><td>
+                            L[0] =
+                        </td><td>
+                            0
+                        </td></tr>
+                        <tr><td>
+                            L[n] =
+                        </td><td>
+                            1 + max{ L[j]: for all j < n such that A[j] < A[n] }<br>
+                        </td></tr>
+                    </table>
+                </p>
 
-        <p>
-            We could implement this. By the way, we use 1-indexed arrays, so we can have a neat base
-            case of 0. We also do this to complicate programming!
-        </p>
-
-        <div id="controls-l"></div>
-        <div class="pseudocode-procedures">
-            <div id="pseudocode-l-caller" title="LIS(A)">
-                R = []
-                for i = 0 upto A.length
-                v = L(A,i)
-                R.push(v)
-                return max(R)
-            </div>
-            <div id="pseudocode-l" title="L(n):">
-                if n = 0
-                return 0
-                else
-                M = []
-                for all j such that A[j] < A[n]
-                v = L(j)
-                M.push(v)
-                return 1 + max(M)
+                <p>
+                    We could implement this. By the way, we use 1-indexed arrays, so we can have a neat base
+                    case of 0. We also do this to complicate programming!
+                </p>
             </div>
         </div>
-        <div id="A-var-l"></div>
-        <div id="A-l"></div>
-        <div id="R-var-l"></div>
-        <div id="R-l"></div>
-        <div id="stack-var-l"></div>
-        <div id="stack-l"></div>
 
-        <div id="l-results"></div>
+        <br>
 
-        <h3>Overlapping Subproblems</h3>
-        <p>
-            The problem with this implementation is that it calls L many times with the same n.
-            That's the other incredient of a problem we can attack using dynamic programming: <a
-            href="https://en.wikipedia.org/wiki/Overlapping_subproblems">overlapping
-            subproblems</a>. In fact, in the worst case, there will be O(2<sup>n</sup>) of
-            them. What is the worst case input? <span id="quiz" class="quiz">The current input is
-            not the worst-case input. Try changing it!</span>.
-        </p>
+        <div class="jumbotron row">
+            <div class="panel row panel-default">
+                <div class="panel-heading">
+                    Recursive LIS Implementation
+                </div>
+                <div class="col-sm-5 vamonos">
+                    <div id="controls-l"></div>
+                    <div class="pseudocode-procedures">
+                        <div id="pseudocode-l-caller" title="LIS(A):">
+                            R = []
+                            for i = 0 upto A.length
+                                v = L(A,i)
+                                R.push(v)
+                            return max(R)
+                        </div>
+                        <div id="pseudocode-l" title="L(n):">
+                            if n = 0
+                                return 0
+                            M = []
+                            for all j such that A[j] < A[n]
+                                v = L(j)
+                                M.push(v)
+                            return 1 + max(M)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-7 vamonos">
+                    <table class="variable-widgets">
+                        <tr><td><div id="A-var-l"></div></td>
+                            <td><div id="A-l"></div></td>
+                        </tr>
+                        <tr><td><div id="R-var-l"></div></td>
+                            <td><div id="R-l"></div></td>
+                        </tr>
+                        <tr><td><div id="stack-var-l"></div></td>
+                            <td><div id="stack-l"></div></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-3 col-xs-offset-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Calls to L(n)</div>
+                    <table id="l-results" class="table table-bordered table-striped table-condensed"> </table>
+                </div>
+            </div>
+
+            <div class="col-xs-5">
+                <h3>Overlapping Subproblems</h3>
+                <p>
+                    The problem with this implementation is that it calls L many times with the same n.
+                    That's the other incredient of a problem we can attack using dynamic programming: <a
+                    href="https://en.wikipedia.org/wiki/Overlapping_subproblems">overlapping
+                    subproblems</a>. In fact, in the worst case, there will be O(2<sup>n</sup>) of
+                    them. What is the worst case input? <span id="quiz" class="text-warning">The current input is
+                    not the worst-case input. Try changing it!</span>
+                </p>
+            </div>
+        </div>
 
         <ul class="pager">
             <li><a onclick="tab(1)">Previous</a></li>
@@ -226,49 +228,63 @@ split it into slides  - html slide format heiroglyph
 
 
     <div id="tab3" class="container-fluid">
-        <h3 id="dp_solution">Dynamic Programming</h3>
 
-        <p>
-            Dynamic programming is easy! All we do is start from the bottom of the problem instead
-            of the top. We just use an array to keep track of the answers we've gotten already, and
-            refer to that instead of recursing. It certianly helps if you know the formal equation
-            of the problem (our L above), so I would recommend starting with that when you try
-            solving your own dynamic programming problems.
-        </p>
+        <div class="row">
+            <div class="col-sm-6 col-sm-offset-3">
+                <h3 id="dp_solution">Dynamic Programming</h3>
+                <p>
+                    Dynamic programming is easy! All we do is start from the bottom of the problem instead
+                    of the top. We just use an array to keep track of the answers we've gotten already, and
+                    refer to that instead of recursing. It certianly helps if you know the formal equation
+                    of the problem (our L above), so I would recommend starting with that when you try
+                    solving your own dynamic programming problems.
+                </p>
+            </div>
+        </div>
 
-        <div class='center'>
-            <table class="vamonos">
-                <tr><td class="pseudocode-and-controls">
+        <br>
+
+        <div class="jumbotron row">
+            <div class="panel row panel-default">
+                <div class="panel-heading">
+                    Dynamic Programming LIS Implementation
+                </div>
+                <div class="col-sm-5 vamonos">
                     <div id="controls"></div>
                     <div class="pseudocode-procedures">
                         <div id="pseudocode" title="LIS(A):">
                             L[0] = 0
                             for n = 1 to A.length
-                            L[n] = 1
-                            for j = 1 to n-1
-                            if A[j] &lt; A[n] and L[n] &lt; L[j] + 1
-                            L[n] = L[j] + 1
+                                L[n] = 1
+                                for j = 1 to n-1
+                                    if A[j] &lt; A[n] and L[n] &lt; L[j] + 1
+                                    L[n] = L[j] + 1
                         </div>
                     </div>
-                </td><td class="variable-widgets">
+                </div>
+                <div class="col-sm-7 vamonos">
                     <table class="variable-widgets">
                         <tr><td><div id="A-var"></div></td>
                             <td><div id="A"></div></td>
                         </tr>
                         <tr><td><div id="L-var"></div></td>
                             <td><div id="L"></div></td></tr>
-                </tr>
                     </table>
-                </td></tr>
-            </table>
+                </div>
+            </div>
         </div>
 
-        <h3>Runtime Analysis</h3>
-        <p>
-            Since we keep eliminate the subproblems, we end up with a linear runtime. Which is
-            awesome compared to the exponential one above. Maybe Mike can think of some more stuff
-            to say here.
-        </p>
+
+        <div class="row">
+            <div class="col-sm-6 col-sm-offset-3">
+                <h3>Runtime Analysis</h3>
+                <p>
+                    Since we keep eliminate the subproblems, we end up with a linear runtime. Which is
+                    awesome compared to the exponential one above. Maybe Mike can think of some more stuff
+                    to say here.
+                </p>
+            </div>
+        </div>
 
         <ul class="pager">
             <li><a onclick="tab(2)">Previous</a></li>
@@ -290,21 +306,20 @@ Array.prototype.compare = function(testArr) {
 }
 
 function pushResults(){
-    var $table = $("<table>", { class: "results" } );
-    var $row = $("<tr>");
-    $row.append($("<th>", { text: "n", class: "results n" }));
-    $row.append($("<th>", { text: "times called", class: "results" }));
-    $table.append($row);
+    var $table = $("table#l-results")
+    var $thead = $("<thead>");
+    $thead.append($("<th>", { text: "n"}));
+    $thead.append($("<th>", { text: "times called"}));
+    $table.append($thead);
     for (var n in l_called_on.results) {
         if (l_called_on.results.hasOwnProperty(n)) {
             var val = l_called_on.results[n];
             var $row = $("<tr>");
-            $row.append($("<td>", { text: n, class: "results n" }));
-            $row.append($("<td>", { text: val, class: "results" }));
+            $row.append($("<td>", { text: n}));
+            $row.append($("<td>", { text: val}));
             $table.append($row);
         }
     }
-    $("div#l-results").html($table);
 }
 
 function l_called_on(n){
@@ -324,11 +339,11 @@ function quiz_check_input(A) {
     if (A.compare(B)) {
         quiz_check_input.backup = $elem.text()
         $elem.text("Yep. The worst-case is when A is sorted.")
-        $elem.removeClass("quiz");
-        $elem.addClass("quizok");
+        $elem.removeClass("text-warning");
+        $elem.addClass("text-success");
     } else if (quiz_check_input.backup) {
-        $elem.removeClass("quizok");
-        $elem.addClass("quiz");
+        $elem.removeClass("text-success");
+        $elem.addClass("text-warning");
         $elem.text(quiz_check_input.backup);
     }
 }
@@ -487,7 +502,6 @@ var myviz2 = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Controls({
             container: "controls",
-            expandWidth: true,
         }),
     ],
 
