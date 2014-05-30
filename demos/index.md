@@ -25,8 +25,7 @@ subheader: Dynamic algorithm visualization in the browser
 
    * [Rod-cutting](rod_cutting.html) ([with quiz](rod_cutting-quiz.html))
    * [Matrix-chain multiplication](matrix-chain.html)
-   * [Longest increasing subsequence](lis.html)
-   * [Simplified longest increasing subsequence](lis2.html)
+   * [Longest increasing subsequence](lis.html)[(simplified)](lis2.html)
 
 * Graphs:
 
