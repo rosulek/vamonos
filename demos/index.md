@@ -43,9 +43,5 @@ subheader: Dynamic algorithm visualization in the browser
    * [Max Flow Railroad Example](max-flow-rail.html)
    * [Ford-Fulkerson Bipartite Matching](bipartite-matching.html)
 
-* Lessons:
-
-   * [Longest Increasing Subsequence](lis-extended.html)
-
 
 All demos use the [**Vamonos**](../index.html) algorithm visualization library ([github](https://github.com/rosulek/vamonos)).
