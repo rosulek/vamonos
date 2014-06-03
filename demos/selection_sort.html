@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+
     <style type="text/css">
         body {
             text-align: center;
@@ -15,13 +19,13 @@
 
 </head><body>
 
-    <h1>Selection Sort</h1>
-
-    <table class="vamonos">
-        <tr><td class="pseudocode-and-controls">
-
+    <br>
+    <div class=" row">
+        <div class="panel vamonos col-sm-offset-4 col-sm-4 panel-default">
+            <div class="panel-heading">
+                Selection Sort
+            </div>
             <div class="pseudocode-procedures">
-
                 <div id="pseudocode" title="SelectionSort(A):">
                     for i = 0 to A.length-2
                         # find smallest item in A[i..]
@@ -31,24 +35,16 @@
                                 m = j
                         swap A[i] and A[m]
                 </div>
-
             </div>
-
-        </td></tr><tr><td>
-
             <div id="controls"></div>
-
-        </td></tr><tr><td class="variable-widgets">
-
             <table class="variable-widgets">
                 <tr><td><div id="a-var"></div></td>
                     <td><div id="array"></div></td>
                 </tr>
             </table>
+        </div>
+    </div>
 
-        </td></tr>
-
-    </table>
 </body>
 
 <script type="text/javascript">

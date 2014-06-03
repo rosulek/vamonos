@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+
     <style type="text/css">
         body {
             text-align: center;
@@ -16,105 +20,69 @@
 
 </head><body>
 
-    <h1>Factorial</h1>
-
-    <table class="vamonos">
-        <tr><td class="pseudocode-and-controls">
-
+    <br>
+    <div class=" row">
+        <div class="panel vamonos col-sm-4 col-sm-offset-4 panel-default">
+            <div class="panel-heading">
+                Factorial
+            </div>
             <div class="pseudocode-procedures">
-
                 <div id="fact" title="Fact(n):">
                     if n &le; 1
                         return n
                     return n * Fact(n-1)
                 </div>
-
             </div>
-
-        </td></tr><tr><td>
-
             <div id="controls"></div>
-
-        </td></tr><tr><td class="variable-widgets">
-
             <table class="variable-widgets">
                 <tr><td><div id="stack-var"></div></td>
                     <td><div id="stack"></div></td>
                 </tr>
             </table>
-
-        </td></tr>
-
-    </table>
-
-    &nbsp;
-    &nbsp;
-    &nbsp;
-
-    <table class="vamonos">
-        <tr><td class="pseudocode-and-controls">
-
+        </div>
+    </div>
+    <div class=" row">
+        <div class="panel vamonos col-sm-offset-4 col-sm-4 panel-default">
+            <div class="panel-heading">
+                Accumulating Factorial
+            </div>
             <div class="pseudocode-procedures">
-
                 <div id="fact2" title="Fact(n, acc):">
                     if n &le; 1
                         return acc
                     // no tail call optimization
                     return Fact(n-1, acc*n)
                 </div>
-
             </div>
-
-        </td></tr><tr><td>
-
             <div id="controls2"></div>
-
-        </td></tr><tr><td class="variable-widgets">
-
             <table class="variable-widgets">
                 <tr><td><div id="stack-var2"></div></td>
                     <td><div id="stack2"></div></td>
                 </tr>
             </table>
-
-        </td></tr>
-
-    </table>
-
-
-    &nbsp;
-    &nbsp;
-    &nbsp;
-
-    <table class="vamonos">
-        <tr><td class="pseudocode-and-controls">
-
+        </div>
+    </div>
+    <div class=" row">
+        <div class="panel vamonos col-sm-offset-4 col-sm-4 panel-default">
+            <div class="panel-heading">
+                Tail Call Factorial
+            </div>
             <div class="pseudocode-procedures">
-
                 <div id="fact3" title="Fact(n, acc):">
                     if n &le; 1
                         return acc
                     // tail call optimization!
                     return Fact(n-1, acc*n)
                 </div>
-
             </div>
-
-        </td></tr><tr><td>
-
             <div id="controls3"></div>
-
-        </td></tr><tr><td class="variable-widgets">
-
             <table class="variable-widgets">
                 <tr><td><div id="stack-var3"></div></td>
                     <td><div id="stack3"></div></td>
                 </tr>
             </table>
-
-        </td></tr>
-
-    </table>
+        </div>
+    </div>
 
 
 </body><script>
