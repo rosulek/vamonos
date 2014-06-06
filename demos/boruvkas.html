@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+
     <style type="text/css">
     .vertex-contents {
         font-size: .8em;
@@ -50,41 +54,46 @@
 
 </head><body>
 
-    <h1>Borůvka's Minimum Spanning Tree</h1>
-
-    <table class="vamonos">
-
-        <tr><td class="pseudocode-and-controls">
-
-            <div id="controls"></div>
-
-            <div class="pseudocode-procedures">
-                <div id="pseudocode" title="MST-Boruvka(G)">
-                    while |G.V| &gt; 1
-                        for each u &in; G.V
-                            for each v &in; G.V s.t. (u,v) &in; G.E
-                                if (u,v).w &lt; best.w
-                                    best = (u,v)
-                            if best = null
-                                error "disconnected graph"
-                            else
-                                add best to MST
-                        for each (u,v) &in; G.E s.t. (u,v).inMST
-                            Collapse(u,v)
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-offset-1 col-sm-10 panel-default">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Borůvka's Minimum Spanning Tree
+                    </div>
+                    <div class="row nopadding panel-body">
+                        <div class="col-sm-6 nopadding">
+                            <div id="controls"></div>
+                            <div class="pseudocode-procedures">
+                                <div id="pseudocode" title="MST-Boruvka(G)">
+                                    while |G.V| &gt; 1
+                                        for each u &in; G.V
+                                            for each v &in; G.V s.t. (u,v) &in; G.E
+                                                if (u,v).w &lt; best.w
+                                                    best = (u,v)
+                                            if best = null
+                                                error "disconnected graph"
+                                            else
+                                                add best to MST
+                                        for each (u,v) &in; G.E s.t. (u,v).inMST
+                                            Collapse(u,v)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 nopadding">
+                            <table class="variable-widgets">
+                                <tr><td><div id="g-var"></div></td>
+                                    <td><div id="g"></div></td> </tr>
+                                <tr><td><div id="gmst-var"></div></td>
+                                    <td><div id="gmst"></div></td> </tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-        </td><td class="variable-widgets">
-
-            <table class="variable-widgets">
-                <tr><td><div id="g-var"></div></td>
-                    <td><div id="g"></div></td> </tr>
-                <tr><td><div id="gmst-var"></div></td>
-                    <td><div id="gmst"></div></td> </tr>
-            </table>
-
-        </td></tr>
-    </table>
+        </div>
+    </div>
 
 </body>
 <script type="text/javascript">

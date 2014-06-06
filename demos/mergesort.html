@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+
     <style type="text/css">
 
         td.gt-i, td.gt-j, td.gt-r, td.lt-p {
@@ -25,62 +29,69 @@
 </head>
 <body>
 
-<h1>Mergesort</h1>
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-offset-2 col-sm-8 panel-default">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Mergesort
+                    </div>
+                    <div class="row nopadding panel-body">
+                        <div class="col-sm-6 nopadding">
+                            <div id="controls"> </div>
+                            <div class="pseudocode-procedures">
+                                <div id="mergesort" title="MergeSort(A,p,r):">
+                                    if p &lt; r
+                                        q = &lfloor; (p+r)/2 &rfloor;
+                                        MergeSort(A,p,q)
+                                        MergeSort(A,q+1,r)
+                                        Merge(A,p,q,r)
+                                </div>
+                                <div id="merge" title="Merge(A,p,q,r):">
+                                    n<sub>1</sub> = q - p + 1
+                                    n<sub>2</sub> = r - q
+                                    let L, R be new arrays
+                                    for i = 1 to n<sub>1</sub>
+                                        L[i] = A[p+i-1]
+                                    for j = 1 to n<sub>2</sub>
+                                        R[j] = A[q+j]
+                                    L[n<sub>1</sub>+1] = &infin;
+                                    R[n<sub>2</sub>+1] = &infin;
+                                    i = 1
+                                    j = 1
+                                    for k = p to r
+                                        if L[i] &leq; R[j]
+                                            A[k] = L[i]
+                                            i = i + 1
+                                        else
+                                            A[k] = R[j]
+                                            j = j + 1
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 nopadding">
+                            <table class="variable-widgets">
 
-<table class="vamonos">
-    <tr><td class="pseudocode-and-controls">
-        <div id="controls"> </div>
+                                <tr><td><div id="array-a-var"></div></td>
+                                    <td><div id="array-a"></div></td></tr>
 
-        <div class="pseudocode-procedures">
-            <div id="mergesort" title="MergeSort(A,p,r):">
-                if p &lt; r
-                    q = &lfloor; (p+r)/2 &rfloor;
-                    MergeSort(A,p,q)
-                    MergeSort(A,q+1,r)
-                    Merge(A,p,q,r)
-            </div>
-            <div id="merge" title="Merge(A,p,q,r):">
-                n<sub>1</sub> = q - p + 1
-                n<sub>2</sub> = r - q
-                let L, R be new arrays
-                for i = 1 to n<sub>1</sub>
-                    L[i] = A[p+i-1]
-                for j = 1 to n<sub>2</sub>
-                    R[j] = A[q+j]
-                L[n<sub>1</sub>+1] = &infin;
-                R[n<sub>2</sub>+1] = &infin;
-                i = 1
-                j = 1
-                for k = p to r
-                    if L[i] &leq; R[j]
-                        A[k] = L[i]
-                        i = i + 1
-                    else
-                        A[k] = R[j]
-                        j = j + 1
+                                <tr><td><div id="array-l-var"></div></td>
+                                    <td><div id="array-l"></div></td></tr>
+
+                                <tr><td><div id="array-r-var"></div></td>
+                                    <td><div id="array-r"></div></td></tr>
+
+                                <tr><td><div id="callstack-var"></div></td>
+                                    <td><div id="callstack"></div></td></tr>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
-
-    </td><td class="variable-widgets">
-
-            <table class="variable-widgets">
-
-                <tr><td><div id="array-a-var"></div></td>
-                    <td><div id="array-a"></div></td></tr>
-
-                <tr><td><div id="array-l-var"></div></td>
-                    <td><div id="array-l"></div></td></tr>
-
-                <tr><td><div id="array-r-var"></div></td>
-                    <td><div id="array-r"></div></td></tr>
-
-                <tr><td><div id="callstack-var"></div></td>
-                    <td><div id="callstack"></div></td></tr>
-
-            </table>
-    </td></tr>
-</table>
+    </div>
 
 </body>
 <script type="text/javascript">

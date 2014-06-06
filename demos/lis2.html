@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+
     <style type="text/css">
     body {
         text-align: center;
@@ -20,32 +24,44 @@
 
 </head><body>
 
-    <h1>Longest Increasing Subsequence</h1>
-
-    <table class="vamonos">
-        <tr><td class="pseudocode-and-controls">
-            <div id="controls"></div>
-            <div class="pseudocode-procedures">
-                <div id="pseudocode" title="LIS(A):">
-                    L[0] = 0
-                    for n = 1 to A.length
-                        L[n] = 1
-                        for j = 1 to n-1
-                            if A[j] &lt; A[n] and L[n] &lt; L[j] + 1
-                                L[n] = L[j] + 1
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-offset-1 col-sm-10 panel-default">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Longest Increasing Subsequence
+                    </div>
+                    <div class="row nopadding panel-body">
+                        <div class="col-sm-6 nopadding">
+                            <div id="controls"></div>
+                            <div class="pseudocode-procedures">
+                                <div id="pseudocode" title="LIS(A):">
+                                    L[0] = 0
+                                    for n = 1 to A.length
+                                        L[n] = 1
+                                        for j = 1 to n-1
+                                            if A[j] &lt; A[n] and L[n] &lt; L[j] + 1
+                                                L[n] = L[j] + 1
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 nopadding">
+                            <table class="variable-widgets">
+                                <tr><td><div id="A-var"></div></td>
+                                    <td><div id="A"></div></td>
+                                </tr>
+                                <tr><td><div id="L-var"></div></td>
+                                    <td><div id="L"></div></td></tr>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </td><td class="variable-widgets">
-            <table class="variable-widgets">
-                <tr><td><div id="A-var"></div></td>
-                    <td><div id="A"></div></td>
-                </tr>
-                <tr><td><div id="L-var"></div></td>
-                    <td><div id="L"></div></td></tr>
-                </tr>
-            </table>
-        </td></tr>
-    </table>
+        </div>
+    </div>
+
     <p class='caption' align='center'>
         <table>
             <tr><td>

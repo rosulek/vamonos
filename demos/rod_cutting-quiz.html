@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+
     <style type="text/css">
         .ui-widget-overlay {
             position: fixed;
@@ -70,38 +74,49 @@
 
 </head><body>
 
-    <h1>Rod-Cutting with Quiz</h1>
-
-    <table class="vamonos">
-        <tr><td class="pseudocode-and-controls">
-            <div id="controls"></div>
-            <div class="pseudocode-procedures">
-                <div id="pseudocode" title="RodCut(price):">
-                    opt[0] = 0
-                    sol[0] = []
-                    for k = 1 to price.length
-                        opt[k] = 0
-                        sol[k] = null
-                        for i = 1 to k
-                            if opt[k] &lt; opt[k-i] + price[i]
-                                opt[k] = opt[k-i] + price[i]
-                                sol[k] = sol[k-i] + [i]
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-offset-2 col-sm-8 panel-default">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Rod-Cutting with Quiz
+                    </div>
+                    <div class="row nopadding panel-body">
+                        <div class="col-sm-6 nopadding">
+                            <div id="controls"></div>
+                            <div class="pseudocode-procedures">
+                                <div id="pseudocode" title="RodCut(price):">
+                                    opt[0] = 0
+                                    sol[0] = []
+                                    for k = 1 to price.length
+                                        opt[k] = 0
+                                        sol[k] = null
+                                        for i = 1 to k
+                                            if opt[k] &lt; opt[k-i] + price[i]
+                                                opt[k] = opt[k-i] + price[i]
+                                                sol[k] = sol[k-i] + [i]
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 nopadding">
+                            <table class="variable-widgets">
+                                <tr><td><div id="price-var"></div></td>
+                                    <td><div id="price"></div></td>
+                                </tr>
+                                <tr><td><div id="opt-var"></div></td>
+                                    <td><div id="opt"></div></td>
+                                </tr>
+                                <tr><td><div id="sol-var"></div></td>
+                                    <td><div id="sol"></div></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </td><td class="variable-widgets">
-            <table class="variable-widgets">
-                <tr><td><div id="price-var"></div></td>
-                    <td><div id="price"></div></td>
-                </tr>
-                <tr><td><div id="opt-var"></div></td>
-                    <td><div id="opt"></div></td>
-                </tr>
-                <tr><td><div id="sol-var"></div></td>
-                    <td><div id="sol"></div></td>
-                </tr>
-            </table>
-        </td></tr>
-    </table>
+        </div>
+    </div>
 
 </body>
 

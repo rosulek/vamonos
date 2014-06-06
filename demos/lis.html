@@ -16,56 +16,54 @@
             text-align: center;
         }
 
-    .nopadding {
-        padding: 0 !important;
-        margin: 0 !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-    }
-
     </style>
 
 </head><body>
-    <h3>
-        Longest Increasing Subsequence
-    </h3>
-    <div class="row nopadding">
-        <div class="panel col-sm-offset-2 col-sm-8 panel-default">
-            <div class="row">
-                <div class="nopadding col-sm-6">
-                    <div id="controls"></div>
-                    <div class="pseudocode-procedures">
-                        <div id="pseudocode" title="LIS(A):">
-                            opt[0] = 0
-                            sol[0] = []
-                            for k = 1 to A.length
-                                opt[k] = 1
-                                sol[k] = [A[k]]
-                                for i = 1 to k-1
-                                    if A[i] &lt; A[k] and opt[k] &lt; opt[i] + 1
-                                        opt[k] = opt[i] + 1
-                                        sol[k] = sol[i] + [A[i]]
-                            best = 1
-                            for j = 2 to A.length
-                                if opt[best] &lt; opt[j]
-                                    best = j
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-offset-1 col-sm-10 panel-default">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Longest Increasing Subsequence
+                    </div>
+                    <div class="row nopadding panel-body">
+                        <div class="col-sm-6 nopadding">
+                            <div id="controls"></div>
+                            <div class="pseudocode-procedures">
+                                <div id="pseudocode" title="LIS(A):">
+                                    opt[0] = 0
+                                    sol[0] = []
+                                    for k = 1 to A.length
+                                        opt[k] = 1
+                                        sol[k] = [A[k]]
+                                        for i = 1 to k-1
+                                            if A[i] &lt; A[k] and opt[k] &lt; opt[i] + 1
+                                                opt[k] = opt[i] + 1
+                                                sol[k] = sol[i] + [A[i]]
+                                    best = 1
+                                    for j = 2 to A.length
+                                        if opt[best] &lt; opt[j]
+                                            best = j
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 nopadding">
+                            <table class="variable-widgets">
+                                <tr><td><div id="A-var"></div></td>
+                                    <td><div id="A"></div></td>
+                                </tr>
+                                <tr><td><div id="opt-var"></div></td>
+                                    <td><div id="opt"></div></td></tr>
+                                <tr><td><div id="sol-var"></div></td>
+                                    <td><div id="sol"></div></td></tr>
+                                </tr>
+                                <tr><td><div id="best-var"></div></td>
+                                    <td><div id="best"></div></td>
+                                </tr>
+                            </table>
                         </div>
                     </div>
-                </div>
-                <div class="nopadding col-sm-6">
-                    <table class="variable-widgets">
-                        <tr><td><div id="A-var"></div></td>
-                            <td><div id="A"></div></td>
-                        </tr>
-                        <tr><td><div id="opt-var"></div></td>
-                            <td><div id="opt"></div></td></tr>
-                        <tr><td><div id="sol-var"></div></td>
-                            <td><div id="sol"></div></td></tr>
-                        </tr>
-                        <tr><td><div id="best-var"></div></td>
-                            <td><div id="best"></div></td>
-                        </tr>
-                    </table>
                 </div>
             </div>
         </div>
