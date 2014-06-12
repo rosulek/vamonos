@@ -391,7 +391,6 @@ class GraphDisplay
             parent = this.parentNode
             ref = parent.querySelector(".graph-label")
             parent.insertBefore(this, ref)
-            this.className += "vertex-drag"
             this.style.filter = "url(#shadow)"
         dragmove = (d) ->
             # using "dragstart" event conflicted with click handling
@@ -409,7 +408,6 @@ class GraphDisplay
             .on "dragend", (d) ->
                 dragmove.initialized = false
                 d3.select(this)
-                    .classed("vertex-drag", null)
                     .style("filter", null)
                 if ths.persistentDragging and ths.mode is 'display'
                     ths._savex[d.id] = d.x
