@@ -3,3 +3,6 @@ README.html
 node_modules/
 dist/
 api/
+*.log
+*.pdf
+*.aux

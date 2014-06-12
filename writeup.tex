@@ -1,0 +1,118 @@
+\documentclass[12pt]{article}
+
+\usepackage{mathptmx,amssymb,amsmath}
+\usepackage{fullpage}
+\usepackage{enumerate}
+\usepackage{fancyvrb}
+
+
+%%%
+%%% Formatting details
+%%%
+\sloppy
+\sloppypar
+\widowpenalty=0
+\clubpenalty=0
+\displaywidowpenalty=0
+\raggedbottom
+\pagestyle{plain}
+
+
+% \topskip0pt
+% \parskip0pt
+% \partopsep0pt
+
+\DefineVerbatimEnvironment{program}{Verbatim}
+  {baselinestretch=1.0,xleftmargin=5mm,fontsize=\small,samepage=true}
+
+\def\denseitems{
+    \itemsep1pt plus1pt minus1pt
+    \parsep0pt plus0pt
+    \parskip0pt\topsep0pt}
+
+
+\newcommand{\prog}[1]{{\small\texttt{#1}}}
+% \newcommand{\bs}{\texttt{\symbol{92}}}
+
+\begin{document}
+
+\title{\textbf{Vamonos}
+\\ Algorithm Visualization Framework}
+
+\author{Mike Rosulek and Brent Carmer \\
+School of EECS \\
+Oregon State University
+}
+
+\maketitle
+
+\section{Introduction}
+\label{sec:intro}
+
+Vamonos is an interactive algorithm visualization framework for the browser. It allows easy creation
+of algorithm visualizations. It supports a number of data structures including dynamic display of
+arrays and graphs. It supports recursion and can display the call-stack including argument and
+return values.
+
+\section{Users and Use-Cases}
+\label{sec:users}
+
+We have two main users: instructors and students.
+
+\begin{itemize}
+\item Instructors\\
+
+  Instructors can use Vamonos in class to demonstrate the execution of algorithms. The
+  visualizations are minimalist, with little visual distraction, giving instructors freedom to use
+  them as they like. Edge cases can be drawn into data structures easily.
+
+\item Students\\
+
+  Students can experiment with different input. They can customize breakpoints and watched variables
+  as needed to further their understanding. We have created entire lessons demonstrating algorithmic
+  concepts like dynamic programming for self-study.
+
+\end{itemize}
+
+\section{Cognitive Dimension Evaluation}
+\label{sec:cogdim}
+
+\section{Basic Objects}
+\label{sec:objects}
+
+\section{Interpretation and Analyses}
+\label{sec:analysis}
+
+\section{Implementation}
+\label{sec:implementation}
+
+We use \prog{jQuery} heavily for most visualization tasks and \prog{D3.js} for displaying graphs.
+
+\begin{itemize}
+\item Algorithm implementation\\
+  The algorithm is implemented in Javascript. Talk about _, with, etc.
+
+Widgets initialization
+
+The structure of a Vamonos demo is three part. The layout of the visualization happens in
+\prog{HTML}. Various divs are tagged with ids, which are used to identify them later from the
+javascript part.
+\end{itemize}
+
+\section{Design Evolution}
+\label{sec:evol}
+
+
+
+\section{Related Projects}
+\label{sec:related}
+
+Python tutor
+
+\section{Future Work}
+\label{sec:future}
+
+Encyclopedia of algorithms
+Compile visualization from pseudocode
+
+\end{document}
