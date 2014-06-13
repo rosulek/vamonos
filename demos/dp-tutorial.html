@@ -36,12 +36,11 @@
 
 
     $( function(){
-        $("div#tab2").hide();
-        $("div#tab3").hide();
+        tab(1);
     });
 
     function tab(n) {
-        var active = [1,2,3].filter(function(x){ return x !== n })
+        var active = [1,2,3,4,5].filter(function(x){ return x !== n })
         active.forEach(function(x){
             $("li#tabbutt" + x).removeClass("active");
             $("div#tab" + x).hide();
@@ -71,8 +70,10 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li id="tabbutt1" class="active"><a onclick="tab(1);">Introduction</a></li>
-                    <li id="tabbutt2"><a onclick="tab(2);">Recursive Solution</a></li>
-                    <li id="tabbutt3"><a onclick="tab(3);">DP Solution</a></li>
+                    <li id="tabbutt2"><a onclick="tab(2);">Caching</a></li>
+                    <li id="tabbutt3"><a onclick="tab(3);">Top-down vs Bottom-up</a></li>
+                    <li id="tabbutt4"><a onclick="tab(4);">The Basic Idea</a></li>
+                    <li id="tabbutt5"><a onclick="tab(5);">Bonus Scheduling</a></li>
                 </ul>
             </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->
@@ -103,7 +104,7 @@
                 </p>
                 <div class="panel vamonos panel-default">
                     <div class="panel-heading">
-                        Fibonacci Implementation
+                        Recursive Fibonacci
                     </div>
                     <div class="pseudocode-procedures">
                         <div id="fib" title="Fib(n):">
@@ -120,6 +121,49 @@
                         </tr>
                     </table>
                 </div>
+
+                <script type="text/javascript">
+                var fib = new Vamonos.Visualizer({
+                    widgets: [
+                        new Vamonos.Widget.Hardcoded({
+                            n: 10,
+                        }),
+
+                        new Vamonos.Widget.Pseudocode("fib"),
+                        new Vamonos.Widget.Controls("fib-controls"),
+
+                        new Vamonos.Widget.CallStack({
+                            container: "fib-stack",
+                            procedureNames: {
+                                main: "Fib",
+                            },
+                        }),
+
+                        new Vamonos.Widget.VarName({
+                            container: "fib-stack-var",
+                            varName: "_callstack",
+                            displayName: "Call Stack",
+                            watching: true
+                        })
+                    ],
+
+                    algorithm: function(_) {
+                        with (this) {
+                            _(1);
+                            if (n <= 1) {
+                                _(2);
+                                return 1;
+                            }
+                            _(3);
+                            _(4);
+                            var a = main({n:n-1});
+                            var b = main({n:n-2});
+                            return a + b;
+                        }
+                    },
+                    maxFrames: 500,
+                });
+                </script>
 
                 <p>
                     What could be wrong with that? For one thing, most calls to fib() are needlessly
@@ -141,101 +185,128 @@
     </div>
 
     <div id="tab2" class="container-fluid">
+
         <div class="row">
-            <div class="col-sm-7 col-sm-offset-3">
-                <h3 id="recursive_solution">To Formalize This</h3>
+            <div class="col-sm-6">
+                <h3>Caching</h3>
 
                 <p>
-                    We can definitely break this up into smaller problems. That's what we call <a
-                    href="https://en.wikipedia.org/wiki/Optimal_substructure">optimal substructure</a>.  If
-                    we know the longest increasing subsequence of the list ending with A[i-1], we can easily
-                    compute the longest increasing subsequence of A[i]. We can create a recursive function L
-                    to calculate this recursively.
-                </p>
-
-                <p class='caption' align='center'>
-                    <table>
-                        <tr><td>
-                            L[0] =
-                        </td><td>
-                            0
-                        </td></tr>
-                        <tr><td>
-                            L[n] =
-                        </td><td>
-                            1 + max{ L[j]: for all j < n such that A[j] < A[n] }<br>
-                        </td></tr>
-                    </table>
+                    One way to avoid computing the same value twice is to bolt on a <em>cache</em>
+                    to the algorithm. At the beginning of every call to fib(n), we check whether the
+                    answer is already in the cache. Otherwise, we compute the answer just as before,
+                    and store the answer in the cache just before returning. We call this
+                    <strong><em>recursion with shortcuts</em></strong>.
                 </p>
 
                 <p>
-                    We could implement this. By the way, we use 1-indexed arrays, so we can have a neat base
-                    case of 0. We also do this to complicate programming!
+                    This algorithm won't needlessly recompute a value fib(n) after computing it
+                    once. But this style of coding is slightly cumbersome since:
+                    <ul>
+                        <li>
+                            It is hard to analyze/understand, because it relies heavily on
+                            side-effects. The same call to fib() could result in different behavior
+                            based on the contents of the cache.
+                        </li>
+
+                        <li>
+                            Correctly maintaining the cache is awkward when using a static/global
+                            cache variable like this. For future problems we will discuss, a cache
+                            can be made to work but only if it is cleared for some calls but not
+                            others.
+                        </li>
+                    </ul>
                 </p>
+
             </div>
-        </div>
-
-        <br>
-
-        <div class="jumbotron row">
-            <div class="panel row panel-default">
-                <div class="panel-heading">
-                    Recursive LIS Implementation
-                </div>
-                <div class="col-sm-5 vamonos">
-                    <div id="controls-l"></div>
+            <div class="col-sm-6">
+                <div class="panel vamonos panel-default">
+                    <div class="panel-heading">
+                        Caching Fibonacci
+                    </div>
                     <div class="pseudocode-procedures">
-                        <div id="pseudocode-l-caller" title="LIS(A):">
-                            R = []
-                            for i = 0 upto A.length
-                                v = L(A,i)
-                                R.push(v)
-                            return max(R)
-                        </div>
-                        <div id="pseudocode-l" title="L(n):">
-                            if n = 0
-                                return 0
-                            M = []
-                            for all j such that A[j] < A[n]
-                                v = L(j)
-                                M.push(v)
-                            return 1 + max(M)
+                        <div id="fib-cache" title="Fib(n):">
+                            // cache[n] will store the already-computed result of Fib(n)
+                            if cache[n] exists then
+                                return cache[n]
+                            if n <= 1 then
+                                cache[n] = 1
+                            else
+                                cache[n] = Fib(n-1) + Fib(n-2)
+                            return cache[n]
                         </div>
                     </div>
-                </div>
-                <div class="col-sm-7 vamonos">
+                    <div id="fib-cache-controls"></div>
                     <table class="variable-widgets">
-                        <tr><td><div id="A-var-l"></div></td>
-                            <td><div id="A-l"></div></td>
-                        </tr>
-                        <tr><td><div id="R-var-l"></div></td>
-                            <td><div id="R-l"></div></td>
-                        </tr>
-                        <tr><td><div id="stack-var-l"></div></td>
-                            <td><div id="stack-l"></div></td>
+                        <tr><td><div id="fib-cache-cache-var"></div></td>
+                            <td><div id="fib-cache-cache"></div></td>
+                        <tr><td><div id="fib-cache-stack-var"></div></td>
+                            <td><div id="fib-cache-stack"></div></td>
                         </tr>
                     </table>
                 </div>
-            </div>
-        </div>
 
-        <div class="row">
-            <div class="col-xs-3 col-xs-offset-2">
-                <div class="panel panel-default">
-                    <div class="panel-heading">Calls to L(n)</div>
-                    <table id="l-results" class="table table-bordered table-striped table-condensed"> </table>
-                </div>
-            </div>
+                <script type="text/javascript">
+                var fib_cache = new Vamonos.Visualizer({
+                    widgets: [
+                        new Vamonos.Widget.Hardcoded({
+                            n: 10,
+                        }),
+                        new Vamonos.Widget.Pseudocode("fib-cache"),
+                        new Vamonos.Widget.Controls("fib-cache-controls"),
+                        new Vamonos.Widget.CallStack({
+                            container: "fib-cache-stack",
+                            procedureNames: {
+                                main: "Fib",
+                            },
+                        }),
+                        new Vamonos.Widget.VarName({
+                            container: "fib-cache-stack-var",
+                            varName: "_callstack",
+                            displayName: "Calls",
+                            watching: true
+                        }),
+                        new Vamonos.Widget.VarName({
+                            container: "fib-cache-cache-var",
+                            varName: "cache",
+                            watching: true,
+                        }),
+                        new Vamonos.Widget.Array({
+                            container: "fib-cache-cache",
+                            varName: "cache",
+                            displayOnly: true,
+                        }),
+                    ],
+                    algorithm: function(_) {
+                        with (this) {
+                            if (global.cache === undefined) {
+                                global.cache = [];
+                            }
+                            if (_(1), global.cache[n] !== undefined) {
+                                _(2);
+                                return global.cache[n];
+                            }
 
-            <div class="col-xs-5">
-                <h3>Overlapping Subproblems</h3>
+                            if (_(3), n <= 1) {
+                                _(4);
+                                global.cache[n] = 1;
+                            } else {
+                                _(5);
+                                _(6);
+                                var a = main({n:n-1});
+                                var b = main({n:n-2});
+                                global.cache[n] = a + b;
+                            }
+                            _(7);
+                            return global.cache[n];
+                        }
+                    },
+                    maxFrames: 500,
+                });
+                </script>
+
                 <p>
-                    The problem with this implementation is that it calls L many times with the same n.
-                    That's the other incredient of a problem we can attack using dynamic programming: <a
-                    href="https://en.wikipedia.org/wiki/Overlapping_subproblems">overlapping
-                    subproblems</a>. In fact, in the worst case, there will be O(2<sup>n</sup>) of
-                    them. What is the worst case input? <span id="quiz" class="text-warning">The current input is
-                    not the worst-case input. Try changing it!</span>
+                    Q: when calling fib(5) with an initially empty cache, what will be the first
+                    entry in the cache to be added?
                 </p>
             </div>
         </div>
@@ -248,166 +319,275 @@
 
 
     <div id="tab3" class="container-fluid">
-
         <div class="row">
-            <div class="col-sm-6 col-sm-offset-3">
-                <h3 id="dp_solution">Dynamic Programming</h3>
+            <div class="col-sm-6">
+                <h3>Top-down vs Bottom-up</h3>
+
                 <p>
-                    Dynamic programming is easy! All we do is start from the bottom of the problem instead
-                    of the top. We just use an array to keep track of the answers we've gotten already, and
-                    refer to that instead of recursing. It certianly helps if you know the formal equation
-                    of the problem (our L above), so I would recommend starting with that when you try
-                    solving your own dynamic programming problems.
+                    In the previous example, the cache gets filled starting at the base cases 0 & 1 and then
+                    gets filled up in increasing order. It makes sense that you can't compute fib(n) until
+                    fib(n-1) returns, filling cache[n-1] in the process.
+                </p>
+
+                <p>
+                    Let's execute the recursion-with-shortcuts algorithm, and imagine that all we can see is
+                    how the cache array is filled:
+                </p>
+
+                <p>
+                    TRY IT
+                </p>
+
+                <p>
+                    So the recursion-with-shortcuts approach fills the cache in a certain way, and
+                    eventually returns the last item added to the cache.
+                </p>
+
+                <p>
+                    If you were asked to write an algorithm that fills an array in this way, you certainly
+                    wouldn't have written the recursion-with-shortcuts approach. You would have written
+                    something much more direct:
                 </p>
             </div>
-        </div>
 
-        <br>
-
-        <div class="jumbotron row">
-            <div class="panel row panel-default">
-                <div class="panel-heading">
-                    Dynamic Programming LIS Implementation
-                </div>
-                <div class="col-sm-5 vamonos">
-                    <div id="controls"></div>
+            <div class="col-sm-6">
+                <div class="panel vamonos panel-default">
+                    <div class="panel-heading">
+                        Bottom-up Fibonacci
+                    </div>
                     <div class="pseudocode-procedures">
-                        <div id="pseudocode" title="LIS(A):">
-                            L[0] = 0
-                            for n = 1 to A.length
-                                L[n] = 1
-                                for j = 1 to n-1
-                                    if A[j] &lt; A[n] and L[n] &lt; L[j] + 1
-                                    L[n] = L[j] + 1
+                        <div id="fib-bot" title="Fib(n):">
+                            cache[0] = cache[1] = 1
+                            for i = 2 to n:
+                                cache[k] = cache[k-1] + cache[k-2]
+                            return cache[n]
                         </div>
                     </div>
-                </div>
-                <div class="col-sm-7 vamonos">
+                    <div id="fib-bot-controls"></div>
                     <table class="variable-widgets">
-                        <tr><td><div id="A-var"></div></td>
-                            <td><div id="A"></div></td>
+                        <tr><td><div id="fib-bot-cache-var"></div></td>
+                            <td><div id="fib-bot-cache"></div></td>
                         </tr>
-                        <tr><td><div id="L-var"></div></td>
-                            <td><div id="L"></div></td></tr>
+                        <tr><td><div id="fib-bot-stack-var"></div></td>
+                            <td><div id="fib-bot-stack"></div></td>
+                        </tr>
                     </table>
                 </div>
-            </div>
-        </div>
 
+                <script type="text/javascript">
+                var fib_cache = new Vamonos.Visualizer({
+                    widgets: [
+                        new Vamonos.Widget.Hardcoded({
+                            n: 10,
+                        }),
+                        new Vamonos.Widget.Pseudocode("fib-bot"),
+                        new Vamonos.Widget.Controls("fib-bot-controls"),
+                        new Vamonos.Widget.CallStack({
+                            container: "fib-bot-stack",
+                            procedureNames: {
+                                main: "Fib",
+                            },
+                        }),
+                        new Vamonos.Widget.VarName({
+                            container: "fib-bot-stack-var",
+                            varName: "_callstack",
+                            displayName: "Calls",
+                            watching: true
+                        }),
+                        new Vamonos.Widget.VarName({
+                            container: "fib-bot-cache-var",
+                            varName: "cache",
+                            watching: true,
+                        }),
+                        new Vamonos.Widget.Array({
+                            container: "fib-bot-cache",
+                            varName: "cache",
+                            displayOnly: true,
+                        }),
+                    ],
+                    algorithm: function(_) {
+                        with (this) {
+                            _(1);
+                            this.cache = global.cache = [1,1];
+                            for (var i = 2; _(2), i <= n; i++) {
+                                _(3);
+                                cache[i] = cache[i-1] + cache[i-2];
+                            }
+                            _(4);
+                            return cache[n];
+                        }
+                    },
+                    maxFrames: 500,
+                });
+                </script>
 
-        <div class="row">
-            <div class="col-sm-6 col-sm-offset-3">
-                <h3>Runtime Analysis</h3>
                 <p>
-                    Since we keep eliminate the subproblems, we end up with a linear runtime. Which is
-                    awesome compared to the exponential one above. Maybe Mike can think of some more stuff
-                    to say here.
+                    Isn't that nicer?
+                </p>
+
+                <p>
+                    The two recursion-based approaches work **top-down**, considering larger problems in
+                    terms of smaller subproblems. This last, direct approch is **bottom-up**, solving larger
+                    and larger subproblems until the desired subproblem has been solved.
                 </p>
             </div>
         </div>
 
         <ul class="pager">
             <li><a onclick="tab(2)">Previous</a></li>
+            <li><a onclick="tab(4)">Next</a></li>
         </ul>
     </div>
-------------
 
-## Caching
+    <div id="tab4" class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6 col-sm-offset-3">
 
-One way to avoid computing the same value twice is to bolt on a *cache* to the algorithm. At the beginning of every call to fib(n), we check whether the answer is already in the cache. Otherwise, we compute the answer just as before, and store the answer in the cache just before returning. We call this **recursion with shortcuts**.
+                <h3>The Basic Idea</h3>
 
-   static cache[] // syntax??
-   // cache[n] will store the already-computed result of fib(n)
-   fib(n):
-       if cache[n] exists then
-           return cache[n]
-       if n <= 1 then
-           cache[n] = 1
-       else
-           cache[n] = fib(n-1) + fib(n-2)
-       return cache[n]
+                <p>
+                    We've seen 3 ways of doing the same simple thing: simple recursion, recursion
+                    with shortcuts, and bottom-up.
+                </p>
 
-This algorithm won't needlessly recompute a value fib(n) after computing it once. But this style of coding is slightly cumbersome since:
+                <p>
+                    The bottom-up approach is all there is to dynamic programming! Solve the base
+                    cases, then solve the next-smallest subproblems, and so on until you have solved
+                    the desired problem.
+                </p>
 
-* It is hard to analyze/understand, because it relies heavily on side-effects. The same call to fib() could result in different behavior based on the contents of the cache.
+                <p>
+                    Many/most students do indeed start out by thinking about the Fibonacci sequence
+                    in terms of the bottom-up approach (computing the nth Fibonacci number by
+                    enumerating 0,1,2,3,5,8,...). Then a CS education takes great pains to force
+                    students to think about things in a recursive way (F(n) = F(n-1) + F(n-2)).
+                </p>
 
-* Correctly maintaining the cache is awkward when using a static/global cache variable like this. For future problems we will discuss, a cache can be made to work but only if it is cleared for some calls but not others.
+                <p>
+                    Now we are asking you to go back to the bottom-up approach? Don't worry, the
+                    Fibonacci example is misleadingly simple. To use dynamic programming to its
+                    greatest benefit, you **must** understand the recursive top-down approach first,
+                    only then can you convert to a bottom-up algorithm.
+                </p>
+            </div>
+        </div>
 
-Q: when calling fib(5) with an initially empty cache, what will be the first entry in the cache to be added?
+        <ul class="pager">
+            <li><a onclick="tab(3)">Previous</a></li>
+            <li><a onclick="tab(5)">Next</a></li>
+        </ul>
+    </div>
 
-TRY IT
+    <div id="tab5" class="container-fluid">
+        <h3>First example: Work Bonus Scheduling</h3>
 
-----------
+        <div class="row">
+            <div class="col-sm-6">
+                <p>
+                    You work in outdoor construction in a hot climate, and get paid a daily bonus
+                    based on the high temperature that day. If the high temperature is T degrees,
+                    then you get a $T bonus (temperatures in this region are always positive). Local
+                    safety regulations also say that no one can work on consecutive days.
+                </p>
 
-## Top-down vs Bottom-up
+                <p>
+                    Suppose you know the forecast for the next n days, represented as an array
+                    T[1..n]. T[i] is the high temperature, i days from now. What is the maximum
+                    bonus you can receive over the next n days, assuming the forecast is correct and
+                    assuming you are in it just for the money (and are willing to work in any
+                    weather)?
+                </p>
 
-In the previous example, the cache gets filled starting at the base cases 0 & 1 and then gets filled up in increasing order. It makes sense that you can't compute fib(n) until fib(n-1) returns, filling cache[n-1] in the process.
+                <p>
+                    Example: Suppose the forecast is [93,91,87,72,85,88]. You can work on odd days
+                    to get a bonus of 93+87+85=265, or even days to get a bonus of 91+72+88=251. But
+                    even better would be to work on days 1, 3, and 6 to get a bonus of 93+87+88=268.
+                </p>
 
-Let's execute the recursion-with-shortcuts algorithm, and imagine that all we can see is how the cache array is filled:
+                <p>
+                    To get started solving this problem, let's first just worry about computing *the
+                    maximum bonus*, and not worry about *which schedule achieves* the maximum
+                    bonus. So, given the above example forecast, we would like to compute the number
+                    268.
+                </p>
 
-TRY IT
+                <p>
+                    Now suppose you are given a forecast T[1..n]. What do you do? To master the
+                    dynamic programming technique, you'll have to get used to the following kind of
+                    logic:
 
-So the recursion-with-shortcuts approach fills the cache in a certain way, and eventually returns the last item added to the cache.
+                    <ol>
+                        <li>
+                            If you decide to work on the nth day, you will get a bonus of
+                            T[n]. But then you can't work on the (n-1)th day, so the remainder of
+                            your schedule will be some subset of days 1 through n-2.
+                        </li>
 
-If you were asked to write an algorithm that fills an array in this way, you certainly wouldn't have written the recursion-with-shortcuts approach. You would have written something much more direct:
+                        <li>
+                            If you decide *not* to work on the nth day, then you'll be working in
+                            some subset of days 1 through n-1.
+                        </li>
+                    </ol>
 
-   fib(n):
-       cache[0] = cache[1] = 1
-       for i = 2 to n:
-           cache[k] = cache[k-1] + cache[k-2]
-       return cache[n]
+                    Those are the only two choices, right? Either work on the nth day, or don't work
+                    on the nth day.
+                </p>
+            </div>
+            <div class="col-sm-6">
 
-Isn't that nicer?
+                <p>
+                    Define best[k] to be the maximum possible bonus you can get by working during
+                    days 1 through k. Then let's revisit those two cases:
 
-The two recursion-based approaches work **top-down**, considering larger problems in terms of smaller subproblems. This last, direct approch is **bottom-up**, solving larger and larger subproblems until the desired subproblem has been solved.
+                    <ol>
+                        <li>
+                            You work on the nth day, earning T[n]. You also work some time during
+                            days 1 through n-2. The most that can give you is best[n-2]. Hence the
+                            most you can get from this case is best[n-2] + T[n].
+                        </li>
 
-----------------
+                        <li>
+                            You don't work on the nth day, you only work during days 1 through
+                            n-1. The most you that can give you is best[n-1].
+                        </li>
+                    </ol>
 
-## The Basic Idea
+                    So when thinking about what to do on the nth day, there are only two choices:
+                    choose to earn T[n] + best[n-2], or choose to earn best[n-1]. Of course you
+                    would choose whichever of these is highest, right? So we get:
+                </p>
 
-We've seen 3 ways of doing the same simple thing: simple recursion, recursion with shortcuts, and bottom-up.
 
-The bottom-up approach is all there is to dynamic programming! Solve the base cases, then solve the next-smallest subproblems, and so on until you have solved the desired problem.
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Work Bonus Formula
+                    </div>
+                    <div class="panel-body math">
+                        best[n] = max{ T[n] + best[n-2], best[n-1] }
+                    </div>
+                </div>
 
-Many/most students do indeed start out by thinking about the Fibonacci sequence in terms of the bottom-up approach (computing the nth Fibonacci number by enumerating 0,1,2,3,5,8,...). Then a CS education takes great pains to force students to think about things in a recursive way (F(n) = F(n-1) + F(n-2)).
+                <p>
+                    Of course, this formula only makes sense when n > 1. The base cases have to be
+                    best[1] = T[1] (it's always better to work than not to work, when considering
+                    only one day) and best[0] = 0 (working on zero days gives you zero bonus).
+                </p>
 
-Now we are asking you to go back to the bottom-up approach? Don't worry, the Fibonacci example is misleadingly simple. To use dynamic programming to its greatest benefit, you **must** understand the recursive top-down approach first, only then can you convert to a bottom-up algorithm.
+                <p>
+                    Hey, this is a recursive formula, which we could translate directly to a
+                    recursive algorithm. But it would suffer from overlapping subproblems! Calling
+                    it with input n would result in recursive calls on n-1 and n-2, just like the
+                    recursive algorithm for the Fibonacci numbers!
+                </p>
 
-----------------
-
-## First example: Work Bonus Scheduling
-
-You work in outdoor construction in a hot climate, and get paid a daily bonus based on the high temperature that day. If the high temperature is T degrees, then you get a $T bonus (temperatures in this region are always positive). Local safety regulations also say that no one can work on consecutive days.
-
-Suppose you know the forecast for the next n days, represented as an array T[1..n]. T[i] is the high temperature, i days from now. What is the maximum bonus you can receive over the next n days, assuming the forecast is correct and assuming you are in it just for the money (and are willing to work in any weather)?
-
-Example: Suppose the forecast is [93,91,87,72,85,88]. You can work on odd days to get a bonus of 93+87+85=265, or even days to get a bonus of 91+72+88=251. But even better would be to work on days 1, 3, and 6 to get a bonus of 93+87+88=268.
-
-To get started solving this problem, let's first just worry about computing *the maximum bonus*, and not worry about *which schedule achieves* the maximum bonus. So, given the above example forecast, we would like to compute the number 268.
-
-Now suppose you are given a forecast T[1..n]. What do you do? To master the dynamic programming technique, you'll have to get used to the following kind of logic:
-
-1. If you decide to work on the nth day, you will get a bonus of T[n]. But then you can't work on the (n-1)th day, so the remainder of your schedule will be some subset of days 1 through n-2.
-
-2. If you decide *not* to work on the nth day, then you'll be working in some subset of days 1 through n-1.
-
-Those are the only two choices, right? Either work on the nth day, or don't work on the nth day.
-
-Define best[k] to be the maximum possible bonus you can get by working during days 1 through k. Then let's revisit those two cases:
-
-1. You work on the nth day, earning T[n]. You also work some time during days 1 through n-2. The most that can give you is best[n-2]. Hence the most you can get from this case is best[n-2] + T[n].
-
-2. You don't work on the nth day, you only work during days 1 through n-1. The most you that can give you is best[n-1].
-
-So when thinking about what to do on the nth day, there are only two choices: choose to earn T[n] + best[n-2], or choose to earn best[n-1]. Of course you would choose whichever of these is highest, right? So we get:
-
-   best[n] = max{ T[n] + best[n-2], best[n-1] }
-
-Of course, this formula only makes sense when n > 1. The base cases have to be best[1] = T[1] (it's always better to work than not to work, when considering only one day) and best[0] = 0 (working on zero days gives you zero bonus).
-
-Hey, this is a recursive formula, which we could translate directly to a recursive algorithm. But it would suffer from overlapping subproblems! Calling it with input n would result in recursive calls on n-1 and n-2, just like the recursive algorithm for the Fibonacci numbers!
-
-So instead, we will use dynamic programming, computing best[k] values **bottom-up**. Remember the basic approach? We are just filling in a table. The first entries we fill in are the base cases. Then we fill entries in a legal order, using the recurrence formula.
+                <p>
+                    So instead, we will use dynamic programming, computing best[k] values
+                    **bottom-up**. Remember the basic approach? We are just filling in a table. The
+                    first entries we fill in are the base cases. Then we fill entries in a legal
+                    order, using the recurrence formula.
+                </p>
+            </div>
+        </div>
 
    schedule(T[1..n]):
        best[0] = 0
@@ -505,278 +685,5 @@ Q: can you think of different legal ways to fill up the cache? How would it chan
 ------------
 
 </body>
-<script type="text/javascript">
 
-Array.prototype.compare = function(testArr) {
-    if (this.length != testArr.length) return false;
-    for (var i = 0; i < testArr.length; i++) {
-        if (this[i].compare) {
-            if (!this[i].compare(testArr[i])) return false;
-        }
-        if (this[i] !== testArr[i]) return false;
-    }
-    return true;
-}
-
-function pushResults(){
-    var $table = $("table#l-results")
-    var $thead = $("<thead>");
-    $thead.append($("<th>", { text: "n"}));
-    $thead.append($("<th>", { text: "times called"}));
-    $table.append($thead);
-    for (var n in l_called_on.results) {
-        if (l_called_on.results.hasOwnProperty(n)) {
-            var val = l_called_on.results[n];
-            var $row = $("<tr>");
-            $row.append($("<td>", { text: n}));
-            $row.append($("<td>", { text: val}));
-            $table.append($row);
-        }
-    }
-}
-
-function l_called_on(n){
-    var elem = l_called_on.results[n];
-    if (elem === undefined) l_called_on.results[n] = 0;
-    l_called_on.results[n] += 1;
-}
-
-function l_called_on_init() {
-    l_called_on.results = {};
-}
-
-function quiz_check_input(A) {
-    var $elem = $("span#quiz")
-    var A = A.slice(1);
-    var B = A.slice(0).sort();
-    if (A.compare(B)) {
-        quiz_check_input.backup = $elem.text()
-        $elem.text("Yep. The worst-case is when A is sorted.")
-        $elem.removeClass("text-warning");
-        $elem.addClass("text-success");
-    } else if (quiz_check_input.backup) {
-        $elem.removeClass("text-success");
-        $elem.addClass("text-warning");
-        $elem.text(quiz_check_input.backup);
-    }
-}
-
-var myviz1 = new Vamonos.Visualizer({
-    widgets: [
-        new Vamonos.Widget.Array({
-            container: "A-l",
-            varName: "A",
-            defaultInput: [0, 3,1,4,1,5,9,2,6,5],
-            ignoreIndexZero: true,
-            cssRules: [[">", "j", "shaded"]],
-            showIndices: ["n", "j"],
-        }),
-
-        new Vamonos.Widget.Pseudocode({
-            container: "pseudocode-l-caller",
-        }),
-
-        new Vamonos.Widget.Pseudocode({
-            container: "pseudocode-l",
-            procedureName: "l_rec",
-        }),
-
-        new Vamonos.Widget.Controls({ container: "controls-l" }),
-
-        new Vamonos.Widget.VarName({
-            container: "A-var-l",
-            varName: "A",
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "R-var-l",
-            varName: "global::R",
-            displayName: "R",
-            watching: true,
-        }),
-
-        new Vamonos.Widget.Array({
-            container: "R-l",
-            varName: "global::R",
-            ignoreIndexZero: true,
-            displayOnly: true,
-            showIndices: ["i"],
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "stack-var-l",
-            varName: "_callstack",
-            displayName: "Call Stack",
-            watching: true,
-        }),
-
-        new Vamonos.Widget.CallStack({
-            container: "stack-l",
-            procedureNames: {
-                main: "LIS",
-                l_rec: "L",
-            },
-        }),
-
-    ],
-
-    algorithm: {
-        main: function(_){
-            with (this) {
-                l_called_on_init();
-                quiz_check_input(A);
-                _(1);
-                global.R = [0];
-                global.A = A;
-                for (i = 1; _(2), i < A.length; i++) {
-                    _(3);
-                    var v = l_rec({ n:i });
-                    _(4);
-                    global.R.push(v);
-                }
-                _(5);
-                pushResults();
-                return Math.max.apply(this, global.R);
-            }
-        },
-
-        l_rec: function(_){
-            with (this) {
-                l_called_on(n);
-                if (_(1), n === 0) {
-                    _(2);
-                    return 0
-                }
-                _(3);
-                _(4);
-                var M = [];
-                for (var i = n - 1; i >= 0; i--) {
-                    if (global.A[i] >= global.A[n]) continue;
-                    _(5);
-                    j = i;
-                    _(6);
-                    var v = l_rec({ n: j });
-                    _(7);
-                    M.push(v);
-                }
-                _(8);
-                if (global.A[n] === undefined) {
-                    return Math.max.apply(this, M);
-                } else if (M.length) {
-                    return 1 + Math.max.apply(this, M);
-                } else {
-                    return 1;
-                }
-            }
-        },
-    },
-
-    maxFrames: 100000,
-    unbounded: true,
-});
-
-myviz1.runAlgorithm();
-myviz1.trigger('editMode');
-
-
-var myviz2 = new Vamonos.Visualizer({
-    widgets: [
-
-        new Vamonos.Widget.VarName({
-            container: "A-var",
-            varName: "A",
-        }),
-
-        new Vamonos.Widget.Array({
-            container: "A",
-            varName: "A",
-            defaultInput: [0, 3,1,4,1,5,9,2,6,5],
-            ignoreIndexZero: true,
-            cssRules: [[">", "j", "shaded"]],
-            showIndices: ["n", "j"],
-            firstCellBlank: true,
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "L-var",
-            varName: "global::L",
-            displayName: "L",
-            watching: true,
-        }),
-
-        new Vamonos.Widget.Array({
-            container: "L",
-            varName: "global::L",
-            displayOnly: true,
-            showIndices: ["n", "j"],
-        }),
-
-        new Vamonos.Widget.Pseudocode("pseudocode"),
-
-        new Vamonos.Widget.Controls({
-            container: "controls",
-        }),
-    ],
-
-    algorithm: function (_) {
-        with (this) {
-_(1);       global.L = [0]
-_(2);       for (n = 1; n < A.length; _(2), n++) {
-_(3);           global.L[n] = 1;
-_(4);           for (j=1; j<n; _(4), j++) {
-_(5);               if (A[j] < A[n] && global.L[n] < global.L[j] + 1) {
-_(6);                   global.L[n] = global.L[j] + 1;
-                     }
-                }
-                j = undefined;
-            }
-            n = undefined;
-        }
-    }
-});
-
-
-var fib = new Vamonos.Visualizer({
-    widgets: [
-        new Vamonos.Widget.Hardcoded({
-            n: 10,
-        }),
-
-        new Vamonos.Widget.Pseudocode("fib"),
-        new Vamonos.Widget.Controls("fib-controls"),
-
-        new Vamonos.Widget.CallStack({
-            container: "fib-stack",
-            procedureNames: {
-                main: "Fib",
-            },
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "fib-stack-var",
-            varName: "_callstack",
-            displayName: "Call Stack",
-            watching: true
-        })
-    ],
-
-    algorithm: function(_) {
-        with (this) {
-            _(1);
-            if (n <= 1) {
-                _(2);
-                return 1;
-            }
-            _(3);
-            _(4);
-            var a = main({n:n-1});
-            var b = main({n:n-2});
-            return a + b;
-        }
-    },
-    maxFrames: 500,
-});
-
-
-</script>
 </html>
