@@ -589,14 +589,106 @@
             </div>
         </div>
 
-   schedule(T[1..n]):
-       best[0] = 0
-       best[1] = T[1]
-       for k = 2 to n:
-           best[k] = max{ best[k-2] + T[k], best[k-1] }
-       return best[n]
 
-Q: predict values that will be filled in!
+        <div class="jumbotron">
+            <div class="row panel vamonos panel-default">
+                <div class="panel-heading">
+                    Scheduling
+                </div>
+                <div class="col-sm-6 nopadding">
+                    <div id="schedule-controls"></div>
+                    <div class="pseudocode-procedures">
+                        <div id="schedule" title="Schedule(T[1..n])">
+                            best[0] = 0
+                            best[1] = T[1]
+                            for k = 2 to n:
+                                best[k] = max{ best[k-2] + T[k], best[k-1] }
+                            return best[n]
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 nopadding">
+                    <table class="variable-widgets">
+                        <tr><td><div id="schedule-t-var"></div></td>
+                            <td><div id="schedule-t"></div></td>
+                        </tr>
+                        <tr><td><div id="schedule-best-var"></div></td>
+                            <td><div id="schedule-best"></div></td>
+                        </tr>
+                        <tr><td><div id="schedule-stack-var"></div></td>
+                            <td><div id="schedule-stack"></div></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+        var schedule = new Vamonos.Visualizer({
+            widgets: [
+                new Vamonos.Widget.Hardcoded({
+                    n: 10,
+                }),
+                new Vamonos.Widget.Pseudocode("schedule"),
+                new Vamonos.Widget.Controls("schedule-controls"),
+                new Vamonos.Widget.CallStack({
+                    container: "schedule-stack",
+                    procedureNames: {
+                        main: "Schedule",
+                    },
+                }),
+                new Vamonos.Widget.VarName({
+                    container: "schedule-stack-var",
+                    varName: "_callstack",
+                    displayName: "calls",
+                    watching: true
+                }),
+                new Vamonos.Widget.VarName({
+                    container: "schedule-t-var",
+                    varName: "T",
+                    watching: true,
+                }),
+                new Vamonos.Widget.Array({
+                    container: "schedule-t",
+                    varName: "T",
+                    defaultInput: [0, 3,1,4,1,5,9,2,6,5],
+                    ignoreIndexZero: true,
+                    cssRules: [[">", "k", "shaded"]],
+                    showIndices: ["k"],
+                    firstCellBlank: true,
+                }),
+                new Vamonos.Widget.VarName({
+                    container: "schedule-best-var",
+                    varName: "best",
+                    watching: true,
+                }),
+                new Vamonos.Widget.Array({
+                    container: "schedule-best",
+                    varName: "best",
+                    displayOnly: true,
+                }),
+            ],
+            algorithm: function(_) {
+                with (this) {
+                    _(1);
+                    this.best = global.best = [0];
+                    _(2);
+                    best[1] = T[1];
+                    for (k = 2; _(3), k < T.length; k++) {
+                        _(4);
+                        best[k] = Math.max( best[k-2] + T[k], best[k-1] );
+                    }
+                    _(5);
+                    return best[T.length - 1];
+                }
+            },
+            maxFrames: 500,
+        });
+        </script>
+
+        <p>
+            Q: predict values that will be filled in!
+        </p>
 
 ------------
 
