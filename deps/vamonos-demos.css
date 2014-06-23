@@ -1,0 +1,107 @@
+@import url(http://fonts.googleapis.com/css?family=Roboto:300|Fjalla+One);
+#main,
+#footer {
+  width: 850px;
+  margin: 20px auto 20px auto;
+}
+#main {
+  padding: 20px;
+  background-color: white;
+  box-shadow: 8px 8px 20px #ccc;
+}
+#header {
+  margin: 0 48px 32px 48px;
+  padding-bottom: 20px;
+  border-bottom: 1px dashed #ccc;
+  /*    text-align: center; */
+
+}
+#header h1 {
+  font-family: "Fjalla One";
+  font-size: 54px;
+  margin: 4px;
+  text-align: center;
+  color: #d85a1a;
+  text-shadow: 2px 2px #ddd;
+}
+#header h4 {
+  font-weight: normal;
+  text-align: center;
+  color: #888;
+  margin: 4px;
+}
+body {
+  font-family: "Roboto";
+  margin: 0;
+  background: #eee;
+  background: linear-gradient(to bottom, #f8f8f8 0%, #dddddd 100%);
+  /* W3C */
+
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+h1 {
+  font-family: "Fjalla One";
+  font-size: 24px;
+  margin: 36px 0 4px 0;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Fjalla One";
+}
+h1 {
+  font-size: 24px;
+  margin: 36px 0 4px 0;
+}
+h2 {
+  font-size: 18px;
+  margin: 36px 0 4px 0;
+}
+h3 {
+  font-size: inherit;
+  color: #555;
+}
+code {
+  background: #eee;
+  border: 1px solid #ddd;
+}
+pre {
+  box-shadow: 2px 2px 10px #ccc;
+  margin: 8px 20px 8px 20px;
+  background: #eee;
+  border: 1px solid #aaa;
+  padding: 8px;
+  overflow-x: auto;
+  text-align: left;
+}
+pre code {
+  background: inherit;
+  border: none;
+}
+#footer {
+  text-align: center;
+  color: #555;
+  font-size: 12px;
+}
+a {
+  color: #d85a1a;
+}
+a:visited {
+  color: #80350F;
+}
+.next-page {
+  margin-top: 36px;
+  padding-top: 12px;
+  border-top: 1px solid #ccc;
+  text-align: right;
+}
+ol ol {
+  list-style-type: lower-alpha;
+}
+.construction {
+  color: #d85a1a;
+}
