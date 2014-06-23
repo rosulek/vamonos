@@ -40,7 +40,7 @@
     });
 
     function tab(n) {
-        var active = [1,2,3,4,5].filter(function(x){ return x !== n })
+        var active = [1,2,3,4,5,6].filter(function(x){ return x !== n })
         active.forEach(function(x){
             $("li#tabbutt" + x).removeClass("active");
             $("div#tab" + x).hide();
@@ -74,6 +74,7 @@
                     <li id="tabbutt3"><a onclick="tab(3);">Top-down vs Bottom-up</a></li>
                     <li id="tabbutt4"><a onclick="tab(4);">The Basic Idea</a></li>
                     <li id="tabbutt5"><a onclick="tab(5);">Bonus Scheduling</a></li>
+                    <li id="tabbutt6"><a onclick="tab(6);">Breadcrumbs</a></li>
                 </ul>
             </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->
@@ -689,48 +690,214 @@
         <p>
             Q: predict values that will be filled in!
         </p>
+    </div>
 
-------------
+    <div id="tab6" class="container-fluid">
 
-## Getting the answer, not just the number
+        <h1>Getting the answer, not just the number</h1>
 
-For our previous problem, we can now find the best bonus amount for a given forecast. But we probably also care about what schedule actually achieves that bonus amount. Let's discuss how to do that.
+        <p>
+            For our previous problem, we can now find the best bonus amount for a given
+            forecast. But we probably also care about what schedule actually achieves that bonus
+            amount. Let's discuss how to do that.
+        </p>
 
-The idea is that each time we compute best[k] (a number), we should also write down and remember *how* to achieve best[k]. In this case, we need to write down the schedule that achieves best[k]. There are several ways to do this, but perhaps the simplest is as a string of "Y" and "N" characters. So the string "YNNYN" represents the schedule of working on days 1 & 4, and resting on days 2, 3 & 5.
+        <p>
+            The idea is that each time we compute best[k] (a number), we should also write down and
+            remember *how* to achieve best[k]. In this case, we need to write down the schedule that
+            achieves best[k]. There are several ways to do this, but perhaps the simplest is as a
+            string of "Y" and "N" characters. So the string "YNNYN" represents the schedule of
+            working on days 1 & 4, and resting on days 2, 3 & 5.
+        </p>
 
-Let's store the schedules in an array soln[1..n]. Again, the rule is: every time you save a number to best[k], you must also save the corresponding schedule to soln[k]. Note that soln[k] must be a string of length k.
+        <p>
+            Let's store the schedules in an array soln[1..n]. Again, the rule is: every time you
+            save a number to best[k], you must also save the corresponding schedule to soln[k]. Note
+            that soln[k] must be a string of length k.
+        </p>
 
-The base cases are: best[1] = T[1], and best[0] = 0. What are the corresponding values to put in soln[]? The schedule that achieves 0 is the empty string, and the schedule that achieves T[1] is "Y". Note that the lengths of strings soln[0] and soln[1] match what we expect.
+        <p>
+            The base cases are: best[1] = T[1], and best[0] = 0. What are the corresponding values
+            to put in soln[]? The schedule that achieves 0 is the empty string, and the schedule
+            that achieves T[1] is "Y". Note that the lengths of strings soln[0] and soln[1] match
+            what we expect.
+        </p>
 
-Now, for best[k] there are two possibilities:
+        <p>
+            Now, for best[k] there are two possibilities:
 
-1. best[k] = best[k-2] + T[k]. This happens when we work on the kth day and rest on the (k-1)th day. So the last 2 characters of soln[k] should be "NY". But what should soln[k] say for the other days? We know that the other days contribute best[k-2] amount to the total. Conveniently, soln[k-2] is a schedule for those days that achieves it. Hence, we have soln[k] = soln[k-2] + "NY", where the + here means concatenation.
+            1. best[k] = best[k-2] + T[k]. This happens when we work on the kth day and rest on the
+            (k-1)th day. So the last 2 characters of soln[k] should be "NY". But what should soln[k]
+            say for the other days? We know that the other days contribute best[k-2] amount to the
+            total. Conveniently, soln[k-2] is a schedule for those days that achieves it. Hence, we
+            have soln[k] = soln[k-2] + "NY", where the + here means concatenation.
 
-2. best[k] = best[k-1]. This happens when we rest on the kth day. So the last character of soln[k] must be "N". What is the rest of the schedule? Well, it's a schedule for days 1 through k-1 that achieves bonus best[k-1]. We have already written down such a schedule, it's simply soln[k-1]. So we have soln[k] = soln[k-1] + "N" in this case.
+            2. best[k] = best[k-1]. This happens when we rest on the kth day. So the last character
+            of soln[k] must be "N". What is the rest of the schedule? Well, it's a schedule for days
+            1 through k-1 that achieves bonus best[k-1]. We have already written down such a
+            schedule, it's simply soln[k-1]. So we have soln[k] = soln[k-1] + "N" in this case.
+        </p>
 
-Putting it all together, we have to break up the "max" expression into an if-statement:
+        <p>
+            Putting it all together, we have to break up the "max" expression into an if-statement:
+        </p>
 
-   schedule(T[1..n]):
-       best[0] = 0
-       soln[0] = ""
-       best[1] = T[1]
-       soln[1] = "Y"
-       for k = 2 to n:
-           if best[k-2] + T[k] > best[k-1]
-               best[k] = best[k-2] + T[k]
-               soln[k] = soln[k-2] + "NY"
-           else
-               best[k] = best[k-1]
-               soln[k] = soln[k-1] + "N"
-       return soln[n] + " achieves bonus " + best[n]
 
-I happen to think that there is some elegance in how the two arrays, "best" and "soln", are always accessed in a similar manner.
+        <div class="jumbotron">
+            <div class="row panel vamonos panel-default">
+                <div class="panel-heading">
+                    Scheduling-Breadcrumbs
+                </div>
+                <div class="col-sm-6 nopadding">
+                    <div id="crumbs-controls"></div>
+                    <div class="pseudocode-procedures">
+                        <div id="crumbs" title="Schedule(T[1..n])">
+                            best[0] = 0
+                            soln[0] = ""
+                            best[1] = T[1]
+                            soln[1] = "Y"
+                            for k = 2 to n:
+                                if best[k-2] + T[k] > best[k-1]
+                                    best[k] = best[k-2] + T[k]
+                                    soln[k] = soln[k-2] + "NY"
+                                else
+                                    best[k] = best[k-1]
+                                    soln[k] = soln[k-1] + "N"
+                            return soln[n] + " achieves bonus " + best[n]
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 nopadding">
+                    <table class="variable-widgets">
+                        <tr><td><div id="crumbs-t-var"></div></td>
+                            <td><div id="crumbs-t"></div></td>
+                        </tr>
+                        <tr><td><div id="crumbs-best-var"></div></td>
+                            <td><div id="crumbs-best"></div></td>
+                        </tr>
+                        <tr><td><div id="crumbs-soln-var"></div></td>
+                            <td><div id="crumbs-soln"></div></td>
+                        </tr>
+                        <tr><td><div id="crumbs-ret-var"></div></td>
+                            <td><div id="crumbs-ret"></div></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-Q: can you come up with an input whose optimal solution involves *not* working on the day with the highest temperature?
+        <script type="text/javascript">
+        var schedule = new Vamonos.Visualizer({
+            widgets: [
+                new Vamonos.Widget.Hardcoded({
+                    n: 10,
+                }),
+                new Vamonos.Widget.Pseudocode({
+                    container: "crumbs",
+                    procedureName: "crumbs",
+                }),
+                new Vamonos.Widget.Controls("crumbs-controls"),
+                new Vamonos.Widget.VarName({
+                    container: "crumbs-stack-var",
+                    varName: "_callstack",
+                    displayName: "calls",
+                    watching: true
+                }),
+                new Vamonos.Widget.VarName({
+                    container: "crumbs-t-var",
+                    varName: "T",
+                }),
+                new Vamonos.Widget.Array({
+                    container: "crumbs-t",
+                    varName: "T",
+                    defaultInput: [0, 3,1,4,1,5,9,2,6,5],
+                    ignoreIndexZero: true,
+                    cssRules: [[">", "k", "shaded"]],
+                    showIndices: ["k"],
+                    firstCellBlank: true,
+                }),
+                new Vamonos.Widget.VarName({
+                    container: "crumbs-best-var",
+                    varName: "best",
+                    watching: true,
+                }),
+                new Vamonos.Widget.Array({
+                    container: "crumbs-best",
+                    varName: "best",
+                    displayOnly: true,
+                }),
+                new Vamonos.Widget.VarName({
+                    container: "crumbs-soln-var",
+                    varName: "soln",
+                }),
+                new Vamonos.Widget.Array({
+                    container: "crumbs-soln",
+                    varName: "soln",
+                    displayOnly: true,
+                }),
+                new Vamonos.Widget.VarName({
+                    container: "crumbs-ret-var",
+                    varName: "ret",
+                    displayName: "return",
+                }),
+                new Vamonos.Widget.VarDisplay({
+                    container: "crumbs-ret",
+                    varName: "ret",
+                }),
+            ],
+            algorithm: {
+                main: function(_) {
+                    with (this) {
+                        global.ret = crumbs({ T:T });
+                    }
+                },
+                crumbs: function(_) {
+                    with (this) {
+                        _(1);
+                        this.best = global.best = [0];
+                        _(2);
+                        this.soln = global.soln = [""];
+                        _(3);
+                        best[1] = T[1];
+                        _(4);
+                        soln[1] = "Y";
+                        for (k = 2; _(5), k < T.length; k++) {
+                            if (_(6), best[k-2] + T[k] > best[k-1]) {
+                                _(7);
+                                best[k] = best[k-2] + T[k];
+                                _(8);
+                                soln[k] = soln[k-2] + "NY";
+                            } else {
+                                _(9);
+                                _(10);
+                                best[k] = best[k-1];
+                                _(11);
+                                soln[k] = soln[k-1] + "N";
+                            }
+                        }
+                        _(12);
+                        return soln[T.length - 1] + " achieves bonus " + best[T.length - 1];
+                    }
+                },
+            },
+            maxFrames: 500,
+        });
+        </script>
+        <p>
+            I happen to think that there is some elegance in how the two arrays, "best" and "soln",
+            are always accessed in a similar manner.
+        </p>
 
-------------scratch space below here -------------------
+        <p>
+            Q: can you come up with an input whose optimal solution involves *not* working on the
+            day with the highest temperature?
+        </p>
 
-## Another example: Binomial coefficients
+    </div>
+
+    <div id="tab7" class="container-fluid">
+
+        <h1>Another example: Binomial coefficients</h1>
 
 You may have seen the formula for binomial coefficients {n \choose k} = \frac{n!}{k!(n-k)!}, but this is a bad way to actually *compute* these numbers. For instance, even if the final result is small (ex: (1000 \choose 1) = 1000) the intermediate values of this computation may be huge (ex: factorial(1000)).
 
@@ -773,6 +940,8 @@ There are several legal ways to fill up the cache, and here's one:
 Do you see the resemblance to Pascal's triangle?
 
 Q: can you think of different legal ways to fill up the cache? How would it change the code?
+
+    </div>
 
 ------------
 
