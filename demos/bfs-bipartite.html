@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+
     <style type="text/css">
     text.vertex-contents {
         font-size: .8em;
@@ -48,47 +52,52 @@
 
 </head><body>
 
-    <h1>BFS-Bipartiteness</h1>
-
-    <table class="vamonos">
-        <tr><td class="pseudocode-and-controls">
-
-            <div id="controls"></div>
-
-            <div class="pseudocode-procedures">
-                <div id="pseudocode" title="BFS-Bipartite(G,s):">
-                    for each u &in; G.V - {s}
-                        u.color = white
-                    s.color = red
-                    Q = &empty;
-                    Q.enqueue(s)
-                    while Q &ne; &empty;
-                        u = Q.dequeue()
-                        for each v &in; G.Adj[u]
-                            if v.color = u.color
-                                output "not bipartite!"
-                            if v.color = white
-                                if u.color = blue
-                                    v.color = red
-                                else
-                                    v.color = blue
-                                Q.enqueue(v)
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10 panel-default">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        BFS-Bipartiteness
+                    </div>
+                    <div class="row nopadding panel-body">
+                        <div class="col-md-6 nopadding">
+                            <div id="controls"></div>
+                            <div class="pseudocode-procedures">
+                                <div id="pseudocode" title="BFS-Bipartite(G,s):">
+                                    for each u &in; G.V - {s}
+                                        u.color = white
+                                    s.color = red
+                                    Q = &empty;
+                                    Q.enqueue(s)
+                                    while Q &ne; &empty;
+                                        u = Q.dequeue()
+                                        for each v &in; G.Adj[u]
+                                            if v.color = u.color
+                                                output "not bipartite!"
+                                            if v.color = white
+                                                if u.color = blue
+                                                    v.color = red
+                                                else
+                                                    v.color = blue
+                                                Q.enqueue(v)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 nopadding">
+                            <table class="variable-widgets">
+                                <tr><td><div id="g-var"></div></td>
+                                    <td><div id="graph"></div></td>
+                                </tr>
+                                <tr><td><div id="q-var"></div></td>
+                                    <td><div id="queue"></div></td></tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-
-        </td><td class="variable-widgets">
-
-            <table class="variable-widgets">
-                <tr><td><div id="g-var"></div></td>
-                    <td><div id="graph"></div></td>
-                </tr>
-                <tr><td><div id="q-var"></div></td>
-                    <td><div id="queue"></div></td></tr>
-            </table>
-
-        </td></tr>
-    </table>
+        </div>
+    </div>
 
 </body>
 <script type="text/javascript">

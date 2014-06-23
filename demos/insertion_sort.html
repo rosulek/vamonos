@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+
     <style type="text/css">
         body {
             text-align: center;
@@ -15,40 +19,34 @@
 
 </head><body>
 
-    <h1>Insertion Sort</h1>
-
-    <table class="vamonos">
-        <tr><td class="pseudocode-and-controls">
-
-            <div class="pseudocode-procedures">
-
-                <div id="pseudocode" title="InsertionSort(A):">
-                    for j = 2 to A.length
-                        key = A[j]
-                        i = j - 1
-                        while i &gt; 0 and A[i] &gt; key
-                            A[i + 1]  = A[i]
-                            i = i - 1
-                        A[i + 1] = key
+    <br>
+    <div class="container">
+        <div class="row nopadding">
+            <div class="panel vamonos col-md-offset-4 col-md-4 panel-default">
+                <div class="panel-heading">
+                    Insertion Sort
                 </div>
-
+                <div class="pseudocode-procedures">
+                    <div id="pseudocode" title="InsertionSort(A):">
+                        for j = 2 to A.length
+                            key = A[j]
+                            i = j - 1
+                            while i &gt; 0 and A[i] &gt; key
+                                A[i + 1]  = A[i]
+                                i = i - 1
+                            A[i + 1] = key
+                    </div>
+                </div>
+                <div id="controls"></div>
+                <table class="variable-widgets">
+                    <tr><td><div id="a-var"></div></td>
+                        <td><div id="array"></div></td>
+                    </tr>
+                </table>
             </div>
+        </div>
+    </div>
 
-        </td></tr><tr><td>
-
-            <div id="controls"></div>
-
-        </td></tr><tr><td class="variable-widgets">
-
-            <table class="variable-widgets">
-                <tr><td><div id="a-var"></div></td>
-                    <td><div id="array"></div></td>
-                </tr>
-            </table>
-
-        </td></tr>
-
-    </table>
 </body>
 <script type="text/javascript">
 

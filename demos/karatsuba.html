@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+
     <style type="text/css">
         body {
             text-align: center;
@@ -15,46 +19,40 @@
 
 </head><body>
 
-    <h1>Karatsuba's Multiplication Algorithm</h1>
-
-    <table class="vamonos">
-        <tr><td class="pseudocode-and-controls">
-
-            <div class="pseudocode-procedures">
-
-                <div id="pseudocode" title="Karatsuba(x,y):">
-                    if x &lt; 10 or y &lt; 10
-                        return xy
-                    d = &lfloor; max(length(p), length(q)) / 2 &rfloor;
-                    x<sub>high</sub>, x<sub>low</sub> = split x as a string at d
-                    y<sub>high</sub>, y<sub>low</sub> = split y as a string at d
-                    a = karatsuba(x<sub>high</sub>, y<sub>high</sub>)
-                    b = karatsuba(x<sub>high</sub> + x<sub>low</sub>, y<sub>high</sub> + y<sub>low</sub>)
-                    c = karatsuba(x<sub>low</sub>, y<sub>low</sub>)
-                    result = c*10<sup>2d</sup> + (b-c-a)*10<sup>d</sup> + a
-                    return result
+    <br>
+    <div class="container">
+        <div class="row nopadding">
+            <div class="panel vamonos col-md-offset-3 col-md-6 col-lg-4 col-lg-offset-4 panel-default">
+                <div class="panel-heading">
+                    Karatsuba's Multiplication Algorithm
                 </div>
-
+                <div class="pseudocode-procedures">
+                    <div id="pseudocode" title="Karatsuba(x,y):">
+                        if x &lt; 10 or y &lt; 10
+                            return xy
+                        d = &lfloor; max(length(p), length(q)) / 2 &rfloor;
+                        x<sub>high</sub>, x<sub>low</sub> = split x as a string at d
+                        y<sub>high</sub>, y<sub>low</sub> = split y as a string at d
+                        a = karatsuba(x<sub>high</sub>, y<sub>high</sub>)
+                        b = karatsuba(x<sub>high</sub> + x<sub>low</sub>, y<sub>high</sub> + y<sub>low</sub>)
+                        c = karatsuba(x<sub>low</sub>, y<sub>low</sub>)
+                        result = c*10<sup>2d</sup> + (b-c-a)*10<sup>d</sup> + a
+                        return result
+                    </div>
+                </div>
+                <div id="controls"></div>
+                <table class="variable-widgets">
+                    <tr><td><div id="stack-var"></div></td>
+                        <td><div id="stack"></div></td></tr>
+                    <tr><td><div id="x-var"></div></td>
+                        <td><div id="x"></div></td></tr>
+                    <tr><td><div id="y-var"></div></td>
+                        <td><div id="y"></div></td></tr>
+                </table>
             </div>
+        </div>
+    </div>
 
-        </td></tr><tr><td>
-
-            <div id="controls"></div>
-
-        </td></tr><tr><td class="variable-widgets">
-
-            <table class="variable-widgets">
-                <tr><td><div id="stack-var"></div></td>
-                    <td><div id="stack"></div></td></tr>
-                <tr><td><div id="x-var"></div></td>
-                    <td><div id="x"></div></td></tr>
-                <tr><td><div id="y-var"></div></td>
-                    <td><div id="y"></div></td></tr>
-            </table>
-
-        </td></tr>
-
-    </table>
 </body>
 <script type="text/javascript">
 

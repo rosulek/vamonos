@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+
     <style type="text/css">
     .vertex {
         width: 40;
@@ -44,48 +48,53 @@
 
 </head><body>
 
-    <h1>Strongly-Connected-Components</h1>
-
-    <table class="vamonos">
-        <tr><td class="pseudocode-and-controls">
-
-            <div id="controls"></div>
-
-            <div class="pseudocode-procedures">
-                <div id="pseudocode-main" title="SCC(G):">
-                    compute finishing times for all vertices of G
-                    group = 0
-                    for each vertex u &in; G<sup>T</sup> sorted by finishing time from largest to smallest
-                        unless u has been visited
-                            group = group + 1
-                            DFS(G<sup>T</sup>,u)
-                </div>
-                <div id="pseudocode-dfs" title="DFS(G,u):">
-                    u.visited = true
-                    u.g = group
-                    for each neighbor v of u sorted by finishing time from largest to smallest
-                        unless v has been visited
-                            DFS(G,v)
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10 panel-default">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Strongly-Connected-Components
+                    </div>
+                    <div class="row nopadding panel-body">
+                        <div class="col-md-6 nopadding">
+                            <div id="controls"></div>
+                            <div class="pseudocode-procedures">
+                                <div id="pseudocode-main" title="SCC(G):">
+                                    compute finishing times for all vertices of G
+                                    group = 0
+                                    for each vertex u &in; G<sup>T</sup> sorted by finishing time from largest to smallest
+                                        unless u has been visited
+                                            group = group + 1
+                                            DFS(G<sup>T</sup>,u)
+                                </div>
+                                <div id="pseudocode-dfs" title="DFS(G,u):">
+                                    u.visited = true
+                                    u.g = group
+                                    for each neighbor v of u sorted by finishing time from largest to smallest
+                                        unless v has been visited
+                                            DFS(G,v)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 nopadding">
+                            <table class="variable-widgets">
+                                <tr><td><div id="g-var"></div></td>
+                                    <td><div id="graph-g"></div></td>
+                                </tr>
+                                <tr><td><div id="stack-var"></div></td>
+                                    <td><div id="stack"></div></td>
+                                </tr>
+                                <tr><td><div id="group-var"></div></td>
+                                    <td><div id="group"></div></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-        </td><td class="variable-widgets">
-
-            <table class="variable-widgets">
-                <tr><td><div id="g-var"></div></td>
-                    <td><div id="graph-g"></div></td>
-                </tr>
-                <tr><td><div id="stack-var"></div></td>
-                    <td><div id="stack"></div></td>
-                </tr>
-                <tr><td><div id="group-var"></div></td>
-                    <td><div id="group"></div></td>
-                </tr>
-            </table>
-
-        </td></tr>
-
-    </table>
+        </div>
+    </div>
 
 
 </body>

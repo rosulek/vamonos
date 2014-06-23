@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+
     <style type="text/css">
     text.vertex-contents {
         font-size: .8em;
@@ -40,49 +44,51 @@
 
 </head><body>
 
-    <h1>Dijkstra's Algorithm</h1>
-
-    <table class="vamonos">
-        <tr><td class="pseudocode-and-controls">
-
-            <div id="controls"></div>
-
-            <div class="pseudocode-procedures">
-
-                <div id="pseudocode-main" title="Dijkstra(G,s):">
-                    for each vertex u &in; G.V - {s}
-                        u.d = &#x221E;
-                        u.pred = null
-                        u.done = false
-                    s.d = 0
-                    Q = G.V
-                    while Q &ne; &empty;
-                        u = Q.extractMin()
-                        u.done = true
-                        for each v &in; G.Adj[u]
-                            Relax(u,v)
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10 panel-default">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Dijkstra's Algorithm
+                    </div>
+                    <div class="row nopadding panel-body">
+                        <div class="col-md-6 nopadding">
+                            <div id="controls"></div>
+                            <div class="pseudocode-procedures">
+                                <div id="pseudocode-main" title="Dijkstra(G,s):">
+                                    for each vertex u &in; G.V - {s}
+                                        u.d = &#x221E;
+                                        u.pred = null
+                                        u.done = false
+                                    s.d = 0
+                                    Q = G.V
+                                    while Q &ne; &empty;
+                                        u = Q.extractMin()
+                                        u.done = true
+                                        for each v &in; G.Adj[u]
+                                            Relax(u,v)
+                                </div>
+                                <div id="pseudocode-relax" title="Relax(G,u,v):">
+                                    if u.d + G.edge(u,v).w &lt; v.d
+                                        v.d = u.d + G.edge(u,v).w
+                                        v.pred = u
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 nopadding">
+                            <table class="variable-widgets">
+                                <tr><td><div id="g-var"></div></td>
+                                    <td><div id="graph"></div></td></tr>
+                                <tr><td><div id="q-var"></div></td>
+                                    <td><div id="queue"></div></td></tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-
-                <div id="pseudocode-relax" title="Relax(G,u,v):">
-                    if u.d + G.edge(u,v).w &lt; v.d
-                        v.d = u.d + G.edge(u,v).w
-                        v.pred = u
-                </div>
-
             </div>
-
-        </td><td class="variable-widgets">
-
-            <table class="variable-widgets">
-                <tr><td><div id="g-var"></div></td>
-                    <td><div id="graph"></div></td></tr>
-                <tr><td><div id="q-var"></div></td>
-                    <td><div id="queue"></div></td></tr>
-            </table>
-
-        </td></tr>
-
-    </table>
+        </div>
+    </div>
 </body>
 <script type="text/javascript">
 var myviz = new Vamonos.Visualizer({

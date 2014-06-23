@@ -33,12 +33,6 @@ The Controls widget controls the Visualizer - switching modes and frames.
 
 
 
- * **expandWidth** :: *Boolean* -- default value: `false`
-
-    whether to expand the controls to fill its parent
-
-
-
  * **frameNumber** :: *Boolean* -- default value: `true`
 
     whether to show the frame number

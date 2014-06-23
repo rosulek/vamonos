@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+
     <style type="text/css">
     .vertex {
         width: 40;
@@ -47,47 +51,47 @@
 
 </head><body>
 
-    <h1>Ford-Fulkerson Bipartite Matching</h1>
-
-    <table class="vamonos">
-        <tr><td class="pseudocode-and-controls">
-
-            <div id="controls"></div>
-
-            <div class="pseudocode-procedures">
-
-                <div id="pseudocode-main" title="Ford-Fulkerson(G,s,t):">
-                    for each edge (u,v) &in; G.E
-                        (u,v).f = 0
-                    G<sub>f</sub> = ResidualGraph(G)
-                    while there is an augmenting path in G
-                        p = AugmentingPath(G,s,t)
-                        for each edge (u,v) in p
-                            if (u,v) &in; G.E
-                                (u,v).f = 1
-                            else
-                                (v,u).f = 0
-                    num-matches = &Sigma;<sub>(s,u)&in;G.E</sub> (s,u).f
+    <br>
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Ford-Fulkerson Bipartite Matching
+            </div>
+            <div class="row nopadding panel-body">
+                <div class="col-md-5 nopadding">
+                    <div id="controls"></div>
+                    <div class="pseudocode-procedures">
+                        <div id="pseudocode-main" title="Ford-Fulkerson(G,s,t):">
+                            for each edge (u,v) &in; G.E
+                                (u,v).f = 0
+                            G<sub>f</sub> = ResidualGraph(G)
+                            while there is an augmenting path in G
+                                p = AugmentingPath(G,s,t)
+                                for each edge (u,v) in p
+                                    if (u,v) &in; G.E
+                                        (u,v).f = 1
+                                    else
+                                        (v,u).f = 0
+                            num-matches = &Sigma;<sub>(s,u)&in;G.E</sub> (s,u).f
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7 nopadding">
+                    <table class="variable-widgets">
+                        <tr><td><div id="g-var"></div></td>
+                            <td><div id="graph-g"></div></td>
+                        </tr>
+                        <tr><td><div id="gf-var"></div></td>
+                            <td><div id="graph-gf"></div></td>
+                        </tr>
+                        <tr><td><div id="num-matches-var"></div></td>
+                            <td><div id="num-matches"></div></td>
+                        </tr>
+                    </table>
                 </div>
             </div>
-
-        </td><td class="variable-widgets">
-
-            <table class="variable-widgets">
-                <tr><td><div id="g-var"></div></td>
-                    <td><div id="graph-g"></div></td>
-                </tr>
-                <tr><td><div id="gf-var"></div></td>
-                    <td><div id="graph-gf"></div></td>
-                </tr>
-                <tr><td><div id="num-matches-var"></div></td>
-                    <td><div id="num-matches"></div></td>
-                </tr>
-            </table>
-
-        </td></tr>
-
-    </table>
+        </div>
+    </div>
 
 
 </body>

@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+
     <style type="text/css">
 
         td.gt-r, td.lt-l {
@@ -21,37 +25,32 @@
 </head>
 <body>
 
-    <h1>Stooge Sort</h1>
-
-<table class="vamonos">
-    <tr><td class="pseudocode-and-controls">
-        <div id="controls"> </div>
-
-        <div class="pseudocode-procedures">
-            <div id="stoogeSort" title="StoogeSort(A,l,r):">
-                if A[r] &lt; A[l]
-                    swap A[r] and A[l]
-                if r - l &gt; 1
-                    t = floor((r - l + 1)/3)
-                    StoogeSort(A,l,r-t)
-                    StoogeSort(A,l+t,r)
-                    StoogeSort(A,l,r-t)
+    <br>
+    <div class=" row">
+        <div class="panel vamonos col-md-offset-4 col-md-4 panel-default">
+            <div class="panel-heading">
+                Stooge Sort
             </div>
-        </div>
-
-
-    </td></tr><tr><td class="variable-widgets">
-
+            <div id="controls"> </div>
+            <div class="pseudocode-procedures">
+                <div id="stoogeSort" title="StoogeSort(A,l,r):">
+                    if A[r] &lt; A[l]
+                        swap A[r] and A[l]
+                    if r - l &gt; 1
+                        t = floor((r - l + 1)/3)
+                        StoogeSort(A,l,r-t)
+                        StoogeSort(A,l+t,r)
+                        StoogeSort(A,l,r-t)
+                </div>
+            </div>
             <table class="variable-widgets">
-
                 <tr><td><div id="array-a-var"></div></td>
                     <td><div id="array-a"></div></td></tr>
-
                 <tr><td><div id="callstack-var"></div></td>
                     <td><div id="callstack"></div></td></tr>
-
             </table>
-    </td></tr>
+        </div>
+    </div>
 </table>
 
 </body>

@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+
     <style type="text/css">
     text.vertex-contents {
         font-size: .8em;
@@ -48,51 +52,55 @@
 </head>
 <body>
 
-    <h1>Depth-First-Search</h1>
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10 panel-default">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Depth-First-Search
+                    </div>
+                    <div class="row nopadding panel-body">
+                        <div class="col-md-6 nopadding">
+                            <div id="controls"></div>
+                            <div class="pseudocode-procedures">
+                                <div id="pseudocode-dfs" title="DFS(G):">
+                                    for each u &in; G.V
+                                        u.color = white
+                                    time = 0
+                                    for each u &in; G.V
+                                        if u.color == white
+                                            DFS-Visit(G,u)
+                                </div>
 
-    <table class="vamonos">
-        <tr><td class="pseudocode-and-controls">
-
-            <div id="controls"></div>
-
-            <div class="pseudocode-procedures">
-                <div id="pseudocode-dfs" title="DFS(G):">
-                    for each u &in; G.V
-                        u.color = white
-                    time = 0
-                    for each u &in; G.V
-                        if u.color == white
-                            DFS-Visit(G,u)
+                                <div id="pseudocode-visit" title="DFS-Visit(G,u):">
+                                    u.d = ++time
+                                    u.color = gray
+                                    <b>for</b> each v &in; G.Adj[u]
+                                        <b>if</b> v.color == white
+                                            DFS-Visit(G,v)
+                                    u.color = black
+                                    u.f = ++time
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 nopadding">
+                            <table class="variable-widgets">
+                                <tr><td><div id="g-var"></div></td>
+                                    <td><div id="graph"></div></td>
+                                </tr>
+                                <tr><td><div id="stack-var"></div></td>
+                                    <td><div id="stack"></div></td></tr>
+                                <tr><td><div id="time-var"></div></td>
+                                    <td><div id="time"></div></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-
-                <div id="pseudocode-visit" title="DFS-Visit(G,u):">
-                    u.d = ++time
-                    u.color = gray
-                    <b>for</b> each v &in; G.Adj[u]
-                        <b>if</b> v.color == white
-                            DFS-Visit(G,v)
-                    u.color = black
-                    u.f = ++time
-                </div>
-
             </div>
-
-        </td><td class="variable-widgets">
-
-            <table class="variable-widgets">
-                <tr><td><div id="g-var"></div></td>
-                    <td><div id="graph"></div></td>
-                </tr>
-                <tr><td><div id="stack-var"></div></td>
-                    <td><div id="stack"></div></td></tr>
-                <tr><td><div id="time-var"></div></td>
-                    <td><div id="time"></div></td>
-                </tr>
-            </table>
-
-        </td></tr>
-    </table>
-
+        </div>
+    </div>
 
 </body>
 

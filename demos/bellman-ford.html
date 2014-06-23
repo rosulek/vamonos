@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+
     <style type="text/css">
     text.vertex-contents {
         font-size: .8em;
@@ -40,43 +44,45 @@
 
 </head><body>
 
-    <h1>Bellman-Ford Algorithm</h1>
-
-    <table class="vamonos">
-        <tr><td class="pseudocode-and-controls">
-
-            <div id="controls"></div>
-
-            <div class="pseudocode-procedures">
-
-                <div id="pseudocode-main" title="BellmanFord(G,s):">
-                    for each vertex v &in; G.V - {s}
-                        v.d = &infin;
-                        v.pred = null
-                    s.d = 0
-                    for i from 1 to |G.V| - 1
-                        for each edge (u,v) &in; G.E
-                            if u.d + (u,v).w &lt; v.d
-                                v.d = u.d + (u,v).w
-                                v.pred = u
-                    for each edge (u,v) &in; G.E
-                        if u.d + (u,v).w &lt; v.d
-                            error "negative-weight cycle"
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10 panel-default">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Bellman-Ford Algorithm
+                    </div>
+                    <div class="row nopadding panel-body">
+                        <div class="col-md-6 nopadding">
+                            <div id="controls"></div>
+                            <div class="pseudocode-procedures">
+                                <div id="pseudocode-main" title="BellmanFord(G,s):">
+                                    for each vertex v &in; G.V - {s}
+                                        v.d = &infin;
+                                        v.pred = null
+                                    s.d = 0
+                                    for i from 1 to |G.V| - 1
+                                        for each edge (u,v) &in; G.E
+                                            if u.d + (u,v).w &lt; v.d
+                                                v.d = u.d + (u,v).w
+                                                v.pred = u
+                                    for each edge (u,v) &in; G.E
+                                        if u.d + (u,v).w &lt; v.d
+                                            error "negative-weight cycle"
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 nopadding">
+                            <table class="variable-widgets">
+                                <tr><td><div id="g-var"></div></td>
+                                    <td><div id="graph"></div></td></tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-
             </div>
-
-        </td><td class="variable-widgets">
-
-            <table class="variable-widgets">
-                <tr><td><div id="g-var"></div></td>
-                    <td><div id="graph"></div></td></tr>
-            </table>
-
-        </td></tr>
-
-    </table>
-
+        </div>
+    </div>
 
 </body>
 <script type="text/javascript">

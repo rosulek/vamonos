@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+
     <style type="text/css">
     .vertex-contents {
         font-size: .8em;
@@ -35,35 +39,39 @@
 
 </head><body>
 
-    <h1>Kruskal's Minimum Spanning Tree</h1>
-
-    <table class="vamonos">
-
-        <tr><td class="pseudocode-and-controls">
-
-            <div id="controls"></div>
-
-            <div class="pseudocode-procedures">
-                <div id="pseudocode" title="MST-Kruskal(G)">
-                    for each v &in; G.V
-                        Make-Set(v)
-                    for each (u,v) ordered by increasing weight
-                        if Find-Set(u) &ne; Find-Set(v)
-                            Union(u,v)
-                            (u,v).inMST = True
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10 panel-default">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Kruskal's Minimum Spanning Tree
+                    </div>
+                    <div class="row nopadding panel-body">
+                        <div class="col-md-6 nopadding">
+                            <div id="controls"></div>
+                            <div class="pseudocode-procedures">
+                                <div id="pseudocode" title="MST-Kruskal(G)">
+                                    for each v &in; G.V
+                                        Make-Set(v)
+                                    for each (u,v) ordered by increasing weight
+                                        if Find-Set(u) &ne; Find-Set(v)
+                                            Union(u,v)
+                                            (u,v).inMST = True
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 nopadding">
+                            <table class="variable-widgets">
+                                <tr><td><div id="g-var"></div></td>
+                                    <td><div id="graph"></div></td> </tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-        </td><td class="variable-widgets">
-
-            <table class="variable-widgets">
-                <tr><td><div id="g-var"></div></td>
-                    <td><div id="graph"></div></td> </tr>
-            </table>
-
-        </td></tr>
-    </table>
-
+        </div>
+    </div>
 </body>
 <script type="text/javascript">
 var myviz = new Vamonos.Visualizer({

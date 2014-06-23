@@ -1,3 +1,9 @@
+.nopadding {
+  padding: 0 !important;
+  margin: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
 .editing {
   background-color: #92e894 !important;
 }
@@ -40,12 +46,12 @@ input.inline-input:focus {
 .ui-resizable {
   position: relative;
 }
+div.vamonos {
+  padding-left: 0px;
+  padding-right: 0px;
+}
 table.vamonos {
   border-collapse: collapse;
-  -webkit-box-shadow: 5px 5px 10px #aaaaaa;
-  -moz-box-shadow: 5px 5px 10px #aaaaaa;
-  box-shadow: 5px 5px 10px #aaaaaa;
-  border: 1px solid #888888;
   margin: auto;
   display: inline-block;
   background-color: white;
@@ -53,7 +59,6 @@ table.vamonos {
 table.vamonos > tbody > tr > td {
   padding: 0px;
   vertical-align: top;
-  border: 1px solid #888888;
 }
 .pseudocode-procedures {
   padding: 10px;
@@ -66,6 +71,12 @@ table.vamonos .controls {
 table.variable-widgets {
   border-spacing: 5px 10px;
   border-collapse: collapse;
+}
+table.variable-widgets td:last-child {
+  width: 100%;
+}
+table.variable-widgets td:first-child {
+  white-space: nowrap;
 }
 table.variable-widgets > tbody > tr > td {
   vertical-align: middle;
@@ -506,7 +517,6 @@ button.controls-button:disabled {
   background: -ms-linear-gradient(top, #f4f4f4 0%, #eeeeee 10%, #eeeeee 50%, #dddddd 90%, #cccccc 100%);
   background: linear-gradient(to bottom, #f4f4f4 0%, #eeeeee 10%, #eeeeee 50%, #dddddd 90%, #cccccc 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f4f4f4', endColorstr='#cccccc', GradientType=0);
-  border: 1px solid #888888;
   display: block;
   text-align: center;
   padding: 8px;

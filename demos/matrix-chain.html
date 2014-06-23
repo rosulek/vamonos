@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+
     <style type="text/css">
         td.row-i.col-k {
             background-color: #ada;
@@ -21,41 +25,51 @@
 
 </head><body>
 
-    <h1>Matrix-Chain Multiplication</h1>
-
-    <table class="vamonos">
-        <tr><td class="pseudocode-and-controls">
-            <div id="controls"></div>
-            <div class="pseudocode-procedures">
-                <div id="pseudocode" title="MatrixChainMult(dim):">
-                    for i = 1 to dim.length - 1
-                        opt[i,i] = 0
-                    for l = 2 to dim.length
-                        for i = 1 to dim.length - l
-                            k = i + l - 1
-                            opt[i,k] = &infin;
-                            for j = i to k-1
-                                prev = best[i,j] + best[j+1,k]
-                                val = dim[i-1]*dim[j]*dim[k] + prev
-                                if opt[i,k] &gt; val
-                                    opt[i,k] = val
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10 panel-default">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Matrix-Chain Multiplication
+                    </div>
+                    <div class="row nopadding panel-body">
+                        <div class="col-md-6 nopadding">
+                            <div id="controls"></div>
+                            <div class="pseudocode-procedures">
+                                <div id="pseudocode" title="MatrixChainMult(dim):">
+                                    for i = 1 to dim.length - 1
+                                        opt[i,i] = 0
+                                    for l = 2 to dim.length
+                                        for i = 1 to dim.length - l
+                                            k = i + l - 1
+                                            opt[i,k] = &infin;
+                                            for j = i to k-1
+                                                prev = best[i,j] + best[j+1,k]
+                                                val = dim[i-1]*dim[j]*dim[k] + prev
+                                                if opt[i,k] &gt; val
+                                                    opt[i,k] = val
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 nopadding">
+                            <table class="variable-widgets">
+                                <tr><td><div id="dim-var"></div></td>
+                                    <td><div id="dim"></div></td>
+                                </tr>
+                                <tr><td><div id="opt-var"></div></td>
+                                    <td><div id="opt"></div></td>
+                                </tr>
+                                <tr><td><div id="val-var"></div></td>
+                                    <td><div id="val"></div></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </td>
-        <td class="variable-widgets">
-            <table class="variable-widgets">
-                <tr><td><div id="dim-var"></div></td>
-                    <td><div id="dim"></div></td>
-                </tr>
-                <tr><td><div id="opt-var"></div></td>
-                    <td><div id="opt"></div></td>
-                </tr>
-                <tr><td><div id="val-var"></div></td>
-                    <td><div id="val"></div></td>
-                </tr>
-            </table>
-        </td></tr>
-    </table>
+        </div>
+    </div>
     <br>
 </body>
 

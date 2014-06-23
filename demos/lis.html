@@ -7,55 +7,66 @@
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
 
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+
     <style type="text/css">
         body {
             text-align: center;
         }
+
     </style>
 
 </head><body>
-
-    <h1>Longest Increasing Subsequence</h1>
-
-    <table class="vamonos">
-        <tr><td class="pseudocode-and-controls">
-            <div id="controls"></div>
-            <div class="pseudocode-procedures">
-                <div id="pseudocode" title="LIS(A):">
-                    opt[0] = 0
-                    sol[0] = []
-                    for k = 1 to A.length
-                        opt[k] = 1
-                        sol[k] = [A[k]]
-                        for i = 1 to k-1
-                            if A[i] &lt; A[k] and opt[k] &lt; opt[i] + 1
-                                opt[k] = opt[i] + 1
-                                sol[k] = sol[i] + [A[i]]
-                    best = 1
-                    for j = 2 to A.length
-                        if opt[best] &lt; opt[j]
-                            best = j
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10 panel-default">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Longest Increasing Subsequence
+                    </div>
+                    <div class="row nopadding panel-body">
+                        <div class="col-md-6 nopadding">
+                            <div id="controls"></div>
+                            <div class="pseudocode-procedures">
+                                <div id="pseudocode" title="LIS(A):">
+                                    opt[0] = 0
+                                    sol[0] = []
+                                    for k = 1 to A.length
+                                        opt[k] = 1
+                                        sol[k] = [A[k]]
+                                        for i = 1 to k-1
+                                            if A[i] &lt; A[k] and opt[k] &lt; opt[i] + 1
+                                                opt[k] = opt[i] + 1
+                                                sol[k] = sol[i] + [A[i]]
+                                    best = 1
+                                    for j = 2 to A.length
+                                        if opt[best] &lt; opt[j]
+                                            best = j
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 nopadding">
+                            <table class="variable-widgets">
+                                <tr><td><div id="A-var"></div></td>
+                                    <td><div id="A"></div></td>
+                                </tr>
+                                <tr><td><div id="opt-var"></div></td>
+                                    <td><div id="opt"></div></td></tr>
+                                <tr><td><div id="sol-var"></div></td>
+                                    <td><div id="sol"></div></td></tr>
+                                </tr>
+                                <tr><td><div id="best-var"></div></td>
+                                    <td><div id="best"></div></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-        </td><td class="variable-widgets">
-            <table class="variable-widgets">
-                <tr><td><div id="A-var"></div></td>
-                    <td><div id="A"></div></td>
-                </tr>
-                <tr><td><div id="opt-var"></div></td>
-                    <td><div id="opt"></div></td></tr>
-                <tr><td><div id="sol-var"></div></td>
-                    <td><div id="sol"></div></td></tr>
-                </tr>
-                <tr><td><div id="best-var"></div></td>
-                    <td><div id="best"></div></td>
-                </tr>
-            </table>
-
-        </td></tr>
-    </table>
-
+        </div>
     </div>
 
 </body>
@@ -126,7 +137,6 @@ var myviz = new Vamonos.Visualizer({
 
         new Vamonos.Widget.Controls({
             container: "controls",
-            expandWidth: true,
         }),
     ],
 
