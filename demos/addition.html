@@ -21,31 +21,32 @@
 </head><body>
 
     <br>
-    <div class=" row">
-        <div class="panel vamonos col-md-offset-4 col-md-4 panel-default">
-            <div class="panel-heading">
-                Recursive Addition
-            </div>
-            <div class="pseudocode-procedures">
-
-                <div id="pseudocode" title="Add(x,y):">
-                    if x = 0
-                        return y
-                    else
-                        result = 1 + Add(x - 1, y)
-                        return result
+    <div class="container">
+        <div class="row nopadding">
+            <div class="panel vamonos col-md-offset-4 col-md-4 panel-default">
+                <div class="panel-heading">
+                    Recursive Addition
                 </div>
-            </div>
-            <div id="controls"></div>
+                <div class="pseudocode-procedures">
+                    <div id="pseudocode" title="Add(x,y):">
+                        if x = 0
+                            return y
+                        else
+                            result = 1 + Add(x - 1, y)
+                            return result
+                    </div>
+                </div>
+                <div id="controls"></div>
 
-            <table class="variable-widgets">
-                <tr><td><div id="stack-var"></div></td>
-                    <td><div id="stack"></div></td></tr>
-                <tr><td><div id="x-var"></div></td>
-                    <td><div id="x"></div></td></tr>
-                <tr><td><div id="y-var"></div></td>
-                    <td><div id="y"></div></td></tr>
-            </table>
+                <table class="variable-widgets">
+                    <tr><td><div id="stack-var"></div></td>
+                        <td><div id="stack"></div></td></tr>
+                    <tr><td><div id="x-var"></div></td>
+                        <td><div id="x"></div></td></tr>
+                    <tr><td><div id="y-var"></div></td>
+                        <td><div id="y"></div></td></tr>
+                </table>
+            </div>
         </div>
     </div>
 

@@ -20,28 +20,30 @@
 </head><body>
 
     <br>
-    <div class=" row">
-        <div class="panel vamonos col-md-offset-4 col-md-4 panel-default">
-            <div class="panel-heading">
-                Insertion Sort
-            </div>
-            <div class="pseudocode-procedures">
-                <div id="pseudocode" title="InsertionSort(A):">
-                    for j = 2 to A.length
-                        key = A[j]
-                        i = j - 1
-                        while i &gt; 0 and A[i] &gt; key
-                            A[i + 1]  = A[i]
-                            i = i - 1
-                        A[i + 1] = key
+    <div class="container">
+        <div class="row nopadding">
+            <div class="panel vamonos col-md-offset-4 col-md-4 panel-default">
+                <div class="panel-heading">
+                    Insertion Sort
                 </div>
+                <div class="pseudocode-procedures">
+                    <div id="pseudocode" title="InsertionSort(A):">
+                        for j = 2 to A.length
+                            key = A[j]
+                            i = j - 1
+                            while i &gt; 0 and A[i] &gt; key
+                                A[i + 1]  = A[i]
+                                i = i - 1
+                            A[i + 1] = key
+                    </div>
+                </div>
+                <div id="controls"></div>
+                <table class="variable-widgets">
+                    <tr><td><div id="a-var"></div></td>
+                        <td><div id="array"></div></td>
+                    </tr>
+                </table>
             </div>
-            <div id="controls"></div>
-            <table class="variable-widgets">
-                <tr><td><div id="a-var"></div></td>
-                    <td><div id="array"></div></td>
-                </tr>
-            </table>
         </div>
     </div>
 

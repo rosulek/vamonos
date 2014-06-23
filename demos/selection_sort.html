@@ -20,28 +20,30 @@
 </head><body>
 
     <br>
-    <div class=" row">
-        <div class="panel vamonos col-md-offset-4 col-md-4 panel-default">
-            <div class="panel-heading">
-                Selection Sort
-            </div>
-            <div class="pseudocode-procedures">
-                <div id="pseudocode" title="SelectionSort(A):">
-                    for i = 0 to A.length-2
-                        # find smallest item in A[i..]
-                        m = i
-                        for j = i+1 to A.length-1
-                            if A[j] &lt; A[m]
-                                m = j
-                        swap A[i] and A[m]
+    <div class="container">
+        <div class="row nopadding">
+            <div class="panel vamonos col-md-offset-4 col-md-4 panel-default">
+                <div class="panel-heading">
+                    Selection Sort
                 </div>
+                <div class="pseudocode-procedures">
+                    <div id="pseudocode" title="SelectionSort(A):">
+                        for i = 0 to A.length-2
+                            # find smallest item in A[i..]
+                            m = i
+                            for j = i+1 to A.length-1
+                                if A[j] &lt; A[m]
+                                    m = j
+                            swap A[i] and A[m]
+                    </div>
+                </div>
+                <div id="controls"></div>
+                <table class="variable-widgets">
+                    <tr><td><div id="a-var"></div></td>
+                        <td><div id="array"></div></td>
+                    </tr>
+                </table>
             </div>
-            <div id="controls"></div>
-            <table class="variable-widgets">
-                <tr><td><div id="a-var"></div></td>
-                    <td><div id="array"></div></td>
-                </tr>
-            </table>
         </div>
     </div>
 
