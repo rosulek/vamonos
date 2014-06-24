@@ -197,14 +197,11 @@ class GraphDisplay
         @$outer.disableSelection()
 
         if @resizable
-            @$outer.resizable
+            @$outer.parent().resizable
                 handles: "se"
-                minWidth: @minX
-                minHeight: @minY
+                resize: (e, ui) => @svg.attr("height", ui.size.height)
 
         @svg = d3.selectAll("#" + @$outer.attr("id")).append("svg")
-            .attr("width", "100%")
-            .attr("height", "100%")
 
         @createShadowFilter
             svg: @svg
@@ -353,10 +350,10 @@ class GraphDisplay
             max_x = @minX ? 0
             max_y = @minY ? 0
         if animate
-            @$outer.animate({width: max_x, height: max_y}, 500)
+            @$outer.animate({width: "100%", height: max_y}, 500)
         else
-            @$outer.width(max_x)
-            @$outer.height(max_y)
+            @$outer.width("100%")
+            @svg.attr("height", max_y)
 
     hideGraph: () ->
         @$outer.hide()

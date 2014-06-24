@@ -72,7 +72,6 @@
                                         (u,v).f = 1
                                     else
                                         (v,u).f = 0
-                            num-matches = &Sigma;<sub>(s,u)&in;G.E</sub> (s,u).f
                         </div>
                     </div>
                 </div>
@@ -83,9 +82,6 @@
                         </tr>
                         <tr><td><div id="gf-var"></div></td>
                             <td><div id="graph-gf"></div></td>
-                        </tr>
-                        <tr><td><div id="num-matches-var"></div></td>
-                            <td><div id="num-matches"></div></td>
                         </tr>
                     </table>
                 </div>
@@ -106,17 +102,6 @@ var myviz = new Vamonos.Visualizer({
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode-main",
             breakpoints: [4,5],
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "num-matches-var",
-            varName: "global::matches",
-            displayName: "num-matches",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "num-matches",
-            varName: "global::matches",
         }),
 
         new Vamonos.Widget.VarName({
