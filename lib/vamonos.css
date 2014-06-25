@@ -305,11 +305,6 @@ tr.pseudocode-error td.pseudocode-line-number {
 tr.pseudocode-error td.pseudocode-gutter {
   background-color: #dda2a2;
 }
-.graph-inner-container {
-  position: absolute;
-  width: inherit;
-  height: inherit;
-}
 .graph-label {
   font-family: sans-serif;
   font-size: .7em;
@@ -544,11 +539,6 @@ div.callstack {
 table.callstack {
   border-collapse: collapse;
   margin: 0 auto 0 auto;
-}
-td.callstack-args,
-td.callstack-return {
-  width: 50%;
-  vertical-align: middle;
 }
 td.callstack-args {
   text-align: right;
