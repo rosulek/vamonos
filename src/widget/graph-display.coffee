@@ -197,9 +197,11 @@ class GraphDisplay
         @$outer.disableSelection()
 
         if @resizable
-            @$outer.parent().resizable
+            @$outer.resizable
                 handles: "se"
-                resize: (e, ui) => @svg.attr("height", ui.size.height)
+                resize: (e, ui) =>
+                    @svg.attr("height", ui.size.height)
+                    @svg.attr("width", ui.size.width)
 
         @svg = d3.selectAll("#" + @$outer.attr("id")).append("svg")
 
@@ -336,6 +338,7 @@ class GraphDisplay
 
     # sets the size of @$outer based on the positions of vertices in @currentGraph
     fitGraph: (animate = false) ->
+        console.log "fitGraph", @currentGraph
         if @currentGraph?
             xVals = []
             yVals = []
@@ -349,11 +352,13 @@ class GraphDisplay
         else
             max_x = @minX ? 0
             max_y = @minY ? 0
+        console.log max_x, max_y
         if animate
-            @$outer.animate({width: "100%", height: max_y}, 500)
+            @svg.animate({width: max_x, height: max_y}, 500)
         else
             @$outer.width("100%")
             @svg.attr("height", max_y)
+            @svg.attr("width", max_x)
 
     hideGraph: () ->
         @$outer.hide()
