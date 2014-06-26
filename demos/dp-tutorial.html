@@ -75,7 +75,7 @@
                     <li id="tabbutt4"><a onclick="tab(4);">The Basic Idea</a></li>
                     <li id="tabbutt5"><a onclick="tab(5);">Bonus Scheduling</a></li>
                     <li id="tabbutt6"><a onclick="tab(6);">Breadcrumbs</a></li>
-                    <li id="tabbutt7"><a onclick="tab(7);">Binomial Coefficients</a></li>
+                    <!-- <li id="tabbutt7"><a onclick="tab(7);">Binomial Coefficients</a></li> -->
                 </ul>
             </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->
@@ -902,55 +902,53 @@
         </ul>
     </div>
 
-    <div id="tab7" class="container-fluid">
+    <!-- <div id="tab7" class="container-fluid">
 
-        <h1>Another example: Binomial coefficients</h1>
+    <h1>Another example: Binomial coefficients</h1>
 
-You may have seen the formula for binomial coefficients {n \choose k} = \frac{n!}{k!(n-k)!}, but this is a bad way to actually *compute* these numbers. For instance, even if the final result is small (ex: (1000 \choose 1) = 1000) the intermediate values of this computation may be huge (ex: factorial(1000)).
+    You may have seen the formula for binomial coefficients {n \choose k} = \frac{n!}{k!(n-k)!}, but this is a bad way to actually *compute* these numbers. For instance, even if the final result is small (ex: (1000 \choose 1) = 1000) the intermediate values of this computation may be huge (ex: factorial(1000)).
 
-Another way to compute binomial coefficients is to use Pascal's identity, which is recursive:
+    Another way to compute binomial coefficients is to use Pascal's identity, which is recursive:
 
-   (n \choose 0) = (n \choose n) = 1
-   (n \choose k) = (n-1 \choose k-1) + (n-1 \choose k)
+    (n \choose 0) = (n \choose n) = 1
+    (n \choose k) = (n-1 \choose k-1) + (n-1 \choose k)
 
-We could blindly convert this recursive formula into a recursive algorithm:
+    We could blindly convert this recursive formula into a recursive algorithm:
 
-   choose(n,k):
-       if k == 0 or k == n:
-           return 1
-       else
-           return choose(n-1,k-1) + choose(n-1,k)
+    choose(n,k):
+    if k == 0 or k == n:
+    return 1
+    else
+    return choose(n-1,k-1) + choose(n-1,k)
 
-But again this algorithm suffers from serious overlapping subproblems!
+    But again this algorithm suffers from serious overlapping subproblems!
 
-SEE RECURSION TREE
+    SEE RECURSION TREE
 
-The dynamic programming approach would be to fill up a table/cache with all of the desired values. In this case, the table will be two-dimensional, so cache[n][k] will remember the output of choose(n,k).
+    The dynamic programming approach would be to fill up a table/cache with all of the desired values. In this case, the table will be two-dimensional, so cache[n][k] will remember the output of choose(n,k).
 
-First, we fill in the base cases: in this case, there are many. Then we have to fill in everything else. We know we will have to fill entry (i,j) of the table using the expression:
+    First, we fill in the base cases: in this case, there are many. Then we have to fill in everything else. We know we will have to fill entry (i,j) of the table using the expression:
 
-   cache[i,j] = cache[i-1,j-1] + cache[i-1,j]
+    cache[i,j] = cache[i-1,j-1] + cache[i-1,j]
 
-We just have to loop over value of (i,j) in a way that makes this legal. That is, we want cache[i-1,j-1] and cache[i-1,j] to already exist when it comes time to fill in cache[i,j].
+    We just have to loop over value of (i,j) in a way that makes this legal. That is, we want cache[i-1,j-1] and cache[i-1,j] to already exist when it comes time to fill in cache[i,j].
 
-There are several legal ways to fill up the cache, and here's one:
+    There are several legal ways to fill up the cache, and here's one:
 
-   choose(n,k):
-       for i = 0 to n:
-           cache[i,0] = 1
-           cache[i,i] = 1
-       for i = 1 to n:
-           for j = 1 to k:
-               cache[i,j] = cache[i-1,j-1] + cache[i-1,j]
-       return cache[n,k]
+    choose(n,k):
+    for i = 0 to n:
+    cache[i,0] = 1
+    cache[i,i] = 1
+    for i = 1 to n:
+    for j = 1 to k:
+    cache[i,j] = cache[i-1,j-1] + cache[i-1,j]
+    return cache[n,k]
 
-Do you see the resemblance to Pascal's triangle?
+    Do you see the resemblance to Pascal's triangle?
 
-Q: can you think of different legal ways to fill up the cache? How would it change the code?
+    Q: can you think of different legal ways to fill up the cache? How would it change the code?
 
-    </div>
-
-------------
+    </div> -->
 
 </body>
 
