@@ -181,7 +181,7 @@ class ArrayGuts
             if @displayOnly
                 row.show() for row in [@$rowCells, @$rowAnnotations]
 
-                # @$rowIndices.show() if @showCellNumber
+                @$rowIndices.show() if @showCellNumber
 
                 # if this array is display-only, then @theArray (in the stash) would
                 # have gotten reset to null. however, it's not so important that
