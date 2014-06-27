@@ -252,7 +252,7 @@ class ArrayGuts
         if @container.height() > (@maxHeight ? 0)
             @maxHeight = @container.height()
         else
-            @container.css("min-height",@maxHeight)
+            # @container.css("min-height",@maxHeight)
 
     resetHeight: () ->
         @maxHeight = 0

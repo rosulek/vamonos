@@ -286,6 +286,7 @@ table.array {
         td, th {
             .variable-name();
             height: @array-cell-size;
+            white-space: nowrap;
         }
     }
 
@@ -904,4 +905,63 @@ span.var-editable {
     100% { background: default;
            color: default;
          }
+}
+
+//////////////
+// USERQUIZ
+
+.ui-widget-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.ui-widget-overlay {
+    background-color: #cccccc;
+    opacity: .3;
+    filter: Alpha(Opacity=30);
+}
+
+.ui-front {
+    z-index: 100;
+}
+
+.ui-dialog {
+    background: white;
+    border: 1px solid #aaa;
+    box-shadow: 4px 4px 8px #ccc;
+}
+.userquiz {
+    padding: 10px;
+}
+.ui-dialog-titlebar {
+    background: #d85a1a;
+    color: white;
+    padding: 4px;
+    cursor: move;
+    margin: 2px;
+}
+.ui-dialog-titlebar-close {
+    display: none;
+}
+.userquiz-question {
+    margin-bottom: 10px;
+}
+.userquiz-answer {
+    width: 50px;
+}
+.userquiz-response {
+    text-align: center;
+}
+.userquiz-feedback {
+    margin-top: 10px;
+}
+.userquiz-feedback.wrong-answer {
+    color: #c55;
+}
+.userquiz-feedback.correct-answer {
+    color: #5c5;
+    font-weight: bold;
 }
