@@ -66,16 +66,16 @@ class UserQuiz
         when "render"
             [@currentFrame, type] = options
             return unless type is "next" \
-                      and @condition(@currentFrame) \
+                      and @condition(@currentFrame, @visualizer.frames) \
                       and @currentFrame._frameNumber not in @framesPassed
 
             @$dialog.attr("title", @title(@currentFrame))
-            @$question.html(@question(@currentFrame))
+            @$question.html(@question(@currentFrame, @visualizer.frames))
             @$answer.val("")
             @$feedback.html("")
             @$feedback.removeClass("correct-answer", "wrong-answer")
 
-            @currentAnswer = @answer(@currentFrame)
+            @currentAnswer = @answer(@currentFrame, @visualizer.frames)
             @wrongTimeout  = null
 
             @visualizer.frozen = true

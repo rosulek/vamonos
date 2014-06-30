@@ -35,21 +35,30 @@
         font-weight: bold;
     }
 
+    a:hover {
+        cursor: default;
+    }
+
     </style>
 
     <script>
 
+    var demos = [];
 
     $( function(){
         tab(1);
     });
 
     function tab(n) {
-        var active = [1,2,3,4,5,6].filter(function(x){ return x !== n })
-        active.forEach(function(x){
+        var inactive = [1,2,3,4,5,6].filter(function(x){ return x !== n })
+        inactive.forEach(function(x){
             $("li#tabbutt" + x).removeClass("active");
             $("div#tab" + x).hide();
+            demos[x].forEach(function(demo){
+                demo.deactivate();
+            });
         });
+        demos[n].forEach(function(demo){ demo.activate() });
         $("li#tabbutt" + n).addClass("active");
         $("div#tab" + n).show();
 
@@ -186,6 +195,7 @@
             <li><a onclick="tab(2)">Next</a></li>
         </ul>
 
+        <script> demos[1] = [fib]; </script>
     </div>
 
     <div id="tab2" class="container-fluid">
@@ -221,7 +231,7 @@
                 </p>
 
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-6 col-lg-4">
                 <div class="panel vamonos panel-default">
                     <div class="panel-heading">
                         Caching Fibonacci
@@ -326,14 +336,14 @@
             <li><a onclick="tab(1)">Previous</a></li>
             <li><a onclick="tab(3)">Next</a></li>
         </ul>
+        <script> demos[2] = [fib_cache]; </script>
     </div>
 
 
     <div id="tab3" class="container-fluid">
+        <h3>Top-down vs Bottom-up</h3>
         <div class="row">
             <div class="col-sm-6 col-lg-4 col-lg-offset-2">
-                <h3>Top-down vs Bottom-up</h3>
-
                 <p>
                     In the previous example, the cache gets filled starting at the base cases 0 & 1 and then
                     gets filled up in increasing order. It makes sense that you can't compute fib(n) until
@@ -439,9 +449,12 @@
                 </div>
 
                 <script type="text/javascript">
-                var fib_cache = new Vamonos.Visualizer({
+                var fib_cache3 = new Vamonos.Visualizer({
                     widgets: [
-                        new Vamonos.Widget.Pseudocode("fib-bot"),
+                        new Vamonos.Widget.Pseudocode({
+                            container: "fib-bot",
+                            procedureName: "fib",
+                        }),
                         new Vamonos.Widget.Controls("fib-bot-controls"),
                         new Vamonos.Widget.VarName({
                             container: "fib-bot-cache-var",
@@ -504,6 +517,7 @@
             <li><a onclick="tab(2)">Previous</a></li>
             <li><a onclick="tab(4)">Next</a></li>
         </ul>
+        <script>demos[3] = [fib_cache2, fib_cache3];</script>
     </div>
 
     <div id="tab4" class="container-fluid">
@@ -543,13 +557,14 @@
             <li><a onclick="tab(3)">Previous</a></li>
             <li><a onclick="tab(5)">Next</a></li>
         </ul>
+        <script>demos[4] = [];</script>
     </div>
 
     <div id="tab5" class="container-fluid">
         <h3>First example: Work Bonus Scheduling</h3>
 
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-6 col-lg-4 col-lg-offset-2">
                 <p>
                     You work in outdoor construction in a hot climate, and get paid a daily bonus
                     based on the high temperature that day. If the high temperature is T degrees,
@@ -572,10 +587,10 @@
                 </p>
 
                 <p>
-                    To get started solving this problem, let's first just worry about computing *the
-                    maximum bonus*, and not worry about *which schedule achieves* the maximum
-                    bonus. So, given the above example forecast, we would like to compute the number
-                    268.
+                    To get started solving this problem, let's first just worry about computing
+                    <em>the maximum bonus</em>, and not worry about <em>which schedule achieves</em>
+                    the maximum bonus. So, given the above example forecast, we would like to
+                    compute the number 268.
                 </p>
 
                 <p>
@@ -600,7 +615,7 @@
                     on the nth day.
                 </p>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-6 col-lg-4">
 
                 <p>
                     Define best[k] to be the maximum possible bonus you can get by working during
@@ -649,7 +664,7 @@
 
                 <p>
                     So instead, we will use dynamic programming, computing best[k] values
-                    **bottom-up**. Remember the basic approach? We are just filling in a table. The
+                    <emph>bottom-up</emph>. Remember the basic approach? We are just filling in a table. The
                     first entries we fill in are the base cases. Then we fill entries in a legal
                     order, using the recurrence formula.
                 </p>
@@ -657,8 +672,9 @@
         </div>
 
 
-        <div class="jumbotron">
-            <div class="row panel vamonos panel-default">
+        <div class="jumbotron row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="row panel vamonos panel-default">
                 <div class="panel-heading">
                     Scheduling
                 </div>
@@ -669,7 +685,9 @@
                             best[0] = 0
                             best[1] = T[1]
                             for k = 2 to n:
-                                best[k] = max{ best[k-2] + T[k], best[k-1] }
+                                a = best[k-2] + T[k]
+                                b = best[k-1]
+                                best[k] = max{ a, b }
                             return best[n]
                         </div>
                     </div>
@@ -682,11 +700,12 @@
                         <tr><td><div id="schedule-best-var"></div></td>
                             <td><div id="schedule-best"></div></td>
                         </tr>
-                        <tr><td><div id="schedule-stack-var"></div></td>
-                            <td><div id="schedule-stack"></div></td>
+                        <tr><td><div id="schedule-ret-var"></div></td>
+                            <td><div id="schedule-ret"></div></td>
                         </tr>
                     </table>
                 </div>
+            </div>
             </div>
         </div>
 
@@ -696,20 +715,11 @@
                 new Vamonos.Widget.Hardcoded({
                     n: 10,
                 }),
-                new Vamonos.Widget.Pseudocode("schedule"),
+                new Vamonos.Widget.Pseudocode({
+                    container: "schedule",
+                    procedureName: "sched",
+                }),
                 new Vamonos.Widget.Controls("schedule-controls"),
-                new Vamonos.Widget.CallStack({
-                    container: "schedule-stack",
-                    procedureNames: {
-                        main: "Schedule",
-                    },
-                }),
-                new Vamonos.Widget.VarName({
-                    container: "schedule-stack-var",
-                    varName: "_callstack",
-                    displayName: "calls",
-                    watching: true
-                }),
                 new Vamonos.Widget.VarName({
                     container: "schedule-t-var",
                     varName: "T",
@@ -734,40 +744,74 @@
                     varName: "best",
                     displayOnly: true,
                 }),
-            ],
-            algorithm: function(_) {
-                with (this) {
-                    _(1);
-                    this.best = global.best = [0];
-                    _(2);
-                    best[1] = T[1];
-                    for (k = 2; _(3), k < T.length; k++) {
-                        _(4);
-                        best[k] = Math.max( best[k-2] + T[k], best[k-1] );
+                new Vamonos.Widget.VarName({
+                    container: "schedule-ret-var",
+                    varName: "ret",
+                    displayName: "return",
+                }),
+                new Vamonos.Widget.VarDisplay({
+                    container: "schedule-ret",
+                    varName: "ret",
+                }),
+                new Vamonos.Widget.UserQuiz({
+                    condition: function(frame, frames) {
+                        var bestLength = 2;
+                        var n = frame._frameNumber - 1;
+                        console.log(frames[n+1]);
+                        return frame.best !== undefined &&
+                               frame.best.length == bestLength &&
+                               frames[n+1].best !== undefined &&
+                               frames[n+1].best.length == bestLength + 1;
+                    },
+                    question: "What will the next value of best be?",
+                    answer: function(frame, frames) {
+                        var n = frame._frameNumber - 1;
+                        var b = frames[n+1].best;
+                        return b[b.length - 1];
                     }
-                    _(5);
-                    return best[T.length - 1];
+                }),
+            ],
+            algorithm: {
+                main: function(_) {
+                    with (this) {
+                        global.ret = sched({ T: T });
+                    }
+                },
+
+                sched: function(_) {
+                    with (this) {
+                        _(1);
+                        this.best = global.best = [0];
+                        _(2);
+                        best[1] = T[1];
+                        for (k = 2; _(3), k < T.length; k++) {
+                            _(4);
+                            var a = best[k-2] + T[k];
+                            _(5);
+                            var b = best[k-1];
+                            _(6);
+                            best[k] = Math.max(a, b);
+                        }
+                        _(7);
+                        return best[T.length - 1];
+                    }
                 }
             },
             maxFrames: 500,
         });
         </script>
 
-        <p class="center">
-            Q: predict values that will be filled in!
-        </p>
         <ul class="pager">
             <li><a onclick="tab(4)">Previous</a></li>
             <li><a onclick="tab(6)">Next</a></li>
         </ul>
+        <script>demos[5] = [schedule];</script>
     </div>
 
     <div id="tab6" class="container-fluid">
+        <h1>Getting the answer, not just the number</h1>
         <div class="row">
-            <div class="col-sm-6">
-
-                <h1>Getting the answer, not just the number</h1>
-
+            <div class="col-lg-4 col-lg-offset-2 col-sm-6">
                 <p>
                     For our previous problem, we can now find the best bonus amount for a given
                     forecast. But we probably also care about what schedule actually achieves that bonus
@@ -811,7 +855,7 @@
                 </p>
 
             </div>
-            <div class="col-sm-6">
+            <div class="col-lg-4 col-sm-6">
                 <p>
                     Putting it all together, we have to break up the "max" expression into an if-statement:
                 </p>
@@ -854,7 +898,7 @@
                 </div>
 
                 <script type="text/javascript">
-                var schedule = new Vamonos.Visualizer({
+                var crumbs = new Vamonos.Visualizer({
                     widgets: [
                         new Vamonos.Widget.Hardcoded({
                             n: 10,
@@ -965,6 +1009,7 @@
             <li><a onclick="tab(5)">Previous</a></li>
             <li><a onclick="tab(7)">Next</a></li>
         </ul>
+        <script>demos[6] = [crumbs];</script>
     </div>
 
     <!-- <div id="tab7" class="container-fluid">

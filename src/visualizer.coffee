@@ -419,5 +419,11 @@ class Visualizer
         catch error
             {}
 
+    deactivate: ->
+        @frozen = true
+
+    activate: ->
+        @frozen = false
+
 
 @Vamonos.export { Visualizer }
