@@ -606,8 +606,8 @@
                         </li>
 
                         <li>
-                            If you decide *not* to work on the nth day, then you'll be working in
-                            some subset of days 1 through n-1.
+                            If you decide <em>not</em> to work on the nth day, then you'll be
+                            working in some subset of days 1 through n-1.
                         </li>
                     </ol>
 
@@ -819,11 +819,12 @@
                 </p>
 
                 <p>
-                    The idea is that each time we compute best[k] (a number), we should also write down and
-                    remember *how* to achieve best[k]. In this case, we need to write down the schedule that
-                    achieves best[k]. There are several ways to do this, but perhaps the simplest is as a
-                    string of "Y" and "N" characters. So the string "YNNYN" represents the schedule of
-                    working on days 1 & 4, and resting on days 2, 3 & 5.
+                    The idea is that each time we compute best[k] (a number), we should also write
+                    down and remember <em>how</em> to achieve best[k]. In this case, we need to
+                    write down the schedule that achieves best[k]. There are several ways to do
+                    this, but perhaps the simplest is as a string of "Y" and "N" characters. So the
+                    string "YNNYN" represents the schedule of working on days 1 & 4, and resting on
+                    days 2, 3 & 5.
                 </p>
 
                 <p>
@@ -863,38 +864,37 @@
                     <div class="panel-heading">
                         Scheduling-Breadcrumbs
                     </div>
-                        <div id="crumbs-controls"></div>
-                        <div class="pseudocode-procedures">
-                            <div id="crumbs" title="Schedule(T[1..n])">
-                                best[0] = 0
-                                soln[0] = ""
-                                best[1] = T[1]
-                                soln[1] = "Y"
-                                for k = 2 to n:
-                                    if best[k-2] + T[k] > best[k-1]
-                                        best[k] = best[k-2] + T[k]
-                                        soln[k] = soln[k-2] + "NY"
-                                    else
-                                        best[k] = best[k-1]
-                                        soln[k] = soln[k-1] + "N"
-                                return soln[n] + " achieves bonus " + best[n]
-                            </div>
+                    <div id="crumbs-controls"></div>
+                    <div class="pseudocode-procedures">
+                        <div id="crumbs" title="Schedule(T[1..n])">
+                            best[0] = 0
+                            soln[0] = ""
+                            best[1] = T[1]
+                            soln[1] = "Y"
+                            for k = 2 to n:
+                                if best[k-2] + T[k] > best[k-1]
+                                    best[k] = best[k-2] + T[k]
+                                    soln[k] = soln[k-2] + "NY"
+                                else
+                                    best[k] = best[k-1]
+                                    soln[k] = soln[k-1] + "N"
+                            return soln[n] + " achieves bonus " + best[n]
                         </div>
-                        <table class="variable-widgets">
-                            <tr><td><div id="crumbs-t-var"></div></td>
-                                <td><div id="crumbs-t"></div></td>
-                            </tr>
-                            <tr><td><div id="crumbs-best-var"></div></td>
-                                <td><div id="crumbs-best"></div></td>
-                            </tr>
-                            <tr><td><div id="crumbs-soln-var"></div></td>
-                                <td><div id="crumbs-soln"></div></td>
-                            </tr>
-                            <tr><td><div id="crumbs-ret-var"></div></td>
-                                <td><div id="crumbs-ret"></div></td>
-                            </tr>
-                        </table>
                     </div>
+                    <table class="variable-widgets">
+                        <tr><td><div id="crumbs-t-var"></div></td>
+                            <td><div id="crumbs-t"></div></td>
+                        </tr>
+                        <tr><td><div id="crumbs-best-var"></div></td>
+                            <td><div id="crumbs-best"></div></td>
+                        </tr>
+                        <tr><td><div id="crumbs-soln-var"></div></td>
+                            <td><div id="crumbs-soln"></div></td>
+                        </tr>
+                        <tr><td><div id="crumbs-ret-var"></div></td>
+                            <td><div id="crumbs-ret"></div></td>
+                        </tr>
+                    </table>
                 </div>
 
                 <script type="text/javascript">
@@ -987,27 +987,83 @@
                                     }
                                 }
                                 _(12);
+                                notifyQuiz(T, soln);
                                 return soln[T.length - 1] + " achieves bonus " + best[T.length - 1];
                             }
                         },
                     },
                     maxFrames: 500,
                 });
-                </script>
-        </div>
-        <p class="center">
-            I happen to think that there is some elegance in how the two arrays, "best" and "soln",
-            are always accessed in a similar manner.
-        </p>
 
-        <p class="center">
-            Q: can you come up with an input whose optimal solution involves *not* working on the
-            day with the highest temperature?
-        </p>
+                function maxIndices(T){
+                    var t = -Infinity;
+                    var indices = [];
+                    T.forEach(function(x,i){
+                        if (x > t) {
+                            t = x;
+                            indices = [i];
+                        } else if (x == t) {
+                            indices.push(i);
+                        }
+                    });
+                    return indices;
+                }
+
+                function notifyQuiz(T, soln){
+                    var indices = maxIndices(T);
+                    var result = true;
+                    indices.forEach(function(i){
+                        if (soln[soln.length-1][i-1] === "Y") {
+                            result = false;
+                        }
+                    });
+                    setQuizText(result);
+                }
+
+                function setQuizText(complete){
+                    var $q = $("#crumbs-quiz");
+                    var $a = $("#crumbs-quiz-answer");
+                    if (complete) {
+                        $a.text("Good job!");
+                        $a.addClass("bg-success");
+                        $a.removeClass("bg-warning");
+                        $q.removeClass("panel-warning");
+                        $q.removeClass("panel-danger");
+                        $q.addClass("panel-success");
+                    } else {
+                        $a.text("The current input uses the hottest day. Try again!");
+                        $a.addClass("bg-warning");
+                        $a.removeClass("bg-success");
+                        $q.removeClass("panel-success");
+                        $q.removeClass("panel-warning");
+                        $q.addClass("panel-danger");
+                    }
+                }
+
+                </script>
+                <p>
+                    I happen to think that there is some elegance in how the two arrays, "best" and
+                    "soln", are always accessed in a similar manner.
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6 col-sm-offset-3">
+                <div id="crumbs-quiz" class="panel panel-default panel-warning">
+                    <div class="panel-heading">Breadcrumbs Quiz</div>
+                    <div class="panel-body">
+                        Can you come up with an input whose optimal solution involves <em>not</em> working on
+                        the day with the highest temperature?
+                        <span id="crumbs-quiz-answer"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <ul class="pager">
             <li><a onclick="tab(5)">Previous</a></li>
-            <li><a onclick="tab(7)">Next</a></li>
+            <!-- <li><a onclick="tab(7)">Next</a></li> -->
         </ul>
         <script>demos[6] = [crumbs];</script>
     </div>
