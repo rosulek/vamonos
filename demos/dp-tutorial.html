@@ -39,6 +39,13 @@
         cursor: default;
     }
 
+    li {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
     </style>
 
     <script>
@@ -50,7 +57,7 @@
     });
 
     function tab(n) {
-        var inactive = [1,2,3,4,5,6].filter(function(x){ return x !== n })
+        var inactive = [1,2,3,4,5,6,7].filter(function(x){ return x !== n })
         inactive.forEach(function(x){
             $("li#tabbutt" + x).removeClass("active");
             $("div#tab" + x).hide();
@@ -89,7 +96,7 @@
                     <li id="tabbutt4"><a onclick="tab(4);">The Basic Idea</a></li>
                     <li id="tabbutt5"><a onclick="tab(5);">Bonus Scheduling</a></li>
                     <li id="tabbutt6"><a onclick="tab(6);">Breadcrumbs</a></li>
-                    <!-- <li id="tabbutt7"><a onclick="tab(7);">Binomial Coefficients</a></li> -->
+                    <li id="tabbutt7"><a onclick="tab(7);">Binomial Coefficients</a></li>
                 </ul>
             </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->
@@ -1063,58 +1070,178 @@
 
         <ul class="pager">
             <li><a onclick="tab(5)">Previous</a></li>
-            <!-- <li><a onclick="tab(7)">Next</a></li> -->
+            <li><a onclick="tab(7)">Next</a></li>
         </ul>
         <script>demos[6] = [crumbs];</script>
     </div>
 
-    <!-- <div id="tab7" class="container-fluid">
+    <div id="tab7" class="container-fluid">
 
-    <h1>Another example: Binomial coefficients</h1>
+        <h1>Another example: Binomial coefficients</h1>
 
-    You may have seen the formula for binomial coefficients {n \choose k} = \frac{n!}{k!(n-k)!}, but this is a bad way to actually *compute* these numbers. For instance, even if the final result is small (ex: (1000 \choose 1) = 1000) the intermediate values of this computation may be huge (ex: factorial(1000)).
+        <div class="row">
+            <div class="col-lg-4 col-lg-offset-2 col-sm-6">
 
-    Another way to compute binomial coefficients is to use Pascal's identity, which is recursive:
+                <p>
+                    You may have seen the formula for binomial coefficients {n \choose k} =
+                    \frac{n!}{k!(n-k)!}, but this is a bad way to actually *compute* these
+                    numbers. For instance, even if the final result is small (ex: (1000 \choose 1) =
+                    1000) the intermediate values of this computation may be huge (ex:
+                    factorial(1000)).
+                </p>
 
-    (n \choose 0) = (n \choose n) = 1
-    (n \choose k) = (n-1 \choose k-1) + (n-1 \choose k)
+                <p>
+                    Another way to compute binomial coefficients is to use Pascal's identity, which
+                    is recursive:
+                </p>
 
-    We could blindly convert this recursive formula into a recursive algorithm:
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Pascal's Identity
+                    </div>
+                    <div class="panel-body math">
+                        (n \choose 0) = (n \choose n) = 1<br>
+                        (n \choose k) = (n-1 \choose k-1) + (n-1 \choose k)
+                    </div>
+                </div>
 
-    choose(n,k):
-    if k == 0 or k == n:
-    return 1
-    else
-    return choose(n-1,k-1) + choose(n-1,k)
+                <p>
+                    We could blindly convert this recursive formula into a recursive algorithm:
+                </p>
 
-    But again this algorithm suffers from serious overlapping subproblems!
 
-    SEE RECURSION TREE
+                <div class="panel vamonos panel-default">
+                    <div class="panel-heading">
+                        Choose(10,5)
+                    </div>
+                    <div class="pseudocode-procedures">
+                        <div id="choose1" title="Choose(n,k):">
+                            if k == 0 or k == n:
+                                return 1
+                            else
+                                return Choose(n-1,k-1) + Choose(n-1,k)
+                        </div>
+                    </div>
+                    <div id="choose1-controls"></div>
+                    <table class="variable-widgets">
+                        <tr><td><div id="choose1-stack-var"></div></td>
+                            <td><div id="choose1-stack"></div></td>
+                        </tr>
+                    </table>
+                </div>
 
-    The dynamic programming approach would be to fill up a table/cache with all of the desired values. In this case, the table will be two-dimensional, so cache[n][k] will remember the output of choose(n,k).
+                <script type="text/javascript">
+                var choose1 = new Vamonos.Visualizer({
+                    widgets: [
+                        new Vamonos.Widget.Hardcoded({
+                            n: 7,
+                            k: 5,
+                        }),
+                        new Vamonos.Widget.Pseudocode({
+                            container: "choose1",
+                            procedureName: "Choose",
+                        }),
+                        new Vamonos.Widget.Controls("choose1-controls"),
+                        new Vamonos.Widget.CallStack({
+                            container: "choose1-stack",
+                            procedureNames: {
+                                main: "Choose",
+                            },
+                        }),
+                        new Vamonos.Widget.VarName({
+                            container: "choose1-stack-var",
+                            varName: "_callstack",
+                            displayName: "Call Stack",
+                            watching: true
+                        })
+                    ],
+                    algorithm: {
+                        main: function(_) {
+                            with (this) {
+                                if (_(1), k == 0 || k == n) {
+                                    _(2);
+                                    return 1;
+                                } else {
+                                    _(3);
+                                    _(4);
+                                    return main({ n:n-1, k:k-1 }) + main({ n:n-1, k:k });
+                                }
+                            }
+                        },
+                    },
+                    maxFrames: 500,
+                });
+                </script>
+                <p>
+                    But again this algorithm suffers from serious overlapping subproblems!
+                </p>
 
-    First, we fill in the base cases: in this case, there are many. Then we have to fill in everything else. We know we will have to fill entry (i,j) of the table using the expression:
+            </div>
 
-    cache[i,j] = cache[i-1,j-1] + cache[i-1,j]
+            <div class="col-lg-4 col-sm-6">
 
-    We just have to loop over value of (i,j) in a way that makes this legal. That is, we want cache[i-1,j-1] and cache[i-1,j] to already exist when it comes time to fill in cache[i,j].
+                <p>
+                    The dynamic programming approach would be to fill up a table/cache with all of
+                    the desired values. In this case, the table will be two-dimensional, so
+                    cache[n][k] will remember the output of choose(n,k).
+                </p>
 
-    There are several legal ways to fill up the cache, and here's one:
+                <p>
+                    First, we fill in the base cases: in this case, there are many. Then we have to
+                    fill in everything else. We know we will have to fill entry (i,j) of the table
+                    using the expression:
+                </p>
 
-    choose(n,k):
-    for i = 0 to n:
-    cache[i,0] = 1
-    cache[i,i] = 1
-    for i = 1 to n:
-    for j = 1 to k:
-    cache[i,j] = cache[i-1,j-1] + cache[i-1,j]
-    return cache[n,k]
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Cache Definition
+                    </div>
+                    <div class="panel-body math">
+                        cache[i,j] = cache[i-1,j-1] + cache[i-1,j]
+                    </div>
+                </div>
 
-    Do you see the resemblance to Pascal's triangle?
+                <p>
+                    We just have to loop over value of (i,j) in a way that makes this legal. That
+                    is, we want cache[i-1,j-1] and cache[i-1,j] to already exist when it comes time
+                    to fill in cache[i,j].
+                </p>
 
-    Q: can you think of different legal ways to fill up the cache? How would it change the code?
+                <p>
+                    There are several legal ways to fill up the cache, and here's one:
+                </p>
 
-    </div> -->
+                choose(n,k):
+                for i = 0 to n:
+                cache[i,0] = 1
+                cache[i,i] = 1
+                for i = 1 to n:
+                for j = 1 to k:
+                cache[i,j] = cache[i-1,j-1] + cache[i-1,j]
+                return cache[n,k]
+
+                <p>
+                    Do you see the resemblance to Pascal's triangle?
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6 col-sm-offset-3">
+                <div id="crumbs-quiz" class="panel panel-default panel-warning">
+                    <div class="panel-heading">Cache Quiz</div>
+                    <div class="panel-body">
+                        Can you think of different legal ways to fill up the cache? How would it change the code?
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ul class="pager">
+            <li><a onclick="tab(6)">Previous</a></li>
+        </ul>
+        <script>demos[7] = [];</script>
+    </div>
 
 </body>
 
