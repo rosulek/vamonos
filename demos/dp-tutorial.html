@@ -46,6 +46,19 @@
         user-select: none;
     }
 
+    table.matrix td.row-i {
+        background-color: #bbb;
+    }
+
+    table.matrix td.col-j {
+        background-color: #bbb;
+    }
+
+    table.matrix td.row-n.col-k {
+        background-color: #ada;
+    }
+
+
     </style>
 
     <script>
@@ -107,7 +120,7 @@
         <div class="row">
             <h3>Fibonacci's overlapping subproblems</h3>
 
-            <div class="col-sm-6 col-sm-offset-3">
+            <div class="col-lg-4 col-lg-offset-4 col-sm-6 col-sm-offset-3">
 
                 <p>
                     We all know and love the Fibonacci sequence, which is defined as:
@@ -529,7 +542,7 @@
 
     <div id="tab4" class="container-fluid">
         <div class="row">
-            <div class="col-sm-6 col-sm-offset-3">
+            <div class="col-lg-4 col-lg-offset-4 col-sm-6 col-sm-offset-3">
 
                 <h3>The Basic Idea</h3>
 
@@ -1211,15 +1224,113 @@
                     There are several legal ways to fill up the cache, and here's one:
                 </p>
 
-                choose(n,k):
-                for i = 0 to n:
-                cache[i,0] = 1
-                cache[i,i] = 1
-                for i = 1 to n:
-                for j = 1 to k:
-                cache[i,j] = cache[i-1,j-1] + cache[i-1,j]
-                return cache[n,k]
 
+                <div class="panel vamonos panel-default">
+                    <div class="panel-heading">
+                        Cache(10,5)
+                    </div>
+                    <div class="pseudocode-procedures">
+                        <div id="cache2" title="Cache(n,k):">
+                            for i = 0 to n:
+                                cache[i,0] = 1
+                                cache[i,i] = 1
+                            for i = 1 to n:
+                                for j = 1 to i:
+                                    cache[i,j] = cache[i-1,j-1] + cache[i-1,j]
+                            return cache[n,k]
+                        </div>
+                    </div>
+                    <div id="cache2-controls"></div>
+                    <table class="variable-widgets">
+                        <tr><td><div id="cache2-cache-var"></div></td>
+                            <td><div id="cache2-cache"></div></td>
+                        <tr><td><div id="cache2-ret-var"></div></td>
+                            <td><div id="cache2-ret"></div></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <script type="text/javascript">
+                var choose2 = new Vamonos.Visualizer({
+                    widgets: [
+                        new Vamonos.Widget.Hardcoded({
+                            n: 10,
+                            k: 5,
+                        }),
+                        new Vamonos.Widget.Pseudocode({
+                            container: "cache2",
+                            procedureName: "bin",
+                        }),
+                        new Vamonos.Widget.Controls("cache2-controls"),
+                        new Vamonos.Widget.VarName({
+                            container: "cache2-ret-var",
+                            varName: "ret",
+                            displayName: "return",
+                        }),
+                        new Vamonos.Widget.VarDisplay({
+                            container: "cache2-ret",
+                            varName: "ret",
+                        }),
+                        new Vamonos.Widget.VarName({
+                            container: "cache2-cache-var",
+                            varName: "cache",
+                            watching: true,
+                        }),
+                        new Vamonos.Widget.Matrix({
+                            container: "cache2-cache",
+                            varName: "cache",
+                            displayOnly: true,
+                            cssRules: [
+                                ["col", ">", "row", "shaded"],
+                                ["row", "=", "i", "row-i"],
+                                ["col", "=", "j", "col-j"],
+                                ["row", "=", "n", "row-n"],
+                                ["col", "=", "k", "col-k"],
+                            ],
+                            showIndices: [
+                                ["row","i"],
+                                ["col","j"],
+                                ["row","n"],
+                                ["col","k"],
+                            ],
+                        }),
+                    ],
+                    algorithm: {
+                        main: function(_) {
+                            with (this) {
+                                global.ret = bin({ n:n, k:k });
+                            }
+                        },
+                        bin: function(_) {
+                            with (this) {
+                                global.cache = this.cache = [];
+                                _(1);
+                                for (global.i = 0; _(1), global.i <= n; global.i++) {
+                                    _(2);
+                                    cache[global.i] = [1];
+                                    _(3);
+                                    cache[global.i][global.i] = 1;
+                                }
+                                _(4);
+                                for (global.i = 1; _(4), global.i <= n; global.i++) {
+                                    _(5);
+                                    for (global.j = 1; _(5), global.j < global.i; global.j++) {
+                                        _(6);
+                                        cache[global.i][global.j] =
+                                            cache[global.i-1][global.j-1] +
+                                            cache[global.i][global.j-1];
+                                    }
+                                    global.j = undefined;
+                                }
+                                global.i = undefined;
+                                _(7);
+                                return cache[n][k];
+                            }
+                        },
+                    },
+                    maxFrames: 500,
+                });
+                </script>
                 <p>
                     Do you see the resemblance to Pascal's triangle?
                 </p>
@@ -1227,7 +1338,7 @@
         </div>
 
         <div class="row">
-            <div class="col-sm-6 col-sm-offset-3">
+            <div class="col-lg-4 col-lg-offset-4 col-sm-6 col-sm-offset-3">
                 <div id="crumbs-quiz" class="panel panel-default panel-warning">
                     <div class="panel-heading">Cache Quiz</div>
                     <div class="panel-body">
@@ -1240,7 +1351,7 @@
         <ul class="pager">
             <li><a onclick="tab(6)">Previous</a></li>
         </ul>
-        <script>demos[7] = [];</script>
+        <script>demos[7] = [choose1, choose2];</script>
     </div>
 
 </body>
