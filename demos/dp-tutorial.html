@@ -10,6 +10,13 @@
     <link rel="stylesheet" href="../deps/bootstrap.min.css">
     <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
     <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+    </script>
 
     <style type="text/css">
 
@@ -24,10 +31,6 @@
 
     h1, h2, h3, h4, h5, h6 {
         text-align: center;
-    }
-
-    .math {
-        font-family: serif;
     }
 
     emph {
@@ -57,8 +60,6 @@
     table.matrix td.row-n.col-k {
         background-color: #ada;
     }
-
-
     </style>
 
     <script>
@@ -130,9 +131,11 @@
                     <div class="panel-heading">
                         Fibonacci Formula
                     </div>
-                    <div class="panel-body math">
-                        F<sub>0</sub> = F<sub>1</sub> = 1<br>
-                        F<sub>n</sub> = F<sub>n-1</sub> + F<sub>n-2</sub> for <i>n</i> &geq; 2
+                    <div class="panel-body">
+                        \begin{aligned}
+                        F_0 &= F_1 = 1\\
+                        F_n &= F_{n-1} + F_{n-2} \text{ for } n \geq 2
+                        \end{aligned}
                     </div>
                 </div>
                 <p>
@@ -199,14 +202,14 @@
                 </script>
 
                 <p>
-                    What could be wrong with that? For one thing, most calls to fib() are needlessly
-                    re-computed many times with the same argument!
+                    What could be wrong with that? For one thing, most calls to <code>fib()</code>
+                    are needlessly re-computed many times with the same argument!
                 </p>
 
                 <p>
-                    We say that this algorithm suffers from <emph>overlapping subproblems</emph>. As an
-                    example, the value of fib(3) is requested -- directly or indirectly -- by many
-                    other calls to fib().
+                    We say that this algorithm suffers from <emph>overlapping subproblems</emph>. As
+                    an example, the value of <code>fib(3)</code> is requested -- directly or
+                    indirectly -- by many other calls to <code>fib()</code>.
                 </p>
             </div>
         </div>
@@ -225,20 +228,20 @@
             <div class="col-sm-6 col-lg-4 col-lg-offset-2">
                 <p>
                     One way to avoid computing the same value twice is to bolt on a <em>cache</em>
-                    to the algorithm. At the beginning of every call to fib(n), we check whether the
-                    answer is already in the cache. Otherwise, we compute the answer just as before,
-                    and store the answer in the cache just before returning. We call this
-                    <emph>recursion with shortcuts</emph>.
+                    to the algorithm. At the beginning of every call to <code>fib(n)</code>, we
+                    check whether the answer is already in the cache. Otherwise, we compute the
+                    answer just as before, and store the answer in the cache just before
+                    returning. We call this <emph>recursion with shortcuts</emph>.
                 </p>
 
                 <p>
-                    This algorithm won't needlessly recompute a value fib(n) after computing it
-                    once. But this style of coding is slightly cumbersome since:
+                    This algorithm won't needlessly recompute a value <code>fib(n)</code> after
+                    computing it once. But this style of coding is slightly cumbersome since:
                     <ul>
                         <li>
                             It is hard to analyze/understand, because it relies heavily on
-                            side-effects. The same call to fib() could result in different behavior
-                            based on the contents of the cache.
+                            side-effects. The same call to <code>fib()</code> could result in
+                            different behavior based on the contents of the cache.
                         </li>
 
                         <li>
@@ -365,9 +368,10 @@
         <div class="row">
             <div class="col-sm-6 col-lg-4 col-lg-offset-2">
                 <p>
-                    In the previous example, the cache gets filled starting at the base cases 0 & 1 and then
-                    gets filled up in increasing order. It makes sense that you can't compute fib(n) until
-                    fib(n-1) returns, filling cache[n-1] in the process.
+                    In the previous example, the cache gets filled starting at the base cases 0 & 1
+                    and then gets filled up in increasing order. It makes sense that you can't
+                    compute <code>fib(n)</code> until <code>fib(n-1)</code> returns, filling
+                    <code>cache[n-1]</code> in the process.
                 </p>
 
                 <p>
@@ -561,7 +565,7 @@
                     Many/most students do indeed start out by thinking about the Fibonacci sequence
                     in terms of the bottom-up approach (computing the nth Fibonacci number by
                     enumerating 0,1,2,3,5,8,...). Then a CS education takes great pains to force
-                    students to think about things in a recursive way (F(n) = F(n-1) + F(n-2)).
+                    students to think about things in a recursive way ($F(n) = F(n-1) + F(n-2)$).
                 </p>
 
                 <p>
@@ -594,16 +598,17 @@
 
                 <p>
                     Suppose you know the forecast for the next n days, represented as an array
-                    T[1..n]. T[i] is the high temperature, i days from now. What is the maximum
-                    bonus you can receive over the next n days, assuming the forecast is correct and
-                    assuming you are in it just for the money (and are willing to work in any
-                    weather)?
+                    <code>T[1..n]</code>. <code>T[i]</code> is the high temperature, i days from
+                    now. What is the maximum bonus you can receive over the next n days, assuming
+                    the forecast is correct and assuming you are in it just for the money (and are
+                    willing to work in any weather)?
                 </p>
 
                 <p>
-                    Example: Suppose the forecast is [93,91,87,72,85,88]. You can work on odd days
-                    to get a bonus of 93+87+85=265, or even days to get a bonus of 91+72+88=251. But
-                    even better would be to work on days 1, 3, and 6 to get a bonus of 93+87+88=268.
+                    Example: Suppose the forecast is <code>[93,91,87,72,85,88]</code>. You can work
+                    on odd days to get a bonus of 93+87+85=265, or even days to get a bonus of
+                    91+72+88=251. But even better would be to work on days 1, 3, and 6 to get a
+                    bonus of 93+87+88=268.
                 </p>
 
                 <p>
@@ -614,15 +619,15 @@
                 </p>
 
                 <p>
-                    Now suppose you are given a forecast T[1..n]. What do you do? To master the
-                    dynamic programming technique, you'll have to get used to the following kind of
-                    logic:
+                    Now suppose you are given a forecast <code>T[1..n]</code>. What do you do? To
+                    master the dynamic programming technique, you'll have to get used to the
+                    following kind of logic:
 
                     <ol>
                         <li>
                             If you decide to work on the nth day, you will get a bonus of
-                            T[n]. But then you can't work on the (n-1)th day, so the remainder of
-                            your schedule will be some subset of days 1 through n-2.
+                            <code>T[n]</code>. But then you can't work on the (n-1)th day, so the
+                            remainder of your schedule will be some subset of days 1 through n-2.
                         </li>
 
                         <li>
@@ -643,20 +648,22 @@
 
                     <ol>
                         <li>
-                            You work on the nth day, earning T[n]. You also work some time during
-                            days 1 through n-2. The most that can give you is best[n-2]. Hence the
-                            most you can get from this case is best[n-2] + T[n].
+                            You work on the nth day, earning <code>T[n]</code>. You also work some
+                            time during days 1 through n-2. The most that can give you is
+                            <code>best[n-2]</code>. Hence the most you can get from this case is
+                            <code>best[n-2] + T[n]</code>.
                         </li>
 
                         <li>
                             You don't work on the nth day, you only work during days 1 through
-                            n-1. The most you that can give you is best[n-1].
+                            n-1. The most you that can give you is <code>best[n-1]</code>.
                         </li>
                     </ol>
 
                     So when thinking about what to do on the nth day, there are only two choices:
-                    choose to earn T[n] + best[n-2], or choose to earn best[n-1]. Of course you
-                    would choose whichever of these is highest, right? So we get:
+                    choose to earn <code>T[n] + best[n-2]</code>, or choose to earn
+                    <code>best[n-1]</code>. Of course you would choose whichever of these is
+                    highest, right? So we get:
                 </p>
 
 
@@ -664,15 +671,16 @@
                     <div class="panel-heading">
                         Work Bonus Formula
                     </div>
-                    <div class="panel-body math">
-                        best[n] = max{ T[n] + best[n-2], best[n-1] }
+                    <div class="panel-body">
+                        $$best[n] = max\{ T[n] + best[n-2], best[n-1] \}$$
                     </div>
                 </div>
 
                 <p>
                     Of course, this formula only makes sense when n > 1. The base cases have to be
-                    best[1] = T[1] (it's always better to work than not to work, when considering
-                    only one day) and best[0] = 0 (working on zero days gives you zero bonus).
+                    <code>best[1] = T[1]</code> (it's always better to work than not to work, when
+                    considering only one day) and <code>best[0] = 0</code> (working on zero days
+                    gives you zero bonus).
                 </p>
 
                 <p>
@@ -683,10 +691,10 @@
                 </p>
 
                 <p>
-                    So instead, we will use dynamic programming, computing best[k] values
-                    <emph>bottom-up</emph>. Remember the basic approach? We are just filling in a table. The
-                    first entries we fill in are the base cases. Then we fill entries in a legal
-                    order, using the recurrence formula.
+                    So instead, we will use dynamic programming, computing <code>best[k]</code>
+                    values <emph>bottom-up</emph>. Remember the basic approach? We are just filling
+                    in a table. The first entries we fill in are the base cases. Then we fill
+                    entries in a legal order, using the recurrence formula.
                 </p>
             </div>
         </div>
@@ -839,40 +847,54 @@
                 </p>
 
                 <p>
-                    The idea is that each time we compute best[k] (a number), we should also write
-                    down and remember <em>how</em> to achieve best[k]. In this case, we need to
-                    write down the schedule that achieves best[k]. There are several ways to do
-                    this, but perhaps the simplest is as a string of "Y" and "N" characters. So the
-                    string "YNNYN" represents the schedule of working on days 1 & 4, and resting on
-                    days 2, 3 & 5.
+                    The idea is that each time we compute <code>best[k]</code> (a number), we should
+                    also write down and remember <em>how</em> to achieve <code>best[k]</code>. In
+                    this case, we need to write down the schedule that achieves
+                    <code>best[k]</code>. There are several ways to do this, but perhaps the
+                    simplest is as a string of <code>"Y"</code> and <code>"N"</code> characters. So
+                    the string <code>"YNNYN"</code> represents the schedule of working on days 1 &
+                    4, and resting on days 2, 3 & 5.
                 </p>
 
                 <p>
-                    Let's store the schedules in an array soln[1..n]. Again, the rule is: every time you
-                    save a number to best[k], you must also save the corresponding schedule to soln[k]. Note
-                    that soln[k] must be a string of length k.
+                    Let's store the schedules in an array <code>soln[1..n]</code>. Again, the rule
+                    is: every time you save a number to <code>best[k]</code>, you must also save the
+                    corresponding schedule to <code>soln[k]</code>. Note that <code>soln[k]</code>
+                    must be a string of length k.
                 </p>
 
                 <p>
-                    The base cases are: best[1] = T[1], and best[0] = 0. What are the corresponding values
-                    to put in soln[]? The schedule that achieves 0 is the empty string, and the schedule
-                    that achieves T[1] is "Y". Note that the lengths of strings soln[0] and soln[1] match
-                    what we expect.
+                    The base cases are: <code>best[1] = T[1]</code>, and <code>best[0] =
+                    0</code>. What are the corresponding values to put in <code>soln[]</code>? The
+                    schedule that achieves 0 is the empty string, and the schedule that achieves
+                    <code>T[1]</code> is <code>"Y"</code>. Note that the lengths of strings
+                    <code>soln[0]</code> and <code>soln[1]</code> match what we expect.
                 </p>
 
                 <p>
-                    Now, for best[k] there are two possibilities:
+                    Now, for <code>best[k]</code> there are two possibilities:
 
-                    1. best[k] = best[k-2] + T[k]. This happens when we work on the kth day and rest on the
-                    (k-1)th day. So the last 2 characters of soln[k] should be "NY". But what should soln[k]
-                    say for the other days? We know that the other days contribute best[k-2] amount to the
-                    total. Conveniently, soln[k-2] is a schedule for those days that achieves it. Hence, we
-                    have soln[k] = soln[k-2] + "NY", where the + here means concatenation.
-
-                    2. best[k] = best[k-1]. This happens when we rest on the kth day. So the last character
-                    of soln[k] must be "N". What is the rest of the schedule? Well, it's a schedule for days
-                    1 through k-1 that achieves bonus best[k-1]. We have already written down such a
-                    schedule, it's simply soln[k-1]. So we have soln[k] = soln[k-1] + "N" in this case.
+                    <ol>
+                        <li>
+                            <code>best[k] = best[k-2] + T[k]</code>. This happens when we work on
+                            the kth day and rest on the (k-1)th day. So the last 2 characters of
+                            <code>soln[k]</code> should be <code>"NY"</code>. But what should
+                            <code>soln[k]</code> say for the other days? We know that the other days
+                            contribute <code>best[k-2]</code> amount to the total. Conveniently,
+                            <code>soln[k-2]</code> is a schedule for those days that achieves it. Hence, we
+                            have <code>soln[k] = soln[k-2] + "NY"</code>, where the <code>+</code> here
+                            means concatenation.
+                        </li>
+                        <li>
+                            <code>best[k] = best[k-1]</code>. This happens when we rest on the kth
+                            day. So the last character of <code>soln[k]</code> must be
+                            <code>"N"</code>. What is the rest of the schedule? Well, it's a
+                            schedule for days 1 through k-1 that achieves bonus
+                            <code>best[k-1]</code>. We have already written down such a schedule,
+                            it's simply <code>soln[k-1]</code>. So we have <code>soln[k] = soln[k-1]
+                            + "N"</code> in this case.
+                        </li>
+                    </ol>
                 </p>
 
             </div>
@@ -1096,11 +1118,11 @@
             <div class="col-lg-4 col-lg-offset-2 col-sm-6">
 
                 <p>
-                    You may have seen the formula for binomial coefficients {n \choose k} =
-                    \frac{n!}{k!(n-k)!}, but this is a bad way to actually *compute* these
-                    numbers. For instance, even if the final result is small (ex: (1000 \choose 1) =
-                    1000) the intermediate values of this computation may be huge (ex:
-                    factorial(1000)).
+                    You may have seen the formula for binomial coefficients ${n \choose k} =
+                    \frac{n!}{k!(n-k)!}$, but this is a bad way to actually <em>compute</em> these
+                    numbers. For instance, even if the final result is small (ex: ${1000 \choose 1} =
+                    1000$) the intermediate values of this computation may be huge (ex:
+                    $1000!$).
                 </p>
 
                 <p>
@@ -1112,9 +1134,11 @@
                     <div class="panel-heading">
                         Pascal's Identity
                     </div>
-                    <div class="panel-body math">
-                        (n \choose 0) = (n \choose n) = 1<br>
-                        (n \choose k) = (n-1 \choose k-1) + (n-1 \choose k)
+                    <div class="panel-body">
+                        \begin{aligned}
+                        {n \choose 0} &= {n \choose n} = 1\\
+                        {n \choose k} &= {n-1 \choose k-1} + {n-1 \choose k}
+                        \end{aligned}
                     </div>
                 </div>
 
@@ -1196,12 +1220,12 @@
                 <p>
                     The dynamic programming approach would be to fill up a table/cache with all of
                     the desired values. In this case, the table will be two-dimensional, so
-                    cache[n][k] will remember the output of choose(n,k).
+                    <code>cache[n][k]</code> will remember the output of ${n \choose k}$.
                 </p>
 
                 <p>
                     First, we fill in the base cases: in this case, there are many. Then we have to
-                    fill in everything else. We know we will have to fill entry (i,j) of the table
+                    fill in everything else. We know we will have to fill entry $(i,j)$ of the table
                     using the expression:
                 </p>
 
@@ -1210,14 +1234,14 @@
                         Cache Definition
                     </div>
                     <div class="panel-body math">
-                        cache[i,j] = cache[i-1,j-1] + cache[i-1,j]
+                        $$cache[i,j] = cache[i-1,j-1] + cache[i-1,j]$$
                     </div>
                 </div>
 
                 <p>
-                    We just have to loop over value of (i,j) in a way that makes this legal. That
-                    is, we want cache[i-1,j-1] and cache[i-1,j] to already exist when it comes time
-                    to fill in cache[i,j].
+                    We just have to loop over value of $(i,j)$ in a way that makes this legal. That
+                    is, we want <code>cache[i-1,j-1]</code> and <code>cache[i-1,j]</code> to already
+                    exist when it comes time to fill in <code>cache[i,j]</code>.
                 </p>
 
                 <p>
@@ -1232,12 +1256,12 @@
                     <div class="pseudocode-procedures">
                         <div id="cache2" title="Cache(n,k):">
                             for i = 0 to n:
-                                cache[i,0] = 1
-                                cache[i,i] = 1
+                                Cache[i,0] = 1
+                                Cache[i,i] = 1
                             for i = 1 to n:
                                 for j = 1 to i:
-                                    cache[i,j] = cache[i-1,j-1] + cache[i-1,j]
-                            return cache[n,k]
+                                    Cache[i,j] = Cache[i-1,j-1] + Cache[i-1,j]
+                            return Cache[n,k]
                         </div>
                     </div>
                     <div id="cache2-controls"></div>
@@ -1279,7 +1303,6 @@
                         new Vamonos.Widget.Matrix({
                             container: "cache2-cache",
                             varName: "cache",
-                            displayOnly: true,
                             cssRules: [
                                 ["col", ">", "row", "shaded"],
                                 ["row", "=", "i", "row-i"],
