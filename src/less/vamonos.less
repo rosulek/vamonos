@@ -131,13 +131,14 @@ body.processing *, body.processing {
 // INLINE INPUT
 
 input.inline-input {
-    display: inline;
+    display: inline-block;
     border: none;
     background-color: @editing-bg-color;
     font: inherit;
     padding: 0px;
     margin: 0px;
     text-align: center;
+    width: 40px;
 }
 
 input.inline-input:focus {
@@ -503,6 +504,7 @@ div.graph-drawer {
     span.label {
         font-style: italic;
         font-size: 1.1em;
+        color: #000;
     }
 
     input {

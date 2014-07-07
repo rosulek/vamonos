@@ -49,12 +49,8 @@
         user-select: none;
     }
 
-    table.matrix td.row-i {
-        background-color: #bbb;
-    }
-
-    table.matrix td.col-j {
-        background-color: #bbb;
+    table.matrix td.row-i.col-j {
+        background-color: #ffa;
     }
 
     table.matrix td.row-n.col-k {
@@ -127,7 +123,7 @@
                     We all know and love the Fibonacci sequence, which is defined as:
                 </p>
 
-                <div class="panel panel-default">
+                <div class="panel panel-info">
                     <div class="panel-heading">
                         Fibonacci Formula
                     </div>
@@ -144,7 +140,7 @@
 
                 <div class="panel vamonos panel-default">
                     <div class="panel-heading">
-                        Recursive Fibonacci
+                        Recursive Fibonacci Implementation
                     </div>
                     <div class="pseudocode-procedures">
                         <div id="fib" title="Fib(n):">
@@ -165,11 +161,12 @@
                 <script type="text/javascript">
                 var fib = new Vamonos.Visualizer({
                     widgets: [
-                        new Vamonos.Widget.Hardcoded({
-                            n: 5,
-                        }),
                         new Vamonos.Widget.Pseudocode("fib"),
-                        new Vamonos.Widget.Controls("fib-controls"),
+                        new Vamonos.Widget.Controls({
+                            container: "fib-controls",
+                            inputVar: "n",
+                            inputVarVal: 5,
+                        }),
                         new Vamonos.Widget.CallStack({
                             container: "fib-stack",
                             procedureNames: {
@@ -179,7 +176,7 @@
                         new Vamonos.Widget.VarName({
                             container: "fib-stack-var",
                             varName: "_callstack",
-                            displayName: "Call Stack",
+                            displayName: "callstack",
                             watching: true
                         })
                     ],
@@ -257,7 +254,7 @@
             <div class="col-sm-6 col-lg-4">
                 <div class="panel vamonos panel-default">
                     <div class="panel-heading">
-                        Caching Fibonacci
+                        Caching Fibonacci Implementation
                     </div>
                     <div class="pseudocode-procedures">
                         <div id="fib-cache" title="Fib(n):">
@@ -284,11 +281,12 @@
                 <script type="text/javascript">
                 var fib_cache = new Vamonos.Visualizer({
                     widgets: [
-                        new Vamonos.Widget.Hardcoded({
-                            n: 5,
-                        }),
                         new Vamonos.Widget.Pseudocode("fib-cache"),
-                        new Vamonos.Widget.Controls("fib-cache-controls"),
+                        new Vamonos.Widget.Controls({
+                            container: "fib-cache-controls",
+                            inputVar: "n",
+                            inputVarVal: 5,
+                        }),
                         new Vamonos.Widget.CallStack({
                             container: "fib-cache-stack",
                             procedureNames: {
@@ -298,7 +296,7 @@
                         new Vamonos.Widget.VarName({
                             container: "fib-cache-stack-var",
                             varName: "_callstack",
-                            displayName: "Calls",
+                            displayName: "callstack",
                             watching: true
                         }),
                         new Vamonos.Widget.VarName({
@@ -381,7 +379,7 @@
 
                 <div class="panel vamonos panel-default">
                     <div class="panel-heading">
-                        Caching Fibonacci
+                        Caching Fibonacci Implementation
                     </div>
                     <div id="fib-cache2-controls"></div>
                     <table class="variable-widgets">
@@ -393,10 +391,11 @@
                 <script type="text/javascript">
                 var fib_cache2 = new Vamonos.Visualizer({
                     widgets: [
-                        new Vamonos.Widget.Hardcoded({
-                            n: 10,
+                        new Vamonos.Widget.Controls({
+                            container: "fib-cache2-controls",
+                            inputVar: "n",
+                            inputVarVal: 10,
                         }),
-                        new Vamonos.Widget.Controls("fib-cache2-controls"),
                         new Vamonos.Widget.VarName({
                             container: "fib-cache2-cache-var",
                             varName: "cache",
@@ -451,7 +450,7 @@
             <div class="col-sm-6 col-lg-4">
                 <div class="panel vamonos panel-default">
                     <div class="panel-heading">
-                        Bottom-up Fibonacci
+                        Bottom-up Fibonacci Implementation
                     </div>
                     <div class="pseudocode-procedures">
                         <div id="fib-bot" title="Fib(n):">
@@ -479,7 +478,11 @@
                             container: "fib-bot",
                             procedureName: "fib",
                         }),
-                        new Vamonos.Widget.Controls("fib-bot-controls"),
+                        new Vamonos.Widget.Controls({
+                            container: "fib-bot-controls",
+                            inputVar: "n",
+                            inputVarVal: 10,
+                        }),
                         new Vamonos.Widget.VarName({
                             container: "fib-bot-cache-var",
                             varName: "cache",
@@ -503,7 +506,7 @@
                     algorithm: {
                         main: function(_) {
                             with (this) {
-                                global.ret = fib({n : 10});
+                                global.ret = fib({n : n});
                             }
                         },
 
@@ -667,7 +670,7 @@
                 </p>
 
 
-                <div class="panel panel-default">
+                <div class="panel panel-info">
                     <div class="panel-heading">
                         Work Bonus Formula
                     </div>
@@ -704,7 +707,7 @@
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="row panel vamonos panel-default">
                 <div class="panel-heading">
-                    Scheduling
+                    Scheduling Implementation
                 </div>
                 <div class="col-sm-6 nopadding">
                     <div id="schedule-controls"></div>
@@ -740,14 +743,13 @@
         <script type="text/javascript">
         var schedule = new Vamonos.Visualizer({
             widgets: [
-                new Vamonos.Widget.Hardcoded({
-                    n: 10,
-                }),
                 new Vamonos.Widget.Pseudocode({
                     container: "schedule",
                     procedureName: "sched",
                 }),
-                new Vamonos.Widget.Controls("schedule-controls"),
+                new Vamonos.Widget.Controls({
+                    container: "schedule-controls",
+                }),
                 new Vamonos.Widget.VarName({
                     container: "schedule-t-var",
                     varName: "T",
@@ -904,7 +906,7 @@
                 </p>
                 <div class="panel vamonos panel-default">
                     <div class="panel-heading">
-                        Scheduling-Breadcrumbs
+                        Scheduling-Breadcrumbs Implementation
                     </div>
                     <div id="crumbs-controls"></div>
                     <div class="pseudocode-procedures">
@@ -942,14 +944,13 @@
                 <script type="text/javascript">
                 var crumbs = new Vamonos.Visualizer({
                     widgets: [
-                        new Vamonos.Widget.Hardcoded({
-                            n: 10,
-                        }),
                         new Vamonos.Widget.Pseudocode({
                             container: "crumbs",
                             procedureName: "crumbs",
                         }),
-                        new Vamonos.Widget.Controls("crumbs-controls"),
+                        new Vamonos.Widget.Controls({
+                            container: "crumbs-controls",
+                        }),
                         new Vamonos.Widget.VarName({
                             container: "crumbs-stack-var",
                             varName: "_callstack",
@@ -1092,7 +1093,7 @@
 
         <div class="row">
             <div class="col-sm-6 col-sm-offset-3">
-                <div id="crumbs-quiz" class="panel panel-default panel-warning">
+                <div id="crumbs-quiz" class="panel panel-warning">
                     <div class="panel-heading">Breadcrumbs Quiz</div>
                     <div class="panel-body">
                         Can you come up with an input whose optimal solution involves <em>not</em> working on
@@ -1130,7 +1131,7 @@
                     is recursive:
                 </p>
 
-                <div class="panel panel-default">
+                <div class="panel panel-info">
                     <div class="panel-heading">
                         Pascal's Identity
                     </div>
@@ -1149,7 +1150,7 @@
 
                 <div class="panel vamonos panel-default">
                     <div class="panel-heading">
-                        Choose(10,5)
+                        Recursive Implementation
                     </div>
                     <div class="pseudocode-procedures">
                         <div id="choose1" title="Choose(n,k):">
@@ -1171,7 +1172,7 @@
                 var choose1 = new Vamonos.Visualizer({
                     widgets: [
                         new Vamonos.Widget.Hardcoded({
-                            n: 7,
+                            n: 10,
                             k: 5,
                         }),
                         new Vamonos.Widget.Pseudocode({
@@ -1188,7 +1189,7 @@
                         new Vamonos.Widget.VarName({
                             container: "choose1-stack-var",
                             varName: "_callstack",
-                            displayName: "Call Stack",
+                            displayName: "callstack",
                             watching: true
                         })
                     ],
@@ -1206,7 +1207,7 @@
                             }
                         },
                     },
-                    maxFrames: 500,
+                    maxFrames: 2000,
                 });
                 </script>
                 <p>
@@ -1229,7 +1230,7 @@
                     using the expression:
                 </p>
 
-                <div class="panel panel-default">
+                <div class="panel panel-info">
                     <div class="panel-heading">
                         Cache Definition
                     </div>
@@ -1251,17 +1252,17 @@
 
                 <div class="panel vamonos panel-default">
                     <div class="panel-heading">
-                        Cache(10,5)
+                        Caching Implementation
                     </div>
                     <div class="pseudocode-procedures">
-                        <div id="cache2" title="Cache(n,k):">
+                        <div id="cache2" title="Choose(n,k):">
                             for i = 0 to n:
-                                Cache[i,0] = 1
-                                Cache[i,i] = 1
+                                cache[i,0] = 1
+                                cache[i,i] = 1
                             for i = 1 to n:
                                 for j = 1 to i:
-                                    Cache[i,j] = Cache[i-1,j-1] + Cache[i-1,j]
-                            return Cache[n,k]
+                                    cache[i,j] = cache[i-1,j-1] + cache[i-1,j]
+                            return cache[n,k]
                         </div>
                     </div>
                     <div id="cache2-controls"></div>
@@ -1285,7 +1286,9 @@
                             container: "cache2",
                             procedureName: "bin",
                         }),
-                        new Vamonos.Widget.Controls("cache2-controls"),
+                        new Vamonos.Widget.Controls({
+                            container: "cache2-controls",
+                        }),
                         new Vamonos.Widget.VarName({
                             container: "cache2-ret-var",
                             varName: "ret",
@@ -1334,14 +1337,12 @@
                                     _(3);
                                     cache[global.i][global.i] = 1;
                                 }
-                                _(4);
-                                for (global.i = 1; _(4), global.i <= n; global.i++) {
-                                    _(5);
-                                    for (global.j = 1; _(5), global.j < global.i; global.j++) {
+                                for (global.i = 1; global.i <= n; _(4), global.i++) {
+                                    for (global.j = 1; global.j < global.i; _(5), global.j++) {
                                         _(6);
                                         cache[global.i][global.j] =
                                             cache[global.i-1][global.j-1] +
-                                            cache[global.i][global.j-1];
+                                            cache[global.i-1][global.j];
                                     }
                                     global.j = undefined;
                                 }

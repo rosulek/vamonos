@@ -41,6 +41,15 @@ class Controls
             type: "Boolean"
             defaultValue: true
             description: "whether to show the run and stop button"
+        inputVar:
+            type: "String"
+            defaultValue: undefined
+            description: "the name of a variable for the user to set before running"
+        inputVarVal:
+            type: ["String", "Number"]
+            defaultValue: undefined
+            description: "the default value of inputVar"
+
 
     constructor: (arg) ->
 
@@ -73,7 +82,9 @@ class Controls
                 container: @$buttons,
                 runStopButton: @runStopButton,
                 autoPlay: @autoPlay,
-                keyboardShortcuts: @keyboardShortcuts
+                keyboardShortcuts: @keyboardShortcuts,
+                inputVar: @inputVar,
+                inputVarVal: @inputVarVal,
             })
 
         @$container.append(@$inner)
@@ -156,8 +167,9 @@ class ControlButtons
     NEXT  = "\u25ae\u25B6"
     PREV  = "\u25c0\u25ae"
 
-    constructor: ({container, runStopButton, @autoPlay, @keyboardShortcuts}) ->
+    constructor: ({container, runStopButton, @autoPlay, @keyboardShortcuts, @inputVar, @inputVarVal}) ->
         @$container         = Vamonos.jqueryify(container)
+
 
         @$runStopButton   = $("<button>", {class: "controls-button", html: RUN})
         @$prevButton      = $("<button>", {class: "controls-button", html: PREV})
@@ -189,6 +201,35 @@ class ControlButtons
             if @playInterval? then @stopPlaying() else @startPlaying()
         )
 
+    setupInput: () ->
+        return unless @inputVar?
+        throw "controller input: no visualizer" unless @visualizer
+        @visualizer.registerVariable(@inputVar)
+        @visualizer.setVariable(@inputVar, @inputVarVal) if @inputVarVal?
+        @$inputDiv = $("<div>", {class: "controls-input"})
+        @$input = $("<span>", {text: "input: " + @inputVar + " = "})
+        @$val = $("<span>", {html: if @inputVarVal? then Vamonos.rawToTxt(@inputVarVal) else "???" })
+        @$inputDiv.append(@$input, @$val)
+        @$container.prepend(@$inputDiv)
+
+    acceptInput: () ->
+        save = undefined
+        @$inputDiv.on(
+            "click",
+            => Vamonos.editableValue(@$val,
+                ((e)-> save = Vamonos.txtToRaw(e.text()))
+                (newval) =>
+                    @inputVarVal = Vamonos.txtToRaw(newval)
+                    @inputVarVal = save unless @inputVarVal?
+                    @visualizer.setVariable(@inputVar, @inputVarVal)
+                    return Vamonos.rawToTxt(@inputVarVal)
+                )
+            )
+
+    rejectInput: () ->
+        @$inputDiv.off("click")
+
+
     startPlaying: ->
         return if @playInterval? or @atLastFrame
         @$playPauseButton.html(PAUSE)
@@ -208,6 +249,7 @@ class ControlButtons
         when "setup"
             [@visualizer] = options
             $("body").on("keydown.controlbuttons", (e) => @keyDownHandler(e) ) if @keyboardShortcuts
+            @setupInput() if @inputVar?
 
         when "editStart"
             @$runStopButton.html(RUN)
@@ -219,6 +261,10 @@ class ControlButtons
 
             @$container.addClass("controls-disabled")
             @mode = "edit"
+            @acceptInput() if @inputVar?
+
+        when "editStop"
+            @rejectInput() if @inputVar?
 
         # treat displayStart as being at 0 frames out of 0
         when "displayStart"
@@ -295,6 +341,8 @@ class ControlButtons
         else
             @$prevButton.attr("disabled", "true");
             @$prevButton.prop("title", "")
+
+
 
 
 #===============================================================================
