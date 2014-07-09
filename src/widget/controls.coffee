@@ -41,14 +41,10 @@ class Controls
             type: "Boolean"
             defaultValue: true
             description: "whether to show the run and stop button"
-        inputVar:
-            type: "String"
+        inputVars:
+            type: "Object"
             defaultValue: undefined
-            description: "the name of a variable for the user to set before running"
-        inputVarVal:
-            type: ["String", "Number"]
-            defaultValue: undefined
-            description: "the default value of inputVar"
+            description: "a mapping from var names to default values"
 
 
     constructor: (arg) ->
@@ -83,8 +79,7 @@ class Controls
                 runStopButton: @runStopButton,
                 autoPlay: @autoPlay,
                 keyboardShortcuts: @keyboardShortcuts,
-                inputVar: @inputVar,
-                inputVarVal: @inputVarVal,
+                inputVars: @inputVars,
             })
 
         @$container.append(@$inner)
@@ -167,7 +162,7 @@ class ControlButtons
     NEXT  = "\u25ae\u25B6"
     PREV  = "\u25c0\u25ae"
 
-    constructor: ({container, runStopButton, @autoPlay, @keyboardShortcuts, @inputVar, @inputVarVal}) ->
+    constructor: ({container, runStopButton, @autoPlay, @keyboardShortcuts, @inputVars}) ->
         @$container         = Vamonos.jqueryify(container)
 
 
@@ -202,32 +197,39 @@ class ControlButtons
         )
 
     setupInput: () ->
-        return unless @inputVar?
+        return unless @inputVars?
         throw "controller input: no visualizer" unless @visualizer
-        @visualizer.registerVariable(@inputVar)
-        @visualizer.setVariable(@inputVar, @inputVarVal) if @inputVarVal?
-        @$inputDiv = $("<div>", {class: "controls-input"})
-        @$input = $("<span>", {text: "input: " + @inputVar + " = "})
-        @$val = $("<span>", {html: if @inputVarVal? then Vamonos.rawToTxt(@inputVarVal) else "???" })
-        @$inputDiv.append(@$input, @$val)
-        @$container.prepend(@$inputDiv)
+        for varName, defaultValue of @inputVars
+            @visualizer.registerVariable(varName)
+            @visualizer.setVariable(varName, defaultValue) if defaultValue?
+            @$inputDivs ?= {}
+            @$inputDivs[varName] = $("<div>", {class: "controls-input"})
+            $input = $("<span>", {text: "input: " + varName + " = "})
+            $val = $("<span>", {class: "val", html: if defaultValue? then Vamonos.rawToTxt(defaultValue) else "???" })
+            @$inputDivs[varName].append($input, $val)
+            @$container.prepend(@$inputDivs[varName])
 
     acceptInput: () ->
-        save = undefined
-        @$inputDiv.on(
-            "click",
-            => Vamonos.editableValue(@$val,
-                ((e)-> save = Vamonos.txtToRaw(e.text()))
-                (newval) =>
-                    @inputVarVal = Vamonos.txtToRaw(newval)
-                    @inputVarVal = save unless @inputVarVal?
-                    @visualizer.setVariable(@inputVar, @inputVarVal)
-                    return Vamonos.rawToTxt(@inputVarVal)
+        console.log @$inputDivs
+        for varName, $div of @$inputDivs
+            do (varName = varName, $div = $div, ths = this) ->
+                $div.on(
+                    "click",
+                    () =>
+                        console.log varName
+                        Vamonos.editableValue($div.children("span.val"),
+                            ((e)-> Vamonos.txtToRaw(e.text()))
+                            (newval) =>
+                                if newval?
+                                    v = Vamonos.txtToRaw(newval)
+                                    ths.inputVars[varName] = v
+                                    ths.visualizer.setVariable(varName, v)
+                                return Vamonos.rawToTxt(ths.inputVars[varName])
+                        )
                 )
-            )
 
     rejectInput: () ->
-        @$inputDiv.off("click")
+        $div.off("click") for varName, $div of @$inputDivs
 
 
     startPlaying: ->
@@ -249,7 +251,7 @@ class ControlButtons
         when "setup"
             [@visualizer] = options
             $("body").on("keydown.controlbuttons", (e) => @keyDownHandler(e) ) if @keyboardShortcuts
-            @setupInput() if @inputVar?
+            @setupInput() if @inputVars?
 
         when "editStart"
             @$runStopButton.html(RUN)
@@ -261,10 +263,10 @@ class ControlButtons
 
             @$container.addClass("controls-disabled")
             @mode = "edit"
-            @acceptInput() if @inputVar?
+            @acceptInput() if @inputVars?
 
         when "editStop"
-            @rejectInput() if @inputVar?
+            @rejectInput() if @inputVars?
 
         # treat displayStart as being at 0 frames out of 0
         when "displayStart"

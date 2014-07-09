@@ -164,8 +164,7 @@
                         new Vamonos.Widget.Pseudocode("fib"),
                         new Vamonos.Widget.Controls({
                             container: "fib-controls",
-                            inputVar: "n",
-                            inputVarVal: 5,
+                            inputVars: { n : 5 },
                         }),
                         new Vamonos.Widget.CallStack({
                             container: "fib-stack",
@@ -284,8 +283,7 @@
                         new Vamonos.Widget.Pseudocode("fib-cache"),
                         new Vamonos.Widget.Controls({
                             container: "fib-cache-controls",
-                            inputVar: "n",
-                            inputVarVal: 5,
+                            inputVars: { n: 5 },
                         }),
                         new Vamonos.Widget.CallStack({
                             container: "fib-cache-stack",
@@ -393,8 +391,7 @@
                     widgets: [
                         new Vamonos.Widget.Controls({
                             container: "fib-cache2-controls",
-                            inputVar: "n",
-                            inputVarVal: 10,
+                            inputVars: { n: 10 },
                         }),
                         new Vamonos.Widget.VarName({
                             container: "fib-cache2-cache-var",
@@ -480,8 +477,7 @@
                         }),
                         new Vamonos.Widget.Controls({
                             container: "fib-bot-controls",
-                            inputVar: "n",
-                            inputVarVal: 10,
+                            inputVars: { n: 10 },
                         }),
                         new Vamonos.Widget.VarName({
                             container: "fib-bot-cache-var",
@@ -1171,15 +1167,17 @@
                 <script type="text/javascript">
                 var choose1 = new Vamonos.Visualizer({
                     widgets: [
-                        new Vamonos.Widget.Hardcoded({
-                            n: 10,
-                            k: 5,
-                        }),
                         new Vamonos.Widget.Pseudocode({
                             container: "choose1",
                             procedureName: "Choose",
                         }),
-                        new Vamonos.Widget.Controls("choose1-controls"),
+                        new Vamonos.Widget.Controls({
+                            container: "choose1-controls",
+                            inputVars: {
+                                n: 10,
+                                k: 5,
+                            },
+                        }),
                         new Vamonos.Widget.CallStack({
                             container: "choose1-stack",
                             procedureNames: {
@@ -1278,16 +1276,16 @@
                 <script type="text/javascript">
                 var choose2 = new Vamonos.Visualizer({
                     widgets: [
-                        new Vamonos.Widget.Hardcoded({
-                            n: 10,
-                            k: 5,
-                        }),
                         new Vamonos.Widget.Pseudocode({
                             container: "cache2",
                             procedureName: "bin",
                         }),
                         new Vamonos.Widget.Controls({
                             container: "cache2-controls",
+                            inputVars: {
+                                n: 10,
+                                k: 5,
+                            },
                         }),
                         new Vamonos.Widget.VarName({
                             container: "cache2-ret-var",
