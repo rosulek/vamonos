@@ -18,13 +18,14 @@ body.processing {
   animation: background-highlight-pulse 0.6s ease-in-out !important;
 }
 input.inline-input {
-  display: inline;
+  display: inline-block;
   border: none;
   background-color: #92e894;
   font: inherit;
   padding: 0px;
   margin: 0px;
   text-align: center;
+  width: 40px;
 }
 input.inline-input:focus {
   outline: none;
@@ -342,6 +343,7 @@ div.graph-drawer {
 div.graph-drawer span.label {
   font-style: italic;
   font-size: 1.1em;
+  color: #000;
 }
 div.graph-drawer input {
   text-align: left;

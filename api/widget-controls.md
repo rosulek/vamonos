@@ -45,6 +45,12 @@ The Controls widget controls the Visualizer - switching modes and frames.
 
 
 
+ * **inputVars** :: *Object* -- optional
+
+    a mapping from var names to default values
+
+
+
  * **keyboardShortcuts** :: *Boolean* -- default value: `true`
 
     whether to handle keyboard shortcuts
