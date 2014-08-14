@@ -20,7 +20,6 @@ elements we've seen already: `Psueudocode`, `CallStack`, `Controls`, and
 
 > [quicksort1.html](array-tutorial/quicksort1.html)
 >
-> <div class="viz-container">
 > <table class="vamonos">
 > <tr><td class="pseudocode-and-controls">
 > <div id="quicksort1" title="Quicksort(A,p,r):">
@@ -46,7 +45,6 @@ elements we've seen already: `Psueudocode`, `CallStack`, `Controls`, and
 > <tr><td><div id="callstack-var1"></div></td>
 > <td><div id="callstack1"></div></td></tr>
 > </table></td></tr></table>
-> </div>
 
 
 It runs, but we cannot see the output! It's a great thing indeed that the
