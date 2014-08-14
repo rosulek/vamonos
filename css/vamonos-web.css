@@ -28,6 +28,15 @@ body {
 /*    text-align: center; */
 }
 
+table.vamonos {
+    /* .default-box-shadow(@shadow-color); */
+    border: 1px solid #888;
+}
+
+table.vamonos > tbody > tr > td {
+    border: 1px solid #888;
+}
+
 #header h1 {
     font-family: "Fjalla One";
     font-size: 54px;

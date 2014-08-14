@@ -16,10 +16,11 @@ recommended that you read them first!
 
 We start by creating a visualization implementing Quicksort with all of the
 elements we've seen already: `Psueudocode`, `CallStack`, `Controls`, and
-`Visualizer`. 
+`Visualizer`.
 
 > [quicksort1.html](array-tutorial/quicksort1.html)
 >
+> <div class="viz-container">
 > <table class="vamonos">
 > <tr><td class="pseudocode-and-controls">
 > <div id="quicksort1" title="Quicksort(A,p,r):">
@@ -45,6 +46,7 @@ elements we've seen already: `Psueudocode`, `CallStack`, `Controls`, and
 > <tr><td><div id="callstack-var1"></div></td>
 > <td><div id="callstack1"></div></td></tr>
 > </table></td></tr></table>
+> </div>
 
 
 It runs, but we cannot see the output! It's a great thing indeed that the
@@ -90,7 +92,7 @@ Quicksort demo we can use the `defaultInput` argument instead of the
 `Hardcoded` widget to give the visualization something to start with.
 
 > [quicksort2.html](array-tutorial/quicksort2.html)
-> 
+>
 > <table class="vamonos">
 > <tr><td class="pseudocode-and-controls2">
 > <div id="quicksort2" title="Quicksort(A,p,r):">
@@ -159,13 +161,13 @@ than `i`.
 >             }),
 >
 >             // We need to tell Vamonos to take a snapshot at _(1).
->             // The other way we could do this is by setting a watchVar 
+>             // The other way we could do this is by setting a watchVar
 >             // for i.
 >             new Vamonos.Widget.Hardcoded({breakpoints: [1]}),
 >
 >             new Vamonos.Widget.Controls("controls3")
 >         ],
-> 
+>
 >         algorithm: function(_) {
 >             with (this) {
 >                 for (i = 0; i < 6; i++) {
@@ -216,7 +218,7 @@ to override some of Vamonos' css rules.
 Yay! Now we have a functional quicksort demo!
 
 > [quicksort3.html](array-tutorial/quicksort3.html)
-> 
+>
 > <style type="text/css">
 >     td.gt-i.leq-j {
 >         background-color: white !important;
