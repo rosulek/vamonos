@@ -21,7 +21,8 @@ scriptinclude: index-demo.js
 # See it in action!
 
 Here is a Vamonos visualization of the *selection sort* algorithm. Feel free to jump right in and play around with it. Or, if you'd like a short guided tour,
-<button id="tutorial" onclick="tut.restart()">press here</button>.
+
+>    <button id="tutorial" onclick="tut.restart()">press here</button>
 
 >    <table class="vamonos">
 >        <tr><td class="pseudocode-and-controls">
