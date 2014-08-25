@@ -7,7 +7,7 @@ body {
 
     background: linear-gradient(to bottom, #f8f8f8 0%, #ddd 100%); /* W3C */
     background-repeat: no-repeat;
-    background-attachment: fixed;
+    /* background-attachment: fixed; */
 }
 
 #main, #footer {
