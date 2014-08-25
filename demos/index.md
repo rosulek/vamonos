@@ -7,7 +7,7 @@ subheader: Dynamic algorithm visualization in the browser
 
 # Algorithm Visualizations
 
-* Sorting:
+Sorting:
 
    * [Insertion sort](insertion_sort.html)
    * [Selection sort](selection_sort.html)
@@ -15,19 +15,19 @@ subheader: Dynamic algorithm visualization in the browser
    * [Quicksort](quicksort.html)
    * [Stoogesort](stoogesort.html)
 
-* Recursion:
+Recursion:
 
    * [Three versions of factorial](factorial.html)
    * [Recursive addition](addition.html)
    * [Karatsuba's multiplication algorithm](karatsuba.html)
 
-* Dynamic programming:
+Dynamic programming:
 
    * [Rod-cutting](rod_cutting.html) ([with quiz](rod_cutting-quiz.html))
    * [Matrix-chain multiplication](matrix-chain.html)
    * [Longest increasing subsequence](lis.html) ([simplified](lis2.html))
 
-* Graphs:
+Graphs:
 
    * [Breadth-first search](bfs.html)
    * [Detecting bipartiteness](bfs-bipartite.html) (2-colorability)
