@@ -1,0 +1,11 @@
+{
+  "name": "vamonos",
+  "version": "1.2.1",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-coffee": "~0.4.0",
+    "grunt-contrib-watch": "~0.4.4",
+    "grunt-contrib-less": "~0.6.0",
+    "grunt-shell": "~0.4.0"
+  }
+}

@@ -1,1 +1,8 @@
-_site/
+lib/
+README.html
+node_modules/
+dist/
+api/
+*.log
+*.pdf
+*.aux
