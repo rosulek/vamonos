@@ -5,7 +5,7 @@ body {
     margin: 0;
     background: #eee;
 
-    background: linear-gradient(top bottom, #f8f8f8 0%, #ddd 100%); /* W3C */
+    background: linear-gradient(to bottom, #f8f8f8 0%, #ddd 100%); /* W3C */
     background-repeat: no-repeat;
     background-attachment: fixed;
 }
