@@ -338,7 +338,6 @@ class GraphDisplay
 
     # sets the size of @$outer based on the positions of vertices in @currentGraph
     fitGraph: (animate = false) ->
-        console.log "fitGraph", @currentGraph
         if @currentGraph?
             xVals = []
             yVals = []
@@ -352,7 +351,6 @@ class GraphDisplay
         else
             max_x = @minX ? 0
             max_y = @minY ? 0
-        console.log max_x, max_y
         if animate
             @svg.animate({width: max_x, height: max_y}, 500)
         else

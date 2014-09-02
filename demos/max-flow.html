@@ -51,13 +51,13 @@
     <br>
     <div class="container">
         <div class="row">
-            <div class="col-lg-12 panel-default">
+            <div class="col-sm-offset-2 col-sm-8 col-md-12 col-md-offset-0 col-lg-10 col-lg-offset-1 panel-default">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         Ford-Fulkerson Max Flow
                     </div>
                     <div class="row nopadding panel-body">
-                        <div class="col-lg-6 nopadding">
+                        <div class="col-md-6 nopadding">
                             <div id="controls"></div>
                             <div class="pseudocode-procedures">
                                 <div id="pseudocode-main" title="Ford-Fulkerson(G,s,t):">
@@ -71,20 +71,16 @@
                                                 (u,v).f = (u,v).f + c<sub><i>f</i></sub>(p)
                                             else
                                                 (v,u).f = (v,u).f - c<sub><i>f</i></sub>(p)
-                                    max-flow = &Sigma;<sub>(s,u)&in;G.E</sub> (s,u).f
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-6 nopadding">
+                        <div class="col-md-6 nopadding">
                             <table class="variable-widgets">
                                 <tr><td><div id="g-var"></div></td>
                                     <td><div id="graph-g"></div></td>
                                 </tr>
                                 <tr><td><div id="gf-var"></div></td>
                                     <td><div id="graph-gf"></div></td>
-                                </tr>
-                                <tr><td><div id="max-flow-var"></div></td>
-                                    <td><div id="max-flow"></div></td>
                                 </tr>
                             </table>
                         </div>
@@ -180,17 +176,6 @@ var myviz = new Vamonos.Visualizer({
                     { source: 'v2', target: 'v5', c: 3 },
                 ]
             }),
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "max-flow-var",
-            varName: "global::maxflow",
-            displayName: "max-flow",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "max-flow",
-            varName: "global::maxflow",
         }),
 
         new Vamonos.Widget.VarName({
