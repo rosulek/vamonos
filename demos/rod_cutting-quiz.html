@@ -77,13 +77,13 @@
     <br>
     <div class="container">
         <div class="row">
-            <div class="col-md-12 panel-default">
+            <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2 panel-default">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         Rod-Cutting with Quiz
                     </div>
                     <div class="row nopadding panel-body">
-                        <div class="col-md-6 nopadding">
+                        <div class="col-sm-6 nopadding">
                             <div id="controls"></div>
                             <div class="pseudocode-procedures">
                                 <div id="pseudocode" title="RodCut(price):">
@@ -99,7 +99,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6 nopadding">
+                        <div class="col-sm-6 nopadding">
                             <table class="variable-widgets">
                                 <tr><td><div id="price-var"></div></td>
                                     <td><div id="price"></div></td>
@@ -171,7 +171,10 @@ var myviz = new Vamonos.Visualizer({
             cellFormat: function(x) { return x ? "["+x.join(",")+"]" : "" }
         }),
 
-        new Vamonos.Widget.Pseudocode("pseudocode"),
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode",
+            breakpoints: [7],
+        }),
 
         new Vamonos.Widget.Controls({
             container: "controls",

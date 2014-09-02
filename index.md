@@ -51,10 +51,10 @@ Here is a Vamonos visualization of the *selection sort* algorithm. Feel free to 
 We have developed pre-made visualizations of many common algorithms. See our [demo collection](demos/index.html).
 
 # Download: <span class="construction"></span>
-The latest version of Vamonos is v1.2.1.
+The latest version of Vamonos is v2.1.0.
 
-* [Vamonos and dependencies](https://github.com/rosulek/vamonos/releases/download/v2.0.0/vamonos.zip)
-* [Library of pre-made standalone visualizations](https://github.com/rosulek/vamonos/releases/download/v2.0.0/vamonos-demos.zip)
+* [Vamonos and dependencies](https://github.com/rosulek/vamonos/releases/download/v2.1.0/vamonos.zip)
+* [Library of pre-made standalone visualizations](https://github.com/rosulek/vamonos/releases/download/v2.1.0/vamonos-demos.zip)
 
 Past releases, source code, and everything else is available on
 our [github project page](https://github.com/rosulek/vamonos).
