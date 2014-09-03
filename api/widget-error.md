@@ -18,7 +18,7 @@ are met.
 Constructor Arguments
 =====================
 
- * **conditions** :: *Array* -- **required**
+**conditions** :: *Array* -- **required**
 
 a list of functions that take a viz object and return a string saying what went wrong.
 

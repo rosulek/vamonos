@@ -16,31 +16,31 @@ The `ResultProperty` allows you to check upon entering DisplayMode that a variab
 Constructor Arguments
 =====================
 
- * **container** :: *String* | *jQuery Selector* -- **required**
+**container** :: *String* | *jQuery Selector* -- **required**
 
 The id or a jQuery selector of the div in which this widget should draw itself.
 
 
 
- * **failure** :: *String* -- **required**
+**failure** :: *String* -- **required**
 
 what `container` should be set to when `varName` is false
 
 
 
- * **success** :: *String* -- **required**
+**success** :: *String* -- **required**
 
 what `container` should be set to when `varName` is true
 
 
 
- * **test** :: *Function* -- **required**
+**test** :: *Function* -- **required**
 
 a function that tests for a property on `varName`
 
 
 
- * **varName** :: *String* -- **required**
+**varName** :: *String* -- **required**
 
 the name of variable that will be tested
 

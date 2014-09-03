@@ -16,7 +16,7 @@ A disjoint set data structure for use in algorithms and widgets.
 Constructor Arguments
 =====================
 
- * **onUpdate** :: *Function* -- optional
+**onUpdate** :: *Function* -- optional
 
 A function that does something to an element in the set when it the disjoint set is modified.
 
