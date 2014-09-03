@@ -16,13 +16,13 @@ A queue data structure for use in algorithms and widgets.
 Constructor Arguments
 =====================
 
-## **comparator** :: *Function* -- optional
+ * **comparator** :: *Function* -- optional
 
 A function taking two elements and returning `1`, `0`, or `-1`. Used in the `sort` method.
 
 
 
-## **initialArray** :: *Array* -- default value: `[]`
+ * **initialArray** :: *Array* -- default value: `[]`
 
 The initial value of the queue.
 
