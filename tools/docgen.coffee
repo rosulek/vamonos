@@ -60,7 +60,7 @@ docs = (nameSpace, widget) ->
     Vamonos.mixin(specObj, widget.spec) # make sure overlapping args come from THIS widget
 
     if (1 for x,y of specObj).length # if the spec object has any attributes
-        h3 "Constructor Arguments"
+        h1 "Constructor Arguments"
         pr makeArgSpec(specObj, widget.name)
 
     if (1 for x,y of widget.interface).length # if the interface object has attributes
@@ -140,10 +140,10 @@ argSpec = (argName, specs) ->
         t = type.join("* | *")
     else
         t = type
-    b "**#{argName}** :: *#{t}* -- #{r}"
-    i description if description?
+    p "**#{argName}** :: *#{t}* -- #{r}"
+    p description if description?
     if example?
-        i "Example:"
+        p "For Example:"
         code example
     return [required, ret.val]
 
