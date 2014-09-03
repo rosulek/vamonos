@@ -30,7 +30,7 @@ class Visualizer
             defaultValue: undefined
             description: "the maximum depth of the callstack that snapshots " +
                 "will be taken at when it is set as a watchVar."
-        exportAfterEditMode:
+        exportToQueryString:
             type: "Boolean"
             defaultValue: false
             description: "whether the visualizer will update the location with " +
@@ -301,7 +301,7 @@ class Visualizer
 
         @initializeStash()
         @tellWidgets("editStop") if @mode is "edit"
-        @export() if @exportAfterEditMode
+        @export() if @exportToQueryString
 
         @mode = "running"
 
