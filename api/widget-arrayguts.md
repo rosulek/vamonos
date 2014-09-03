@@ -44,7 +44,7 @@ A function that parses the text input from an editable cell to an internal repre
 
 an array of triples of the form `[comparison, index-variable-expr, css-class]` where every index in the array that matches the comparason against the given index-variable-expr receives the given css class.
 
-    Example:
+For Example:
 
 >     cssRules: [
 >         ['>', 'k', 'shaded'],

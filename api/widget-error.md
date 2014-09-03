@@ -22,7 +22,7 @@ Constructor Arguments
 
 a list of functions that take a viz object and return a string saying what went wrong.
 
-    Example:
+For Example:
 
 >     new Vamonos.Widget.Error({
 >         conditions: [

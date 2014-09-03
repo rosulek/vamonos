@@ -68,7 +68,7 @@ whether vertices can be moved
 
 provides a way to change CSS classes of edges based upon the values of variables or the edges themselves. You provide a mapping of classnames to functions or strings. The function simply needs to take an edge and return a boolean (whether to apply the class). The string is a pairing of variable names in the form `'u->v'` or `'u<->v'` for undirected graphs.
 
-    Example:
+For Example:
 
 >     edgeCssAttributes: {
 >         green: function(edge){
@@ -84,7 +84,7 @@ provides a way to change CSS classes of edges based upon the values of variables
 
 a string, containing the name of the edge attribute to displayor a function taking an edge and returning a string to display. one can also specify whether to show certain things in edit or display mode by using an object.
 
-    Example:
+For Example:
 
 >     edgeLabel: { display: 'w', edit: function(e){ return e.w } },
 >     edgeLabel: 'w',
@@ -138,7 +138,7 @@ whether to flash vertices that have changed attributes
 
 Provides a way to add styles to path objects. Functions must return an array whose first element is an attribute name, and second element is the value.
 
-    Example:
+For Example:
 
 >     styleEdges: [
 >         function(e){
@@ -155,7 +155,7 @@ Provides a way to add styles to path objects. Functions must return an array who
 
 provides a way to change CSS classes of vertices based on vertex attributes. takes an object of the form `{ attribute: value | [list of values] }`. in the case of a single value,  the vertex will simply get a class with the same name as the attribute. in the case of a list of values, the css class will be of the form 'attribute-value' when its value matches. You can also provide a function that takes a vertex and returns a class to apply to it.
 
-    Example:
+For Example:
 
 >     vertexCssAttributes: {
 >         done: true,
@@ -175,7 +175,7 @@ the height of vertices in the graph
 
 an object containing a mapping of label positions (inner, nw, sw, ne, se) to labels. Labels can display simple variable names (corresponding to inputVars). This must be provided in the form: `{ label: ['var1', 'var2'] }`. It can be more complicated, as a function that takes a vertex and returns some html. if we give a label an object, we can control what is shown in edit/display mode in the form: `{ label : { edit: function{}, display: function{} } }`
 
-    Example:
+For Example:
 
 >     vertexLabels: {
 >         inner : {

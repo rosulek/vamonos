@@ -56,7 +56,7 @@ CallStack will not display calls to the `main` procedure when set. This is usefu
 
 an object mapping procedure names (those in the Visualizer's 'algorithm' argument) to their fully capitalized and formatted display forms.
 
-    Example:
+For Example:
 
 >     procedureNames: {
 >         main: "DFS",

@@ -32,7 +32,7 @@ the name of variable that this widget represents
 
 alternate varname to display - defaults to `varName`. subscript can be displayed as everything following an underscore.
 
-    Example:
+For Example:
 
 >     displayName: "G_f"
 

@@ -27,7 +27,7 @@ Whether the graph is directed.
 
 A single edge or an array of edges to create the graph with.
 
-    Example:
+For Example:
 
 >     edges: [
 >         {source: 'v0',target: 'v4'},
@@ -46,7 +46,7 @@ A string prepended to each new vertex id.
 
 A single vertex or an array of vertices to create the graph with.
 
-    Example:
+For Example:
 
 >     vertices: [
 >         {id: "v0", x: 17,  y: 10},
