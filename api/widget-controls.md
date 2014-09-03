@@ -13,65 +13,66 @@ Vamonos.Widget.Controls
 The Controls widget controls the Visualizer - switching modes and frames.
 
 
-### Constructor Arguments
+Constructor Arguments
+=====================
 
- * **container** :: *String* | *jQuery Selector* -- **required**
+## **container** :: *String* | *jQuery Selector* -- **required**
 
-    The id or a jQuery selector of the div in which this widget should draw itself.
-
-
-
- * **autoPlay** :: *Boolean* -- default value: `false`
-
-    whether the visualization should skip edit mode
+The id or a jQuery selector of the div in which this widget should draw itself.
 
 
 
- * **buttons** :: *Boolean* -- default value: `true`
+## **autoPlay** :: *Boolean* -- default value: `false`
 
-    whether to show the buttons
-
-
-
- * **frameNumber** :: *Boolean* -- default value: `true`
-
-    whether to show the frame number
+whether the visualization should skip edit mode
 
 
 
- * **fullscreen** :: *Boolean* -- default value: `false`
+## **buttons** :: *Boolean* -- default value: `true`
 
-    whether the visualization is in fullscreen mode
-
-
-
- * **inputVars** :: *Object* -- optional
-
-    a mapping from var names to default values
+whether to show the buttons
 
 
 
- * **keyboardShortcuts** :: *Boolean* -- default value: `true`
+## **frameNumber** :: *Boolean* -- default value: `true`
 
-    whether to handle keyboard shortcuts
-
-
-
- * **runStopButton** :: *Boolean* -- default value: `true`
-
-    whether to show the run and stop button
+whether to show the frame number
 
 
 
- * **showWhileSliding** :: *Boolean* -- default value: `true`
+## **fullscreen** :: *Boolean* -- default value: `false`
 
-    whether to update visualization when sliding
+whether the visualization is in fullscreen mode
 
 
 
- * **slider** :: *Boolean* -- default value: `true`
+## **inputVars** :: *Object* -- optional
 
-    whether to show the slider
+a mapping from var names to default values
+
+
+
+## **keyboardShortcuts** :: *Boolean* -- default value: `true`
+
+whether to handle keyboard shortcuts
+
+
+
+## **runStopButton** :: *Boolean* -- default value: `true`
+
+whether to show the run and stop button
+
+
+
+## **showWhileSliding** :: *Boolean* -- default value: `true`
+
+whether to update visualization when sliding
+
+
+
+## **slider** :: *Boolean* -- default value: `true`
+
+whether to show the slider
 
 
 

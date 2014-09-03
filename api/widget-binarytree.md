@@ -13,35 +13,36 @@ Vamonos.Widget.BinaryTree
 A representation of a binary tree.
 
 
-### Constructor Arguments
+Constructor Arguments
+=====================
 
- * **container** :: *String* | *jQuery Selector* -- **required**
+## **container** :: *String* | *jQuery Selector* -- **required**
 
-    The id or a jQuery selector of the div in which this widget should draw itself.
-
-
-
- * **varName** :: *String* -- **required**
-
-    the name of variable that this widget represents
+The id or a jQuery selector of the div in which this widget should draw itself.
 
 
 
- * **defaultTree** :: *BinaryTree* -- optional
+## **varName** :: *String* -- **required**
 
-    the initial tree
-
-
-
- * **xscalar** :: *Number* -- default value: `60`
-
-    how far to seperate nodes on the x axis
+the name of variable that this widget represents
 
 
 
- * **yscalar** :: *Number* -- default value: `40`
+## **defaultTree** :: *BinaryTree* -- optional
 
-    how far to seperate nodes on the y axis
+the initial tree
+
+
+
+## **xscalar** :: *Number* -- default value: `60`
+
+how far to seperate nodes on the x axis
+
+
+
+## **yscalar** :: *Number* -- default value: `40`
+
+how far to seperate nodes on the y axis
 
 
 

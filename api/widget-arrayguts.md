@@ -13,37 +13,38 @@ Vamonos.Widget.ArrayGuts
 ArrayGuts is where array input and display happen.
 
 
-### Constructor Arguments
+Constructor Arguments
+=====================
 
- * **container** :: *String* | *jQuery Selector* -- **required**
+## **container** :: *String* | *jQuery Selector* -- **required**
 
-    The id or a jQuery selector of the div in which this widget should draw itself.
-
-
-
- * **varName** :: *String* -- **required**
-
-    the name of variable that this widget represents
+The id or a jQuery selector of the div in which this widget should draw itself.
 
 
 
- * **cellFormat** :: *Function* -- optional
+## **varName** :: *String* -- **required**
 
-    A function that takes the raw contents of each entry and returns the html to be displayed.
-
-
-
- * **cellParse** :: *Function* -- optional
-
-    A function that parses the text input from an editable cell to an internal representation.
+the name of variable that this widget represents
 
 
 
- * **cssRules** :: *Array* -- default value: `[]`
+## **cellFormat** :: *Function* -- optional
 
-    an array of triples of the form `[comparison, index-variable-expr, css-class]` where every index in the array that matches the comparason against the given index-variable-expr receives the given css class.
+A function that takes the raw contents of each entry and returns the html to be displayed.
 
-    Example:
+
+
+## **cellParse** :: *Function* -- optional
+
+A function that parses the text input from an editable cell to an internal representation.
+
+
+
+## **cssRules** :: *Array* -- default value: `[]`
+
+an array of triples of the form `[comparison, index-variable-expr, css-class]` where every index in the array that matches the comparason against the given index-variable-expr receives the given css class.
+
+For Example:
 
 >     cssRules: [
 >         ['>', 'k', 'shaded'],
@@ -52,63 +53,63 @@ ArrayGuts is where array input and display happen.
 
 
 
- * **defaultInput** :: *Array* -- default value: `[]`
+## **defaultInput** :: *Array* -- default value: `[]`
 
-    the initial value for this array
-
-
-
- * **displayOnly** :: *Boolean* -- default value: `false`
-
-    whether the array is editable
+the initial value for this array
 
 
 
- * **firstCellBlank** :: *Boolean* -- optional
+## **displayOnly** :: *Boolean* -- default value: `false`
 
-    Leave the first cell blank.
-
-
-
- * **ignoreIndexZero** :: *Boolean* -- default value: `false`
-
-    whether the array should appear to be 1-indexed
+whether the array is editable
 
 
 
- * **maxInputLength** :: *Number* -- optional
+## **firstCellBlank** :: *Boolean* -- optional
 
-    Limit input to a certain number of characters.
-
-
-
- * **persistent** :: *Boolean* -- default value: `false`
-
-    whether to save the result of running the algorithm and to use it as the initial value upon returning to edit mode.
+Leave the first cell blank.
 
 
 
- * **showCellNumber** :: *Boolean* -- default value: `true`
+## **ignoreIndexZero** :: *Boolean* -- default value: `false`
 
-    Whether to show a number above each cell.
-
-
-
- * **showChanges** :: *String* | *Array* -- default value: `"next"`
-
-    type of frame shifts to highlight changes at, can be multiple types with an array of strings
+whether the array should appear to be 1-indexed
 
 
 
- * **showIndices** :: *Array* -- default value: `[]`
+## **maxInputLength** :: *Number* -- optional
 
-    an array of index-variable-exprs of the form that show the text of the index-variable-exprs on the indices they correspond to.
+Limit input to a certain number of characters.
 
 
 
- * **showLabel** :: *Boolean* -- default value: `false`
+## **persistent** :: *Boolean* -- default value: `false`
 
-    whether to show the varName before the array
+whether to save the result of running the algorithm and to use it as the initial value upon returning to edit mode.
+
+
+
+## **showCellNumber** :: *Boolean* -- default value: `true`
+
+Whether to show a number above each cell.
+
+
+
+## **showChanges** :: *String* | *Array* -- default value: `"next"`
+
+type of frame shifts to highlight changes at, can be multiple types with an array of strings
+
+
+
+## **showIndices** :: *Array* -- default value: `[]`
+
+an array of index-variable-exprs of the form that show the text of the index-variable-exprs on the indices they correspond to.
+
+
+
+## **showLabel** :: *Boolean* -- default value: `false`
+
+whether to show the varName before the array
 
 
 

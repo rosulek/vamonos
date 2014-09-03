@@ -15,13 +15,14 @@ The visualization will not change to DisplayMode unless all conditions
 are met.
 
 
-### Constructor Arguments
+Constructor Arguments
+=====================
 
- * **conditions** :: *Array* -- **required**
+## **conditions** :: *Array* -- **required**
 
-    a list of functions that take a viz object and return a string saying what went wrong.
+a list of functions that take a viz object and return a string saying what went wrong.
 
-    Example:
+For Example:
 
 >     new Vamonos.Widget.Error({
 >         conditions: [

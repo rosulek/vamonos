@@ -13,29 +13,30 @@ Vamonos.Widget.Pseudocode
 The Pseudocode widget prettily formats the pseudocode in the div you provide it. It also visualizes and allows editing of breakpoints.
 
 
-### Constructor Arguments
+Constructor Arguments
+=====================
 
- * **container** :: *String* | *jQuery Selector* -- **required**
+## **container** :: *String* | *jQuery Selector* -- **required**
 
-    The id or a jQuery selector of the div in which this widget should draw itself.
-
-
-
- * **breakpoints** :: *Array* | *String* -- default value: `[]`
-
-    initial breakpoints, as an array of line numbers, or `'all'` for all breakpoints
+The id or a jQuery selector of the div in which this widget should draw itself.
 
 
 
- * **editableBreakpoints** :: *Boolean* -- default value: `true`
+## **breakpoints** :: *Array* | *String* -- default value: `[]`
 
-    whether breakpoints can be modified with this widget
+initial breakpoints, as an array of line numbers, or `'all'` for all breakpoints
 
 
 
- * **procedureName** :: *String* -- default value: `"main"`
+## **editableBreakpoints** :: *Boolean* -- default value: `true`
 
-    the name of the procedure in the algorithm
+whether breakpoints can be modified with this widget
+
+
+
+## **procedureName** :: *String* -- default value: `"main"`
+
+the name of the procedure in the algorithm
 
 
 

@@ -13,23 +13,24 @@ Vamonos.Widget.ModeLine
 Display a string that changes depending upon which mode the visualizer is in.
 
 
-### Constructor Arguments
+Constructor Arguments
+=====================
 
- * **container** :: *String* | *jQuery Selector* -- **required**
+## **container** :: *String* | *jQuery Selector* -- **required**
 
-    The id or a jQuery selector of the div in which this widget should draw itself.
-
-
-
- * **displayModeText** :: *String* -- **required**
-
-    message ModeLine displays in displayMode
+The id or a jQuery selector of the div in which this widget should draw itself.
 
 
 
- * **editModeText** :: *String* -- **required**
+## **displayModeText** :: *String* -- **required**
 
-    message ModeLine displays in editMode
+message ModeLine displays in displayMode
+
+
+
+## **editModeText** :: *String* -- **required**
+
+message ModeLine displays in editMode
 
 
 

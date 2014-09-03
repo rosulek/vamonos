@@ -14,19 +14,20 @@ The Graph data structure provides standard graph functionality
 to Vamonos.
 
 
-### Constructor Arguments
+Constructor Arguments
+=====================
 
- * **directed** :: *Boolean* -- default value: `false`
+## **directed** :: *Boolean* -- default value: `false`
 
-    Whether the graph is directed.
+Whether the graph is directed.
 
 
 
- * **edges** :: *Object* | *Array* -- optional
+## **edges** :: *Object* | *Array* -- optional
 
-    A single edge or an array of edges to create the graph with.
+A single edge or an array of edges to create the graph with.
 
-    Example:
+For Example:
 
 >     edges: [
 >         {source: 'v0',target: 'v4'},
@@ -35,17 +36,17 @@ to Vamonos.
 
 
 
- * **prefix** :: *String* -- default value: `""`
+## **prefix** :: *String* -- default value: `""`
 
-    A string prepended to each new vertex id.
+A string prepended to each new vertex id.
 
 
 
- * **vertices** :: *Object* | *Array* -- optional
+## **vertices** :: *Object* | *Array* -- optional
 
-    A single vertex or an array of vertices to create the graph with.
+A single vertex or an array of vertices to create the graph with.
 
-    Example:
+For Example:
 
 >     vertices: [
 >         {id: "v0", x: 17,  y: 10},

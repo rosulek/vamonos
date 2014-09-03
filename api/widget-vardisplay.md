@@ -13,29 +13,30 @@ Vamonos.Widget.VarDisplay
 VarDisplay allows viewing of the contents of variables, and if they are objects, their attributes.
 
 
-### Constructor Arguments
+Constructor Arguments
+=====================
 
- * **container** :: *String* | *jQuery Selector* -- **required**
+## **container** :: *String* | *jQuery Selector* -- **required**
 
-    The id or a jQuery selector of the div in which this widget should draw itself
-
-
-
- * **varName** :: *String* -- **required**
-
-    the name of variable that this widget represents
+The id or a jQuery selector of the div in which this widget should draw itself
 
 
 
- * **attributes** :: *Array* -- optional
+## **varName** :: *String* -- **required**
 
-    if the variable is an object, an array of strings representing which object attributes to show
+the name of variable that this widget represents
 
 
 
- * **showChanges** :: *String* | *Array* -- default value: `"next"`
+## **attributes** :: *Array* -- optional
 
-    type of frame shifts to highlight changes at, can be multiple types with an array of strings
+if the variable is an object, an array of strings representing which object attributes to show
+
+
+
+## **showChanges** :: *String* | *Array* -- default value: `"next"`
+
+type of frame shifts to highlight changes at, can be multiple types with an array of strings
 
 
 

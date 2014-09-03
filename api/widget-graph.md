@@ -18,85 +18,86 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
  * [Vamonos.Widget.GraphDisplay](widget-graphdisplay.html)
 
 
-### Constructor Arguments
+Constructor Arguments
+=====================
 
- * **container** :: *String* | *jQuery Selector* -- **required**
+## **container** :: *String* | *jQuery Selector* -- **required**
 
-    The id or a jQuery selector of the div in which this widget should draw itself.
-
-
-
- * **varName** :: *String* -- **required**
-
-    the name of variable that this widget represents
+The id or a jQuery selector of the div in which this widget should draw itself.
 
 
 
- * **animateEdgeFlips** :: *Boolean* -- default value: `false`
+## **varName** :: *String* -- **required**
 
-    whether edges flip ostentatiously when they switch source and target
-
-
-
- * **arrowLength** :: *Number* -- default value: `6`
-
-    the length of arrows in directed graphs
+the name of variable that this widget represents
 
 
 
- * **arrowWidth** :: *Number* -- default value: `6`
+## **animateEdgeFlips** :: *Boolean* -- default value: `false`
 
-    the width of arrows in directed graphs
-
-
-
- * **background** :: *Object* -- optional
-
-    an image to use as the background of the graph. Args come in as an object `{ source: STRING, callback: OPTIONAL-FUNCTION }`. If callback is provided, it must be a function taking a d3 selector.You can specify seperate images for edit and display mode by providing an object such as `{ display: { source: STRING, callback: OPTIONAL-FUNCTION } edit: { source: STRING, callback: OPTIONAL-FUNCTION }`
+whether edges flip ostentatiously when they switch source and target
 
 
 
- * **bezierCurviness** :: *Number* -- default value: `15`
+## **arrowLength** :: *Number* -- default value: `6`
 
-    the curviness of bezier curves in this graph
-
-
-
- * **containerMargin** :: *Number* -- default value: `30`
-
-    how close vertices can get to the container edge
+the length of arrows in directed graphs
 
 
 
- * **defaultEdgeAttrs** :: *Object* -- optional
+## **arrowWidth** :: *Number* -- default value: `6`
 
-    A mapping of attribute names to default values for new edges created in edit mode.
-
-
-
- * **defaultGraph** :: *Graph* -- optional
-
-    the initial graph, as a Vamonos.DataStructure.Graph
+the width of arrows in directed graphs
 
 
 
- * **defaultVertexAttrs** :: *Object* -- optional
+## **background** :: *Object* -- optional
 
-    A mapping of attribute names to default values for new vertices created in edit mode.
-
-
-
- * **draggable** :: *Boolean* -- default value: `true`
-
-    whether vertices can be moved
+an image to use as the background of the graph. Args come in as an object `{ source: STRING, callback: OPTIONAL-FUNCTION }`. If callback is provided, it must be a function taking a d3 selector.You can specify seperate images for edit and display mode by providing an object such as `{ display: { source: STRING, callback: OPTIONAL-FUNCTION } edit: { source: STRING, callback: OPTIONAL-FUNCTION }`
 
 
 
- * **edgeCssAttributes** :: *Object* -- default value: `{}`
+## **bezierCurviness** :: *Number* -- default value: `15`
 
-    provides a way to change CSS classes of edges based upon the values of variables or the edges themselves. You provide a mapping of classnames to functions or strings. The function simply needs to take an edge and return a boolean (whether to apply the class). The string is a pairing of variable names in the form `'u->v'` or `'u<->v'` for undirected graphs.
+the curviness of bezier curves in this graph
 
-    Example:
+
+
+## **containerMargin** :: *Number* -- default value: `30`
+
+how close vertices can get to the container edge
+
+
+
+## **defaultEdgeAttrs** :: *Object* -- optional
+
+A mapping of attribute names to default values for new edges created in edit mode.
+
+
+
+## **defaultGraph** :: *Graph* -- optional
+
+the initial graph, as a Vamonos.DataStructure.Graph
+
+
+
+## **defaultVertexAttrs** :: *Object* -- optional
+
+A mapping of attribute names to default values for new vertices created in edit mode.
+
+
+
+## **draggable** :: *Boolean* -- default value: `true`
+
+whether vertices can be moved
+
+
+
+## **edgeCssAttributes** :: *Object* -- default value: `{}`
+
+provides a way to change CSS classes of edges based upon the values of variables or the edges themselves. You provide a mapping of classnames to functions or strings. The function simply needs to take an edge and return a boolean (whether to apply the class). The string is a pairing of variable names in the form `'u->v'` or `'u<->v'` for undirected graphs.
+
+For Example:
 
 >     edgeCssAttributes: {
 >         green: function(edge){
@@ -108,11 +109,11 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
 
 
 
- * **edgeLabel** :: *String* | *Function* | *Object* -- optional
+## **edgeLabel** :: *String* | *Function* | *Object* -- optional
 
-    a string, containing the name of the edge attribute to displayor a function taking an edge and returning a string to display. one can also specify whether to show certain things in edit or display mode by using an object.
+a string, containing the name of the edge attribute to displayor a function taking an edge and returning a string to display. one can also specify whether to show certain things in edit or display mode by using an object.
 
-    Example:
+For Example:
 
 >     edgeLabel: { display: 'w', edit: function(e){ return e.w } },
 >     edgeLabel: 'w',
@@ -120,77 +121,77 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
 
 
 
- * **editable** :: *Boolean* -- default value: `true`
+## **editable** :: *Boolean* -- default value: `true`
 
-    whether the graph allows user input
-
-
-
- * **editableEdgeAttrs** :: *Boolean* -- default value: `true`
-
-    whether edge attributes are modifiable in edit mode.
+whether the graph allows user input
 
 
 
- * **fadeIn** :: *Boolean* -- default value: `false`
+## **editableEdgeAttrs** :: *Boolean* -- default value: `true`
 
-    whether new things fade in, and deleted things fade out
-
-
-
- * **highlightChanges** :: *Boolean* -- default value: `true`
-
-    whether vertices will get the css class 'changed' when they are modified
+whether edge attributes are modifiable in edit mode.
 
 
 
- * **inputVars** :: *Object* -- default value: `{}`
+## **fadeIn** :: *Boolean* -- default value: `false`
 
-    a mapping of variable names to vertex ids of the form                `{ var1: 'node1' }` for displaying variables that contain                vertices.
-
-
-
- * **minX** :: *Number* -- default value: `100`
-
-    minimum width of the graph widget
+whether new things fade in, and deleted things fade out
 
 
 
- * **minY** :: *Number* -- default value: `100`
+## **highlightChanges** :: *Boolean* -- default value: `true`
 
-    minimum height of the graph widget
-
-
-
- * **persistentDragging** :: *Boolean* -- default value: `true`
-
-    whether the positions resulting from dragging vertices are persistent across frames in display mode.
+whether vertices will get the css class 'changed' when they are modified
 
 
 
- * **resizable** :: *Boolean* -- default value: `true`
+## **inputVars** :: *Object* -- default value: `{}`
 
-    whether the graph widget is resizable
-
-
-
- * **showChanges** :: *String* | *Array* -- default value: `"next"`
-
-    type of frame shifts to highlight changes at, can be multiple types with an array of strings
+a mapping of variable names to vertex ids of the form                `{ var1: 'node1' }` for displaying variables that contain                vertices.
 
 
 
- * **showVertexChanges** :: *Boolean* -- default value: `true`
+## **minX** :: *Number* -- default value: `100`
 
-    whether to flash vertices that have changed attributes
+minimum width of the graph widget
 
 
 
- * **styleEdges** :: *Array* -- optional
+## **minY** :: *Number* -- default value: `100`
 
-    Provides a way to add styles to path objects. Functions must return an array whose first element is an attribute name, and second element is the value.
+minimum height of the graph widget
 
-    Example:
+
+
+## **persistentDragging** :: *Boolean* -- default value: `true`
+
+whether the positions resulting from dragging vertices are persistent across frames in display mode.
+
+
+
+## **resizable** :: *Boolean* -- default value: `true`
+
+whether the graph widget is resizable
+
+
+
+## **showChanges** :: *String* | *Array* -- default value: `"next"`
+
+type of frame shifts to highlight changes at, can be multiple types with an array of strings
+
+
+
+## **showVertexChanges** :: *Boolean* -- default value: `true`
+
+whether to flash vertices that have changed attributes
+
+
+
+## **styleEdges** :: *Array* -- optional
+
+Provides a way to add styles to path objects. Functions must return an array whose first element is an attribute name, and second element is the value.
+
+For Example:
 
 >     styleEdges: [
 >         function(e){
@@ -203,11 +204,11 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
 
 
 
- * **vertexCssAttributes** :: *Object* -- default value: `{}`
+## **vertexCssAttributes** :: *Object* -- default value: `{}`
 
-    provides a way to change CSS classes of vertices based on vertex attributes. takes an object of the form `{ attribute: value | [list of values] }`. in the case of a single value,  the vertex will simply get a class with the same name as the attribute. in the case of a list of values, the css class will be of the form 'attribute-value' when its value matches. You can also provide a function that takes a vertex and returns a class to apply to it.
+provides a way to change CSS classes of vertices based on vertex attributes. takes an object of the form `{ attribute: value | [list of values] }`. in the case of a single value,  the vertex will simply get a class with the same name as the attribute. in the case of a list of values, the css class will be of the form 'attribute-value' when its value matches. You can also provide a function that takes a vertex and returns a class to apply to it.
 
-    Example:
+For Example:
 
 >     vertexCssAttributes: {
 >         done: true,
@@ -217,17 +218,17 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
 
 
 
- * **vertexHeight** :: *Number* -- default value: `30`
+## **vertexHeight** :: *Number* -- default value: `30`
 
-    the height of vertices in the graph
+the height of vertices in the graph
 
 
 
- * **vertexLabels** :: *Object* -- default value: `{}`
+## **vertexLabels** :: *Object* -- default value: `{}`
 
-    an object containing a mapping of label positions (inner, nw, sw, ne, se) to labels. Labels can display simple variable names (corresponding to inputVars). This must be provided in the form: `{ label: ['var1', 'var2'] }`. It can be more complicated, as a function that takes a vertex and returns some html. if we give a label an object, we can control what is shown in edit/display mode in the form: `{ label : { edit: function{}, display: function{} } }`
+an object containing a mapping of label positions (inner, nw, sw, ne, se) to labels. Labels can display simple variable names (corresponding to inputVars). This must be provided in the form: `{ label: ['var1', 'var2'] }`. It can be more complicated, as a function that takes a vertex and returns some html. if we give a label an object, we can control what is shown in edit/display mode in the form: `{ label : { edit: function{}, display: function{} } }`
 
-    Example:
+For Example:
 
 >     vertexLabels: {
 >         inner : {
@@ -241,9 +242,9 @@ The Graph widget provides graph input functionality. It uses GraphDisplay for fu
 
 
 
- * **vertexWidth** :: *Number* -- default value: `40`
+## **vertexWidth** :: *Number* -- default value: `40`
 
-    the width of vertices in the graph
+the width of vertices in the graph
 
 
 
