@@ -160,27 +160,20 @@ var myviz = new Vamonos.Visualizer({
         }),
 
         new Vamonos.Widget.ResultProperty({
-            G: function(G){
+            varName: "G",
+            container: "result",
+            success: "<span class='good'>Great job!</span>",
+            failure: "<span class='bad'>No vertex relaxed 5 times. Try again!</span>",
+            test: function(G) {
                 var vs = G.getVertices();
-                var ok = undefined;
-                var text = "";
+                var relaxed5Times;
                 for (var i = 0; i < vs.length; i++) {
                     if (vs[i].timesRelaxed !== undefined && vs[i].timesRelaxed >= 5) {
-                        ok = vs[i];
+                        relaxed5Times = true;
                         break;
                     }
                 }
-                if (ok !== undefined) {
-                    text = "<span class='good'>" +
-                           "Great job! Vertex " + ok.name +
-                           " was relaxed " + ok.timesRelaxed + " times." +
-                           "</span>";
-                } else {
-                    text = "<span class='bad'>" +
-                           "No vertex relaxed 5 times. Try again!" +
-                           "</span>";
-                }
-                $("#result").html(text);
+                return relaxed5Times;
             },
         }),
 
@@ -280,6 +273,7 @@ _(11);                  relax({u:u,v:v,G:G});
                     v = undefined;
                 }
                 u = undefined;
+
             }
         },
 
@@ -295,7 +289,9 @@ _(11);                  relax({u:u,v:v,G:G});
                 }
             }
         }
-    }
+    },
+
+    exportToQueryString: true,
 });
 
 </script></html>
