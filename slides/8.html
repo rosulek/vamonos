@@ -1,11 +1,16 @@
 <html><head>
+    <title>Selection Sort</title>
 
-    <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
+    <meta id="meta" name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" href="../css/vamonos-web.css">
     <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
     <script type="text/javascript" src="keyboard.js"></script>
+
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
 
     <style type="text/css">
         body {
@@ -15,92 +20,91 @@
 
 </head><body>
 
-    <h1>Insertion Sort</h1>
-
-    <table class="vamonos">
-        <tr><td class="pseudocode-and-controls">
-
-            <div class="pseudocode-procedures">
-
-                <div id="pseudocode" title="InsertionSort(A):">
-                    for j = 2 to A.length
-                        key = A[j]
-                        i = j - 1
-                        while i &gt; 0 and A[i] &gt; key
-                            A[i + 1]  = A[i]
-                            i = i - 1
-                        A[i + 1] = key
+    <br>
+    <div class="container">
+        <div class="row nopadding">
+            <div class="panel vamonos col-sm-6 col-sm-offset-3 col-md-offset-4 col-md-4 panel-default">
+                <div class="panel-heading">
+                    Selection Sort
                 </div>
-
+                <div class="pseudocode-procedures">
+                    <div id="pseudocode" title="SelectionSort(A):">
+                        for i = 0 to A.length-2
+                            # find smallest item in A[i..]
+                            m = i
+                            for j = i+1 to A.length-1
+                                if A[j] &lt; A[m]
+                                    m = j
+                            swap A[i] and A[m]
+                    </div>
+                </div>
+                <div id="controls"></div>
+                <table class="variable-widgets">
+                    <tr><td><div id="a-var"></div></td>
+                        <td><div id="array"></div></td>
+                    </tr>
+                </table>
             </div>
+        </div>
+    </div>
 
-        </td></tr><tr><td>
-
-            <div id="controls"></div>
-
-        </td></tr><tr><td class="variable-widgets">
-
-            <table class="variable-widgets">
-                <tr><td><div id="a-var"></div></td>
-                    <td><div id="array"></div></td>
-                </tr>
-            </table>
-
-        </td></tr>
-
-    </table>
 </body>
+
 <script type="text/javascript">
 
+
+var tut;
 var myviz = new Vamonos.Visualizer({
     widgets: [
-
         new Vamonos.Widget.Array({
             container: "array",
-            defaultInput: [0, 3, 1, 4, 1, 5, 9],
-            ignoreIndexZero: true,
+            defaultInput: [6, 3, 1, 4, 1, 5, 9],
+            ignoreIndexZero: false,
             varName: "A",
             cssRules: [
-                [">", "j", "shaded"]
+                ["<", "i", "shaded"]
             ],
-            showIndices: ["i", "j"],
-            showLabel: false,
-//            persistent: true
-            
+            showIndices: ["i", "m", "j"],
+            showLabel: false
         }),
 
         new Vamonos.Widget.VarName({
             container: "a-var",
             varName: "A",
             inputVar: true,
+            watchable: false
         }),
 
         new Vamonos.Widget.Pseudocode({
             container: "pseudocode",
-            breakpoints: "all",
+            breakpoints: "all"
         }),
 
-        new Vamonos.Widget.Controls("controls")
+        new Vamonos.Widget.Controls("controls"),
+
     ],
 
     algorithm: function (_) {
         with (this) {
-            for (j = 2; j < A.length; _(1), j++) {
-_(2);           key = A[j];
-_(3);           i = j - 1;
-                while (_(4), i > 0 && A[i] > key) {
-_(5);               A[i + 1] = A[i];
-_(6);               i = i - 1;
+            for (_(1), i = 0; i < A.length-1; _(1), i++) {
+_(2);           m = i;
+                for (_(3), j = i+1; j < A.length; _(3), j++) {
+_(4);               if (A[j] < A[m]) {
+_(5);                   m = j
+                    }
                 }
-_(7);           A[i + 1] = key;
-                i = null;
+                j = null;
+_(6);           var tmp = A[i];
+                A[i] = A[m];
+                A[m] = tmp;
+                m = null;
             }
-            j = null;
+            i = null;
         }
     },
-
 });
 
-</script>
+tut.restart();
 
+</script>
 </html>

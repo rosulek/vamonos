@@ -1,243 +1,298 @@
 <html><head>
+    <title>Dijkstra's Algorithm Quiz</title>
 
-    <meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
+    <meta id="meta" name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" href="../css/vamonos-web.css">
     <link rel="stylesheet" href="../lib/vamonos.css">
+    <link rel="stylesheet" href="../lib/vamonos-demos.css">
     <script type="text/javascript" src="../lib/vamonos-all.js"></script>
     <script type="text/javascript" src="keyboard.js"></script>
 
+    <link rel="stylesheet" href="../deps/bootstrap.min.css">
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
+    <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+
     <style type="text/css">
-        .vertex {
-            width: 40;
-            height: 30;
-        }
+    text.vertex-contents {
+        font-size: .8em;
+    }
 
-        .vertex-contents {
-            font-size: .8em;
-        }
+    .vertex-ne-label, .vertex-nw-label {
+        font-weight: bold;
+    }
 
-        .vertex-ne-label, .vertex-nw-label {
-            font-weight: bold;
-        }
+    .vertex-sw-label {
+        font-size: .8em;
+        font-family: serif;
+    }
 
-        .vertex-sw-label {
-            font-style: italic;
-        }
+    ellipse.done {
+        fill: #bbb;
+    }
 
-        body {
-            text-align: center;
-        }
+    ellipse.ok {
+        -webkit-box-shadow: 0px 0px 10px yellow;
+        -moz-box-shadow: 0px 0px 10px yellow;
+        box-shadow: 0px 0px 10px yellow;
+        fill: yellow;
+    }
+
+    path.green {
+        stroke: #92E894;
+    }
+
+    path.red {
+        stroke: #FF7D7D;
+    }
+
+    span.bad {
+        color: red;
+        font-weight: bold;
+    }
+
+    span.good {
+        color: blue;
+        font-weight: bold;
+    }
+
+    text.color-black, text.color-gray {
+        color: white;
+    }
+
+    body {
+        text-align: center;
+    }
     </style>
 
 </head><body>
 
-    <h1>Prim's Minimum Spanning Tree</h1>
-
-    <table class="vamonos">
-
-        <tr><td class="pseudocode-and-controls">
-
-            <div id="controls"></div>
-
-            <div class="pseudocode-procedures">
-                <div id="pseudocode" title="MST-Prim(G,r)">
-                    for each u &in; G.V
-                        u.key = &infin;
-                        u.pred = nil
-                    r.key = 0
-                    Q = G.V
-                    while Q &ne; &empty;
-                        u = ExtractMin(Q)
-                        for each v &in; G.Adj[u]
-                            if v &in; Q and w(u,v) &lt; v.key
-                                v.pred = u
-                                v.key = w(u,v)
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10 col-lg-offset-2 col-lg-8 panel-default">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Dijkstra's Algorithm
+                    </div>
+                    <div class="row nopadding panel-body">
+                        <div class="col-sm-5 nopadding">
+                            <div id="controls"></div>
+                            <div class="pseudocode-procedures">
+                                <div id="pseudocode-main" title="Dijkstra(G,s):">
+                                    for each vertex u &in; G.V - {s}
+                                        u.d = &#x221E;
+                                        u.pred = null
+                                        u.done = false
+                                        u.timesRelaxed = 0
+                                    s.d = 0
+                                    Q = G.V
+                                    while Q &ne; &empty;
+                                        u = Q.extractMin()
+                                        u.done = true
+                                        for each v &in; G.Adj[u]
+                                            Relax(u,v)
+                                </div>
+                                <div id="pseudocode-relax" title="Relax(G,u,v):">
+                                    if u.d + G.edge(u,v).w &lt; v.d
+                                        v.d = u.d + G.edge(u,v).w
+                                        v.pred = u
+                                        v.timesRelaxed += 1
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-7 nopadding">
+                            <table class="variable-widgets">
+                                <tr><td><div id="g-var"></div></td>
+                                    <td><div id="graph"></div></td></tr>
+                                <tr><td><div id="q-var"></div></td>
+                                    <td><div id="queue"></div></td></tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-        </td><td class="variable-widgets">
-
-            <table class="variable-widgets">
-                <tr><td><div id="g-var"></div></td>
-                    <td><div id="graph"></div></td>
-                </tr>
-                <tr><td><div id="u-var"></div></td>
-                    <td><div id="u"></div></td>
-                </tr>
-                <tr><td><div id="v-var"></div></td>
-                    <td><div id="v"></div></td>
-                </tr>
-                <tr><td><div id="q-var"></div></td>
-                    <td><div id="queue"></div></td></tr>
-            </table>
-
-        </td></tr>
-    </table>
-
+    <p>
+        Create a graph where a vertex gets relaxed at least 5 times.
+    </p>
+    <div id="result"></div>
 </body>
 <script type="text/javascript">
 var myviz = new Vamonos.Visualizer({
     widgets: [
         new Vamonos.Widget.Controls("controls"),
 
-        new Vamonos.Widget.Pseudocode({
-            container: "pseudocode",
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "u-var",
-            varName: "u",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "u",
-            varName: "u",
-            attributes: ["name","key","pred"]
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "v-var",
-            varName: "v",
-        }),
-
-        new Vamonos.Widget.VarDisplay({
-            container: "v",
-            varName: "v",
-            attributes: ["name","key","pred"]
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "q-var",
-            varName: "Q",
-        }),
-
         new Vamonos.Widget.Queue({
             container: "queue",
-            varName: "Q",
+            varName: "global::Q",
             showLabel: false,
             displayOnly: true,
-            cellFormat: function (v) { 
+            cellFormat: function (v) {
                 if (v) {
-                    var key = (v.key == Infinity ? "\u221E" : v.key);
-                    return v.name + " : " + key;
+                    var d = (v.d == Infinity ? "\u221E" : v.d);
+                    return v.name + " : " + d;
                 }
                 else return "";
             }
+        }),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-main",
+            breakpoints: [11],
+        }),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-relax",
+            procedureName: "relax",
         }),
 
         new Vamonos.Widget.VarName({
             container: "g-var",
             varName: "G",
             inputVar: true,
-            watching: true,
+        }),
+
+        new Vamonos.Widget.VarName({
+            container: "q-var",
+            varName: "global::Q",
+            displayName: "Q",
+        }),
+
+        new Vamonos.Widget.ResultProperty({
+            varName: "G",
+            container: "result",
+            success: "<span class='good'>Great job!</span>",
+            failure: "<span class='bad'>No vertex relaxed 5 times. Try again!</span>",
+            test: function(G) {
+                var vs = G.getVertices();
+                var relaxed5Times;
+                for (var i = 0; i < vs.length; i++) {
+                    if (vs[i].timesRelaxed !== undefined && vs[i].timesRelaxed >= 5) {
+                        relaxed5Times = true;
+                        break;
+                    }
+                }
+                return relaxed5Times;
+            },
         }),
 
         new Vamonos.Widget.Graph({
-            container: "graph",
             varName: "G",
-            inputVars: { r: "v1" },
-            vertexLabels: {
-                inner: {
-                    edit: function(vtx){ return vtx.name },
-                    display: function(vtx){ return vtx.key },
-                },
-                sw: { 
-                    edit: function(vtx){return ""}, 
-                    display: function(vtx){return vtx.name} 
-                },
-                ne: ['u','v'],
-                nw: ['r'],
+            container: "graph",
+            inputVars: {
+                s: "v0",
             },
-            edgeLabel: [ "w", 1 ],
-            colorEdges: [
-                ["u->v", "#FF7D7D"],
-                [ function(edge){
-                    return (edge.target.pred ? edge.target.pred.id === edge.source.id : false)
-                        || (edge.source.pred ? edge.source.pred.id === edge.target.id : false) }
-                , "#276CFF" ],
-            ],
+            vertexLabels: {
+                inner : {
+                    edit: function(vtx){return vtx.name},
+                    display: function(vtx){return vtx.d}
+                },
+                ne    : ["u", "v"],
+                nw    : ["s"],
+            },
+            vertexCssAttributes: {
+                done: true,
+                ok: function(vtx){
+                    if (vtx.timesRelaxed !== undefined && vtx.timesRelaxed >= 5) {
+                        return "ok"
+                    }
+                }
+            },
+            edgeLabel: "w",
+            defaultEdgeAttrs: { w: 1 },
+
+            edgeCssAttributes: {
+                green : function(edge){
+                    return (edge.target.pred === edge.source.name)
+                        || (edge.source.pred === edge.target.name)
+                },
+                red   : "u<->v",
+            },
+
             defaultGraph: new Vamonos.DataStructure.Graph({
-                directed: false,
-                prefix: "",
                 vertices: [
-                    { id: 'v0', x: 10, y: 187, name: 'a' },
-                    { id: 'v1', x: 4, y: 13, name: 'b' },
-                    { x: 87, y: 156, name: 'c', id: '-vertex-4' },
-                    { x: 94, y: 87, name: 'd', id: '-vertex-5' },
-                    { x: 207, y: 195, name: 'e', id: '-vertex-6' },
-                    { x: 160, y: 124, name: 'f', id: '-vertex-7' },
-                    { x: 223, y: 26, name: 'g', id: '-vertex-8' },
-                    { x: 151, y: 53, name: 'h', id: '-vertex-9' },
-                    { x: 104, y: 0, name: 'i', id: '-vertex-10' },
+                    {id: "v0", x: 17,  y: 10},
+                    {id: "v1", x: 98,  y: 10},
+                    {id: "v2", x: 176, y: 13},
+                    {id: "v3", x: 15,  y: 78},
+                    {id: "v4", x: 100, y: 80},
+                    {id: "v5", x: 182, y: 80},
+                    {id: "v6", x: 15,  y: 138},
+                    {id: "v7", x: 100, y: 140},
+                    {id: "v8", x: 182, y: 140},
                 ],
                 edges: [
-                    { source: 'v1', target: 'v0', w: 6 },
-                    { source: 'v0', target: '-vertex-6', w: 9 },
-                    { source: 'v0', target: '-vertex-4', w: 3 },
-                    { source: 'v1', target: 'v0', w: 6 },
-                    { source: '-vertex-4', target: 'v1', w: 4 },
-                    { source: '-vertex-5', target: 'v1', w: 2 },
-                    { source: '-vertex-9', target: 'v1', w: 5 },
-                    { source: '-vertex-10', target: 'v1', w: 4 },
-                    { source: 'v0', target: '-vertex-6', w: 9 },
-                    { source: '-vertex-7', target: '-vertex-6', w: 8 },
-                    { source: '-vertex-6', target: '-vertex-4', w: 9 },
-                    { source: '-vertex-6', target: '-vertex-8', w: 18 },
-                    { source: 'v0', target: '-vertex-4', w: 3 },
-                    { source: '-vertex-4', target: 'v1', w: 4 },
-                    { source: '-vertex-4', target: '-vertex-5', w: 2 },
-                    { source: '-vertex-6', target: '-vertex-4', w: 9 },
-                    { source: '-vertex-4', target: '-vertex-5', w: 2 },
-                    { source: '-vertex-5', target: 'v1', w: 2 },
-                    { source: '-vertex-5', target: '-vertex-7', w: 8 },
-                    { source: '-vertex-5', target: '-vertex-7', w: 8 },
-                    { source: '-vertex-7', target: '-vertex-6', w: 8 },
-                    { source: '-vertex-8', target: '-vertex-7', w: 10 },
-                    { source: '-vertex-7', target: '-vertex-9', w: 9 },
-                    { source: '-vertex-6', target: '-vertex-8', w: 18 },
-                    { source: '-vertex-8', target: '-vertex-7', w: 10 },
-                    { source: '-vertex-8', target: '-vertex-9', w: 3 },
-                    { source: '-vertex-8', target: '-vertex-10', w: 4 },
-                    { source: '-vertex-7', target: '-vertex-9', w: 9 },
-                    { source: '-vertex-8', target: '-vertex-9', w: 3 },
-                    { source: '-vertex-9', target: 'v1', w: 5 },
-                    { source: '-vertex-8', target: '-vertex-10', w: 4 },
-                    { source: '-vertex-10', target: 'v1', w: 4 },
+                    {source: 'v0',target: 'v4', w:1},
+                    {source: 'v1',target: 'v2', w:2},
+                    {source: 'v1',target: 'v4', w:5},
+                    {source: 'v3',target: 'v4', w:3},
+                    {source: 'v3',target: 'v6', w:1},
+                    {source: 'v4',target: 'v8', w:10},
+                    {source: 'v5',target: 'v8', w:2},
+                    {source: 'v6',target: 'v7', w:3},
+                    {source: 'v7',target: 'v8', w:2},
                 ]
             }),
-        })
+        }),
+
     ],
 
-    algorithm: function(_){
-        with (this) {
-            G.eachVertex(function(vtx){
-_(1);           u = vtx;
-_(2);           u.key = Infinity; 
-_(3);           u.pred = undefined; 
-            });
-_(4);       r.key = 0;
-_(5);       Q = new Vamonos.DataStructure.Queue({
-                initialArray: G.getVertices(),
-                comparator: function(a,b){
-                    return (a.key == b.key ? 0 :
-                            a.key  > b.key ? 1 : -1)
-                },
-            });
-_(6);       while (_(6), !Q.isEmpty()) {
-_(7);           u = Q.extractMin();
-                G.eachNeighbor(u, function(vtx){
-_(8);               v = vtx;
-_(9);               if (Q.contains(v) && G.edge(u,v).w < v.key) {
-_(10);                  v.pred = u;
-_(11);                  v.key = G.edge(u,v).w;
-                    }
-                })
-                
+    algorithm: {
+
+        main: function(_){
+            with (this) {
+                G.eachVertex(function(vtx){
+                    _(1);
+                    u = vtx;
+                    _(2);
+                    u.d = Infinity;
+                    _(3);
+                    u.pred = undefined;
+                    _(4);
+                    u.done = false;
+                    _(5);
+                    u.timesRelaxed = 0;
+                });
+
+                _(5);
+                s.d = 0;
+                _(6);
+                global.Q = new Vamonos.DataStructure.Queue({
+                    initialArray: G.getVertices(),
+                    comparator: function(a,b){ return a.d - b.d },
+                });
+
+                while (_(7), !global.Q.isEmpty()) {
+_(8);               u = global.Q.extractMin();
+_(9);               u.done = true;
+                    G.eachNeighbor(u, function(vtx){
+_(10);                  v = vtx;
+_(11);                  relax({u:u,v:v,G:G});
+                    });
+                    v = undefined;
+                }
+                u = undefined;
+
+            }
+        },
+
+        relax: function(_){
+            with (this) {
+                if (_(1), u.d + (+G.edge(u,v).w) < v.d) {
+                    _(2);
+                    v.d = u.d + (+G.edge(u,v).w); global.Q.sort();
+                    _(3);
+                    v.pred = u.name;
+                    _(4);
+                    v.timesRelaxed += 1;
+                }
             }
         }
     },
+
+    exportToQueryString: true,
 });
 
-</script>
-</html>
+</script></html>

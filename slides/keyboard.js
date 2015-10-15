@@ -1,6 +1,6 @@
 $(function(){
     var slideNum = parseInt(window.location.pathname.match("(\\d+)\\.html$")[1],10);
-    var totalSlides = 14;
+    var totalSlides = 15;
     console.log("slide " + slideNum + "/" + totalSlides);
     $("body").on("keydown",function(e){
         // 78 = "n"
