@@ -210,13 +210,11 @@ class ControlButtons
             @$container.prepend(@$inputDivs[varName])
 
     acceptInput: () ->
-        console.log @$inputDivs
         for varName, $div of @$inputDivs
             do (varName = varName, $div = $div, ths = this) ->
                 $div.on(
                     "click",
                     () =>
-                        console.log varName
                         Vamonos.editableValue($div.children("span.val"),
                             ((e)-> Vamonos.txtToRaw(e.text()))
                             (newval) =>
