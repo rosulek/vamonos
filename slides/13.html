@@ -57,7 +57,7 @@
     <br>
     <div class="container">
         <div class="row">
-            <div class="col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1 panel-default">
+            <div class="col-md-10 col-md-offset-1 panel-default">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         Ford-Fulkerson Max Flow
@@ -80,7 +80,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-7 nopadding">
+                        <div class="col-md-6 nopadding">
                             <table class="variable-widgets">
                                 <tr><td><div id="g-var"></div></td>
                                     <td><div id="graph-g"></div></td>
@@ -197,8 +197,8 @@ var myviz = new Vamonos.Visualizer({
             showChanges: [],
             vertexLabels: {
                 inner: function(vtx){return vtx.name},
-                nw   : ["s_f"],
-                ne   : ["t_f"],
+                nw   : ["sf"],
+                ne   : ["tf"],
             },
             edgeCssAttributes: {
                 red : function(edge){return (edge.target.pred === edge.source.id)},
@@ -268,12 +268,12 @@ _(2);               e.f = 0;
                 u = v = undefined;
 
 _(3);           G_f = ResidualGraph(G);
-                s_f = ResidualVtx(s);
-                t_f = ResidualVtx(t);
+                sf = ResidualVtx(s);
+                tf = ResidualVtx(t);
 
                 var done = false;
                 i = 0;
-                while (_(4), p = BFS(G_f,s_f,t_f), p.length) {
+                while (_(4), p = BFS(G_f,sf,tf), p.length) {
 _(5);               // get the flow for each edge on the path
                     var flows = p.map(function(e){ return e.f });
                     // cfp is the min flow for each edge on the path
