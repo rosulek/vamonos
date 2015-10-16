@@ -75,13 +75,13 @@
                                 </div>
 
                                 <div id="pseudocode-visit" title="DFS-Visit(G,u):">
-                                    u.d = ++time
+                                    u.start = ++time
                                     u.color = gray
                                     <b>for</b> each v &in; G.Adj[u]
                                         <b>if</b> v.color == white
                                             DFS-Visit(G,v)
-                                    u.color = black
-                                    u.f = ++time
+                                    u.color &nbsp;= black
+                                    u.finish = ++time
                                 </div>
                             </div>
                         </div>
@@ -162,7 +162,9 @@ var myviz = new Vamonos.Visualizer({
             vertexLabels: {
                 inner : {
                     edit: function(vtx){ return vtx.name },
-                    display: function(vtx){ return Vamonos.rawToTxt(vtx.d) + "/" + Vamonos.rawToTxt(vtx.f) }
+                    display: function(vtx){ 
+                        return Vamonos.rawToTxt(vtx.start) + "/" + Vamonos.rawToTxt(vtx.finish) 
+                    }
                 },
                 sw    : {
                     edit: function(vtx){return ""},
@@ -228,7 +230,7 @@ _(6);                   visit({G:G, u:u}, ["v"]);
 
         visit: function(_) {
             with (this) {
-_(1);           u.d = ++global.time;
+_(1);           u.start = ++global.time;
 _(2);           u.color = "gray";
                 G.eachNeighbor(u, function(vtx){
 _(3);               v = vtx;
@@ -238,7 +240,7 @@ _(5);                   visit({G:G, u:v});
                 });
                 v = undefined;
 _(6);           u.color = "black";
-_(7);           u.f = ++global.time;
+_(7);           u.finish = ++global.time;
             }
         },
     },

@@ -12,7 +12,13 @@
     <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
     <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
 
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+
     <style type="text/css">
+        .pseudocode-procedures {
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+
         .ui-widget-overlay {
             position: fixed;
             top: 0;
@@ -87,23 +93,23 @@
                         <div class="col-sm-6 nopadding">
                             <div id="controls"></div>
                             <div class="pseudocode-procedures">
-                                <div id="pseudocode" title="RodCut(p):">
+                                <div id="pseudocode" title="RodCut(price):">
                                     opt[0] = 0
                                     sol[0] = []
-                                    for k = 1 to p.length
+                                    for k = 1 to price.length
                                         opt[k] = 0
                                         sol[k] = null
                                         for i = 1 to k
-                                            if opt[k] &lt; opt[k-i] + p[i]
-                                                opt[k] = opt[k-i] + p[i]
+                                            if opt[k] &lt; opt[k-i] + price[i]
+                                                opt[k] = opt[k-i] + price[i]
                                                 sol[k] = sol[k-i] + [i]
                                 </div>
                             </div>
                         </div>
                         <div class="col-sm-6 nopadding">
                             <table class="variable-widgets">
-                                <tr><td><div id="p-var"></div></td>
-                                    <td><div id="p"></div></td>
+                                <tr><td><div id="price-var"></div></td>
+                                    <td><div id="price"></div></td>
                                 </tr>
                                 <tr><td><div id="opt-var"></div></td>
                                     <td><div id="opt"></div></td>
@@ -126,15 +132,15 @@
 var myviz = new Vamonos.Visualizer({
     widgets: [
         new Vamonos.Widget.VarName({
-            container: "p-var",
-            varName: "p",
+            container: "price-var",
+            varName: "price",
             inputVar: true,
             watchable: false
         }),
 
         new Vamonos.Widget.Array({
-            container: "p",
-            varName: "p",
+            container: "price",
+            varName: "price",
             defaultInput: [0, 1,5,8,9,10,17,17,20,24],
             ignoreIndexZero: true,
             cssRules: [[">", "k", "shaded"]],
@@ -193,11 +199,11 @@ var myviz = new Vamonos.Visualizer({
             answer: function(frame) {
                 var answer = 0;
                 var opt    = frame.opt;
-                var p      = frame.p;
+                var price  = frame.price;
                 var k      = frame.k;
                 for (var i = 1; i <= k; i++) {
-                    if (answer < opt[k-i] + p[i]) {
-                        answer = opt[k-i] + p[i];
+                    if (answer < opt[k-i] + price[i]) {
+                        answer = opt[k-i] + price[i];
                     }
                 }
                 return answer;
@@ -209,12 +215,12 @@ var myviz = new Vamonos.Visualizer({
         with (this) {
 _(1);       global.opt = [0]
 _(2);       global.sol = [[]]
-_(3);       for (k = 1; k < p.length; _(3), k++) {
+_(3);       for (k = 1; k < price.length; _(3), k++) {
 _(4);           global.opt[k] = 0;
 _(5);           global.sol[k] = null;
 _(6);           for (i=1; i<=k; _(6), i++) {
-_(7);               if (global.opt[k] < global.opt[k-i] + p[i]) {
-_(8);                   global.opt[k] = global.opt[k-i] + p[i];
+_(7);               if (global.opt[k] < global.opt[k-i] + price[i]) {
+_(8);                   global.opt[k] = global.opt[k-i] + price[i];
 _(9);                   global.sol[k] = global.sol[k-i].concat([i]);
                     }
                 }

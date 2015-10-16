@@ -11,8 +11,13 @@
     <link rel="stylesheet" href="../deps/bootstrap.min.css">
     <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
     <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
 
     <style type="text/css">
+    .pseudocode-procedures {
+        font-family: 'Source Sans Pro', sans-serif;
+    }
+
     .vertex {
         width: 40;
         height: 30;
@@ -52,13 +57,13 @@
     <br>
     <div class="container">
         <div class="row">
-            <div class="col-sm-offset-2 col-sm-8 col-md-12 col-md-offset-0 col-lg-10 col-lg-offset-1 panel-default">
+            <div class="col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1 panel-default">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         Ford-Fulkerson Max Flow
                     </div>
                     <div class="row nopadding panel-body">
-                        <div class="col-md-6 nopadding">
+                        <div class="col-md-5 nopadding">
                             <div id="controls"></div>
                             <div class="pseudocode-procedures">
                                 <div id="pseudocode-main" title="Ford-Fulkerson(G,s,t):">
@@ -75,7 +80,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6 nopadding">
+                        <div class="col-md-7 nopadding">
                             <table class="variable-widgets">
                                 <tr><td><div id="g-var"></div></td>
                                     <td><div id="graph-g"></div></td>
@@ -159,12 +164,12 @@ var myviz = new Vamonos.Visualizer({
             defaultGraph: new Vamonos.DataStructure.Graph({
                 directed: true,
                 vertices: [
-                    { x: 100, y: 10,  id: 'v0' },
-                    { x: 100, y: 110, id: 'v1' },
-                    { x: 210, y: 10,  id: 'v2' },
-                    { x: 210, y: 110, id: 'v3' },
                     { x: 10,  y: 60,  id: 'v4' },
-                    { x: 300, y: 60,  id: 'v5' },
+                    { x: 95, y: 10,  id: 'v0' },
+                    { x: 95, y: 110, id: 'v1' },
+                    { x: 200, y: 10,  id: 'v2' },
+                    { x: 200, y: 110, id: 'v3' },
+                    { x: 280, y: 60,  id: 'v5' },
                 ],
                 edges: [
                     { source: 'v4', target: 'v0', c: 4 },
