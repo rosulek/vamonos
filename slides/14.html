@@ -100,7 +100,7 @@
                             if n <= 1 then
                                 cache[n] = 1
                             else
-                                cache[n] = Fib(n-1) + Fib(n-2)
+                                cache[n] = Fib(n-2) + Fib(n-1)
                             return cache[n]
                         </div>
                     </div>
@@ -174,8 +174,8 @@
                             } else {
                                 _(5);
                                 _(6);
-                                var a = main({n:n-1});
                                 var b = main({n:n-2});
+                                var a = main({n:n-1});
                                 global.cache[n] = a + b;
                             }
                             _(7);
