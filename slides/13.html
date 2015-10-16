@@ -68,15 +68,15 @@
                             <div class="pseudocode-procedures">
                                 <div id="pseudocode-main" title="Ford-Fulkerson(G,s,t):">
                                     for each edge (u,v) &in; G.E
-                                        (u,v).f = 0
+                                        (u,v).<i>f</i> = 0
                                     G<sub>f</sub> = ResidualGraph(G)
-                                    while p = AugmentingPath(G,s,t)
+                                    while p = AugmentingPath(G<sub>f</sub>,s,t)
                                         c<sub><i>f</i></sub>(p) = min { c<sub><i>f</i></sub>(u,v) : (u,v) &in; p }
                                         for each edge (u,v) in p
                                             if (u,v) &in; G.E
-                                                (u,v).f = (u,v).f + c<sub><i>f</i></sub>(p)
+                                                (u,v).<i>f</i> = (u,v).<i>f</i> + c<sub><i>f</i></sub>(p)
                                             else
-                                                (v,u).f = (v,u).f - c<sub><i>f</i></sub>(p)
+                                                (v,u).<i>f</i> = (v,u).<i>f</i> - c<sub><i>f</i></sub>(p)
                                 </div>
                             </div>
                         </div>
