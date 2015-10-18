@@ -1,5 +1,5 @@
 <html><head>
-    <title>Dynamic Programming</title>
+    <title>Future Work</title>
 
     <meta id="meta" name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -53,137 +53,29 @@
     }
     </style>
 </head><body>
-
-    <div id="tab2" class="container-fluid">
-
-        <div class="row">
-          <p></p>
-            <div class="col-sm-6 col-lg-4 col-lg-offset-2">
-              <h3>Dynamic Program Lesson 2: Caching</h3>
-                <p>
-                    One way to avoid computing the same value twice is to bolt on a <em>cache</em>
-                    to the algorithm. At the beginning of every call to <code>fib(n)</code>, we
-                    check whether the answer is already in the cache. Otherwise, we compute the
-                    answer just as before, and store the answer in the cache just before
-                    returning. We call this <emph>recursion with shortcuts</emph>.
-                </p>
-
-                <p>
-                    This algorithm won't needlessly recompute a value <code>fib(n)</code> after
-                    computing it once. But this style of coding is slightly cumbersome since:
-                    <ul>
-                        <li>
-                            It is hard to analyze/understand, because it relies heavily on
-                            side-effects. The same call to <code>fib()</code> could result in
-                            different behavior based on the contents of the cache.
-                        </li>
-
-                        <li>
-                            Correctly maintaining the cache is awkward when using a static/global
-                            cache variable like this. For future problems we will discuss, a cache
-                            can be made to work but only if it is cleared for some calls but not
-                            others.
-                        </li>
-                    </ul>
-                </p>
-
+    <br>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1 panel-default">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              Future Work
             </div>
-            <div class="col-sm-6 col-lg-4">
-                <div class="panel vamonos panel-default">
-                    <div class="panel-heading">
-                        Caching Fibonacci Implementation
-                    </div>
-                    <div class="pseudocode-procedures">
-                        <div id="fib-cache" title="Fib(n):">
-                            // cache[n] will store the result of Fib(n)
-                            if cache[n] exists then
-                                return cache[n]
-                            if n <= 1 then
-                                cache[n] = 1
-                            else
-                                cache[n] = Fib(n-2) + Fib(n-1)
-                            return cache[n]
-                        </div>
-                    </div>
-                    <div id="fib-cache-controls"></div>
-                    <table class="variable-widgets">
-                        <tr><td><div id="fib-cache-cache-var"></div></td>
-                            <td><div id="fib-cache-cache"></div></td>
-                        <tr><td><div id="fib-cache-stack-var"></div></td>
-                            <td><div id="fib-cache-stack"></div></td>
-                        </tr>
-                    </table>
-                </div>
-
-                <script type="text/javascript">
-                var fib_cache = new Vamonos.Visualizer({
-                    widgets: [
-                        new Vamonos.Widget.Pseudocode("fib-cache"),
-                        new Vamonos.Widget.Controls({
-                            container: "fib-cache-controls",
-                            inputVars: { n: 4 },
-                        }),
-                        new Vamonos.Widget.CallStack({
-                            container: "fib-cache-stack",
-                            procedureNames: {
-                                main: "Fib",
-                            },
-                        }),
-                        new Vamonos.Widget.VarName({
-                            container: "fib-cache-stack-var",
-                            varName: "_callstack",
-                            displayName: "callstack",
-                            watching: true
-                        }),
-                        new Vamonos.Widget.VarName({
-                            container: "fib-cache-cache-var",
-                            varName: "cache",
-                            watching: true,
-                        }),
-                        new Vamonos.Widget.Array({
-                            container: "fib-cache-cache",
-                            varName: "cache",
-                            displayOnly: true,
-                        }),
-                        new Vamonos.Widget.UserQuiz({
-                            condition: function(frame) {
-                                return frame._frameNumber == 1;
-                            },
-                            question: function(frame) {
-                                return "when calling Fib(" + frame.n + "), what will be the first cache entry?"
-                            },
-                            answer: function(frame) {
-                                return 1;
-                            }
-                        }),
-                    ],
-                    algorithm: function(_) {
-                        with (this) {
-                            if (global.cache === undefined) {
-                                global.cache = [];
-                            }
-                            if (_(1), global.cache[n] !== undefined) {
-                                _(2);
-                                return global.cache[n];
-                            }
-
-                            if (_(3), n <= 1) {
-                                _(4);
-                                global.cache[n] = 1;
-                            } else {
-                                _(5);
-                                _(6);
-                                var b = main({n:n-2});
-                                var a = main({n:n-1});
-                                global.cache[n] = a + b;
-                            }
-                            _(7);
-                            return global.cache[n];
-                        }
-                    },
-                    maxFrames: 500,
-                });
-                </script>
+            <div class="row nopadding panel-body">
+              <div class="col-md-12">
+                <br>
+                <ul>
+                  <li><b>Automatically generate visualizations</b></li>
+                    <br>
+                  <li><b>Usability study</b></li>
+                    <br>
+                </ul>
+              </div>
             </div>
+          </div>
         </div>
-      </body></html>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

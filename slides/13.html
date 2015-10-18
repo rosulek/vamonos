@@ -1,386 +1,86 @@
 <html><head>
-    <title>Max Flow</title>
+    <title>Taxonomy</title>
 
     <meta id="meta" name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" href="../lib/vamonos.css">
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
-    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
-    <script type="text/javascript" src="keyboard.js"></script>
 
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <script type="text/javascript" src="keyboard.js"></script>
     <link rel="stylesheet" href="../deps/bootstrap.min.css">
     <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
     <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
-    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
-
+    </script>
     <style type="text/css">
-    .pseudocode-procedures {
-        font-family: 'Source Sans Pro', sans-serif;
+
+    p.caption {
+        font-size: 20px;
+        font-family: monospace;
     }
 
-    .vertex {
-        width: 40;
-        height: 30;
-    }
-
-    .vertex-contents {
-        font-size: .8em;
-    }
-
-    .vertex-sw-label {
-        font-style: italic;
-    }
-
-    .vertex-ne-label, .vertex-nw-label {
-        font-weight: bold;
-    }
-
-    text.vertex-contents {
-        font-weight: bold;
-    }
-
-    path.green {
-        stroke: #92E894;
-    }
-
-    path.red {
-        stroke: #FF7D7D;
-    }
-
-    body {
+    .center {
         text-align: center;
     }
+
+    h1, h2, h3, h4, h5, h6 {
+        text-align: center;
+    }
+
+    emph {
+        font-style: italic;
+        font-weight: bold;
+    }
+
+    a:hover {
+        cursor: default;
+    }
+
+    li {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    table.matrix td.row-i.col-j {
+        background-color: #ffa;
+    }
+
+    table.matrix td.row-n.col-k {
+        background-color: #ada;
+    }
     </style>
-
 </head><body>
-
     <br>
     <div class="container">
-        <div class="row">
-            <div class="col-md-10 col-md-offset-1 panel-default">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        Ford-Fulkerson Max Flow
-                    </div>
-                    <div class="row nopadding panel-body">
-                        <div class="col-md-5 nopadding">
-                            <div id="controls"></div>
-                            <div class="pseudocode-procedures">
-                                <div id="pseudocode-main" title="Ford-Fulkerson(G,s,t):">
-                                    for each edge (u,v) &in; G.E
-                                        (u,v).f = 0
-                                    G<sub>f</sub> = ResidualGraph(G)
-                                    while p = AugmentingPath(G<sub>f</sub>,s,t)
-                                        c<sub>f</sub>(p) = min { c<sub>f</sub>(u,v) : (u,v) &in; p }
-                                        for each edge (u,v) in p
-                                            if (u,v) &in; G.E
-                                                (u,v).f = (u,v).f + c<sub>f</sub>(p)
-                                            else
-                                                (v,u).f = (v,u).f - c<sub>f</sub>(p)
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 nopadding">
-                            <table class="variable-widgets">
-                                <tr><td><div id="g-var"></div></td>
-                                    <td><div id="graph-g"></div></td>
-                                </tr>
-                                <tr><td><div id="gf-var"></div></td>
-                                    <td><div id="graph-gf"></div></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1 panel-default">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              Taxonomy of Effortlessness [IKKN2005]
             </div>
+            <div class="row nopadding panel-body">
+              <div class="col-md-12">
+                <br>
+                <ul>
+                  <li><b>Integrability</b></li>
+                    How easy is the system to set up and use?
+                    <br> <br>
+                  <li><b>Scope</b></li>
+                    How widely can you apply the system?
+                    <br> <br>
+                  <li><b>Interaction</b></li>
+                    How deeply can a user modify a visualization?
+                    <br> <br>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-
+  </div>
 </body>
-<script type="text/javascript">
-
-var i = 0;
-
-var myviz = new Vamonos.Visualizer({
-    widgets: [
-
-        new Vamonos.Widget.Controls("controls"),
-
-        new Vamonos.Widget.Pseudocode({
-            container: "pseudocode-main",
-            breakpoints: [4,5],
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "g-var",
-            varName: "G",
-            inputVar: true,
-        }),
-
-        new Vamonos.Widget.Graph({
-            varName: "G",
-            container: "graph-g",
-            inputVars: {
-                s: "v4",
-                t: "v5",
-            },
-            vertexLabels: {
-                inner: function(vtx){return vtx.name},
-                nw   : ["s"],
-                ne   : ["t"],
-                sw   : ["u", "v"],
-            },
-            edgeLabel: {
-                edit: 'c',
-                display: function(e){
-                    return (e.f !== undefined ? e.f : "-") + "/"
-                         + (e.c !== undefined ? e.c : "-");
-                },
-            },
-            defaultEdgeAttrs: { c: 1 },
-            edgeCssAttributes: { green: "u->v" },
-            styleEdges: [
-                function(e){
-                    if (e.f !== undefined && (e.f > 0)) {
-                        var r = 96,
-                            g = 127,
-                            b = 255,
-                            scale = d3.scale.linear()
-                                      .domain([0, e.c])
-                                      .range([255, r]),
-                            color = Vamonos.rgbToHex(scale(e.f), scale(e.f), b);
-                        return ["stroke", color];
-                    }
-                },
-                function(e){
-                    if (e.f !== undefined && (e.f > 0)) {
-                        var scale = d3.scale.linear()
-                                      .domain([0, 5])
-                                      .range([2, 8]);
-                        return ["stroke-width", scale(e.f)];
-                    }
-                },
-            ],
-            defaultGraph: new Vamonos.DataStructure.Graph({
-                directed: true,
-                vertices: [
-                    { x: 10,  y: 60,  id: 'v4' },
-                    { x: 95, y: 10,  id: 'v0' },
-                    { x: 95, y: 110, id: 'v1' },
-                    { x: 200, y: 10,  id: 'v2' },
-                    { x: 200, y: 110, id: 'v3' },
-                    { x: 280, y: 60,  id: 'v5' },
-                ],
-                edges: [
-                    { source: 'v4', target: 'v0', c: 4 },
-                    { source: 'v4', target: 'v1', c: 4 },
-                    { source: 'v1', target: 'v2', c: 1 },
-                    { source: 'v1', target: 'v3', c: 2 },
-                    { source: 'v0', target: 'v3', c: 2 },
-                    { source: 'v0', target: 'v2', c: 4 },
-                    { source: 'v3', target: 'v5', c: 5 },
-                    { source: 'v2', target: 'v5', c: 3 },
-                ]
-            }),
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "gf-var",
-            varName: "G_f",
-        }),
-
-        new Vamonos.Widget.Graph({
-            varName: "G_f",
-            container: "graph-gf",
-            editable: false,
-            edgeLabel: 'f',
-            showChanges: [],
-            vertexLabels: {
-                inner: function(vtx){return vtx.name},
-                nw   : ["sf"],
-                ne   : ["tf"],
-            },
-            edgeCssAttributes: {
-                red : function(edge){return (edge.target.pred === edge.source.id)},
-            },
-        }),
-
-        new Vamonos.Widget.Error({
-            conditions: [
-                function(viz){
-                    var s = viz.getVariable("s");
-                    var t = viz.getVariable("t");
-                    if (s.id === t.id) {
-                        return "Ford-Fulkerson says: s and t must be different!";
-                    }
-                }
-            ]
-        })
-
-    ],
-
-    algorithm: {
-
-        main: function(_){
-            with (this) {
-
-                // ResidualVtx :: Helper function that gets the equivalent
-                // vtx from the residual graph
-                var ResidualVtx = function(vtx) {
-                    return G_f.vertex( G_f.prefix + vtx.id );
-                }
-
-                // UpdateResidualEdge :: helper function that updates the
-                // residual graph from an edge in the main one
-                var UpdateResidualEdge = function(e){
-                    var uf = ResidualVtx(e.source);
-                    var vf = ResidualVtx(e.target);
-                    var ef = G_f.edge(uf,vf);
-                    var bf = G_f.edge(vf,uf);
-                    // forward edge
-                    var val = e.c - e.f;
-                    if (val > 0) {
-                        if (ef)
-                            ef.f = val
-                        else
-                            G_f.addEdge(uf,vf,{f:val});
-                    } else {
-                        if (ef)
-                            G_f.removeEdge(uf,vf);
-                    }
-                    // back edge
-                    if (e.f > 0) {
-                        if (bf)
-                            bf.f = e.f
-                        else
-                            G_f.addEdge(vf,uf,{f:e.f});
-                    } else {
-                        if (bf) G_f.removeEdge(vf,uf);
-                    }
-                };
-
-                // Initialize the main graph
-                G.eachEdge(function(e){
-_(1);               u = e.source;
-                    v = e.target;
-_(2);               e.f = 0;
-                })
-                u = v = undefined;
-
-_(3);           G_f = ResidualGraph(G);
-                sf = ResidualVtx(s);
-                tf = ResidualVtx(t);
-
-                var done = false;
-                i = 0;
-                while (_(4), p = BFS(G_f,sf,tf), p.length) {
-_(5);               // get the flow for each edge on the path
-                    var flows = p.map(function(e){ return e.f });
-                    // cfp is the min flow for each edge on the path
-                    cfp = Math.min.apply(null, flows);
-                    // augment the flow in G along each edge of the path
-                    p.map(function(pEdge){
-_(6);                   u = G.vertex(pEdge.source.oldId);
-                        v = G.vertex(pEdge.target.oldId);
-                        uf = ResidualVtx(u);
-                        vf = ResidualVtx(v);
-                        e = G.edge(u,v);
-                        if (_(7), e) {
-_(8);                       e.f = e.f + cfp;
-                        } else {
-_(9);                       e = G.edge(v,u);
-_(10);                      e.f = e.f - cfp;
-                        }
-                        // update the residual graph
-                        UpdateResidualEdge(e);
-                        delete vf.pred;
-                    });
-                    u = v = undefined;
-                    i++;
-                }
-_(11);          global.maxflow = 0;
-                G.eachNeighbor(s, function(u){
-                    e = G.edge(s,u);
-                    global.maxflow += e.f;
-                })
-            }
-        },
-    }
-});
-
-var ResidualGraph = function(G){
-    var newG = new Vamonos.DataStructure.Graph({
-        directed: true,
-        prefix: "gf-",
-    });
-
-    G.eachVertex(function(vtx){
-        newG.addVertex({
-            x: vtx.x,
-            y: vtx.y,
-            name: vtx.name,
-            oldId: vtx.id,
-            id: newG.prefix + vtx.id
-        });
-    });
-
-    newG.eachVertex(function(u){
-        newG.eachVertex(function(v){
-            if (u.id === v.id) { return }
-            if (e = G.edge(u.oldId,v.oldId)) {
-                var val = e.c - e.f;
-                if (val > 0) {
-                    ef = newG.addEdge(u,v);
-                    ef.f = val;
-                }
-            } else if (e = G.edge(v.oldId,u.oldId)) {
-                if (e.f > 0) {
-                    ef = newG.addEdge(u,v);
-                    ef.f = e.f;
-                }
-            }
-        });
-    });
-    return newG;
-};
-
-var BFS = function(G,s,t){
-    var Q = [];
-    G.eachNeighbor(s, function(u){
-        u.pred = s.id;
-        Q.push(u);
-    });
-    s.pred = false;
-    var done = false;
-    while (!done && Q.length) {
-        var u = Q.shift();
-        var neighbors = G.neighbors(u);
-        for (var i = 0; i < neighbors.length; i++) {
-            var v = neighbors[i];
-            if (v.pred !== undefined) continue;
-            v.pred = u.id;
-            if (v == t) {
-                done = true;
-                break;
-            }
-            Q.push(v);
-        }
-    }
-    var path = [];
-    var inPath = {};
-    var u = t;
-    while (u) {
-        var e = G.edge(u.pred, u.id);
-        if (e) {
-            path.unshift(e);
-            inPath[u.id] = true;
-        }
-        u = G.vertex(u.pred);
-    }
-    G.eachVertex(function(v){
-        if (!inPath[v.id]) delete v.pred;
-    });
-    return path;
-};
-
-</script></html>
+</html>

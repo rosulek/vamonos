@@ -1,5 +1,5 @@
 <html><head>
-    <title>Rod-Cutting Quiz</title>
+    <title>Depth-First-Search</title>
 
     <meta id="meta" name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -12,110 +12,88 @@
     <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
     <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
 
-    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
-
     <style type="text/css">
-        .pseudocode-procedures {
-            font-family: 'Source Sans Pro', sans-serif;
-        }
+    text.vertex-contents {
+        font-size: .8em;
+    }
 
-        .ui-widget-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
+    .vertex-ne-label, .vertex-nw-label {
+        font-weight: bold;
+    }
 
-        .ui-widget-overlay {
-            background-color: #cccccc;
-            opacity: .3;
-            filter: Alpha(Opacity=30);
-        }
+    .vertex-sw-label {
+        font-style: italic;
+    }
 
-        .ui-front {
-            z-index: 100;
-        }
+    ellipse.color-white {
+        fill: white;
+    }
 
-        .ui-dialog {
-            background: white;
-            border: 1px solid #aaa;
-            box-shadow: 4px 4px 8px #ccc;
-        }
-        .userquiz {
-            padding: 10px;
-        }
-        .ui-dialog-titlebar {
-            background: #d85a1a;
-            color: white;
-            padding: 4px;
-            cursor: move;
-            margin: 2px;
-        }
-        .ui-dialog-titlebar-close {
-            display: none;
-        }
-        .userquiz-question {
-            margin-bottom: 10px;
-        }
-        .userquiz-answer {
-            width: 50px;
-        }
-        .userquiz-response {
-            text-align: center;
-        }
-        .userquiz-feedback {
-            margin-top: 10px;
-        }
-        .userquiz-feedback.wrong-answer {
-            color: #c55;
-        }
-        .userquiz-feedback.correct-answer {
-            color: #5c5;
-            font-weight: bold;
-        }
-        body {
-            text-align: center;
-        }
+    ellipse.color-gray {
+        fill: #888;
+    }
+
+    ellipse.color-black {
+        fill: black;
+    }
+
+    path.red {
+        stroke: #FF7D7D;
+    }
+
+    text.color-black, text.color-gray {
+        fill: white;
+    }
+
+    body {
+        text-align: center;
+    }
     </style>
 
-</head><body>
+</head>
+<body>
 
     <br>
     <div class="container">
         <div class="row">
-            <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2 panel-default">
+            <div class="col-md-offset-1 col-md-10 col-lg-offset-2 col-lg-8 panel-default">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        Rod-Cutting with Quiz
+                        Depth-First-Search
                     </div>
                     <div class="row nopadding panel-body">
-                        <div class="col-sm-6 nopadding">
+                        <div class="col-sm-5 nopadding">
                             <div id="controls"></div>
                             <div class="pseudocode-procedures">
-                                <div id="pseudocode" title="RodCut(price):">
-                                    opt[0] = 0
-                                    sol[0] = []
-                                    for k = 1 to price.length
-                                        opt[k] = 0
-                                        sol[k] = null
-                                        for i = 1 to k
-                                            if opt[k] &lt; opt[k-i] + price[i]
-                                                opt[k] = opt[k-i] + price[i]
-                                                sol[k] = sol[k-i] + [i]
+                                <div id="pseudocode-dfs" title="DFS(G):">
+                                    for each u &in; G.V
+                                        u.color = white
+                                    time = 0
+                                    for each u &in; G.V
+                                        if u.color == white
+                                            DFS-Visit(G,u)
+                                </div>
+
+                                <div id="pseudocode-visit" title="DFS-Visit(G,u):">
+                                    u.start = ++time
+                                    u.color = gray
+                                    <b>for</b> each v &in; G.Adj[u]
+                                        <b>if</b> v.color == white
+                                            DFS-Visit(G,v)
+                                    u.color &nbsp;= black
+                                    u.finish = ++time
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-6 nopadding">
+                        <div class="col-sm-7 nopadding">
                             <table class="variable-widgets">
-                                <tr><td><div id="price-var"></div></td>
-                                    <td><div id="price"></div></td>
+                                <tr><td><div id="g-var"></div></td>
+                                    <td><div id="graph"></div></td>
                                 </tr>
-                                <tr><td><div id="opt-var"></div></td>
-                                    <td><div id="opt"></div></td>
-                                </tr>
-                                <tr><td><div id="sol-var"></div></td>
-                                    <td><div id="sol"></div></td>
+                                <tr><td><div id="stack-var"></div></td>
+                                    <td><div id="stack"></div></td></tr>
+                                <tr><td><div id="time-var"></div></td>
+                                    <td><div id="time"></div></td>
                                 </tr>
                             </table>
                         </div>
@@ -128,107 +106,140 @@
 </body>
 
 <script type="text/javascript">
-
 var myviz = new Vamonos.Visualizer({
     widgets: [
         new Vamonos.Widget.VarName({
-            container: "price-var",
-            varName: "price",
+            container: "g-var",
+            varName: "G",
             inputVar: true,
-            watchable: false
-        }),
-
-        new Vamonos.Widget.Array({
-            container: "price",
-            varName: "price",
-            defaultInput: [0, 1,5,8,9,10,17,17,20,24],
-            ignoreIndexZero: true,
-            cssRules: [[">", "k", "shaded"]],
-            showIndices: ["i", "k"],
-            firstCellBlank: true,
         }),
 
         new Vamonos.Widget.VarName({
-            container: "opt-var",
-            varName: "global::opt",
-            displayName: "opt",
+            container: "time-var",
+            varName: "time"
         }),
 
-        new Vamonos.Widget.Array({
-            container: "opt",
-            varName: "global::opt",
-            showIndices: ["k", "k-i"],
-            cssRules: [[">", "k", "shaded"]],
-            displayOnly: true,
+        new Vamonos.Widget.VarDisplay({
+            container: "time",
+            varName: "time"
         }),
 
         new Vamonos.Widget.VarName({
-            container: "sol-var",
-            varName: "global::sol",
-            displayName: "sol",
-            watching: true,
+            container: "stack-var",
+            varName: "_callstack",
+            displayName: "Call Stack",
+            watching: true
         }),
 
-        new Vamonos.Widget.Array({
-            container: "sol",
-            varName: "global::sol",
-            showIndices: ["k"],
-            displayOnly: true,
-            cssRules: [[">", "k", "shaded"]],
-            cellFormat: function(x) { return x ? "["+x.join(",")+"]" : "" }
+        new Vamonos.Widget.CallStack({
+            container: "stack",
+            procedureNames: {
+                main: "DFS",
+                visit: "DFS-Visit",
+            },
+            animate: ["next", "prev"],
+            ignoreArgumentValues: ["G"]
         }),
 
         new Vamonos.Widget.Pseudocode({
-            container: "pseudocode",
-            breakpoints: [7],
+            container: "pseudocode-dfs",
+            procedureName: "main",
+        }),
+
+        new Vamonos.Widget.Pseudocode({
+            container: "pseudocode-visit",
+            procedureName: "visit",
+            breakpoints: [3,4],
         }),
 
         new Vamonos.Widget.Controls({
-            container: "controls",
-            expandWidth: true,
-            slider: false,
+            container: "controls"
         }),
 
-        new Vamonos.Widget.UserQuiz({
-            condition: function(frame) {
-                return frame.k > 3 && frame._nextLine == 7 && frame.i == 1;
-            },
-            question: function(frame) {
-                return "What will the final value of opt[" + frame.k + "] be?"
-            },
-            answer: function(frame) {
-                var answer = 0;
-                var opt    = frame.opt;
-                var price  = frame.price;
-                var k      = frame.k;
-                for (var i = 1; i <= k; i++) {
-                    if (answer < opt[k-i] + price[i]) {
-                        answer = opt[k-i] + price[i];
+        new Vamonos.Widget.Graph({
+            varName: "G",
+            container: "graph",
+            vertexLabels: {
+                inner : {
+                    edit: function(vtx){ return vtx.name },
+                    display: function(vtx){ 
+                        return Vamonos.rawToTxt(vtx.start) + "/" + Vamonos.rawToTxt(vtx.finish) 
                     }
-                }
-                return answer;
-            }
-        }),
+                },
+                sw    : {
+                    edit: function(vtx){return ""},
+                    display: function(vtx){return vtx.name}
+                },
+                ne    : ["u", "v"],
+            },
+            vertexCssAttributes: {
+                color: ["white", "gray", "black"],
+            },
+            edgeCssAttributes: {
+                red : "u->visit::v"
+            },
+            defaultGraph: new Vamonos.DataStructure.Graph({
+                directed: true,
+                vertices: [
+                    {id: "v0", x: 17,  y: 10},
+                    {id: "v1", x: 98,  y: 10},
+                    {id: "v2", x: 15,  y: 78},
+                    {id: "v3", x: 100, y: 80},
+                    {id: "v4", x: 15,  y: 138},
+                    {id: "v5", x: 100, y: 140},
+                    {id: "v6", x: 182, y: 140},
+                ],
+                edges: [
+                    {source: 'v0',target: 'v1'},
+                    {source: 'v1',target: 'v3'},
+                    {source: 'v1',target: 'v6'},
+                    {source: 'v2',target: 'v3'},
+                    {source: 'v2',target: 'v4'},
+                    {source: 'v5',target: 'v8'},
+                    {source: 'v5',target: 'v6'},
+                ]
+            })
+        })
     ],
 
-    algorithm: function (_) {
-        with (this) {
-_(1);       global.opt = [0]
-_(2);       global.sol = [[]]
-_(3);       for (k = 1; k < price.length; _(3), k++) {
-_(4);           global.opt[k] = 0;
-_(5);           global.sol[k] = null;
-_(6);           for (i=1; i<=k; _(6), i++) {
-_(7);               if (global.opt[k] < global.opt[k-i] + price[i]) {
-_(8);                   global.opt[k] = global.opt[k-i] + price[i];
-_(9);                   global.sol[k] = global.sol[k-i].concat([i]);
+    autoStart: false,
+
+    algorithm: {
+        main: function(_) {
+            with (this) {
+                global.time = undefined;
+                G.eachVertex(function(vtx){
+_(1);               u = vtx;
+_(2);               u.color = "white";
+                });
+                u = undefined;
+_(3);           global.time = 0;
+                G.eachVertex(function(vtx){
+_(4);               u = vtx;
+_(5);               if (u.color === "white") {
+_(6);                   visit({G:G, u:u}, ["v"]);
                     }
-                }
-                i = undefined;
+                });
+                u = undefined;
             }
-            k = undefined;
-        }
-    }
-});
+        },
+
+        visit: function(_) {
+            with (this) {
+_(1);           u.start = ++global.time;
+_(2);           u.color = "gray";
+                G.eachNeighbor(u, function(vtx){
+_(3);               v = vtx;
+_(4);               if (v.color === "white") {
+_(5);                   visit({G:G, u:v});
+                    }
+                });
+                v = undefined;
+_(6);           u.color = "black";
+_(7);           u.finish = ++global.time;
+            }
+        },
+    },
+})
 </script>
 </html>

@@ -1,234 +1,189 @@
 <html><head>
-    <title>Breadth-First-Search</title>
+    <title>Dynamic Programming</title>
 
     <meta id="meta" name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" href="../lib/vamonos.css">
     <link rel="stylesheet" href="../lib/vamonos-demos.css">
-    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
-    <script type="text/javascript" src="keyboard.js"></script>
 
+    <script type="text/javascript" src="../lib/vamonos-all.js"></script>
+
+    <script type="text/javascript" src="keyboard.js"></script>
     <link rel="stylesheet" href="../deps/bootstrap.min.css">
     <link rel="stylesheet" href="../deps/bootstrap-theme.min.css">
     <script type="text/javascript" src="../deps/bootstrap.min.js"></script>
-
+    </script>
     <style type="text/css">
-    .vertex {
-        width: 40;
-        height: 30;
+
+    p.caption {
+        font-size: 20px;
+        font-family: monospace;
     }
 
-    .vertex-contents {
-        font-size: .8em;
-    }
-
-    .vertex-ne-label, .vertex-nw-label {
-        font-weight: bold;
-    }
-
-    .vertex-sw-label {
-        font-style: italic;
-    }
-
-    ellipse.color-white {
-        fill: white;
-    }
-
-    ellipse.color-gray {
-        fill: #888;
-    }
-
-    ellipse.color-black {
-        fill: black;
-    }
-
-    path.red {
-        stroke: #FF7D7D;
-    }
-
-    path.blue {
-        stroke: rgb(96,127,255);
-    }
-
-    path.green {
-        stroke: #92E894;
-    }
-
-    text.color-black, text.color-gray {
-        fill: white;
-        font-weight: bold;
-    }
-
-    body {
+    .center {
         text-align: center;
     }
-    </style>
 
+    h1, h2, h3, h4, h5, h6 {
+        text-align: center;
+    }
+
+    emph {
+        font-style: italic;
+        font-weight: bold;
+    }
+
+    a:hover {
+        cursor: default;
+    }
+
+    li {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    table.matrix td.row-i.col-j {
+        background-color: #ffa;
+    }
+
+    table.matrix td.row-n.col-k {
+        background-color: #ada;
+    }
+    </style>
 </head><body>
 
-    <br>
-    <div class="container">
+    <div id="tab2" class="container-fluid">
+
         <div class="row">
-            <div class="col-sm-12 col-md-offset-1 col-md-10 col-lg-8 col-lg-offset-2 panel-default">
-                <div class="panel panel-default">
+          <p></p>
+            <div class="col-sm-6 col-lg-4 col-lg-offset-2">
+              <h3>Dynamic Program Lesson 2: Caching</h3>
+                <p>
+                    One way to avoid computing the same value twice is to bolt on a <em>cache</em>
+                    to the algorithm. At the beginning of every call to <code>fib(n)</code>, we
+                    check whether the answer is already in the cache. Otherwise, we compute the
+                    answer just as before, and store the answer in the cache just before
+                    returning. We call this <emph>recursion with shortcuts</emph>.
+                </p>
+
+                <p>
+                    This algorithm won't needlessly recompute a value <code>fib(n)</code> after
+                    computing it once. But this style of coding is slightly cumbersome since:
+                    <ul>
+                        <li>
+                            It is hard to analyze/understand, because it relies heavily on
+                            side-effects. The same call to <code>fib()</code> could result in
+                            different behavior based on the contents of the cache.
+                        </li>
+
+                        <li>
+                            Correctly maintaining the cache is awkward when using a static/global
+                            cache variable like this. For future problems we will discuss, a cache
+                            can be made to work but only if it is cleared for some calls but not
+                            others.
+                        </li>
+                    </ul>
+                </p>
+
+            </div>
+            <div class="col-sm-6 col-lg-4">
+                <div class="panel vamonos panel-default">
                     <div class="panel-heading">
-                        Breadth-First-Search
+                        Caching Fibonacci Implementation
                     </div>
-                    <div class="row nopadding panel-body">
-                        <div class="col-sm-6 nopadding">
-                            <div id="controls"></div>
-                            <div class="pseudocode-procedures">
-                                <div id="pseudocode" title="BFS(G,s):">
-                                    for each u &in; G.V - {s}
-                                        u.color = white
-                                    s.color = gray
-                                    s.d = 0
-                                    Q = &empty;
-                                    Q.enqueue(s)
-                                    while Q &ne; &empty;
-                                        u = Q.dequeue()
-                                        for each v &in; G.Adj[u]
-                                            if v.color == white
-                                                v.color = gray
-                                                v.d = u.d + 1
-                                                v.pred = u
-                                                Q.enqueue(v)
-                                        u.color = black
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 nopadding">
-                            <table class="variable-widgets">
-                                <tr><td><div id="g-var"></div></td>
-                                    <td><div id="graph"></div></td>
-                                </tr>
-                                <tr><td><div id="q-var"></div></td>
-                                    <td><div id="queue"></div></td></tr>
-                            </table>
+                    <div class="pseudocode-procedures">
+                        <div id="fib-cache" title="Fib(n):">
+                            // cache[n] will store the result of Fib(n)
+                            if cache[n] exists then
+                                return cache[n]
+                            if n <= 1 then
+                                cache[n] = 1
+                            else
+                                cache[n] = Fib(n-2) + Fib(n-1)
+                            return cache[n]
                         </div>
                     </div>
+                    <div id="fib-cache-controls"></div>
+                    <table class="variable-widgets">
+                        <tr><td><div id="fib-cache-cache-var"></div></td>
+                            <td><div id="fib-cache-cache"></div></td>
+                        <tr><td><div id="fib-cache-stack-var"></div></td>
+                            <td><div id="fib-cache-stack"></div></td>
+                        </tr>
+                    </table>
                 </div>
+
+                <script type="text/javascript">
+                var fib_cache = new Vamonos.Visualizer({
+                    widgets: [
+                        new Vamonos.Widget.Pseudocode("fib-cache"),
+                        new Vamonos.Widget.Controls({
+                            container: "fib-cache-controls",
+                            inputVars: { n: 4 },
+                        }),
+                        new Vamonos.Widget.CallStack({
+                            container: "fib-cache-stack",
+                            procedureNames: {
+                                main: "Fib",
+                            },
+                        }),
+                        new Vamonos.Widget.VarName({
+                            container: "fib-cache-stack-var",
+                            varName: "_callstack",
+                            displayName: "callstack",
+                            watching: true
+                        }),
+                        new Vamonos.Widget.VarName({
+                            container: "fib-cache-cache-var",
+                            varName: "cache",
+                            watching: true,
+                        }),
+                        new Vamonos.Widget.Array({
+                            container: "fib-cache-cache",
+                            varName: "cache",
+                            displayOnly: true,
+                        }),
+                        new Vamonos.Widget.UserQuiz({
+                            condition: function(frame) {
+                                return frame._frameNumber == 1;
+                            },
+                            question: function(frame) {
+                                return "when calling Fib(" + frame.n + "), what will be the first cache entry?"
+                            },
+                            answer: function(frame) {
+                                return 1;
+                            }
+                        }),
+                    ],
+                    algorithm: function(_) {
+                        with (this) {
+                            if (global.cache === undefined) {
+                                global.cache = [];
+                            }
+                            if (_(1), global.cache[n] !== undefined) {
+                                _(2);
+                                return global.cache[n];
+                            }
+
+                            if (_(3), n <= 1) {
+                                _(4);
+                                global.cache[n] = 1;
+                            } else {
+                                _(5);
+                                _(6);
+                                var b = main({n:n-2});
+                                var a = main({n:n-1});
+                                global.cache[n] = a + b;
+                            }
+                            _(7);
+                            return global.cache[n];
+                        }
+                    },
+                    maxFrames: 500,
+                });
+                </script>
             </div>
         </div>
-    </div>
-
-</body>
-<script type="text/javascript">
-
-var myviz = new Vamonos.Visualizer({
-    widgets: [
-        new Vamonos.Widget.Controls("controls"),
-
-        new Vamonos.Widget.Queue({
-            container: "queue",
-            varName: "Q",
-            showLabel: false,
-            displayOnly: true
-        }),
-
-        new Vamonos.Widget.Pseudocode({
-            container: "pseudocode",
-            breakpoints: [8,11],
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "g-var",
-            varName: "G",
-            inputVar: true,
-        }),
-
-        new Vamonos.Widget.VarName({
-            container: "q-var",
-            varName: "Q",
-        }),
-
-        new Vamonos.Widget.Graph({
-            varName: "G",
-            container: "graph",
-            inputVars: {
-                s: "v0"
-            },
-            vertexLabels: {
-                inner : {
-                    edit: function(vtx){return vtx.name},
-                    display: function(vtx){return vtx.d}
-                },
-                sw    : {
-                    edit: function(vtx){return ""},
-                    display: function(vtx){return vtx.name}
-                },
-                ne    : ["u", "v"],
-                nw    : ["s"],
-            },
-            vertexCssAttributes: {
-                color: ["white", "gray", "black"],
-            },
-            edgeCssAttributes: {
-                red   : "u->v",
-                green : function(edge){
-                    return (edge.target.pred ? edge.target.pred === edge.source.name : false)
-                        || (edge.source.pred ? edge.source.pred === edge.target.name : false)
-                },
-            },
-            defaultGraph: new Vamonos.DataStructure.Graph({
-                vertices: [
-                    {id: "v0", x: 17,  y: 10},
-                    {id: "v1", x: 98,  y: 10},
-                    {id: "v2", x: 176, y: 13},
-                    {id: "v3", x: 15,  y: 78},
-                    {id: "v4", x: 100, y: 80},
-                    {id: "v5", x: 182, y: 80},
-                    {id: "v6", x: 15,  y: 138},
-                    {id: "v7", x: 100, y: 140},
-                    {id: "v8", x: 182, y: 140},
-                ],
-                edges: [
-                    {source: 'v0',target: 'v4'},
-                    {source: 'v1',target: 'v2'},
-                    {source: 'v1',target: 'v4'},
-                    {source: 'v3',target: 'v4'},
-                    {source: 'v3',target: 'v6'},
-                    {source: 'v3',target: 'v7'},
-                    {source: 'v4',target: 'v8'},
-                    {source: 'v4',target: 'v7'},
-                    {source: 'v5',target: 'v8'},
-                    {source: 'v6',target: 'v7'},
-                    {source: 'v7',target: 'v8'},
-                ]
-            })
-        }),
-
-    ],
-
-    algorithm: function (_) {
-        with (this) {
-            G.eachVertex(function(vtx){
-                if (vtx.id === s.id) { return }
-_(1);               u = vtx;
-_(2);               u.color = "white";
-            });
-            u = undefined;
-_(3);       s.color = "gray";
-_(4);       s.d = 0;
-_(5);       Q = new Vamonos.DataStructure.Queue();
-_(6);       Q.enqueue(s);
-            while (_(7), !Q.isEmpty()) {
-_(8);           u = Q.dequeue();
-                G.eachNeighbor(u, function(vtx) {
-_(9);               v = vtx;
-_(10);               if (v.color === "white") {
-_(11);                  v.color = "gray";
-_(12);                  v.d = u.d + 1;
-_(13);                  v.pred = u.name;
-_(14);                  Q.enqueue(v);
-                    }
-                });
-                v = undefined;
-_(15);          u.color = "black";
-            }
-            u = undefined;
-        }
-    },
-});
-
-</script>
+      </body></html>
