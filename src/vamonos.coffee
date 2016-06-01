@@ -39,7 +39,7 @@
             { type, description, defaultValue } = specs
             throw Error "handleArguments: no type provided for #{widgetName}.#{argName}" unless type?
 
-            type = "" if type is "jQuery Selector"          # Special case
+            type = "x" if type is "jQuery Selector"          # Special case
 
             type = @arrayify(type)
             if givenArgs[argName]?
