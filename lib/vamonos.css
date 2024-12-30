@@ -102,7 +102,7 @@ table.variable-widgets > tbody > tr > td {
 }
 table.array {
   border-collapse: collapse;
-  display: inline;
+  display: inline-block;
   white-space: nowrap;
 }
 table.array td,
