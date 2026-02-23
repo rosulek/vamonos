@@ -659,10 +659,10 @@ class GraphDisplay
             if style.constructor.name is "Function"
                 target.text((d) => Vamonos.rawToTxt(style(d)))
             else if style.constructor.name is "Array"
-                target.text (d) =>
+                target.html (d) =>
                     res = []
                     for v in style when @currentFrame[v]?.id is d.id
-                        res.push(Vamonos.resolveSubscript(Vamonos.removeNamespace(v)))
+                        res.push(Vamonos.resolveSvgSubscript(Vamonos.removeNamespace(v)))
                     return res.join(",")
             else if (style.constructor.name is "Object" and
                      style[@mode]?.constructor.name is "Function")

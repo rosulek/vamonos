@@ -108,6 +108,12 @@
         return "#{ lname }<sub>#{ subscript }</sub> "
         #return "#{ lname }"
 
+    resolveSvgSubscript: (name) ->
+        nameMatches = name.match(/(.+)_(.+)/)
+        return name unless nameMatches?
+        [_,lname,subscript] = nameMatches
+        return "#{ lname }<tspan baseline-shift='sub' font-size='75%'>#{ subscript }</tspan> "
+
     formatObject: (object, attributes = [], prevObj) ->
         if prevObj? and object.name? and object.name isnt prevObj.name
             addClass = "class='changed'"
